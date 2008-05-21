@@ -1,5 +1,5 @@
 //The head of Keymagic application.
-//Copyright (C) 2008  www.mmgeeks.com
+//Copyright (C) 2008  KeyMagic Project
 //http://keymagic.googlecode.com
 //
 //This program is free software; you can redistribute it and/or modify
@@ -19,21 +19,21 @@
 #include "KeyMagicDll.h"
 #include "regex.h"
 
-#pragma data_seg(".magic")
+#pragma data_seg(".geeks")
 HHOOK hKeyHook = NULL;
-HHOOK hMouseHook = NULL;
 HHOOK hWndProcHook = NULL;
 HHOOK hGetMsgHook = NULL;
 HWND Commander_hWnd = NULL;
 UINT KM_SETKBID = NULL;
 UINT KM_KILLFOCUS = NULL;
+UINT KM_GETFOCUS = NULL;
 UINT KM_CHAR = NULL;
 UINT KM_KEYEVENT = NULL;
-char szDir[MAX_PATH] = {0};
+char szDir[1000] = {0};
 #pragma data_seg()
 
 //Make sure that section can READ WRITE and SHARE
-#pragma comment(linker, "/SECTION:.magic,RWS")
+#pragma comment(linker, "/SECTION:.geeks,RWS")
 
 WPARAM	wPam = PM_REMOVE;
 HANDLE	hFile;
@@ -44,62 +44,59 @@ KbFileHeader	*FileHeader = NULL;
 KbData	data;
 OrdData	*OData;
 CombineData	*comdat;
+UniqueKey *UKey;
+KM_ShortCut *SC;
 
-int	LastIndex = -2;
 wchar_t keystroke[5];
 wchar_t	LatestSent [5];
 wchar_t	LastInput [2];
 bool	LastIsCombine;
 bool	isActive = false;
-bool	StillInHook;
 bool	isInterBack = false;
 UINT	CurOderIndx = 0;
 UINT	LastCombineLen;
 UINT	PostedKey = 0;
 UINT	NumOfShortCut = 0;
-UINT	ActiveIndex = -1;
+UINT	ActiveIndex = 0;
 
 bool	OpenForMapping(LPCSTR FileName);
 bool	CheckForCombinationKeys(wchar_t uVKey);
 bool	KeyProc(wchar_t wchar);
-void	BackForCombination();
+bool	UniqueProc(char uVKey);
+void	MyBack();
 void	UpperOrLower (UINT *uVKey);
 wchar_t	SendStrokes (wchar_t* Strokes);
 LPCSTR	GetKeyBoard(UINT Index);
-int	ShortCutCheck (UINT uvKey);
-
-KM_ShortCut *SC;
+int		ShortCutCheck (UINT uvKey);
 
 int ShortCutCheck (UINT uvKey){
+	bool isCTRL, isALT, isSHIFT;
+
+	isCTRL = GetKeyState(VK_CONTROL) & 0x8000;
+	isALT = GetKeyState(VK_MENU) & 0x8000;
+	isSHIFT = GetKeyState(VK_SHIFT) & 0x8000;
 
 	int i;
 	for (i=0; i < NumOfShortCut; i++){
 		if (uvKey != SC[i].SC_KEY)
 			continue;
 
-		if (SC[i].SC_CTRL)
-			if (!(GetKeyState(VK_CONTROL) & 0x8000))
-				continue;
+		if (SC[i].SC_CTRL == isCTRL && SC[i].SC_ALT == isALT && SC[i].SC_SHIFT == isSHIFT){
+			return i;
+		}
 
-		if (SC[i].SC_ALT)
-			if (!(GetKeyState(VK_MENU) & 0x8000))
-				continue;
-
-		if (SC[i].SC_SHIFT)
-			if (!(GetKeyState(VK_SHIFT) & 0x8000))
-				continue;
-		break;
 	}
 
-	if (i == NumOfShortCut)
-		return -1;
-
-	return i;
+	return -1;
 
 }
 
 LRESULT KEYMAGICDLL_API CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
+
+	if (nCode < 0){
+		return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
+	}
 
 	if (nCode == HC_ACTION && lParam & 0x80000000){
 		return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
@@ -109,11 +106,14 @@ LRESULT KEYMAGICDLL_API CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lP
 
 		int index = ShortCutCheck(wParam);
 		if (index >= 0){
-			if (ActiveIndex == index && isActive){
+			if ( (ActiveIndex == index && isActive) || index == 0){
 				isActive = false;
+				PostMessage(Commander_hWnd, KM_GETFOCUS, 0, 0);
 			}
-			else
+			else{
 				OpenKbFile(index);
+				PostMessage(Commander_hWnd, KM_GETFOCUS, index, 0);
+			}
 			return 1;
 		}
 
@@ -123,13 +123,16 @@ LRESULT KEYMAGICDLL_API CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lP
 		if (!GetFocus())
 			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 
+		if (UniqueProc(wParam))
+			return 1;
+
 		if (GetKeyState(VK_MENU) & 0x8000 || GetKeyState(VK_CONTROL) & 0x8000)
 			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 
 		if (wParam == VK_BACK){
 			
 			if (LastIsCombine){
-				BackForCombination();
+				MyBack();
 				return 1;
 			}
 			LastInput[0] = NULL;
@@ -169,31 +172,35 @@ LRESULT KEYMAGICDLL_API CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lP
 	}
 
 	return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
+
 }
 
-wchar_t SendStrokes (wchar_t* Strokes)//Send Keys
+wchar_t SendStrokes (wchar_t* Strokes)//Send Keys Strokes
 {
-	wchar_t Temp;
 
-	Temp = *(Strokes+1);
-	*(Strokes+1) = *Strokes;
-	*Strokes = Temp;
-	
 	HWND hwnd = GetFocus();
-	if (!LastIsCombine)
-		LastCombineLen = 1;
 
-	BackForCombination();
+	int i;
+	int len = wcslen(Strokes);
+	for(i=0; i < len; i++){
+		PostMessageW(hwnd, KM_CHAR, (WPARAM)Strokes[i], 0x210001);
+	}
 
-	PostMessageW(hwnd, KM_CHAR, (WPARAM)*Strokes, 0x210001);
-	keystroke[0] = *Strokes;
-	PostMessageW(hwnd, KM_CHAR, (WPARAM)*(Strokes+1), 0x210001);
-	keystroke[1] = *(Strokes+1);
-	
+	i--;
+	if (i > 0){
+		keystroke[0] = Strokes[i-1];
+		keystroke[1] = Strokes[i];
+	}
+
+	else{
+		keystroke[0] = Strokes[i];
+		keystroke[1] = 0;
+	}
+
 	LastIsCombine = FALSE;
 	PostedKey = 0;
 
-	return *(Strokes+1);
+	return keystroke[1];
 }
 
 bool CheckForCombinationKeys(wchar_t uVKey)//Check for combination (eg. HA HTOE YA PIN [VK = Q] in MM)
@@ -210,7 +217,7 @@ bool CheckForCombinationKeys(wchar_t uVKey)//Check for combination (eg. HA HTOE 
 				return false;
 			int j = 0;
 			do {
-				PostMessageW(handle, KM_CHAR, (WPARAM)comdat[i].Data[j], 0x110001 );
+				PostMessageW(handle, KM_CHAR, (WPARAM)comdat[i].Data[j], 0x210001 );
 				keystroke[j] = (WPARAM)comdat[i].Data[j];
 				j++;
 			}while (comdat[i].Data[j]);
@@ -221,9 +228,10 @@ bool CheckForCombinationKeys(wchar_t uVKey)//Check for combination (eg. HA HTOE 
 		}
 	}
 	return false;
+
 }
 
-void BackForCombination(){//Just deleteing series of chars(Combination Chars)
+void MyBack(){//Just deleteing series of chars(Combination Chars)
 	HWND handle = GetFocus();
 	if (!handle)
 		return;
@@ -238,6 +246,7 @@ void BackForCombination(){//Just deleteing series of chars(Combination Chars)
 
 LRESULT KEYMAGICDLL_API CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
+
 	char Name[50];
 
 	if (nCode < 0)
@@ -257,17 +266,34 @@ LRESULT KEYMAGICDLL_API CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lP
 			if (!lstrcmp(Name, "TrayNotifyWnd"))
 				break;
 
-			PostMessage(HWND_BROADCAST, KM_KILLFOCUS, 0,(LPARAM) cwp->hwnd);
+			PostMessage(Commander_hWnd, KM_KILLFOCUS, 0,(LPARAM) cwp->hwnd);
+		}
+		if (LOWORD(cwp->wParam) == WA_ACTIVE){
+
+			GetClassName(cwp->hwnd, (LPSTR)Name, 50);
+			if (!lstrcmp(Name, "KEYMAGIC"))
+				break;
+			if (!lstrcmp(Name,"Shell_TrayWnd"))
+				break;
+			if (!lstrcmp(Name, "TrayNotifyWnd"))
+				break;
+
+			if (isActive)
+				PostMessage(Commander_hWnd, KM_GETFOCUS, ActiveIndex, 0);
+			else if (!isActive)
+				PostMessage(Commander_hWnd, KM_GETFOCUS, 0, 0);
 		}
 		break;
-	//case WM_SETFOCUS:
-	//	break;
 	}
 
 	if (cwp->message == KM_SETKBID){
 		isActive = cwp->lParam;
-		if (isActive)
+		if (isActive){
+			if (cwp->wParam == ActiveIndex)
+				isActive = false;
+			else
 			OpenKbFile(cwp->wParam);
+		}
 	}
 
 	return CallNextHookEx(hWndProcHook, nCode, wParam, lParam);
@@ -276,6 +302,7 @@ LRESULT KEYMAGICDLL_API CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lP
 
 LRESULT KEYMAGICDLL_API CALLBACK HookGetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
+
 	if (nCode < 0)
 		return CallNextHookEx(hGetMsgHook, nCode, wParam, lParam);
 
@@ -317,15 +344,39 @@ LRESULT KEYMAGICDLL_API CALLBACK HookGetMsgProc(int nCode, WPARAM wParam, LPARAM
 		keybd_event(msg->wParam, 255, NULL, NULL);
 		keybd_event(msg->wParam, 2, KEYEVENTF_KEYUP, NULL);
 	}
-	
+
 	return CallNextHookEx(hGetMsgHook, nCode, wParam, lParam);
+}
+bool UniqueProc(char uVKey){
+	bool isCTRL, isLALT, isRALT, isSHIFT;
+
+	isCTRL = GetKeyState(VK_CONTROL) & 0x8000;
+	isLALT = GetKeyState(VK_LMENU) & 0x8000;
+	isRALT = GetKeyState(VK_RMENU) & 0x8000;
+	isSHIFT = GetKeyState(VK_SHIFT) & 0x8000;
+
+	for (int i=0;FileHeader->nUnKey > i; i++){
+		if (UKey[i].vKEY != uVKey)
+			continue;
+
+		if (UKey[i].CTRL == isCTRL && UKey[i].R_ALT == isRALT && UKey[i].L_ALT == isLALT && UKey[i].SHIFT == isSHIFT)
+		{
+			SendStrokes(UKey[i].wChars);
+			LastIsCombine = TRUE;
+			LastCombineLen = wcslen(UKey[i].wChars);
+			return true;
+		}
+
+	}
+
+	return false;
 }
 
 bool KeyProc(wchar_t wchar){
 
 	for (int i=0;FileHeader->nOrdData > i; i++){
 		LastInput[1] = 0;
-		wchar_t Dest[2];
+		wchar_t Dest[5]={0};
 		Regex CheckKey((wchar_t*)OData[i].Key);
 		if (OData[i].Method == 'k'){
 			Dest[0] = LastInput[0];
@@ -348,6 +399,14 @@ bool KeyProc(wchar_t wchar){
 		bool isMatch = or.test((wchar_t*)Dest);
 
 		if (isMatch){
+			wchar_t Temp;
+
+			Temp = *(Dest+1);
+			*(Dest+1) = *Dest;
+			*Dest = Temp;
+			if (!LastIsCombine)
+				LastCombineLen = 1;
+			MyBack();
 			SendStrokes((wchar_t*)Dest);
 			if (!LatestSent[0]){
 				return false;
@@ -357,25 +416,28 @@ bool KeyProc(wchar_t wchar){
 	}
 	
 	isInterBack = LastIsCombine = FALSE;
-	PostMessageW(GetFocus(), KM_CHAR, wchar, 0x110001 );
+	PostMessageW(GetFocus(), KM_CHAR, wchar, 0x210001 );
 	keystroke[0] =  LastInput[0] = wchar;
 	PostedKey = 0;
 	return true;
 }
 
 void KEYMAGICDLL_API HookInit(HWND hWnd,HHOOK hKbHook,HHOOK hWPHook, HHOOK hGMHook, 
-							  UINT KM_SETKB_ID,  UINT KM_KILL_FOCUS, LPCSTR ParentPath)
+							  UINT KM_SETKB_ID, UINT KM_KILL_FOCUS, UINT KM_GET_FOCUS ,LPCSTR ParentPath)
 {
+
 	Commander_hWnd = hWnd;
 	hKeyHook = hKbHook;
 	hWndProcHook = hWPHook;
 	hGetMsgHook = hGMHook;
 	KM_SETKBID = KM_SETKB_ID;
 	KM_KILLFOCUS = KM_KILL_FOCUS;
+	KM_GETFOCUS = KM_GET_FOCUS;
 	lstrcpy(szDir, ParentPath);
 
 	KM_CHAR = RegisterWindowMessage("KM_CHAR");
 	KM_KEYEVENT = RegisterWindowMessage("KM_KEYEVENT");
+
 }
 
 bool OpenKbFile(int Index)
@@ -396,10 +458,11 @@ bool OpenKbFile(int Index)
 		return false;
 	}
 
-	data.vk = (wchar_t*)FilePtr+6;
-	data.uc = (wchar_t*)FilePtr+6+(WORD)FileHeader->lvk;
+	data.vk = (wchar_t*)((char*)FilePtr+sizeof(KbFileHeader));
+	data.uc = (wchar_t*)((char*)FilePtr+sizeof(KbFileHeader))+(WORD)FileHeader->lvk;
 	OData = (OrdData*)(FileHeader->luc+ data.uc);
 	comdat = (CombineData*)((char*)OData+sizeof(OrdData)*FileHeader->nOrdData);
+	UKey = (UniqueKey*)((char*)comdat+sizeof(CombineData)*FileHeader->nComData);
 
 	ActiveIndex = Index;
 	isActive = true;
@@ -498,11 +561,11 @@ void GetShortCuts(){
 
 	SC = (KM_ShortCut*)malloc(sizeof(KM_ShortCut)*100);
 
-	for (int i=0,Length = lstrlen(&szKBNames[i]);
+	for (int i=0,j=0,Length = lstrlen(&szKBNames[i]);
 		Length > 0;
-		i+=Length+1, Length = lstrlen(&szKBNames[i])){
+		i+=Length+1, Length = lstrlen(&szKBNames[i]),j++){
 			if (GetPrivateProfileString(szSC, (LPCSTR)&szKBNames[i], NULL, (LPSTR)szShortCut, 50, szINI)){
-				sscanf(szShortCut, "%d+%d+%d+%s", &SC[i].SC_CTRL, &SC[i].SC_ALT, &SC[i].SC_SHIFT, &SC[i].SC_KEY);
+				sscanf(szShortCut, "%d+%d+%d+%s", &SC[j].SC_CTRL, &SC[j].SC_ALT, &SC[j].SC_SHIFT, &SC[j].SC_KEY);
 				NumOfShortCut++;
 			}
 	}

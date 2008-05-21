@@ -1,5 +1,5 @@
 //Like a operator of Keymagic.
-//Copyright (C) 2008  www.mmgeeks.com
+//Copyright (C) 2008  KeyMagic Project
 //http://keymagic.googlecode.com
 //
 //This program is free software; you can redistribute it and/or modify
@@ -24,13 +24,14 @@
 #define MAX_LOADSTRING 100
 
 //Custom message IDs
-#define WM_TRAY (WM_USER + 1)
 #define TRAY_ID 100
+#define WM_TRAY (WM_USER + 1)
 #define IDKM_NORMAL (WM_USER + 2)
 #define IDKM_ID (WM_USER + 3)
 
 UINT KM_SETKBID;
 UINT KM_KILLFOCUS;
+UINT KM_GETFOCUS;
 HWND LastHWND;
 
 // Global Variables:
@@ -136,25 +137,23 @@ void GetKeyBoards(){
 	lstrcat(szCurDir, "\\KeyMagic.ini");
 	GetPrivateProfileString(szKBP, NULL, NULL, (LPSTR)szKBNames, 500, szCurDir);
 
-	AppendMenu(hKeyMenu, NULL, IDKM_NORMAL, "Disable KeyMagic");
-	for (int i=0,Length = lstrlen(&szKBNames[i]);
+	GetPrivateProfileString(szMS, (LPCSTR)&szKBNames[0], NULL, (LPSTR)szMenuDisplay, 50, szCurDir);
+	AppendMenu(hKeyMenu, NULL, IDKM_NORMAL, (LPCSTR)&szMenuDisplay);
+
+	for (int i=lstrlen(&szKBNames[0])+1,Length = lstrlen(&szKBNames[i]);
 		Length > 0; 
 		i+=Length+1, Length = lstrlen(&szKBNames[i])){
 			GetPrivateProfileString(szMS, (LPCSTR)&szKBNames[i], NULL, (LPSTR)szMenuDisplay, 50, szCurDir);
 			AppendMenu(hKeyMenu, NULL, IDKM_ID+KeyBoardNum, (LPCSTR)&szMenuDisplay);
 			KeyBoardNum++;
 	}
+	CheckMenuRadioItem(hKeyMenu, IDKM_NORMAL, 
+	KeyBoardNum + IDKM_ID, 
+	IDKM_NORMAL,
+	MF_BYCOMMAND);
+
 };
-//
-//   FUNCTION: InitInstance(HINSTANCE, int)
-//
-//   PURPOSE: Saves instance handle and creates main window
-//
-//   COMMENTS:
-//
-//        In this function, we save the instance handle in a global variable and
-//        create and display the main program window.
-//
+
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    HWND hWnd;
@@ -172,7 +171,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    //ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
-   //if (hKeyMenu){
+   if (hKeyMenu){
 	NOTIFYICONDATA nid;
 	nid.cbSize = sizeof(NOTIFYICONDATA);
 	nid.hWnd = hWnd;
@@ -183,22 +182,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	lstrcpy(nid.szTip, _T("KeyMagic"));
 	Shell_NotifyIcon(NIM_ADD,&nid);
 	UpdateWindow(hWnd);
-   //}
+   }
 
    SetHook(hWnd);
    return TRUE;
 }
-
-//
-//  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  PURPOSE:  Processes messages for the main window.
-//
-//  WM_COMMAND	- process the application menu
-//  WM_PAINT	- Paint the main window
-//  WM_DESTROY	- post a quit message and return
-//
-//
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -212,6 +200,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return 0;
 	}
 
+	else if (message == KM_GETFOCUS){
+		if (wParam != 0){
+			CheckMenuRadioItem(hKeyMenu, IDKM_NORMAL, 
+				KeyBoardNum + IDKM_ID , 
+				wParam + IDKM_NORMAL, 
+				MF_BYCOMMAND);
+		}
+		else{
+			CheckMenuRadioItem(hKeyMenu, IDKM_NORMAL, 
+				KeyBoardNum + IDKM_ID, 
+				IDKM_NORMAL,
+				MF_BYCOMMAND);
+		}
+		return false;
+	}
+
 	switch (message)
 	{
 	case WM_COMMAND:
@@ -221,20 +225,41 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wmId)
 		{
 		case IDM_ABOUT:
+
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
+
 		case IDM_EXIT:
+
 			DestroyWindow(hWnd);
 			break;
+
 		case IDKM_NORMAL:
-			SendMessage(LastHWND, KM_SETKBID, 0, 0);
+
+			SendMessage(LastHWND, KM_SETKBID, -1, 0);
+			CheckMenuRadioItem(hKeyMenu, IDKM_NORMAL, 
+			KeyBoardNum + IDKM_ID, 
+			IDKM_NORMAL, 
+			MF_BYCOMMAND);
+
 			break;
+
 		default:
-			if (wmId >= IDKM_ID && wmId <= IDKM_ID + KeyBoardNum)
-				SendMessage(LastHWND, KM_SETKBID, wmId-IDKM_ID, 1);
+			if (wmId >= IDKM_ID && wmId <= IDKM_ID + KeyBoardNum){
+
+				SendMessage(LastHWND, KM_SETKBID, wmId-IDKM_NORMAL, 1);
+
+				CheckMenuRadioItem(hKeyMenu, IDKM_NORMAL,
+				KeyBoardNum + IDKM_ID, 
+				wmId, 
+				MF_BYCOMMAND);
+
+			}
+
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
 		break;
+
 	case WM_TRAY:
 
 		if (lParam==WM_LBUTTONDOWN) {
@@ -262,10 +287,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_CLOSE:
+
 		ShowWindow(hWnd, SW_HIDE);
 		break;
 
 	case WM_DESTROY:
+
 		UnHook();
 
 		NOTIFYICONDATA nid;
@@ -276,6 +303,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		PostQuitMessage(0);
 		break;
+
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
@@ -320,10 +348,12 @@ VOID SetHook (HWND hwnd)
 	KM_SETKBID = RegisterWindowMessage("KM_SETKBID");
 
 	KM_KILLFOCUS = RegisterWindowMessage("KM_KILLFOCUS");
+
+	KM_GETFOCUS = RegisterWindowMessage("KM_GETFOCUS");
 	
 	GetCurrentDirectory(MAX_PATH, (LPSTR)szCurDir);
 
-	HookInit(hwnd,hKH, hWPH, hGM, KM_SETKBID, KM_KILLFOCUS, szCurDir);
+	HookInit(hwnd,hKH, hWPH, hGM, KM_SETKBID, KM_KILLFOCUS, KM_GETFOCUS, szCurDir);
 }
 
 VOID UnHook ()

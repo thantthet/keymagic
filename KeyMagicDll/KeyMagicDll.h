@@ -15,6 +15,8 @@ struct KbFileHeader{
 	WORD luc;
 	WORD nOrdData;
 	WORD nComData;
+	WORD nUnKey;
+	WORD RESERVE;
 };
 
 struct KbData{
@@ -40,8 +42,25 @@ struct KM_ShortCut{
 	char SC_KEY;
 };
 
-void KEYMAGICDLL_API HookInit(HWND hWnd,HHOOK hKbHook,HHOOK hWPHook, HHOOK hGMHook, 
-							  UINT KM_SETKB_ID, UINT KM_KILL_FOCUS, LPCSTR ParentPath);
+struct UniqueKey{
+
+	bool CTRL;
+	bool L_ALT;
+	bool R_ALT;
+	bool SHIFT;
+
+	char vKEY;
+	wchar_t wChars[5];
+};
+
+void KEYMAGICDLL_API HookInit(HWND hWnd,HHOOK hKbHook,
+							  HHOOK hWPHook, 
+							  HHOOK hGMHook, 
+							  UINT KM_SETKB_ID, 
+							  UINT KM_KILL_FOCUS, 
+							  UINT KM_GET_FOCUS, 
+							  LPCSTR ParentPath);
+
 LRESULT KEYMAGICDLL_API CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam);
 LRESULT KEYMAGICDLL_API CALLBACK HookGetMsgProc(int nCode, WPARAM wParam, LPARAM lParam);
 LRESULT KEYMAGICDLL_API CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lParam);

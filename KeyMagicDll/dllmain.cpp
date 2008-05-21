@@ -1,5 +1,5 @@
 //Dll entrypoint
-//Copyright (C) 2008  www.mmgeeks.com
+//Copyright (C) 2008  KeyMagic Project
 //http://keymagic.googlecode.com
 //
 //This program is free software; you can redistribute it and/or modify
