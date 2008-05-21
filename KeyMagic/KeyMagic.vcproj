@@ -231,10 +231,6 @@
 				RelativePath=".\KeyMagic.rc"
 				>
 			</File>
-			<File
-				RelativePath=".\small.ico"
-				>
-			</File>
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"

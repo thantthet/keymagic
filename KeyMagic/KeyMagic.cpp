@@ -1,5 +1,19 @@
-// KeyMagic.cpp : Defines the entry point for the application.
+//Like a operator of Keymagic.
+//Copyright (C) 2008  www.mmgeeks.com
+//http://keymagic.googlecode.com
 //
+//This program is free software; you can redistribute it and/or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation.
+//
+//This program is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU General Public License for more details.
+//
+//You should have received a copy of the GNU General Public License
+//along with this program; if not, write to the Free Software
+//Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "stdafx.h"
 #include "KeyMagic.h"
@@ -85,21 +99,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	return (int) msg.wParam;
 }
 
-
-
-//
-//  FUNCTION: MyRegisterClass()
-//
-//  PURPOSE: Registers the window class.
-//
-//  COMMENTS:
-//
-//    This function and its usage are only necessary if you want this code
-//    to be compatible with Win32 systems prior to the 'RegisterClassEx'
-//    function that was added to Windows 95. It is important to call this function
-//    so that the application will get 'well formed' small icons associated
-//    with it.
-//
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
 	WNDCLASSEX wcex;
@@ -124,9 +123,10 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 void GetKeyBoards(){
 
 	char szCurDir[MAX_PATH];
+	char szMenuDisplay[500];
 	char szKBNames[500];
-	char szKBFiles[200];
-	char szKBP[] ="KeyBoardPaths";
+	char szKBP[]="KeyBoardPaths";
+	char szMS[]="MenuDisplays";
 
 	hKeyMenu = CreatePopupMenu();
 	if (!hKeyMenu)
@@ -140,8 +140,8 @@ void GetKeyBoards(){
 	for (int i=0,Length = lstrlen(&szKBNames[i]);
 		Length > 0; 
 		i+=Length+1, Length = lstrlen(&szKBNames[i])){
-			GetPrivateProfileString(szKBP, (LPCSTR)&szKBNames[i], NULL, (LPSTR)szKBFiles, 500, szCurDir);
-			AppendMenu(hKeyMenu, NULL, IDKM_ID+KeyBoardNum, (LPCSTR)&szKBNames[i]);
+			GetPrivateProfileString(szMS, (LPCSTR)&szKBNames[i], NULL, (LPSTR)szMenuDisplay, 50, szCurDir);
+			AppendMenu(hKeyMenu, NULL, IDKM_ID+KeyBoardNum, (LPCSTR)&szMenuDisplay);
 			KeyBoardNum++;
 	}
 };

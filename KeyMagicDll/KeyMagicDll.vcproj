@@ -199,7 +199,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Order.cpp"
+				RelativePath=".\regex.cpp"
 				>
 			</File>
 			<File
@@ -233,7 +233,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Order.h"
+				RelativePath=".\regex.h"
 				>
 			</File>
 			<File
