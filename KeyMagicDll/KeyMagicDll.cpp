@@ -534,12 +534,12 @@ LPCSTR GetKeyBoard(UINT Index){
 	lstrcpy(szINI,szDir);
 	lstrcat(szINI,"\\KeyMagic.ini");
 
-	GetPrivateProfileString(szKBP, NULL, NULL, (LPSTR)szKBNames, 500, szINI);
+	GetPrivateProfileStringW(szKBP, NULL, NULL, (LPSTR)szKBNames, 500, szINI);
 
 	for (int i=0,Length = lstrlen(&szKBNames[i]),j=0; 
 		j <= Index;
 		i+=Length+1, j++, Length = lstrlen(&szKBNames[i])){
-			GetPrivateProfileString(szKBP, (LPCSTR)&szKBNames[i], NULL, (LPSTR)szKBFile, 500, szINI);
+			GetPrivateProfileStringW(szKBP, (LPCSTR)&szKBNames[i], NULL, (LPSTR)szKBFile, 500, szINI);
 	}
 
 	lstrcpy(szINI, szDir);
@@ -557,14 +557,14 @@ void GetShortCuts(){
 	lstrcpy(szINI,szDir);
 	lstrcat(szINI,"\\KeyMagic.ini");
 
-	GetPrivateProfileString(szKBP, NULL, NULL, (LPSTR)szKBNames, 500, szINI);
+	GetPrivateProfileStringW(szKBP, NULL, NULL, (LPSTR)szKBNames, 500, szINI);
 
-	SC = (KM_ShortCut*)malloc(sizeof(KM_ShortCut)*100);
+	SC = (KM_ShortCut*)VirtualAlloc(NULL, sizeof(KM_ShortCut)*100, MEM_COMMIT, PAGE_READWRITE);
 
 	for (int i=0,j=0,Length = lstrlen(&szKBNames[i]);
 		Length > 0;
 		i+=Length+1, Length = lstrlen(&szKBNames[i]),j++){
-			if (GetPrivateProfileString(szSC, (LPCSTR)&szKBNames[i], NULL, (LPSTR)szShortCut, 50, szINI)){
+			if (GetPrivateProfileStringW(szSC, (LPCSTR)&szKBNames[i], NULL, (LPSTR)szShortCut, 50, szINI)){
 				sscanf(szShortCut, "%d+%d+%d+%s", &SC[j].SC_CTRL, &SC[j].SC_ALT, &SC[j].SC_SHIFT, &SC[j].SC_KEY);
 				NumOfShortCut++;
 			}
@@ -583,11 +583,7 @@ void UpperOrLower (UINT *uVKey){
 		isUp = true;
 	}
 
-	if (  ( ( (*uVKey >= '0') && (*uVKey <= '9') ) || 
-		(*uVKey == '`') || (*uVKey == '-') || (*uVKey == '=') || (*uVKey == '[') || (*uVKey == ']') || 
-		(*uVKey == '\\') || (*uVKey == ';') || (*uVKey == '\'') || (*uVKey == ',') || (*uVKey == '.') || 
-		(*uVKey == '/')) 
-		&& isUp ){
+	if ( isUp ){
 		switch (*uVKey)
 		{
 		case '0':

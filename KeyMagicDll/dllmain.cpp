@@ -31,7 +31,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 		break;
 	case DLL_THREAD_DETACH:
 	case DLL_PROCESS_DETACH:
-		free(SC);
+		VirtualFree(SC, sizeof(KM_ShortCut)*100, MEM_DECOMMIT);
 		CloseMapping();
 		break;
 	}

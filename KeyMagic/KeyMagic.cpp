@@ -51,7 +51,19 @@ INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 VOID				SetHook (HWND hwnd);
 VOID				UnHook ();
 void				GetKeyBoards();
+void				CreateMyMenu(HWND hWnd);
+void				DrawMyMenu(LPDRAWITEMSTRUCT lpdis);
+void				OnMenuMeasure(HWND hwnd, LPMEASUREITEMSTRUCT lpmis);
 
+// Structure associated with menu items 
+ 
+typedef struct tagMYITEM 
+{ 
+    int   cchItemText; 
+    char  szItemText[1]; 
+} MYITEM; 
+ 
+#define CCH_MAXITEMTEXT 256 
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
@@ -147,6 +159,7 @@ void GetKeyBoards(){
 			AppendMenu(hKeyMenu, NULL, IDKM_ID+KeyBoardNum, (LPCSTR)&szMenuDisplay);
 			KeyBoardNum++;
 	}
+
 	CheckMenuRadioItem(hKeyMenu, IDKM_NORMAL, 
 	KeyBoardNum + IDKM_ID, 
 	IDKM_NORMAL,
@@ -188,6 +201,144 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
+void CreateMyMenu(HWND hWnd){
+
+	MENUITEMINFO mii;
+	MYITEM *pMyItem;
+	UINT uID;
+
+	for (uID = IDKM_NORMAL; uID < IDKM_ID+KeyBoardNum; uID++) 
+	{
+		 // Allocate an item structure, leaving space for a 
+         // string of up to CCH_MAXITEMTEXT characters. 
+ 
+        pMyItem = (MYITEM *) LocalAlloc(LMEM_FIXED,
+			sizeof(MYITEM) + CCH_MAXITEMTEXT); 
+ 
+        // Save the item text in the item structure. 
+ 
+		mii.cbSize = sizeof(MENUITEMINFO);
+        mii.fMask = MIIM_STRING; 
+        mii.dwTypeData = pMyItem->szItemText; 
+        mii.cch = CCH_MAXITEMTEXT; 
+        GetMenuItemInfo(hKeyMenu, uID, FALSE, &mii); 
+        pMyItem->cchItemText = mii.cch; 
+ 
+        // Reallocate the structure to the minimum required size. 
+ 
+        pMyItem = (MYITEM *) LocalReAlloc(pMyItem,
+			sizeof(MYITEM) + mii.cch, LMEM_MOVEABLE); 
+ 
+        // Change the item to an owner-drawn item, and save 
+        // the address of the item structure as item data. 
+ 
+        mii.fMask = MIIM_FTYPE | MIIM_DATA; 
+        mii.fType = MFT_OWNERDRAW; 
+        mii.dwItemData = (ULONG_PTR) pMyItem; 
+        SetMenuItemInfo(hKeyMenu, uID, FALSE, &mii); 
+
+	}
+
+	DrawMenuBar(hWnd);
+
+}
+
+void DestroyMyMenu(){
+	MENUITEMINFO mii;
+	UINT uID; 
+    MYITEM *pMyItem; 
+
+    for (uID = IDKM_NORMAL; uID < IDKM_ID+KeyBoardNum; uID++) 
+    { 
+        // Get the item data. 
+ 
+		mii.cbSize = sizeof(MENUITEMINFO);
+        mii.fMask = MIIM_DATA; 
+        GetMenuItemInfo(hKeyMenu, uID, FALSE, &mii); 
+        pMyItem = (MYITEM *) mii.dwItemData; 
+ 
+        // free the item structure. 
+        LocalFree(pMyItem); 
+    } 
+
+}
+
+void DrawMyMenu(LPDRAWITEMSTRUCT lpdis){
+
+	UINT cch;
+	MENUITEMINFO mii;
+	MYITEM *pMyItem = (MYITEM *) lpdis->itemData;
+
+	if (lpdis->CtlType == ODT_MENU){
+
+		if (lpdis->itemState & ODS_SELECTED)
+		{ 
+			SelectObject(lpdis->hDC,CreateSolidBrush(RGB(210,240,255)));
+			SetTextColor(lpdis->hDC, RGB(0,128,170));
+			SelectObject(lpdis->hDC,CreatePen(PS_INSIDEFRAME, 1, RGB(153,217,234)));
+		}
+		else if (lpdis->itemState & ODS_CHECKED)
+		{
+			SelectObject(lpdis->hDC,CreateSolidBrush(RGB(240,250,255)));
+			SetTextColor(lpdis->hDC, RGB(0,128,192));
+			SelectObject(lpdis->hDC,CreatePen(PS_INSIDEFRAME, 1, RGB(110,205,220)));
+		}
+		else
+		{
+			SetTextColor(lpdis->hDC, RGB(10,120,245));
+			SelectObject(lpdis->hDC,CreatePen(PS_INSIDEFRAME, 1, RGB(255,255,255)));
+		} 
+		
+		SetBkMode(lpdis->hDC, TRANSPARENT);
+		RoundRect(lpdis->hDC, lpdis->rcItem.left, lpdis->rcItem.top, lpdis->rcItem.right, lpdis->rcItem.bottom, 5, 5);
+
+		char Temp[256];
+
+		strcpy(Temp, pMyItem->szItemText);
+
+		strtok(Temp, "\t");
+		char* szShortCut = strtok(NULL, "\t");
+
+		if (szShortCut)
+			cch = szShortCut - Temp;
+		else
+			cch = pMyItem->cchItemText;
+
+		lpdis->rcItem.top += 3;
+
+		// Determine where to draw and leave space for a check mark. 
+
+		lpdis->rcItem.left += 20;
+
+		//ExtTextOut(lpdis->hDC, x, y, ETO_CLIPPED, 
+		//		&lpdis->rcItem, pMyItem->szItemText,
+		//		cch, NULL);
+
+		DrawText(lpdis->hDC, pMyItem->szItemText, cch, &lpdis->rcItem, DT_VCENTER);
+
+		lpdis->rcItem.right -= 8;
+		DrawText(lpdis->hDC, szShortCut, pMyItem->cchItemText-cch, &lpdis->rcItem,DT_VCENTER | DT_RIGHT);
+
+	}
+}
+
+void OnMenuMeasure(HWND hwnd,LPMEASUREITEMSTRUCT lpmis)
+{
+
+    MYITEM *pMyItem = (MYITEM *) lpmis->itemData; 
+	HDC hdc = GetDC(hwnd); 
+    SIZE size; 
+ 
+    GetTextExtentPoint32(hdc, pMyItem->szItemText, 
+            pMyItem->cchItemText, &size); 
+ 
+    lpmis->itemWidth = size.cx; 
+    lpmis->itemHeight = size.cy+5;
+
+    ReleaseDC(hwnd, hdc);
+
+}
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	HMENU hMenu, hPopUp;
@@ -218,6 +369,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	switch (message)
 	{
+	case WM_CREATE:
+
+		CreateMyMenu(hWnd);
+
+		break;
+
 	case WM_COMMAND:
 		wmId    = LOWORD(wParam);
 		wmEvent = HIWORD(wParam);
@@ -286,9 +443,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 
+	case WM_DRAWITEM:
+
+		DrawMyMenu((LPDRAWITEMSTRUCT)lParam);
+
+		break;
+
+	case WM_MEASUREITEM:
+
+		OnMenuMeasure(hWnd,(LPMEASUREITEMSTRUCT)lParam);
+
+		break;
+
 	case WM_CLOSE:
 
 		ShowWindow(hWnd, SW_HIDE);
+		
 		break;
 
 	case WM_DESTROY:
@@ -300,6 +470,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		nid.hWnd = hWnd;
 		nid.uID = TRAY_ID;
 		Shell_NotifyIcon(NIM_DELETE, &nid);
+
+		DestroyMyMenu();
 
 		PostQuitMessage(0);
 		break;
