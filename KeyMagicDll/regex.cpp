@@ -17,7 +17,6 @@
  *
  */
 
-#include "stdafx.h"
 #include "regex.h"
 
 //#include <stdlib.h> will need for malloc

@@ -36,10 +36,8 @@ struct CombineData{
 };
 
 struct KM_ShortCut{
-	bool SC_CTRL;
-	bool SC_ALT;
-	bool SC_SHIFT;
-	char SC_KEY;
+	UINT ukey;
+	BYTE modkey;
 };
 
 struct UniqueKey{
@@ -55,10 +53,7 @@ struct UniqueKey{
 
 void KEYMAGICDLL_API HookInit(HWND hWnd,HHOOK hKbHook,
 							  HHOOK hWPHook, 
-							  HHOOK hGMHook, 
-							  UINT KM_SETKB_ID, 
-							  UINT KM_KILL_FOCUS, 
-							  UINT KM_GET_FOCUS, 
+							  HHOOK hGMHook,
 							  LPCSTR ParentPath);
 
 LRESULT KEYMAGICDLL_API CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam);

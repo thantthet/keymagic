@@ -37,24 +37,6 @@ IDI_KEYMAGIC            ICON                    "KeyMagic.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Menu
-//
-
-IDC_KEYMAGIC MENU 
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "E&xit",                       IDM_EXIT
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About ...",                  IDM_ABOUT
-    END
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Accelerator
 //
 
@@ -70,15 +52,39 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
+IDD_ABOUTBOX DIALOGEX 0, 0, 177, 89
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About KeyMagic"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    ICON            128,IDC_STATIC,14,14,21,20
-    LTEXT           "KeyMagic, Version 1.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2008",IDC_STATIC,42,26,114,8
-    DEFPUSHBUTTON   "OK",IDOK,113,41,50,14,WS_GROUP
+    ICON            IDI_KEYMAGIC,IDC_STATIC,14,14,21,20
+    LTEXT           "KeyMagic Input Customizer",IDC_STATIC,42,14,114,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2008  KeyMagic Project",IDC_STATIC,42,30,127,8
+    DEFPUSHBUTTON   "OK",IDOK,120,68,50,14,WS_GROUP
+    LTEXT           "keymagic.googlecode.com",IDC_STATIC,42,47,85,8
+END
+
+IDD_MAINBOX DIALOGEX 0, 0, 317, 220
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Keymagic"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         130,IDC_STATIC,"Static",SS_BITMAP | SS_REALSIZEIMAGE,0,0,317,41
+    LISTBOX         IDC_KEYBOARDS,11,57,92,132,WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Added Keyboards",IDC_STATIC,6,45,103,168
+    GROUPBOX        "Hotkey",IDC_STATIC,119,60,184,31
+    GROUPBOX        "Menu Display Text",IDC_STATIC,119,101,184,33
+    GROUPBOX        "Location",IDC_STATIC,120,141,183,43
+    PUSHBUTTON      "&Cancel",IDC_CANCEL,189,192,49,16
+    PUSHBUTTON      "&OK",IDC_DONE,122,192,49,16
+    PUSHBUTTON      "&Apply",IDC_APPLY,255,192,49,16
+    EDITTEXT        IDC_DISPLAY,125,114,172,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PATH,125,165,172,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SHORTCUT,"msctls_hotkey32",WS_BORDER | WS_TABSTOP,126,72,171,14
+    GROUPBOX        "Options",IDC_STATIC,114,45,196,168
+    PUSHBUTTON      "Add New",IDC_ADD,12,191,41,14
+    PUSHBUTTON      "Delete",IDC_REMOVE,62,191,41,14
+    CONTROL         "Use from this path",IDC_DIR,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,125,152,166,10
 END
 
 
@@ -93,9 +99,18 @@ BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 163
+        RIGHTMARGIN, 170
+        VERTGUIDE, 82
         TOPMARGIN, 7
-        BOTTOMMARGIN, 55
+        BOTTOMMARGIN, 82
+    END
+
+    IDD_MAINBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 6
+        RIGHTMARGIN, 310
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 213
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -154,13 +169,13 @@ BEGIN
     BEGIN
         BLOCK "000004b0"
         BEGIN
-            VALUE "FileDescription", "KeyMagic Application"
-            VALUE "FileVersion", "1, 0, 0, 0"
+            VALUE "FileDescription", "KeyMagic Program Manager"
+            VALUE "FileVersion", "1.0.0.0"
             VALUE "InternalName", "KeyMagic"
             VALUE "LegalCopyright", "Copyright (C) 2008"
             VALUE "OriginalFilename", "KeyMagic.exe"
-            VALUE "ProductName", "KeyMagic Application"
-            VALUE "ProductVersion", "1, 0, 0, 0"
+            VALUE "ProductName", "KeyMagic Input Customizer"
+            VALUE "ProductVersion", "1.0.0.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -172,13 +187,19 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Bitmap
+//
+
+IDB_BK                  BITMAP                  "bk.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
 STRINGTABLE 
 BEGIN
-    IDS_APP_TITLE           "KeyMagic"
-    IDC_KEYMAGIC            "KEYMAGIC"
+    IDS_EN_TITLE            "KeyMagic 1.1"
 END
 
 #endif    // English (U.S.) resources

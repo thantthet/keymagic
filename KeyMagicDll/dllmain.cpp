@@ -15,7 +15,6 @@
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "stdafx.h"
 #include "KeyMagicDll.h"
 
 BOOL APIENTRY DllMain( HMODULE hModule,
@@ -26,12 +25,10 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
 		GetShortCuts();
 		break;
-	case DLL_THREAD_DETACH:
 	case DLL_PROCESS_DETACH:
-		VirtualFree(SC, sizeof(KM_ShortCut)*100, MEM_DECOMMIT);
+		LocalFree(SC);
 		CloseMapping();
 		break;
 	}

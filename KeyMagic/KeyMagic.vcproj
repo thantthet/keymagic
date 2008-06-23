@@ -46,7 +46,7 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
-				WarningLevel="3"
+				WarningLevel="1"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -60,6 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="../Release/KeyMagicDll.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -117,7 +118,7 @@
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="1"
 				DebugInformationFormat="3"
 			/>
@@ -132,7 +133,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../Release/KeyMagicDll.lib"
+				AdditionalDependencies="../Release/KeyMagicDll.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib $(NOINHERIT)"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -175,26 +176,6 @@
 				RelativePath=".\KeyMagic.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\stdafx.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -210,10 +191,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\stdafx.h"
-				>
-			</File>
-			<File
 				RelativePath=".\targetver.h"
 				>
 			</File>
@@ -224,11 +201,19 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
+				RelativePath=".\bk.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\KeyMagic.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\KeyMagic.rc"
+				>
+			</File>
+			<File
+				RelativePath=".\manifest.manifest"
 				>
 			</File>
 		</Filter>
