@@ -53,7 +53,9 @@ HWND hList;
 
 int kbindex=-1;
 bool hide = false;
+int cbFileToDelete = 0;
 
+strDelete *szFileToDelete;
 // Forward declarations of functions included in this code module:
 INT_PTR CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
@@ -72,7 +74,9 @@ bool				OpenDialog(HWND hwnd, char* szFileName,DWORD nMaxFile);
 bool				UpdateDlgData(HWND hWnd);
 bool				AddKeyBoard(char* lpKBPath);
 bool				WorkOnCommand(LPTSTR lpCmdLine);
-bool				AddKeyBoardToList(char* szFileName);
+bool				AddKeyBoardToList(HWND hWnd, char* szFileName);
+bool				RemoveKeyBoard();
+bool				DeleteKeyFile();
 int APIENTRY WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      LPTSTR    lpCmdLine,
@@ -342,7 +346,7 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SendDlgItemMessage(hWnd, IDC_PATH, WM_GETTEXT, MAX_PATH, (LPARAM)Data->Path);
 			Loc1:
 			SetKbData(hWnd);
-
+			DeleteKeyFile();
 			restart(hWnd);
 			break;
 
@@ -360,7 +364,7 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SetKbData(hWnd);
 
 			ShowWindow(hWnd, SW_HIDE);
-
+			DeleteKeyFile();
 			restart(hWnd);
 
 			break;
@@ -418,24 +422,15 @@ next:
 			if (!OpenDialog(hWnd, szFileName, MAX_PATH))
 				break;
 
-			AddKeyBoardToList(szFileName);
+			AddKeyBoardToList(hWnd ,szFileName);
 			SendDlgItemMessage(hWnd, IDC_DISPLAY, EM_SETMODIFY, TRUE, 0);
 			
 			break;
 
 		case IDC_REMOVE:
 
-			kbindex = SendMessage(hList, LB_GETCURSEL, 0, 0);
-
-			if (kbindex == -1 || kbindex == 0)
-				break;
-
-			Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, kbindex, 0);
-			LocalFree(Data);
-			SendMessage(hList, LB_DELETESTRING, kbindex, 0);
-			kbindex=-1;
-			SendMessage(hList, LB_SETCURSEL, 0, 0);
-			SendDlgItemMessage(hWnd, IDC_DISPLAY, EM_SETMODIFY, TRUE, 0);
+			RemoveKeyBoard();
+			
 			break;
 
 		case IDKM_NORMAL:
@@ -644,8 +639,10 @@ bool AddKeyBoard(char* lpKBPath){
 	PathAppend(szKBPath, "KeyMagic");
 	PathAppend(szKBPath, lpPath);
 
-	if (!CopyFile(lpKBPath, szKBPath, false))
+	if (!CopyFile(lpKBPath, szKBPath, false)){
+		MessageBox(GetDesktopWindow(), "File copying fail!", szKeymagic, MB_ICONERROR);
 		return false;
+	}
 
 	if (!WritePrivateProfileString(szKBP, lpName, lpPath, szCurDir)){
 		return false;
@@ -688,7 +685,16 @@ void GetHotKey(WORD wHotkey, LPSTR ShortCutDisplay){
 void OnInitDlg(HWND hWnd){
 	HMENU hMenu;
 	KeyFileData *Data;
+	char szKBPath[MAX_PATH];
 
+	if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath)){
+		goto next;
+	}
+	PathAppend(szKBPath, "KeyMagic");
+	CreateDirectory(szKBPath, NULL);
+	PathAppend(szKBPath, "Keyboards");
+	CreateDirectory(szKBPath, NULL);
+next:
 	LoadString(hInst, IDS_EN_TITLE, szTitle, MAX_LOADSTRING);
 	SetWindowText(hWnd, szTitle);
 
@@ -852,7 +858,7 @@ void restart (HWND hWnd){
 	GetKeyBoards();
 }
 
-bool AddKeyBoardToList(char* lpKBPath){
+bool AddKeyBoardToList(HWND hWnd,char* lpKBPath){
 	char lpPath[MAX_PATH];
 	char lpName[MAX_PATH];
 	char szCurDir[MAX_PATH];
@@ -873,14 +879,19 @@ bool AddKeyBoardToList(char* lpKBPath){
 	wsprintf(lpPath, "KeyBoards\\%s", lpName);
 	lpName [lstrlen(lpName)-4] = NULL;
 
-	if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath))
+	if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath)){
+		MessageBox(hWnd, "Cannot locate \"Common Application Data\" Path!", szKeymagic, MB_ICONERROR);
 		return false;
+	}
 
 	PathAppend(szKBPath, "KeyMagic");
 	PathAppend(szKBPath, lpPath);
 
-	if (!CopyFile(lpKBPath, szKBPath, false))
-		return false;
+	if (!CopyFile(lpKBPath, szKBPath, false)){
+		if (IDNO == MessageBox(hWnd, "File copying fail! \n Do you want to use from current path?", szKeymagic, MB_ICONERROR | MB_YESNO))
+			return false;
+		lstrcpy(lpPath, lpKBPath);
+	}
 
 	SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)lpName);
 	Data = (KeyFileData*)LocalAlloc(LPTR, sizeof(KeyFileData));
@@ -891,5 +902,47 @@ bool AddKeyBoardToList(char* lpKBPath){
 
 	SendMessage(hList, LB_SETITEMDATA, SendMessage(hList, LB_GETCOUNT, 0, 0)-1, (LPARAM)Data);
 
+	return true;
+}
+
+bool RemoveKeyBoard(){
+	KeyFileData *Data;
+
+	kbindex = SendMessage(hList, LB_GETCURSEL, 0, 0);
+
+	if (kbindex == -1 || kbindex == 0)
+		return false;
+
+	Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, kbindex, 0);
+
+	if (Data->Path[1] != ':'){
+		if (cbFileToDelete == 0)
+			szFileToDelete = (strDelete*)LocalAlloc(LPTR, 100);
+		cbFileToDelete++;
+		LocalReAlloc(szFileToDelete, sizeof (strDelete)*cbFileToDelete, LPTR);
+		lstrcpy(szFileToDelete[cbFileToDelete].Path, Data->Path);
+	}
+
+	LocalFree(Data);
+	SendMessage(hList, LB_DELETESTRING, kbindex, 0);
+	kbindex=-1;
+	SendMessage(hList, LB_SETCURSEL, 0, 0);
+	return true;
+}
+
+bool DeleteKeyFile(){
+	char szKBPath[MAX_PATH],szToDelete[MAX_PATH];
+
+	if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath)){
+		cbFileToDelete=0;
+		return false;
+	}
+	PathAppend(szKBPath, "KeyMagic");
+	for (int i=0; i <= cbFileToDelete; i++){
+		lstrcpy(szToDelete, szKBPath);
+		PathAppend(szToDelete, szFileToDelete[i].Path);
+		DeleteFile(szToDelete);
+	}
+	cbFileToDelete=0;
 	return true;
 }

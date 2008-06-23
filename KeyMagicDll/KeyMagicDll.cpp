@@ -35,7 +35,6 @@ char szDir[1000] = {0};
 //Make sure that section can READ WRITE and SHARE
 #pragma comment(linker, "/SECTION:.keymagic,RWS")
 
-//WPARAM	wPam = PM_REMOVE;
 HANDLE	hFile;
 LPVOID	FilePtr;
 HANDLE	hFileMap;
@@ -47,7 +46,6 @@ CombineData	*comdat;
 UniqueKey *UKey;
 KM_ShortCut *SC;
 
-//wchar_t keystroke[5];
 wchar_t	LatestSent [5];
 wchar_t	LastInput [2];
 bool	LastIsCombine;
@@ -55,7 +53,6 @@ bool	isActive = false;
 bool	isInterBack = false;
 UINT	CurOderIndx = 0;
 UINT	LastCombineLen;
-//UINT	PostedKey = 0;
 UINT	NumOfShortCut = 0;
 UINT	ActiveIndex = 0;
 
@@ -508,19 +505,17 @@ void KEYMAGICDLL_API HookInit(HWND hWnd,HHOOK hKbHook,HHOOK hWPHook, HHOOK hGMHo
 	hGetMsgHook = hGMHook;
 	lstrcpy(szDir, ParentPath);
 
-	//KM_CHAR = RegisterWindowMessage("KM_CHAR");
-	//KM_KEYEVENT = RegisterWindowMessage("KM_KEYEVENT");
-
 }
 
 bool OpenKbFile(int Index)
 {
+	if (Index == 0)
+		return false;
+
 	char Msg[300];
 
 	if (!OpenForMapping(GetKeyBoard(Index))){
 		wsprintf((LPSTR)Msg, "Cannot open \"%s\"!", GetKeyBoard(Index));
-		if (lstrcmpi(&Msg[lstrlen(Msg)-3], "kmk"))
-			return false;
 		MessageBox(GetDesktopWindow(), (LPSTR)Msg , "KeyMagic", MB_ICONEXCLAMATION | MB_OK);
 		isActive = false;
 		return false;

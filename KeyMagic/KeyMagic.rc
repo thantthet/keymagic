@@ -83,7 +83,7 @@ BEGIN
     CONTROL         "",IDC_SHORTCUT,"msctls_hotkey32",WS_BORDER | WS_TABSTOP,126,72,171,14
     GROUPBOX        "Options",IDC_STATIC,114,45,196,168
     PUSHBUTTON      "Add New",IDC_ADD,12,191,41,14
-    PUSHBUTTON      "Delete",IDC_REMOVE,62,191,41,14
+    PUSHBUTTON      "Remove",IDC_REMOVE,62,191,41,14
     CONTROL         "Use from this path",IDC_DIR,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,125,152,166,10
 END
 
@@ -153,8 +153,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,0
- PRODUCTVERSION 1,0,0,0
+ FILEVERSION 1,1,0,0
+ PRODUCTVERSION 1,1,0,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -170,7 +170,7 @@ BEGIN
         BLOCK "000004b0"
         BEGIN
             VALUE "FileDescription", "KeyMagic Program Manager"
-            VALUE "FileVersion", "1.0.0.0"
+            VALUE "FileVersion", "1.1.0.0"
             VALUE "InternalName", "KeyMagic"
             VALUE "LegalCopyright", "Copyright (C) 2008"
             VALUE "OriginalFilename", "KeyMagic.exe"

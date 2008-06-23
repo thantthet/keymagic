@@ -16,6 +16,10 @@ struct KeyFileData{
 	WORD wHotkey;
 };
 
+struct strDelete{
+	char Path[MAX_PATH];
+};
+
 // Structure associated with menu items 
  
 typedef struct tagMYITEM 
