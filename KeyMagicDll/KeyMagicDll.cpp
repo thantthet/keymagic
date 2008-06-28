@@ -352,7 +352,8 @@ LRESULT KEYMAGICDLL_API CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lP
 
 	case KM_SETKBID:
 		isActive = cwp->lParam;
-		if (isActive){
+		if (isActive)
+		{
 			if (cwp->wParam == ActiveIndex){
 				isActive = false;
 				ActiveIndex = -1;
@@ -363,6 +364,7 @@ LRESULT KEYMAGICDLL_API CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lP
 			}
 		}
 		break;
+
 	case KM_RESCAN:
 		LocalFree(SC);
 		GetShortCuts();

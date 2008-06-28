@@ -2,11 +2,32 @@
 
 #include "resource.h"
 
-#define KM_MESSAGE WM_USER+100
+#include <Userenv.h>
+#include <shlwapi.h>
+#include <shlobj.h>
+#include <shellapi.h>
+#include <Commdlg.h>
+
+#include "KeyMagic.h"
+
+//Custom message IDs
+#define TRAY_ID 100
+#define WM_TRAY WM_USER + 10
+#define IDKM_NORMAL 500
+#define IDKM_ID 501
+
+#define KM_MESSAGE WM_USER+5000
 #define KM_SETKBID KM_MESSAGE+1
 #define KM_KILLFOCUS KM_MESSAGE+2
 #define KM_GETFOCUS KM_MESSAGE+3
 #define KM_RESCAN KM_MESSAGE+3
+
+#define MAX_LOADSTRING 100
+
+extern void	GetKeyBoards();
+extern void	SetHook (HWND hwnd);
+
+extern bool hide;
 
 struct KeyFileData{
 	bool isNew;
@@ -29,3 +50,12 @@ typedef struct tagMYITEM
 } MYITEM, NEAR *PMYITEM, FAR *LPMYITEM;
  
 #define CCH_MAXITEMTEXT 256
+
+extern TCHAR szKBP[];
+extern TCHAR szMS[];
+extern TCHAR szSC[];
+extern TCHAR szNeedRestart[];
+extern TCHAR szKeymagic[];
+
+extern HINSTANCE hInst;								// current instance
+extern TCHAR szTitle[MAX_LOADSTRING];					// The title bar text

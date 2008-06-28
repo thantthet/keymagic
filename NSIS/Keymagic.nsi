@@ -1,5 +1,5 @@
 ;Define application version
-!define VERSION 1.1
+!define VERSION "1.1 Build 3"
 
 ; Define the application name
 !define APPNAME "Keymagic"
@@ -50,11 +50,21 @@ Section "" mainSection
 	Delete "$DESKTOP\Keymagic.lnk"
 	Delete "$SMPROGRAMS\${APPNAME}\Keymagic.lnk"
 	Delete "$SMPROGRAMS\${APPNAME}\Keymap Generator.lnk"
+	Delete "$SMPROGRAMS\${APPNAME}\Help.lnk"
 	Delete "$SMPROGRAMS\${APPNAME}\Uninstall.lnk"
 	
 	; add all the shortcuts for all user or current user
 	CreateDirectory "$SMPROGRAMS\${APPNAME}\"
 	CreateShortCut "$SMPROGRAMS\${APPNAME}\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+	
+
+	SetOutPath "$INSTDIR\Docs\"
+	File ".\doc\Authors.txt"
+	File ".\doc\Changelog.txt"
+	File ".\doc\GPL.txt"
+	File ".\doc\License.txt"
+	File ".\Help.chm"
+	CreateShortCut "$SMPROGRAMS\${APPNAME}\Help.lnk" "$INSTDIR\Docs\Help.chm"
 	
 	SetShellVarContext current
 	
@@ -62,10 +72,10 @@ Section "" mainSection
 	
 SectionEnd
 
-SubSection "Keymagic" Keymagic
+SubSection "Keymagic" PackageKeymagic
 	SetOverwrite on
 	
-	Section Keymagic
+	Section "Keymagic Input Customizer" Keymagic
 	UserInfo::GetAccountType
 	Pop $1
 	StrCmp $1 "Admin" 0 +2
@@ -75,10 +85,11 @@ SubSection "Keymagic" Keymagic
 	SetOutPath "$INSTDIR\"
 	File ".\Keymagic.exe"
 	File ".\KeyMagicDll.dll"
+	SetOverwrite off
 	File ".\KeyMagic.ini"
+	SetOverwrite on
 	SetOutPath "$INSTDIR\Icons\"
-	File ".\Keymap.ico"
-	
+	File ".\Keymap.ico"	
 	
 	CreateDirectory "$SMPROGRAMS\${APPNAME}\"
 	CreateDirectory "$APPDATA\Keymagic\Keyboards\"
@@ -93,13 +104,14 @@ SubSection "Keymagic" Keymagic
 	WriteRegStr HKCR "Keymagic.Keymap.File\shell\Install\command" "" "$INSTDIR\KeyMagic.exe -i %1"
 	SectionEnd
 	
-	Section Keymap Generator
+	Section "Keymapper for Keymagic's keymap file" Keymapper
 	UserInfo::GetAccountType
 	Pop $1
 	StrCmp $1 "Admin" 0 +2
 	
 	SetShellVarContext all
 	
+	SetOverwrite on
 	SetOutPath "$INSTDIR\"
 	File ".\Keymapper.exe"
 	SetOutPath "$INSTDIR\Icons\"
@@ -113,9 +125,26 @@ SubSection "Keymagic" Keymagic
 	WriteRegStr HKCR "Keymagic.Keyscript.File\DefaultIcon" "" "$INSTDIR\Icons\Keyscript.ico"
 	WriteRegStr HKCR "Keymagic.Keyscript.File\shell\Make Keymap File\command" "" "$INSTDIR\Keymapper.exe -c %1"
 	WriteRegStr HKCR "Keymagic.Keyscript.File\shell\Open\command" "" "$INSTDIR\Keymapper.exe -o %1"
-	
-
 	SectionEnd
+	
+	Section "Keymaps Files" Keymap
+	SetOverwrite on
+	SetOutPath "$INSTDIR\Keyboards\"
+	File ".\Keyboards\Myanmar3.kmk"
+	File ".\Keyboards\Parabaik.kmk"
+	File ".\Keyboards\Uniburma.kmk"
+	File ".\Keyboards\Zawgyi.kmk"
+	SectionEnd
+	
+	Section "Keyscripts Files" Keyscript
+	SetOverwrite on
+	SetOutPath "$INSTDIR\Keyscripts\"
+	File ".\Keyscript\Myanmar3.kms"
+	File ".\Keyscript\Parabaik.kms"
+	File ".\Keyscript\UniBurma.kms"
+	File ".\Keyscript\Zawgyi.kms"
+	SectionEnd
+	
 SubSectionEnd
 
 ;--------------------------------
@@ -125,7 +154,11 @@ SubSectionEnd
   
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${Keymagic} 'Keymagic Input Customizer.'
+    !insertmacro MUI_DESCRIPTION_TEXT ${PackageKeymagic} 'Keymagic Input Customizer, Keymagic Keymapper, Keymap files and Keyscript files'
+	!insertmacro MUI_DESCRIPTION_TEXT ${Keymagic} 'Keymagic Input Customizer.'
+	!insertmacro MUI_DESCRIPTION_TEXT ${Keymapper} 'Keymagic Keymapper.'
+	!insertmacro MUI_DESCRIPTION_TEXT ${Keymap} 'Keymagic Keymap files.'
+	!insertmacro MUI_DESCRIPTION_TEXT ${Keyscript} 'Keymagic Keyscript files.'
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------

@@ -15,30 +15,18 @@
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include <Userenv.h>
-#include <shlwapi.h>
-#include <shlobj.h>
-#include <shellapi.h>
-#include <Commdlg.h>
-
-#include "KeyMagic.h"
+#include "MyMenu.h"
+#include "MyButton.h"
+#include "DlgProc.h"
 #include "../KeyMagicDll/KeyMagicDll.h"
 
-#define MAX_LOADSTRING 100
-
-//Custom message IDs
-#define TRAY_ID 100
-#define WM_TRAY (WM_USER + 10)
-#define IDKM_NORMAL (WM_USER + 11)
-#define IDKM_ID (WM_USER + 12)
-
 HWND LastHWND;
-
 TCHAR szKBP[]="KeyBoardPaths";
 TCHAR szMS[]="MenuDisplays";
 TCHAR szSC[]="ShortCuts";
 TCHAR szNeedRestart[] = "Application needs to restart to work correctly";
 TCHAR szKeymagic[] = "Keymagic";
+
 // Global Variables:
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
@@ -46,37 +34,16 @@ TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 HHOOK hKH;
 HHOOK hWPH;
 HHOOK hGM;
-
-HMENU hKeyMenu;
-UINT KeyBoardNum;
-HWND hList;
-
-int kbindex=-1;
 bool hide = false;
-int cbFileToDelete = 0;
-
-strDelete *szFileToDelete;
 // Forward declarations of functions included in this code module:
 INT_PTR CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
-VOID				SetHook (HWND hwnd);
-VOID				UnHook ();
-VOID				GetKeyBoards();
-VOID				CreateMyMenu(HMENU hMenu,UINT uID);
-VOID				DrawMyMenu(LPDRAWITEMSTRUCT lpdis);
-VOID				OnMenuMeasure(HWND hwnd, LPMEASUREITEMSTRUCT lpmis);
-VOID				OnInitDlg(HWND hWnd);
-VOID				GetHotKey(WORD wHotkey, LPSTR ShortCutDisplay);
-VOID				DeleteDlgData(HWND hWnd);
-VOID				SetKbData(HWND hWnd);
-VOID				restart(HWND hWnd);
-bool				OpenDialog(HWND hwnd, char* szFileName,DWORD nMaxFile);
-bool				UpdateDlgData(HWND hWnd);
+void				SetHook (HWND hwnd);
+void				UnHook ();
+void				GetKeyBoards();
 bool				AddKeyBoard(char* lpKBPath);
 bool				WorkOnCommand(LPTSTR lpCmdLine);
-bool				AddKeyBoardToList(HWND hWnd, char* szFileName);
-bool				RemoveKeyBoard();
-bool				DeleteKeyFile();
+
 int APIENTRY WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      LPTSTR    lpCmdLine,
@@ -159,130 +126,6 @@ void GetKeyBoards(){
 
 };
 
-VOID CreateMyMenu(HMENU hMenu,UINT uID){
-
-	MENUINFO mi;
-	MENUITEMINFO mii;
-	MYITEM *pMyItem;
-
-	mi.cbSize = sizeof(MENUINFO);
-	mi.fMask = MIM_APPLYTOSUBMENUS | MIM_BACKGROUND;
-	mi.hbrBack = CreateSolidBrush(RGB(255,255,255));
-	SetMenuInfo(hMenu, &mi);
-
-	pMyItem = (MYITEM *) LocalAlloc(LPTR,
-		sizeof(MYITEM) + CCH_MAXITEMTEXT);
-
-	// Save the item text in the item structure. 
-
-	mii.cbSize = sizeof(MENUITEMINFO);
-	mii.fMask = MIIM_STRING; 
-	mii.dwTypeData = pMyItem->szItemText; 
-	mii.cch = CCH_MAXITEMTEXT; 
-	GetMenuItemInfo(hMenu, uID, FALSE, &mii); 
-	pMyItem->cchItemText = mii.cch; 
-
-	// Reallocate the structure to the minimum required size. 
-
-	pMyItem = (MYITEM *) LocalReAlloc(pMyItem,
-		sizeof(MYITEM) + mii.cch, LPTR); 
-
-	// Change the item to an owner-drawn item, and save 
-	// the address of the item structure as item data. 
-
-	mii.fMask = MIIM_FTYPE | MIIM_DATA; 
-	mii.fType = MFT_OWNERDRAW; 
-	mii.dwItemData = (ULONG_PTR) pMyItem; 
-	SetMenuItemInfo(hMenu, uID, FALSE, &mii); 
-
-}
-
-void DestroyMyMenu(HMENU hMenu, UINT uID){
-	MENUITEMINFO mii;
-	//UINT uID; 
-    MYITEM *pMyItem; 
-
-	//for (uID = IDKM_NORMAL; uID < IDKM_ID+KeyBoardNum; uID++) 
-	//{ 
-		// Get the item data. 
-
-	mii.cbSize = sizeof(MENUITEMINFO);
-	mii.fMask = MIIM_DATA; 
-	GetMenuItemInfo(hKeyMenu, uID, FALSE, &mii); 
-	pMyItem = (MYITEM *) mii.dwItemData; 
-
-	// free the item structure. 
-	LocalFree(pMyItem); 
-	//} 
-
-}
-
-void DrawMyMenu(LPDRAWITEMSTRUCT lpdis){
-
-	UINT cch;
-	MENUITEMINFO mii;
-	MYITEM *pMyItem = (MYITEM *) lpdis->itemData;
-	
-	if (lpdis->CtlType == ODT_MENU){
-
-		if (lpdis->itemState & ODS_SELECTED)
-		{
-			SelectObject(lpdis->hDC,CreateSolidBrush(RGB(210,240,255)));
-			SetTextColor(lpdis->hDC, RGB(0,128,170));
-			SelectObject(lpdis->hDC,CreatePen(PS_INSIDEFRAME, 1, RGB(153,217,234)));
-		}
-		else if (lpdis->itemState & ODS_CHECKED)
-		{
-			SelectObject(lpdis->hDC,CreateSolidBrush(RGB(240,250,255)));
-			SetTextColor(lpdis->hDC, RGB(0,128,192));
-			SelectObject(lpdis->hDC,CreatePen(PS_INSIDEFRAME, 1, RGB(110,205,220)));
-		}
-		else
-		{
-			SelectObject(lpdis->hDC,CreateSolidBrush(RGB(255,255,255)));
-			SetTextColor(lpdis->hDC, RGB(10,120,245));
-			SelectObject(lpdis->hDC,CreatePen(PS_INSIDEFRAME, 1, RGB(255,255,255)));
-		} 
-		
-		SetBkMode(lpdis->hDC, TRANSPARENT);
-		RoundRect(lpdis->hDC, lpdis->rcItem.left, lpdis->rcItem.top, lpdis->rcItem.right, lpdis->rcItem.bottom, 3, 3);
-
-		char Temp[256];
-
-		strcpy(Temp, pMyItem->szItemText);
-
-		strtok(Temp, "\t");
-		char* szShortCut = strtok(NULL, "\t");
-
-		lpdis->rcItem.top += 3;
-
-		lpdis->rcItem.left += 10;
-
-		DrawText(lpdis->hDC, Temp, lstrlen(Temp), &lpdis->rcItem, DT_VCENTER);
-
-		lpdis->rcItem.right -= 8;
-		DrawText(lpdis->hDC, szShortCut, lstrlen(szShortCut), &lpdis->rcItem,DT_VCENTER | DT_RIGHT);
-
-	}
-}
-
-void OnMenuMeasure(HWND hwnd,LPMEASUREITEMSTRUCT lpmis)
-{
-
-    MYITEM *pMyItem = (MYITEM *) lpmis->itemData;
-	HDC hdc = GetDC(hwnd);
-    SIZE size; 
- 
-    GetTextExtentPoint32(hdc, pMyItem->szItemText, 
-            pMyItem->cchItemText, &size); 
- 
-    lpmis->itemWidth = size.cx; 
-    lpmis->itemHeight = size.cy+5;
-
-    ReleaseDC(hwnd, hdc);
-
-}
-
 INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	HMENU hMenu;
@@ -306,8 +149,6 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_INITDIALOG:
 		OnInitDlg(hWnd);
-		if (hide == true)
-			SetTimer(hWnd, 100, USER_TIMER_MINIMUM, NULL);
 		break;
 
 	case WM_TIMER:
@@ -338,8 +179,6 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if (kbindex == -1)
 				goto Loc1;
 
-			hList = GetDlgItem(hWnd, IDC_KEYBOARDS);
-
 			Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, kbindex, 0);
 			SendDlgItemMessage(hWnd, IDC_DISPLAY, WM_GETTEXT, 30, (LPARAM)Data->Display);
 			Data->wHotkey = (WORD)SendDlgItemMessage(hWnd, IDC_SHORTCUT, HKM_GETHOTKEY, 0, 0);
@@ -348,6 +187,8 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SetKbData(hWnd);
 			DeleteKeyFile();
 			restart(hWnd);
+
+			SendMessage(LastHWND, KM_RESCAN, 0, 0);
 			break;
 
 		case IDC_DONE:
@@ -367,6 +208,7 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DeleteKeyFile();
 			restart(hWnd);
 
+			SendMessage(LastHWND, KM_RESCAN, 0, 0);
 			break;
 
 		case IDC_CANCEL:
@@ -376,7 +218,6 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		case IDC_KEYBOARDS:
 			if (wmEvent == LBN_SELCHANGE){
-				hList = GetDlgItem(hWnd, IDC_KEYBOARDS);
 
 				CheckDlgButton(hWnd, IDC_DIR, false);
 				EnableWindow(GetDlgItem(hWnd,IDC_PATH), false);
@@ -446,15 +287,15 @@ next:
 		default:
 			if (wmId >= IDKM_ID && wmId <= IDKM_ID + KeyBoardNum){
 
-				SendMessage(LastHWND, KM_SETKBID, wmId-IDKM_NORMAL, true);
+				SendMessage(LastHWND, KM_SETKBID, wmId - IDKM_NORMAL, true);
 
 				if (MF_CHECKED & GetMenuState(hKeyMenu, wmId, MF_BYCOMMAND))
-				wmId = IDKM_NORMAL;
+					wmId = IDKM_NORMAL;
 
 				CheckMenuRadioItem(hKeyMenu, IDKM_NORMAL,
-				KeyBoardNum + IDKM_ID,
-				wmId,
-				MF_BYCOMMAND);
+					KeyBoardNum + IDKM_ID,
+					wmId,
+					MF_BYCOMMAND);
 			}
 		}
 		break;
@@ -500,10 +341,18 @@ next:
 			PostMessage(hWnd, WM_NULL, 0, 0);
 		}
 		break;
+	case WM_CTLCOLORDLG:
+		return (INT_PTR)CreateSolidBrush(RGB(236, 244, 255));
+	//	break;
+
+	case WM_CTLCOLORSTATIC:
+		SetBkColor((HDC)wParam, RGB(236, 244, 255));
+		return (INT_PTR)CreateSolidBrush(RGB(236, 244, 255));
 
 	case WM_DRAWITEM:
 
 		DrawMyMenu((LPDRAWITEMSTRUCT)lParam);
+		DrawMyButton((LPDRAWITEMSTRUCT)lParam);
 
 		break;
 
@@ -654,295 +503,5 @@ bool AddKeyBoard(char* lpKBPath){
 		return false;
 	}
 
-	return true;
-}
-
-void GetHotKey(WORD wHotkey, LPSTR ShortCutDisplay){
-
-	BYTE vkey[1],  modkey;
-
-	vkey[0] = wHotkey;
-	modkey = wHotkey >> 8;
-	ShortCutDisplay[0] = NULL;
-
-	if (modkey & HOTKEYF_SHIFT){
-		lstrcat(ShortCutDisplay, "Shift + ");
-	}
-
-	if (modkey & HOTKEYF_CONTROL){
-		lstrcat(ShortCutDisplay, "Ctrl + ");
-	}
-
-	if (modkey & HOTKEYF_ALT){
-		lstrcat(ShortCutDisplay, "Alt + ");
-	}
-
-	vkey[1] = 0;
-
-	lstrcat(ShortCutDisplay, (LPCSTR)&vkey[0]);
-}
-
-void OnInitDlg(HWND hWnd){
-	HMENU hMenu;
-	KeyFileData *Data;
-	char szKBPath[MAX_PATH];
-
-	if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath)){
-		goto next;
-	}
-	PathAppend(szKBPath, "KeyMagic");
-	CreateDirectory(szKBPath, NULL);
-	PathAppend(szKBPath, "Keyboards");
-	CreateDirectory(szKBPath, NULL);
-next:
-	LoadString(hInst, IDS_EN_TITLE, szTitle, MAX_LOADSTRING);
-	SetWindowText(hWnd, szTitle);
-
-	GetKeyBoards();
-
-	if (hKeyMenu){
-		NOTIFYICONDATA nid;
-		nid.cbSize = sizeof(NOTIFYICONDATA);
-		nid.hWnd = hWnd;
-		nid.uID = TRAY_ID;
-		nid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
-		nid.uCallbackMessage = WM_TRAY;
-		nid.hIcon = LoadIcon(hInst, MAKEINTRESOURCE(IDI_KEYMAGIC));
-		lstrcpy(nid.szTip, "KeyMagic");
-		Shell_NotifyIcon(NIM_ADD,&nid);
-		UpdateWindow(hWnd);
-	}
-
-	SetHook(hWnd);
-
-	SendMessage(hWnd,WM_SETICON, 1,(LPARAM)LoadIcon(hInst, MAKEINTRESOURCE(IDI_KEYMAGIC)));
-
-	hMenu = GetSystemMenu(hWnd, FALSE);
-
-	AppendMenu(hMenu, MF_SEPARATOR, 0, 0);
-	AppendMenu(hMenu, MF_BYCOMMAND, IDM_ABOUT, "&About");
-	EnableWindow(GetDlgItem(hWnd,IDC_PATH), false);
-	hList = GetDlgItem(hWnd, IDC_KEYBOARDS);
-
-	UpdateDlgData(hWnd);
-	
-}
-
-bool UpdateDlgData(HWND hWnd){
-	KeyFileData *Data;
-	char szKBPath[MAX_PATH], szKBNames[500], szCurDir[MAX_PATH], szMenuDisplay[MAX_PATH], szShortCut[10];
-	HWND hDisplay,hHotKey;
-
-	hDisplay = GetDlgItem(hWnd, IDC_DISPLAY);
-	hHotKey = GetDlgItem(hWnd, IDC_SHORTCUT);
-	
-	if (FAILED(SHGetFolderPath(NULL,
-		CSIDL_COMMON_APPDATA,
-		NULL,
-		SHGFP_TYPE_CURRENT,
-		szKBPath))){
-			return false;
-	}
-
-	PathAppend(szKBPath, "KeyMagic");
-	
-	GetModuleFileName(hInst, szCurDir, MAX_PATH);
-	int i;
-	for (i=lstrlen(szCurDir); szCurDir[i] != '\\'; i--){
-	}
-	szCurDir[i] = NULL;
-
-	PathAppend(szCurDir, "KeyMagic.ini");
-
-	GetPrivateProfileString(szKBP, NULL, NULL, (LPSTR)szKBNames, 500, szCurDir);
-
-	for (int i=0, j=0,Length = lstrlen(&szKBNames[i]);
-		Length > 0; 
-		i+=Length+1, Length = lstrlen(&szKBNames[i]), j++){
-
-			SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)&szKBNames[i]);
-
-			GetPrivateProfileString(szMS, &szKBNames[i], NULL, szMenuDisplay, 30, szCurDir);
-			GetPrivateProfileString(szKBP, &szKBNames[i], NULL, szKBPath, MAX_PATH, szCurDir);
-			WORD wHotkey = GetPrivateProfileInt(szSC, &szKBNames[i], 0, szCurDir);
-
-			Data = (KeyFileData*)LocalAlloc(LPTR, sizeof(KeyFileData));
-			Data->isNew = FALSE;
-			lstrcpy(Data->Name,  &szKBNames[i]);
-			lstrcpy(Data->Display, szMenuDisplay);
-			lstrcpy(Data->Path, szKBPath);
-			Data->wHotkey = wHotkey;
-			SendMessage(hList, LB_SETITEMDATA, j, (LPARAM)Data);
-	}
-	return true;
-}
-
-void DeleteDlgData(HWND hWnd){
-	KeyFileData *Data;
-	int count = SendMessage(hList, LB_GETCOUNT, 0, 0);
-	for (int i=0;count > i; i++){
-		Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, i, NULL);
-		LocalFree(Data);
-	}
-	SendMessage(hList, LB_RESETCONTENT, 0, 0);
-}
-
-void SetKbData(HWND hWnd){
-	char szCurDir[MAX_PATH],shortcut[10], szNormal[] = "Normal";
-	KeyFileData *Data;
-	int count = SendMessage(hList, LB_GETCOUNT, 0, 0);
-
-	GetModuleFileName(hInst, szCurDir, MAX_PATH);
-
-	int i;
-	for (i=lstrlen(szCurDir); szCurDir[i] != '\\'; i--){
-	}
-
-	szCurDir[i] = NULL;
-
-	PathAppend(szCurDir, "KeyMagic.ini");
-
-	WritePrivateProfileSection(szKBP, NULL, szCurDir);
-	WritePrivateProfileSection(szMS, NULL, szCurDir);
-	WritePrivateProfileSection(szSC, NULL, szCurDir);
-
-	for (int i=0;count > i; i++){
-		Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, i, NULL);
-
-		WritePrivateProfileString(szKBP, Data->Name, Data->Path, szCurDir);
-
-		WritePrivateProfileString(szMS, Data->Name, Data->Display, szCurDir);
-
-		wsprintf(shortcut, "%d", Data->wHotkey);
-
-		WritePrivateProfileString(szSC, Data->Name, shortcut, szCurDir);
-	}
-}
-
-bool OpenDialog(HWND hwnd, char* szFileName,DWORD nMaxFile)
-{
-	OPENFILENAME ofn = {0};
-
-	RtlZeroMemory(szFileName, nMaxFile);
-
-	ofn.lStructSize = sizeof(ofn);
-	ofn.hwndOwner = hwnd;
-	ofn.hInstance = hInst;
-	ofn.lpstrFilter = "Keymap File(*.kmk)\0*.kmk\0\0";
-	ofn.lpstrFile = szFileName;
-	ofn.nMaxFile = nMaxFile;
-	ofn.lpstrTitle = "Open File...";
-	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | 
-		OFN_LONGNAMES | OFN_HIDEREADONLY;
-
-	if(!GetOpenFileName(&ofn)) return false;
-	return true;
-}
-
-void restart (HWND hWnd){
-	DeleteDlgData(hWnd);
-	UpdateDlgData(hWnd);
-	kbindex = -1;
-
-	SetDlgItemText(hWnd, IDC_DISPLAY, NULL);
-	SetDlgItemText(hWnd, IDC_PATH, NULL);
-	SendDlgItemMessage(hWnd, IDC_SHORTCUT, HKM_SETHOTKEY ,0, 0);
-
-	for (UINT uID = IDKM_NORMAL; uID < IDKM_ID+KeyBoardNum; uID++) 
-	{
-		DestroyMyMenu(hKeyMenu, uID);
-	}
-
-	SendMessage(hList, LB_SETSEL, 0, 0);
-
-	GetKeyBoards();
-}
-
-bool AddKeyBoardToList(HWND hWnd,char* lpKBPath){
-	char lpPath[MAX_PATH];
-	char lpName[MAX_PATH];
-	char szCurDir[MAX_PATH];
-	char szKBPath[MAX_PATH];
-
-	KeyFileData *Data;
-
-	GetModuleFileName(hInst, szCurDir, MAX_PATH);
-
-	int i;
-	for (i=lstrlen(szCurDir); szCurDir[i] != '\\'; i--){
-	}
-
-	szCurDir[i] = NULL;
-	PathAppend(szCurDir, "KeyMagic.ini");
-	
-	GetFileTitle(lpKBPath, lpName, MAX_PATH);
-	wsprintf(lpPath, "KeyBoards\\%s", lpName);
-	lpName [lstrlen(lpName)-4] = NULL;
-
-	if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath)){
-		MessageBox(hWnd, "Cannot locate \"Common Application Data\" Path!", szKeymagic, MB_ICONERROR);
-		return false;
-	}
-
-	PathAppend(szKBPath, "KeyMagic");
-	PathAppend(szKBPath, lpPath);
-
-	if (!CopyFile(lpKBPath, szKBPath, false)){
-		if (IDNO == MessageBox(hWnd, "File copying fail! \n Do you want to use from current path?", szKeymagic, MB_ICONERROR | MB_YESNO))
-			return false;
-		lstrcpy(lpPath, lpKBPath);
-	}
-
-	SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)lpName);
-	Data = (KeyFileData*)LocalAlloc(LPTR, sizeof(KeyFileData));
-	lstrcpy(Data->Name, lpName);
-	lstrcpy(Data->Display, lpName);
-	lstrcpy(Data->Path, lpPath);
-	Data->wHotkey = 0;
-
-	SendMessage(hList, LB_SETITEMDATA, SendMessage(hList, LB_GETCOUNT, 0, 0)-1, (LPARAM)Data);
-
-	return true;
-}
-
-bool RemoveKeyBoard(){
-	KeyFileData *Data;
-
-	kbindex = SendMessage(hList, LB_GETCURSEL, 0, 0);
-
-	if (kbindex == -1 || kbindex == 0)
-		return false;
-
-	Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, kbindex, 0);
-
-	if (Data->Path[1] != ':'){
-		if (cbFileToDelete == 0)
-			szFileToDelete = (strDelete*)LocalAlloc(LPTR, 100);
-		cbFileToDelete++;
-		LocalReAlloc(szFileToDelete, sizeof (strDelete)*cbFileToDelete, LPTR);
-		lstrcpy(szFileToDelete[cbFileToDelete].Path, Data->Path);
-	}
-
-	LocalFree(Data);
-	SendMessage(hList, LB_DELETESTRING, kbindex, 0);
-	kbindex=-1;
-	SendMessage(hList, LB_SETCURSEL, 0, 0);
-	return true;
-}
-
-bool DeleteKeyFile(){
-	char szKBPath[MAX_PATH],szToDelete[MAX_PATH];
-
-	if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath)){
-		cbFileToDelete=0;
-		return false;
-	}
-	PathAppend(szKBPath, "KeyMagic");
-	for (int i=0; i <= cbFileToDelete; i++){
-		lstrcpy(szToDelete, szKBPath);
-		PathAppend(szToDelete, szFileToDelete[i].Path);
-		DeleteFile(szToDelete);
-	}
-	cbFileToDelete=0;
 	return true;
 }
