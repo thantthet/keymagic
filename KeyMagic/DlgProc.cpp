@@ -1,13 +1,296 @@
+//Dialog Procedures
+//Copyright (C) 2008  KeyMagic Project
+//http://keymagic.googlecode.com
+//
+//This program is free software; you can redistribute it and/or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation.
+//
+//This program is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU General Public License for more details.
+//
+//You should have received a copy of the GNU General Public License
+//along with this program; if not, write to the Free Software
+//Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
 #include "KeyMagic.h"
 #include "MyMenu.h"
+#include "MyButton.h"
 #include "DlgProc.h"
 
 strDelete *szFileToDelete;
 int cbFileToDelete = 0;
 int kbindex=-1;
 HWND hList;
-HANDLE hHeap;
-void error(LPCSTR lpszFunction) ;
+HWND LastHWND;
+UINT KeyBoardNum;
+
+INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	HMENU hMenu;
+	POINT pt;
+	int wmId, wmEvent;
+	KeyFileData *Data;
+
+	switch (message)
+	{
+	case KM_KILLFOCUS:
+		LastHWND = (HWND)lParam;
+		break;
+
+	case KM_GETFOCUS:
+		CheckMenuRadioItem(hKeyMenu, IDKM_NORMAL, 
+			KeyBoardNum + IDKM_ID , 
+			wParam + IDKM_NORMAL, 
+			MF_BYCOMMAND);
+		SendMessage((HWND)lParam, KM_RESCAN, 0, 0);
+		break;
+
+	case WM_INITDIALOG:
+		OnInitDlg(hWnd);
+		Up.Fill = RGB(240,250,255);
+		Up.Frame = RGB(153,217,234);
+		Up.Text = RGB(10,120,245);
+		Down.Fill = RGB(210,240,255);
+		Down.Frame = RGB(110,205,220);
+		Down.Text = RGB(10,120,245);
+		break;
+
+	case WM_TIMER:
+		if (wParam == 100){
+			ShowWindow(hWnd, SW_HIDE);
+			hide = false;
+			KillTimer(hWnd, 100);
+		}
+		break;
+
+	case WM_SYSCOMMAND:
+		wmId    = LOWORD(wParam);
+		wmEvent = HIWORD(wParam);
+		switch (wmId)
+		{
+		case IDM_ABOUT:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+			break;
+		}
+		break;
+
+	case WM_COMMAND:
+		wmId    = LOWORD(wParam);
+		wmEvent = HIWORD(wParam);
+		// Parse the menu selections:
+		switch (wmId){
+		case IDC_APPLY:
+			if (kbindex == -1)
+				goto Loc1;
+
+			Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, kbindex, 0);
+			SendDlgItemMessage(hWnd, IDC_DISPLAY, WM_GETTEXT, 30, (LPARAM)Data->Display);
+			Data->wHotkey = (WORD)SendDlgItemMessage(hWnd, IDC_SHORTCUT, HKM_GETHOTKEY, 0, 0);
+			SendDlgItemMessage(hWnd, IDC_PATH, WM_GETTEXT, MAX_PATH, (LPARAM)Data->Path);
+			Loc1:
+			SetKbData(hWnd);
+			DeleteKeyFile();
+			restart(hWnd);
+
+			SendMessage(LastHWND, KM_RESCAN, 0, 0);
+			break;
+
+		case IDC_DONE:
+			if (kbindex == -1)
+				goto Loc2;
+
+			hList = GetDlgItem(hWnd, IDC_KEYBOARDS);
+
+			Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, kbindex, 0);
+			SendDlgItemMessage(hWnd, IDC_DISPLAY, WM_GETTEXT, 30, (LPARAM)Data->Display);
+			Data->wHotkey = (WORD)SendDlgItemMessage(hWnd, IDC_SHORTCUT, HKM_GETHOTKEY, 0, 0);
+			SendDlgItemMessage(hWnd, IDC_PATH, WM_GETTEXT, MAX_PATH, (LPARAM)Data->Path);
+			Loc2:
+			SetKbData(hWnd);
+
+			ShowWindow(hWnd, SW_HIDE);
+			DeleteKeyFile();
+			restart(hWnd);
+
+			SendMessage(LastHWND, KM_RESCAN, 0, 0);
+			break;
+
+		case IDC_CANCEL:
+			restart(hWnd);
+			ShowWindow(hWnd, SW_HIDE);
+			break;
+
+		case IDC_KEYBOARDS:
+			if (wmEvent == LBN_SELCHANGE){
+
+				CheckDlgButton(hWnd, IDC_DIR, false);
+				EnableWindow(GetDlgItem(hWnd,IDC_PATH), false);
+				if (kbindex == -1)
+					goto next;
+				
+				Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, kbindex, 0);
+				if (!Data)
+					break;
+
+				SendDlgItemMessage(hWnd, IDC_DISPLAY, WM_GETTEXT, 30, (LPARAM)Data->Display);
+				Data->wHotkey = (WORD)SendDlgItemMessage(hWnd, IDC_SHORTCUT, HKM_GETHOTKEY, 0, 0);
+				SendDlgItemMessage(hWnd, IDC_PATH, WM_GETTEXT, MAX_PATH, (LPARAM)Data->Path);
+next:
+				kbindex = SendMessage(hList, LB_GETCURSEL, 0, 0);
+				if (kbindex == -1)
+					break;
+				
+				Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, kbindex, 0);
+				if (!Data)
+					break;
+				SendDlgItemMessage(hWnd, IDC_DISPLAY, WM_SETTEXT, 0, (LPARAM)Data->Display);
+				SendDlgItemMessage(hWnd, IDC_SHORTCUT, HKM_SETHOTKEY, Data->wHotkey, 0);
+				SendDlgItemMessage(hWnd, IDC_PATH, WM_SETTEXT, 0, (LPARAM)Data->Path);
+				if (Data->Path[1] == ':'){
+					EnableWindow(GetDlgItem(hWnd,IDC_PATH), true);
+					CheckDlgButton(hWnd, IDC_DIR, true);
+				}
+			}
+			break;
+
+		case IDC_DIR:
+			UINT state;
+			state = IsDlgButtonChecked(hWnd, IDC_DIR);
+			if (state == BST_CHECKED)
+				EnableWindow(GetDlgItem(hWnd,IDC_PATH), true);
+			else
+				EnableWindow(GetDlgItem(hWnd,IDC_PATH), false);
+			break;
+
+		case IDC_ADD:
+			char szFileName[MAX_PATH];
+			if (!OpenDialog(hWnd, szFileName, MAX_PATH))
+				break;
+
+			AddKeyBoardToList(hWnd ,szFileName);
+			SendDlgItemMessage(hWnd, IDC_DISPLAY, EM_SETMODIFY, TRUE, 0);
+			
+			break;
+
+		case IDC_REMOVE:
+
+			RemoveKeyBoard();
+			
+			break;
+
+		case IDKM_NORMAL:
+
+			SendMessage(LastHWND, KM_SETKBID, -1, 0);
+			CheckMenuRadioItem(hKeyMenu, IDKM_NORMAL,
+				KeyBoardNum + IDKM_ID, 
+				IDKM_NORMAL, 
+				MF_BYCOMMAND);
+
+			break;
+
+		default:
+			if (wmId >= IDKM_ID && wmId <= IDKM_ID + KeyBoardNum){
+
+				SendMessage(LastHWND, KM_SETKBID, wmId - IDKM_NORMAL, true);
+
+				if (MF_CHECKED & GetMenuState(hKeyMenu, wmId, MF_BYCOMMAND))
+					wmId = IDKM_NORMAL;
+
+				CheckMenuRadioItem(hKeyMenu, IDKM_NORMAL,
+					KeyBoardNum + IDKM_ID,
+					wmId,
+					MF_BYCOMMAND);
+			}
+		}
+		break;
+
+	case WM_TRAY:
+
+		if (lParam==WM_LBUTTONDOWN) {
+
+			GetCursorPos(&pt);
+
+			SetForegroundWindow(hWnd);
+
+			TrackPopupMenu(hKeyMenu, TPM_RIGHTBUTTON | TPM_LEFTBUTTON,
+				pt.x, pt.y, 0, hWnd, NULL);
+	
+		}
+
+		else if (lParam==WM_RBUTTONDOWN) {
+			hMenu = CreatePopupMenu();
+			AppendMenu(hMenu, MF_BYCOMMAND, 101, "Key&Magic");
+			AppendMenu(hMenu, MF_BYCOMMAND, 100, "E&xit");
+			CreateMyMenu(hWnd, hMenu);
+
+			GetCursorPos(&pt);
+
+			SetForegroundWindow(hWnd);
+
+			BOOL CMD= TrackPopupMenu(hMenu, TPM_RIGHTBUTTON | TPM_LEFTBUTTON | TPM_RETURNCMD,
+				pt.x, pt.y, 0, hWnd, NULL);
+
+			DestroyMyMenu(hMenu);
+
+			DestroyMenu(hMenu);
+
+			if (CMD == 100){
+				PostQuitMessage(0);
+			}
+			else if (CMD == 101){
+				ShowWindow(hWnd, SW_SHOW);
+			}
+
+			PostMessage(hWnd, WM_NULL, 0, 0);
+		}
+		break;
+	case WM_CTLCOLORDLG:
+		return (INT_PTR)CreateSolidBrush(RGB(236, 244, 255));
+	//	break;
+
+	case WM_CTLCOLORSTATIC:
+		SetBkColor((HDC)wParam, RGB(236, 244, 255));
+		return (INT_PTR)CreateSolidBrush(RGB(236, 244, 255));
+
+	case WM_MEASUREITEM:
+		OnMenuMeasure(hWnd, (LPMEASUREITEMSTRUCT)lParam);
+
+		break;
+
+	case WM_DRAWITEM:
+		DrawMyMenu((LPDRAWITEMSTRUCT)lParam);
+		DrawMyButton((LPDRAWITEMSTRUCT)lParam);
+
+		break;
+
+	case WM_CLOSE:
+
+		restart(hWnd);
+		ShowWindow(hWnd, SW_HIDE);
+		break;
+
+	case WM_DESTROY:
+
+		UnHook();
+
+		NOTIFYICONDATA nid;
+		nid.cbSize = sizeof(NOTIFYICONDATA);
+		nid.hWnd = hWnd;
+		nid.uID = TRAY_ID;
+		Shell_NotifyIcon(NIM_DELETE, &nid);
+
+		DestroyMyMenu(hKeyMenu);
+
+		DeleteDlgData(hWnd);
+
+		EndDialog(hWnd,0);
+		break;
+	}
+	return (INT_PTR)FALSE;
+}
 
 void OnInitDlg(HWND hWnd){
 	HMENU hMenu;
@@ -57,6 +340,8 @@ next:
 	
 	if (hide == true)
 		SetTimer(hWnd, 100, USER_TIMER_MINIMUM, NULL);
+
+	CreateMyMenu(hWnd, hKeyMenu);
 }
 
 bool UpdateDlgData(HWND hWnd){
@@ -185,10 +470,7 @@ void restart (HWND hWnd){
 	SetDlgItemText(hWnd, IDC_PATH, NULL);
 	SendDlgItemMessage(hWnd, IDC_SHORTCUT, HKM_SETHOTKEY ,0, 0);
 
-	for (UINT uID = IDKM_NORMAL; uID < IDKM_ID+KeyBoardNum; uID++) 
-	{
-		DestroyMyMenu(hKeyMenu, uID);
-	}
+	DestroyMyMenu(hKeyMenu);
 
 	SendMessage(hList, LB_SETSEL, 0, 0);
 
@@ -213,7 +495,12 @@ bool AddKeyBoardToList(HWND hWnd,char* lpKBPath){
 	PathAppend(szCurDir, "KeyMagic.ini");
 	
 	GetFileTitle(lpKBPath, lpName, MAX_PATH);
+
+	if (lpName [lstrlen(lpName)-4] != '.')
+		lstrcat(lpName, ".kmk");
+
 	wsprintf(lpPath, "KeyBoards\\%s", lpName);
+
 	lpName [lstrlen(lpName)-4] = NULL;
 
 	if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath)){
@@ -254,17 +541,10 @@ bool RemoveKeyBoard(){
 
 	if (Data->Path[1] != ':'){
 		if (cbFileToDelete == 0){
-			//szFileToDelete = (strDelete*)LocalAlloc(LPTR, 100);
-			hHeap = HeapCreate(0, 1000, 0);
-			szFileToDelete = (strDelete*)HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 100);
+			szFileToDelete = (strDelete*)VirtualAlloc(NULL, sizeof(strDelete)*20, MEM_COMMIT, PAGE_READWRITE);
 		}
 
 		cbFileToDelete++;
-		if (!HeapReAlloc(hHeap, HEAP_ZERO_MEMORY, szFileToDelete, sizeof (strDelete)*cbFileToDelete)){//LocalReAlloc(szFileToDelete, sizeof (strDelete)*cbFileToDelete, LPTR)){
-			cbFileToDelete=0;
-			HeapDestroy(hHeap);
-			return false;
-		}
 		lstrcpy(szFileToDelete[cbFileToDelete].Path, Data->Path);
 	}
 
@@ -294,11 +574,7 @@ bool DeleteKeyFile(){
 		DeleteFile(szToDelete);
 	}
 
-	//LocalFree(szFileToDelete);
-	if (hHeap){
-		HeapFree(hHeap, HEAP_ZERO_MEMORY, szFileToDelete);
-		HeapDestroy(hHeap);
-	}
+	VirtualFree(szFileToDelete, sizeof(strDelete)*20, MEM_DECOMMIT);
 
 	cbFileToDelete=0;
 	return true;
@@ -340,3 +616,57 @@ void error(LPCSTR lpszFunction)
 	//Show the error message box
 	MessageBoxA(NULL, (LPCSTR)Buffer, lpszFunction, MB_OK | MB_ICONHAND | MB_APPLMODAL);
 }
+
+void GetKeyBoards(){
+
+	char szCurDir[MAX_PATH];
+	char szMenuDisplay[MAX_PATH];
+	char szKBNames[500];
+	char szShortCut[20];
+	WORD wHotKey;
+
+	if (hKeyMenu)
+		DestroyMenu(hKeyMenu);
+
+	hKeyMenu = CreatePopupMenu();
+	if (!hKeyMenu)
+		return;
+
+	GetModuleFileName(hInst, szCurDir, MAX_PATH);
+	int i;
+	for (i=lstrlen(szCurDir); szCurDir[i] != '\\'; i--){
+	}
+	szCurDir[i] = NULL;
+
+	PathAppend(szCurDir, "KeyMagic.ini");
+	GetPrivateProfileString(szKBP, NULL, NULL, (LPSTR)szKBNames, 500, szCurDir);
+
+	GetPrivateProfileString(szMS, &szKBNames[0], NULL, (LPSTR)szMenuDisplay, MAX_PATH, szCurDir);
+	wHotKey = GetPrivateProfileInt(szSC, &szKBNames[0], 0, szCurDir);
+	lstrcat(szMenuDisplay, "\t");
+
+	GetHotKey(wHotKey, szShortCut);
+	lstrcat(szMenuDisplay, szShortCut);
+
+	AppendMenu(hKeyMenu, NULL, IDKM_NORMAL, szMenuDisplay);
+	KeyBoardNum=0;
+	for (int i=lstrlen(&szKBNames[0])+1,Length = lstrlen(&szKBNames[i]);
+		Length > 0; 
+		i+=Length+1, Length = lstrlen(&szKBNames[i])){
+			GetPrivateProfileString(szMS, &szKBNames[i], NULL, szMenuDisplay, MAX_PATH, szCurDir);
+			wHotKey = GetPrivateProfileInt(szSC, &szKBNames[i], 0, szCurDir);
+
+			lstrcat(szMenuDisplay, "\t");
+			GetHotKey(wHotKey, szShortCut);
+			lstrcat(szMenuDisplay, szShortCut);
+
+			AppendMenu(hKeyMenu, NULL, IDKM_ID+KeyBoardNum, szMenuDisplay);
+			KeyBoardNum++;
+	}
+
+	CheckMenuRadioItem(hKeyMenu, IDKM_NORMAL, 
+		KeyBoardNum + IDKM_ID, 
+		IDKM_NORMAL,
+		MF_BYCOMMAND);
+
+};

@@ -21,7 +21,7 @@
 #define KM_KILLFOCUS KM_MESSAGE+2
 #define KM_GETFOCUS KM_MESSAGE+3
 #define KM_RESCAN KM_MESSAGE+3
-
+#define CCH_MAXITEMTEXT 256
 #define MAX_LOADSTRING 100
 
 extern void	GetKeyBoards();
@@ -48,8 +48,12 @@ typedef struct tagMYITEM
     int   cchItemText; 
     char  szItemText[1]; 
 } MYITEM, NEAR *PMYITEM, FAR *LPMYITEM;
- 
-#define CCH_MAXITEMTEXT 256
+
+INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
+void				SetHook (HWND hwnd);
+void				UnHook ();
+bool				AddKeyBoard(char* lpKBPath);
+bool				WorkOnCommand(LPTSTR lpCmdLine);
 
 extern TCHAR szKBP[];
 extern TCHAR szMS[];
@@ -59,3 +63,5 @@ extern TCHAR szKeymagic[];
 
 extern HINSTANCE hInst;								// current instance
 extern TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
+extern HMENU hKeyMenu;
+extern UINT KeyBoardNum;

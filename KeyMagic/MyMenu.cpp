@@ -1,10 +1,24 @@
+//OwnerDrawMenu
+//Copyright (C) 2008  KeyMagic Project
+//http://keymagic.googlecode.com
+//
+//This program is free software; you can redistribute it and/or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation.
+//
+//This program is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU General Public License for more details.
+//
+//You should have received a copy of the GNU General Public License
+//along with this program; if not, write to the Free Software
+//Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
 #include "Keymagic.h"
 #include "MyMenu.h"
 
-HMENU hKeyMenu;
-UINT KeyBoardNum;
-
-void CreateMyMenu(HMENU hMenu,UINT uID){
+void CreateMyMenu(HWND hOwner, HMENU hMenu){
 
 	MENUINFO mi;
 	MENUITEMINFO mii;
@@ -20,46 +34,54 @@ void CreateMyMenu(HMENU hMenu,UINT uID){
 
 	SetMenuInfo(hMenu, &mi);
 
-	pMyItem = (MYITEM *) LocalAlloc(LPTR,
-		sizeof(MYITEM) + CCH_MAXITEMTEXT);
+	int intMenu = GetMenuItemCount(hMenu);
 
-	// Save the item text in the item structure. 
+	for (int i=0; intMenu > i; i++){
 
-	mii.cbSize = sizeof(MENUITEMINFO);
-	mii.fMask = MIIM_STRING; 
-	mii.dwTypeData = pMyItem->szItemText; 
-	mii.cch = CCH_MAXITEMTEXT; 
-	GetMenuItemInfo(hMenu, uID, FALSE, &mii); 
-	pMyItem->cchItemText = mii.cch; 
+		pMyItem = (MYITEM *) LocalAlloc(LPTR,
+			sizeof(MYITEM) + CCH_MAXITEMTEXT);
 
-	// Reallocate the structure to the minimum required size. 
+		// Save the item text in the item structure.
 
-	pMyItem = (MYITEM *) LocalReAlloc(pMyItem,
-		sizeof(MYITEM) + mii.cch, LPTR); 
+		mii.cbSize = sizeof(MENUITEMINFO);
+		mii.fMask = MIIM_STRING; 
+		mii.dwTypeData = pMyItem->szItemText; 
+		mii.cch = CCH_MAXITEMTEXT; 
+		GetMenuItemInfo(hMenu, i, TRUE, &mii); 
+		pMyItem->cchItemText = mii.cch;
 
-	// Change the item to an owner-drawn item, and save 
-	// the address of the item structure as item data. 
+		// Reallocate the structure to the minimum required size.
 
-	mii.fMask = MIIM_FTYPE | MIIM_DATA; 
-	mii.fType = MFT_OWNERDRAW; 
-	mii.dwItemData = (ULONG_PTR) pMyItem; 
-	SetMenuItemInfo(hMenu, uID, FALSE, &mii); 
+		pMyItem = (MYITEM *) LocalReAlloc(pMyItem,
+			sizeof(MYITEM) + mii.cch, LPTR); 
+
+		// Change the item to an owner-drawn item, and save 
+		// the address of the item structure as item data. 
+
+		mii.fMask = MIIM_FTYPE | MIIM_DATA; 
+		mii.fType = MFT_OWNERDRAW; 
+		mii.dwItemData = (ULONG_PTR) pMyItem; 
+		SetMenuItemInfo(hMenu, i, TRUE, &mii);
+	}
 
 }
 
-void DestroyMyMenu(HMENU hMenu, UINT uID){
+void DestroyMyMenu(HMENU hMenu){
 	
 	MENUITEMINFO mii;
     MYITEM *pMyItem; 
 
 	// Get the item data. 
+	int intMenu = GetMenuItemCount(hMenu);
 
-	mii.cbSize = sizeof(MENUITEMINFO);
-	mii.fMask = MIIM_DATA; 
-	GetMenuItemInfo(hKeyMenu, uID, FALSE, &mii); 
-	pMyItem = (MYITEM *) mii.dwItemData; 
-
-	LocalFree(pMyItem); 
+	for (int i=0; intMenu > i; i++){
+		mii.cbSize = sizeof(MENUITEMINFO);
+		mii.fMask = MIIM_DATA; 
+		GetMenuItemInfo(hMenu, i, TRUE, &mii);
+		pMyItem = (MYITEM *) mii.dwItemData;
+		if (pMyItem)
+			LocalFree(pMyItem);
+	}
 
 }
 
@@ -67,9 +89,11 @@ void DrawMyMenu(LPDRAWITEMSTRUCT lpdis){
 
 	UINT cch;
 	MENUITEMINFO mii;
-	MYITEM *pMyItem = (MYITEM *) lpdis->itemData;
 	
 	if (lpdis->CtlType == ODT_MENU){
+		MYITEM *pMyItem = (MYITEM *) lpdis->itemData;
+		if (!pMyItem)
+			return;
 
 		LOGBRUSH lb;
 		RECT rc;
@@ -136,6 +160,8 @@ void OnMenuMeasure(HWND hwnd,LPMEASUREITEMSTRUCT lpmis)
 	if (lpmis->CtlType != ODT_MENU)
 		return;
     MYITEM *pMyItem = (MYITEM *) lpmis->itemData;
+	if (!pMyItem)
+		return;
 	HDC hdc = GetDC(hwnd);
     SIZE size; 
  

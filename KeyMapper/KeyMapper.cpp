@@ -15,7 +15,6 @@
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "stdafx.h"
 #include "KeyMapper.h"
 
 #include "../KeyMagicDll/KeyMagicDll.h"
@@ -41,7 +40,7 @@ void EscapeSequence(wchar_t* toCheck);
 bool CommandLine(LPTSTR lpCmdLine);
 
 
-int APIENTRY _tWinMain(HINSTANCE hInstance,
+int APIENTRY WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      LPTSTR    lpCmdLine,
                      int       nCmdShow)

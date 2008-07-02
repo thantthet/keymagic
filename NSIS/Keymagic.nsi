@@ -50,7 +50,7 @@ Section "" mainSection
 	Delete "$DESKTOP\Keymagic.lnk"
 	Delete "$SMPROGRAMS\${APPNAME}\Keymagic.lnk"
 	Delete "$SMPROGRAMS\${APPNAME}\Keymap Generator.lnk"
-	Delete "$SMPROGRAMS\${APPNAME}\Help.lnk"
+	Delete "$SMPROGRAMS\${APPNAME}\User Manual.pdf"
 	Delete "$SMPROGRAMS\${APPNAME}\Uninstall.lnk"
 	
 	; add all the shortcuts for all user or current user
@@ -64,7 +64,7 @@ Section "" mainSection
 	File ".\doc\GPL.txt"
 	File ".\doc\License.txt"
 	File ".\Help.chm"
-	CreateShortCut "$SMPROGRAMS\${APPNAME}\Help.lnk" "$INSTDIR\Docs\Help.chm"
+	CreateShortCut "$SMPROGRAMS\${APPNAME}\User Manual.lnk" "$INSTDIR\Docs\User Manual.pdf"
 	
 	SetShellVarContext current
 	

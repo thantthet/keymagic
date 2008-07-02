@@ -1,9 +1,7 @@
 #include <windows.h>
 
-void	CreateMyMenu(HMENU hMenu,UINT uID);
-void	DrawMyMenu(LPDRAWITEMSTRUCT lpdis);
-void	OnMenuMeasure(HWND hwnd, LPMEASUREITEMSTRUCT lpmis);
-void	DestroyMyMenu(HMENU hMenu, UINT uID);
-
-extern HMENU hKeyMenu;
-extern UINT KeyBoardNum;
+void CreateMyMenu(HWND hOwner,HMENU hMenu);
+void DestroyMyMenu(HMENU hMenu);
+void DrawMyMenu(LPDRAWITEMSTRUCT lpdis);
+void OnMenuMeasure(HWND hwnd, LPMEASUREITEMSTRUCT lpmis);
+INT_PTR CALLBACK MyMenuProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
