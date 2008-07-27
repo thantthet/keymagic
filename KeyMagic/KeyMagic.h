@@ -24,9 +24,11 @@
 #define CCH_MAXITEMTEXT 256
 #define MAX_LOADSTRING 100
 
+extern char szINIFile[MAX_PATH];
+extern char szCurDir[MAX_PATH];
+
 extern void	GetKeyBoards();
 extern void	SetHook (HWND hwnd);
-
 extern bool hide;
 
 struct KeyFileData{

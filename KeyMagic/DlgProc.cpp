@@ -26,6 +26,7 @@ int kbindex=-1;
 HWND hList;
 HWND LastHWND;
 UINT KeyBoardNum;
+DWORD StartupFlag;
 
 INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -222,9 +223,15 @@ next:
 
 		else if (lParam==WM_RBUTTONDOWN) {
 			hMenu = CreatePopupMenu();
-			AppendMenu(hMenu, MF_BYCOMMAND, 101, "Key&Magic");
+			AppendMenu(hMenu, MF_BYCOMMAND, 101, "Manage &Keyboards");
+			AppendMenu(hMenu, MF_BYCOMMAND, 102, "&Run at Startup");
+			AppendMenu(hMenu, MF_BYCOMMAND, 103, "&About");
 			AppendMenu(hMenu, MF_BYCOMMAND, 100, "E&xit");
 			CreateMyMenu(hWnd, hMenu);
+
+			StartupFlag = GetPrivateProfileInt("Settings", "Startup", 0, szINIFile);
+
+			StartupFlag ? CheckMenuItem(hMenu, 102, MF_CHECKED) : CheckMenuItem(hMenu, 102, MF_UNCHECKED);
 
 			GetCursorPos(&pt);
 
@@ -233,16 +240,25 @@ next:
 			BOOL CMD= TrackPopupMenu(hMenu, TPM_RIGHTBUTTON | TPM_LEFTBUTTON | TPM_RETURNCMD,
 				pt.x, pt.y, 0, hWnd, NULL);
 
+			switch (CMD){
+				case 100:
+					PostQuitMessage(0);
+					break;
+				case 101:
+					ShowWindow(hWnd, SW_SHOW);
+					break;
+				case 102:
+					StartupFlag =! StartupFlag;
+					Startup(StartupFlag);
+					break;
+				case 103:
+					DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+					break;
+			}
+
 			DestroyMyMenu(hMenu);
 
 			DestroyMenu(hMenu);
-
-			if (CMD == 100){
-				PostQuitMessage(0);
-			}
-			else if (CMD == 101){
-				ShowWindow(hWnd, SW_SHOW);
-			}
 
 			PostMessage(hWnd, WM_NULL, 0, 0);
 		}
@@ -362,21 +378,8 @@ bool UpdateDlgData(HWND hWnd){
 	}
 
 	PathAppend(szKBPath, "KeyMagic");
-	
-	if (!GetModuleFileName(hInst, szCurDir, MAX_PATH)){
-		error("GetModuleFileName");
-		return false;
-	}
 
-	int i;
-	for (i=lstrlen(szCurDir); szCurDir[i] != '\\'; i--){
-	}
-
-	szCurDir[i] = NULL;
-
-	PathAppend(szCurDir, "KeyMagic.ini");
-
-	GetPrivateProfileString(szKBP, NULL, NULL, (LPSTR)szKBNames, 500, szCurDir);
+	GetPrivateProfileString(szKBP, NULL, NULL, (LPSTR)szKBNames, 500, szINIFile);
 
 	for (int i=0, j=0,Length = lstrlen(&szKBNames[i]);
 		Length > 0; 
@@ -384,9 +387,9 @@ bool UpdateDlgData(HWND hWnd){
 
 			SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)&szKBNames[i]);
 
-			GetPrivateProfileString(szMS, &szKBNames[i], NULL, szMenuDisplay, 30, szCurDir);
-			GetPrivateProfileString(szKBP, &szKBNames[i], NULL, szKBPath, MAX_PATH, szCurDir);
-			WORD wHotkey = GetPrivateProfileInt(szSC, &szKBNames[i], 0, szCurDir);
+			GetPrivateProfileString(szMS, &szKBNames[i], NULL, szMenuDisplay, 30, szINIFile);
+			GetPrivateProfileString(szKBP, &szKBNames[i], NULL, szKBPath, MAX_PATH, szINIFile);
+			WORD wHotkey = GetPrivateProfileInt(szSC, &szKBNames[i], 0, szINIFile);
 
 			Data = (KeyFileData*)LocalAlloc(LPTR, sizeof(KeyFileData));
 			Data->isNew = FALSE;
@@ -397,6 +400,7 @@ bool UpdateDlgData(HWND hWnd){
 			SendMessage(hList, LB_SETITEMDATA, j, (LPARAM)Data);
 	}
 	return true;
+
 }
 
 void DeleteDlgData(HWND hWnd){
@@ -410,34 +414,24 @@ void DeleteDlgData(HWND hWnd){
 }
 
 void SetKbData(HWND hWnd){
-	char szCurDir[MAX_PATH],shortcut[10], szNormal[] = "Normal";
+	char shortcut[10], szNormal[] = "Normal";
 	KeyFileData *Data;
 	int count = SendMessage(hList, LB_GETCOUNT, 0, 0);
 
-	GetModuleFileName(hInst, szCurDir, MAX_PATH);
-
-	int i;
-	for (i=lstrlen(szCurDir); szCurDir[i] != '\\'; i--){
-	}
-
-	szCurDir[i] = NULL;
-
-	PathAppend(szCurDir, "KeyMagic.ini");
-
-	WritePrivateProfileSection(szKBP, NULL, szCurDir);
-	WritePrivateProfileSection(szMS, NULL, szCurDir);
-	WritePrivateProfileSection(szSC, NULL, szCurDir);
+	WritePrivateProfileSection(szKBP, NULL, szINIFile);
+	WritePrivateProfileSection(szMS, NULL, szINIFile);
+	WritePrivateProfileSection(szSC, NULL, szINIFile);
 
 	for (int i=0;count > i; i++){
 		Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, i, NULL);
 
-		WritePrivateProfileString(szKBP, Data->Name, Data->Path, szCurDir);
+		WritePrivateProfileString(szKBP, Data->Name, Data->Path, szINIFile);
 
-		WritePrivateProfileString(szMS, Data->Name, Data->Display, szCurDir);
+		WritePrivateProfileString(szMS, Data->Name, Data->Display, szINIFile);
 
 		wsprintf(shortcut, "%d", Data->wHotkey);
 
-		WritePrivateProfileString(szSC, Data->Name, shortcut, szCurDir);
+		WritePrivateProfileString(szSC, Data->Name, shortcut, szINIFile);
 	}
 }
 
@@ -475,24 +469,15 @@ void restart (HWND hWnd){
 	SendMessage(hList, LB_SETSEL, 0, 0);
 
 	GetKeyBoards();
+	CreateMyMenu(hWnd, hKeyMenu);
 }
 
 bool AddKeyBoardToList(HWND hWnd,char* lpKBPath){
 	char lpPath[MAX_PATH];
 	char lpName[MAX_PATH];
-	char szCurDir[MAX_PATH];
 	char szKBPath[MAX_PATH];
 
 	KeyFileData *Data;
-
-	GetModuleFileName(hInst, szCurDir, MAX_PATH);
-
-	int i;
-	for (i=lstrlen(szCurDir); szCurDir[i] != '\\'; i--){
-	}
-
-	szCurDir[i] = NULL;
-	PathAppend(szCurDir, "KeyMagic.ini");
 	
 	GetFileTitle(lpKBPath, lpName, MAX_PATH);
 
@@ -619,7 +604,6 @@ void error(LPCSTR lpszFunction)
 
 void GetKeyBoards(){
 
-	char szCurDir[MAX_PATH];
 	char szMenuDisplay[MAX_PATH];
 	char szKBNames[500];
 	char szShortCut[20];
@@ -632,17 +616,10 @@ void GetKeyBoards(){
 	if (!hKeyMenu)
 		return;
 
-	GetModuleFileName(hInst, szCurDir, MAX_PATH);
-	int i;
-	for (i=lstrlen(szCurDir); szCurDir[i] != '\\'; i--){
-	}
-	szCurDir[i] = NULL;
+	GetPrivateProfileString(szKBP, NULL, NULL, (LPSTR)szKBNames, 500, szINIFile);
 
-	PathAppend(szCurDir, "KeyMagic.ini");
-	GetPrivateProfileString(szKBP, NULL, NULL, (LPSTR)szKBNames, 500, szCurDir);
-
-	GetPrivateProfileString(szMS, &szKBNames[0], NULL, (LPSTR)szMenuDisplay, MAX_PATH, szCurDir);
-	wHotKey = GetPrivateProfileInt(szSC, &szKBNames[0], 0, szCurDir);
+	GetPrivateProfileString(szMS, &szKBNames[0], NULL, (LPSTR)szMenuDisplay, MAX_PATH, szINIFile);
+	wHotKey = GetPrivateProfileInt(szSC, &szKBNames[0], 0, szINIFile);
 	lstrcat(szMenuDisplay, "\t");
 
 	GetHotKey(wHotKey, szShortCut);
@@ -653,8 +630,8 @@ void GetKeyBoards(){
 	for (int i=lstrlen(&szKBNames[0])+1,Length = lstrlen(&szKBNames[i]);
 		Length > 0; 
 		i+=Length+1, Length = lstrlen(&szKBNames[i])){
-			GetPrivateProfileString(szMS, &szKBNames[i], NULL, szMenuDisplay, MAX_PATH, szCurDir);
-			wHotKey = GetPrivateProfileInt(szSC, &szKBNames[i], 0, szCurDir);
+			GetPrivateProfileString(szMS, &szKBNames[i], NULL, szMenuDisplay, MAX_PATH, szINIFile);
+			wHotKey = GetPrivateProfileInt(szSC, &szKBNames[i], 0, szINIFile);
 
 			lstrcat(szMenuDisplay, "\t");
 			GetHotKey(wHotKey, szShortCut);
@@ -665,8 +642,30 @@ void GetKeyBoards(){
 	}
 
 	CheckMenuRadioItem(hKeyMenu, IDKM_NORMAL, 
-		KeyBoardNum + IDKM_ID, 
+		KeyBoardNum + IDKM_ID,
 		IDKM_NORMAL,
 		MF_BYCOMMAND);
 
 };
+
+void Startup(BOOL isEnable){
+	HKEY hkHLM, hkRun;
+	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, NULL, NULL, KEY_ALL_ACCESS, &hkHLM) != ERROR_SUCCESS)
+		return;
+	if (RegOpenKeyEx(hkHLM, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", NULL, KEY_ALL_ACCESS, &hkRun) != ERROR_SUCCESS)
+		return;
+	if (!isEnable){
+		RegDeleteValue(hkRun, "Keymagic");
+	}
+	else{
+		char FileName[MAX_PATH];
+		GetModuleFileName(hInst, FileName, MAX_PATH);
+		lstrcat(FileName, " -s");
+		RegSetValueEx(hkRun, "Keymagic", NULL, REG_SZ, (BYTE*)FileName, lstrlen(FileName));
+	}
+
+	isEnable ? WritePrivateProfileString("Settings", "Startup", "1", szINIFile) : WritePrivateProfileString("Settings", "Startup", "0", szINIFile);
+
+	RegCloseKey(hkRun);
+	RegCloseKey(hkHLM);
+}

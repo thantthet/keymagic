@@ -36,6 +36,8 @@ HHOOK hWPH;
 HHOOK hGM;
 bool hide = false;
 HMENU hKeyMenu;
+char szINIFile[MAX_PATH];
+char szCurDir[MAX_PATH];
 
 int APIENTRY WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
@@ -45,6 +47,17 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 
 	hInst = hInstance;
+
+	GetModuleFileName(hInst, szCurDir, MAX_PATH);
+
+	int i;
+	for (i=lstrlen(szCurDir); szCurDir[i] != '\\'; i--){
+	}
+	szCurDir[i] = NULL;
+
+	lstrcpy(szINIFile,szCurDir);
+
+	PathAppend(szINIFile, "KeyMagic.ini");
 
 	if (WorkOnCommand(lpCmdLine))
 		return 0;
@@ -69,6 +82,12 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_INITDIALOG:
+		char* buildTime[50];
+		lstrcpyA((LPSTR)buildTime,__DATE__);
+		lstrcatA((LPSTR)buildTime," - ");
+		lstrcatA((LPSTR)buildTime,__TIME__);
+		SendDlgItemMessageA(hDlg, IDC_COMPLIE, WM_SETTEXT, 0, (LPARAM)buildTime);
+
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
@@ -84,7 +103,6 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 VOID SetHook (HWND hwnd)
 {
-	char szCurDir[MAX_PATH];
 
 	HMODULE hMod = LoadLibrary("KeyMagicDll.dll");
 	if (hMod == NULL)   {
@@ -97,12 +115,6 @@ VOID SetHook (HWND hwnd)
 	hWPH = SetWindowsHookEx(WH_CALLWNDPROC, &HookWndProc, hMod, NULL);
 
 	hGM = SetWindowsHookEx(WH_GETMESSAGE, &HookGetMsgProc, hMod, NULL);
-	
-	GetModuleFileName(hInst, szCurDir, MAX_PATH);
-	int i;
-	for (i=lstrlen(szCurDir); szCurDir[i] != '\\'; i--){
-	}
-	szCurDir[i] = NULL;
 
 	HookInit(hwnd,hKH, hWPH, hGM, szCurDir);
 }
@@ -135,20 +147,10 @@ bool WorkOnCommand(LPTSTR lpCmdLine){
 bool AddKeyBoard(char* lpKBPath){
 	char lpPath[MAX_PATH];
 	char lpName[MAX_PATH];
-	char szCurDir[MAX_PATH];
 	char szKBPath[MAX_PATH];
 	char szKBP[] = "KeyBoardPaths";
 	char szMD[] = "MenuDisplays";
 	char szSC[] = "ShortCuts";
-
-	GetModuleFileName(hInst, szCurDir, MAX_PATH);
-
-	int i;
-	for (i=lstrlen(szCurDir); szCurDir[i] != '\\'; i--){
-	}
-
-	szCurDir[i] = NULL;
-	PathAppend(szCurDir, "KeyMagic.ini");
 	
 	GetFileTitle(lpKBPath, lpName, MAX_PATH);
 
@@ -170,13 +172,13 @@ bool AddKeyBoard(char* lpKBPath){
 		return false;
 	}
 
-	if (!WritePrivateProfileString(szKBP, lpName, lpPath, szCurDir)){
+	if (!WritePrivateProfileString(szKBP, lpName, lpPath, szINIFile)){
 		return false;
 	}
-	if (!WritePrivateProfileString(szMD, lpName, lpName, szCurDir)){
+	if (!WritePrivateProfileString(szMD, lpName, lpName, szINIFile)){
 		return false;
 	}
-	if (!WritePrivateProfileString(szSC, lpName, "0", szCurDir)){
+	if (!WritePrivateProfileString(szSC, lpName, "0", szINIFile)){
 		return false;
 	}
 

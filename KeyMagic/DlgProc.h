@@ -14,6 +14,7 @@ bool				UpdateDlgData(HWND hWnd);
 void				restart(HWND hWnd);
 void				error(LPCSTR lpszFunction) ;
 void				GetKeyBoards();
+void				Startup(BOOL isEnable);
 
 extern strDelete *szFileToDelete;
 extern int cbFileToDelete;

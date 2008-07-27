@@ -15,12 +15,12 @@ OutFile "${APPNAMEANDVERSION}.exe"
 	
 	;!define MUI_ICON ".\Keymagic.ico"
 	
-	!define MUI_WELCOMEFINISHPAGE_BITMAP ".\Welcome.bmp"
+	!define MUI_WELCOMEFINISHPAGE_BITMAP ".\GUI\Welcome.bmp"
 	!define MUI_WELCOMEFINISHPAGE_BITMAP_NOSTRETCH
 
 	!define MUI_HEADERIMAGE
 	!define MUI_HEADERIMAGE_RIGHT
-	!define MUI_HEADERIMAGE_BITMAP ".\Head.bmp" ; optional
+	!define MUI_HEADERIMAGE_BITMAP ".\GUI\Head.bmp" ; optional
 	!define MUI_ABORTWARNING
 
 	!insertmacro MUI_PAGE_WELCOME
@@ -57,13 +57,12 @@ Section "" mainSection
 	CreateDirectory "$SMPROGRAMS\${APPNAME}\"
 	CreateShortCut "$SMPROGRAMS\${APPNAME}\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 	
-
 	SetOutPath "$INSTDIR\Docs\"
 	File ".\doc\Authors.txt"
 	File ".\doc\Changelog.txt"
 	File ".\doc\GPL.txt"
 	File ".\doc\License.txt"
-	File ".\Help.chm"
+	File ".\doc\User Manual.pdf"
 	CreateShortCut "$SMPROGRAMS\${APPNAME}\User Manual.lnk" "$INSTDIR\Docs\User Manual.pdf"
 	
 	SetShellVarContext current
@@ -89,7 +88,7 @@ SubSection "Keymagic" PackageKeymagic
 	File ".\KeyMagic.ini"
 	SetOverwrite on
 	SetOutPath "$INSTDIR\Icons\"
-	File ".\Keymap.ico"	
+	File ".\GUI\Keymap.ico"	
 	
 	CreateDirectory "$SMPROGRAMS\${APPNAME}\"
 	CreateDirectory "$APPDATA\Keymagic\Keyboards\"
@@ -115,7 +114,7 @@ SubSection "Keymagic" PackageKeymagic
 	SetOutPath "$INSTDIR\"
 	File ".\Keymapper.exe"
 	SetOutPath "$INSTDIR\Icons\"
-	File ".\Keyscript.ico"
+	File ".\GUI\Keyscript.ico"
 	
 	CreateDirectory "$SMPROGRAMS\${APPNAME}\"
 	CreateShortCut "$SMPROGRAMS\${APPNAME}\Keymap Generator.lnk" "$INSTDIR\Keymapper.exe"
@@ -188,6 +187,22 @@ SubSection un.Keymagic
 	Delete "$INSTDIR\KeyMagic.ini"
 	Delete "$INSTDIR\Icons\Keymap.ico"
 	RMDir  "$INSTDIR\Icons\"
+	Delete  "$INSTDIR\Docs\Authors.txt"
+	Delete  "$INSTDIR\Docs\Changelog.txt"
+	Delete  "$INSTDIR\Docs\GPL.txt"
+	Delete  "$INSTDIR\Docs\License.txt"
+	Delete  "$INSTDIR\Docs\Help.chm"
+	RMDir  "$INSTDIR\Docs\"
+	Delete  "$INSTDIR\Keyboards\Myanmar3.kmk"
+	Delete  "$INSTDIR\Keyboards\Parabaik.kmk"
+	Delete  "$INSTDIR\Keyboards\Uniburma.kmk"
+	Delete  "$INSTDIR\Keyboards\Zawgyi.kmk"
+	RMDir  "$INSTDIR\Keyboards"
+	Delete  "$INSTDIR\Keyscripts\Myanmar3.kms"
+	Delete  "$INSTDIR\Keyscripts\Parabaik.kms"
+	Delete  "$INSTDIR\Keyscripts\Uniburma.kms"
+	Delete  "$INSTDIR\Keyscripts\Zawgyi.kms"
+	RMDir  "$INSTDIR\Keyscripts"
 	RMDir  "$INSTDIR\"
 	
 	DeleteRegValue HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "Keymagic"

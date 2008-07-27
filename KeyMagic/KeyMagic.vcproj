@@ -133,7 +133,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../Release/KeyMagicDll.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib $(NOINHERIT)"
+				AdditionalDependencies="../Release/KeyMagicDll.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Advapi32.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib $(NOINHERIT)"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"

@@ -52,16 +52,17 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 177, 89
+IDD_ABOUTBOX DIALOGEX 0, 0, 177, 88
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About KeyMagic"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    ICON            IDI_KEYMAGIC,IDC_STATIC,14,14,21,20
-    LTEXT           "KeyMagic Input Customizer",IDC_STATIC,42,14,114,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2008  KeyMagic Project",IDC_STATIC,42,30,127,8
-    DEFPUSHBUTTON   "OK",IDOK,120,68,50,14,WS_GROUP
-    LTEXT           "keymagic.googlecode.com",IDC_STATIC,42,47,85,8
+    ICON            IDI_KEYMAGIC,IDC_STATIC,16,18,21,20
+    LTEXT           "KeyMagic",IDC_STATIC,43,18,39,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2008  KeyMagic Project",IDC_STATIC,43,30,123,8
+    DEFPUSHBUTTON   "OK",IDOK,120,67,50,14,WS_GROUP
+    LTEXT           "keymagic.googlecode.com",IDC_STATIC,43,45,94,8
+    LTEXT           "Complie Info",IDC_COMPLIE,7,73,94,8,WS_DISABLED
 END
 
 IDD_MAINBOX DIALOGEX 0, 0, 317, 220
@@ -102,7 +103,7 @@ BEGIN
         RIGHTMARGIN, 170
         VERTGUIDE, 82
         TOPMARGIN, 7
-        BOTTOMMARGIN, 82
+        BOTTOMMARGIN, 81
     END
 
     IDD_MAINBOX, DIALOG
