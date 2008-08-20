@@ -18,6 +18,7 @@
 #include "MyMenu.h"
 #include "MyButton.h"
 #include "DlgProc.h"
+#include "DllUnload.h"
 #include "../KeyMagicDll/KeyMagicDll.h"
 
 
@@ -31,9 +32,15 @@ TCHAR szKeymagic[] = "Keymagic";
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 
-HHOOK hKH;
-HHOOK hWPH;
-HHOOK hGM;
+#pragma data_seg(".keymagic")
+HHOOK hKH = NULL;
+HHOOK hWPH = NULL;
+HHOOK hGM = NULL;
+#pragma data_seg()
+
+//Make sure that section can READ WRITE and SHARE
+#pragma comment(linker, "/SECTION:.keymagic,RWS")
+
 bool hide = false;
 HMENU hKeyMenu;
 char szINIFile[MAX_PATH];
@@ -63,7 +70,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		return 0;
 
 	if (OpenMutexW(SYNCHRONIZE, NULL, L"\u1000\u102E\u1038\u1019\u1000\u1039\u1002\u103A\u1005\u1039")){
-		HWND prevhandle = FindWindow(NULL, "KeyMagic 1.1");
+		HWND prevhandle = FindWindow(NULL, "KeyMagic 1.2");
 		ShowWindow(prevhandle, SW_SHOW);
 		ExitProcess(0);
 	}
@@ -127,6 +134,7 @@ VOID UnHook ()
 }
 
 bool WorkOnCommand(LPTSTR lpCmdLine){
+
 	if (!lstrlen(lpCmdLine)){
 		return false;
 	}
@@ -139,6 +147,11 @@ bool WorkOnCommand(LPTSTR lpCmdLine){
 		case 's':
 			hide = true;
 			return false;
+		case 'u':
+			FreeLibrary(LoadLibrary("KeymagicDll.dll"));
+			UnHook();
+			Scanner();
+			return true;
 		}
 	}
 	return false;
@@ -161,10 +174,19 @@ bool AddKeyBoard(char* lpKBPath){
 
 	lpName [lstrlen(lpName)-4] = NULL;
 
-	if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath))
-		return false;
+	//if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath))
+	//	return false;
 
-	PathAppend(szKBPath, "KeyMagic");
+	lstrcpy(szKBPath, szCurDir);
+
+	for (int i=lstrlen(szKBPath); szKBPath[i] != '\\'; i--){
+		szKBPath[i] = NULL;
+		if (szKBPath[i-1] == '\\'){
+			szKBPath[i-1] = NULL;
+			break;
+		}
+	}
+	//PathAppend(szKBPath, "KeyMagic");
 	PathAppend(szKBPath, lpPath);
 
 	if (!CopyFile(lpKBPath, szKBPath, false)){

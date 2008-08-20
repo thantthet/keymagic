@@ -315,10 +315,22 @@ void OnInitDlg(HWND hWnd){
 
 	LoadIcon(hInst, (LPCSTR)IDI_KEYMAGIC);
 
-	if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath)){
+	//if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath)){
+	//	goto next;
+	//}
+
+	if (!GetModuleFileName(GetModuleHandle(NULL), szKBPath, MAX_PATH))
 		goto next;
+
+	for (int i=lstrlen(szKBPath); szKBPath[i] != '\\'; i--){
+		szKBPath[i] = NULL;
+		if (szKBPath[i-1] == '\\'){
+			szKBPath[i-1] = NULL;
+			break;
+		}
 	}
-	PathAppend(szKBPath, "KeyMagic");
+
+	//PathAppend(szKBPath, "KeyMagic");
 	CreateDirectory(szKBPath, NULL);
 	PathAppend(szKBPath, "Keyboards");
 	CreateDirectory(szKBPath, NULL);
@@ -368,16 +380,27 @@ bool UpdateDlgData(HWND hWnd){
 	hDisplay = GetDlgItem(hWnd, IDC_DISPLAY);
 	hHotKey = GetDlgItem(hWnd, IDC_SHORTCUT);
 	
-	if (FAILED(SHGetFolderPath(NULL,
-		CSIDL_COMMON_APPDATA,
-		NULL,
-		SHGFP_TYPE_CURRENT,
-		szKBPath))){
-			error("SHGetFolderPath");
-			return false;
+	//if (FAILED(SHGetFolderPath(NULL,
+	//	CSIDL_COMMON_APPDATA,
+	//	NULL,
+	//	SHGFP_TYPE_CURRENT,
+	//	szKBPath))){
+	//		error("SHGetFolderPath");
+	//		return false;
+	//}
+
+	if (!GetModuleFileName(GetModuleHandle(NULL), szKBPath, MAX_PATH))
+		return false;
+
+	for (int i=lstrlen(szKBPath); szKBPath[i] != '\\'; i--){
+		szKBPath[i] = NULL;
+		if (szKBPath[i-1] == '\\'){
+			szKBPath[i-1] = NULL;
+			break;
+		}
 	}
 
-	PathAppend(szKBPath, "KeyMagic");
+	//PathAppend(szKBPath, "KeyMagic");
 
 	GetPrivateProfileString(szKBP, NULL, NULL, (LPSTR)szKBNames, 500, szINIFile);
 
@@ -488,12 +511,23 @@ bool AddKeyBoardToList(HWND hWnd,char* lpKBPath){
 
 	lpName [lstrlen(lpName)-4] = NULL;
 
-	if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath)){
-		MessageBox(hWnd, "Cannot locate \"Common Application Data\" Path!", szKeymagic, MB_ICONERROR);
+	//if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath)){
+	//	MessageBox(hWnd, "Cannot locate \"Common Application Data\" Path!", szKeymagic, MB_ICONERROR);
+	//	return false;
+	//}
+
+	if (!GetModuleFileName(GetModuleHandle(NULL), szKBPath, MAX_PATH))
 		return false;
+
+	for (int i=lstrlen(szKBPath); szKBPath[i] != '\\'; i--){
+		szKBPath[i] = NULL;
+		if (szKBPath[i-1] == '\\'){
+			szKBPath[i-1] = NULL;
+			break;
+		}
 	}
 
-	PathAppend(szKBPath, "KeyMagic");
+	//PathAppend(szKBPath, "KeyMagic");
 	PathAppend(szKBPath, lpPath);
 
 	if (!CopyFile(lpKBPath, szKBPath, false)){
@@ -546,13 +580,24 @@ bool DeleteKeyFile(){
 	if (!cbFileToDelete)
 		return false;
 
-	if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath)){
-		cbFileToDelete=0;
-		error("SHGetFolderPath");
-		return false;
-	}
+	//if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath)){
+	//	cbFileToDelete=0;
+	//	error("SHGetFolderPath");
+	//	return false;
+	//}
 
-	PathAppend(szKBPath, "KeyMagic");
+	if (!GetModuleFileName(GetModuleHandle(NULL), szKBPath, MAX_PATH))
+		return false;
+
+	for (int i=lstrlen(szKBPath); szKBPath[i] != '\\'; i--){
+		szKBPath[i] = NULL;
+		if (szKBPath[i-1] == '\\'){
+			szKBPath[i-1] = NULL;
+			break;
+		}
+	}
+	//PathAppend(szKBPath, "KeyMagic");
+
 	for (int i=1; i <= cbFileToDelete; i++){
 		lstrcpy(szToDelete, szKBPath);
 		PathAppend(szToDelete, szFileToDelete[i].Path);

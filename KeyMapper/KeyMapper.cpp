@@ -16,7 +16,7 @@
 //Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "KeyMapper.h"
-
+#include "resource.h"
 #include "../KeyMagicDll/KeyMagicDll.h"
 
 // Global Variables:
@@ -39,6 +39,7 @@ void StringRead(wchar_t* Buffer, wchar_t* lpBufOut, size_t cbBufSize, wchar_t* S
 void EscapeSequence(wchar_t* toCheck);
 bool CommandLine(LPTSTR lpCmdLine);
 
+void Logger(HWND hWnd, char* fmt, ...);
 
 int APIENTRY WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
@@ -267,7 +268,7 @@ bool OpenScriptFile(char* szFileName){
 			continue;
 		Font = wcspbrk(FontName, L" =");
 		Font++;
-		for (wchar_t *Finder; Finder != NULL; Finder){
+		for (wchar_t *Finder=(wchar_t*)0xDEAD; Finder != NULL; Finder){
 			Finder = wcspbrk(Font++, L" =");
 			if (Finder == NULL)
 				goto Font;
@@ -298,17 +299,18 @@ void StartComplie(){
 	int cbCount, Length;
 	wchar_t String[256];
 	wchar_t* Buffer;
-	wchar_t szNormal[] = L"Normal";
-	wchar_t szRegex[] = L"Regex";
-	wchar_t szCombine[] = L"Combine";
-	wchar_t szUnique[] = L"Unique";
+	wchar_t szSingle[] = L"SingleInput";
+	wchar_t szMulti[] = L"MultiOutput";
+	wchar_t szCustomize[] = L"Customize";
+	wchar_t szDelete[] = L"CustomizeOnDelete";
 	wchar_t tokens[] = L" =";
 	wchar_t* token;
-	KbData Normal;
+	One2One Normal;
 	KbFileHeader *Header;
-	OrdData *Regex;
-	CombineData* Combine;
-	UniqueKey* Unique;
+	File_Custom *Custom;
+	File_One2Multi *Multi;
+	File_Delete *DeletePattern;
+
 	int count;
 	size_t memsize;
 
@@ -328,156 +330,173 @@ void StartComplie(){
 
 	// "Normal"
 
-	count = SectionRead(Buffer, szNormal);
+	count = SectionRead(Buffer, szSingle);
 
 	if (count == -1)
-		goto Regex;
+		goto Multi;
 
-	StringRead(Buffer, String, 256, szNormal, 0);
+	StringRead(Buffer, String, 256, szSingle, 0);
 
 	token = wcstok(String, tokens);
+
 	if (token == NULL)
-			goto Regex;
+		goto Multi;
 
-	Normal.vk = (wchar_t*)((LPBYTE)Header + sizeof (KbFileHeader));
-	wcscpy((wchar_t*)Normal.vk, token);
-	EscapeSequence(Normal.vk);
+	Normal.Input = (wchar_t*)((LPBYTE)Header + sizeof (KbFileHeader));
+	wcscpy((wchar_t*)Normal.Input, token);
+	EscapeSequence((wchar_t*)Normal.Input);
 
-	Header->luc =  Header->lvk = wcslen(token) + 1;
+	Header->One_Count = wcslen(token);
 
-	memsize += Header->lvk * 4;
-	//LocalReAlloc(Header, memsize, LMEM_ZEROINIT);
+	memsize += Header->One_Count * 4;
 
 	token = wcstok(NULL, tokens);
 	if (token == NULL)
-			goto Regex;
+			goto Multi;
 
-	Normal.uc = (wchar_t*)((LPBYTE)Header + sizeof (KbFileHeader) + Header->lvk * 2);
-	wcscpy((wchar_t*)Normal.uc, token);
-	EscapeSequence(Normal.uc);
+	Normal.Output = (wchar_t*)((LPBYTE)Header + sizeof (KbFileHeader) + Header->One_Count * 2);
+	wcscpy((wchar_t*)Normal.Output, token);
+	EscapeSequence((wchar_t*)Normal.Output);
 
-	// ===----------------------------===
+Multi:
+	Multi = (File_One2Multi*)((LPBYTE)Header + sizeof (KbFileHeader) + Header->One_Count *4);
 
-	// "Regex"
-
-Regex:
-
-	Regex = (OrdData*)((LPBYTE)Header + sizeof (KbFileHeader) + Header->lvk *2 + Header->luc *2);
-
-	count = SectionRead(Buffer, szRegex);
+	count = SectionRead(Buffer, szMulti);
 
 	if (count == -1){
 		count = 0;
-		goto Combine;
+		goto Customize;
 	}
 	count++;
 
-	Header->nOrdData = count;
-
-	memsize += sizeof(OrdData) * count;
-	//LocalReAlloc(Header, memsize, LMEM_ZEROINIT);
-
+	Header->Multi_Count = count;
 	int i=0;
+	
 	while (i < count){
-		StringRead (Buffer, String, 256, szRegex, i);
+		StringRead (Buffer, String, 256, szMulti, i);
+
+		token = wcstok(String, tokens);
+		if (token == NULL)
+			continue;
+		Multi->size = sizeof(short) + sizeof (DWORD);
+		wcscpy((wchar_t*)&Multi->One2Multi.Input_Key, token);
+		EscapeSequence((wchar_t*)&Multi->One2Multi.Input_Key);
+
+		token = wcstok(NULL, tokens);
+		if (token == NULL)
+			continue;
+		wcscpy((wchar_t*)&Multi->One2Multi.Output, token);
+		EscapeSequence((wchar_t*)&Multi->One2Multi.Output);
+		
+		Multi->size += wcslen(Multi->One2Multi.Output) * sizeof(wchar_t) + sizeof(short);
+		memsize += Multi->size;
+
+		Multi = (File_One2Multi*) ((LPBYTE)Multi + Multi->size);
+
+		i++;
+	}
+
+	memsize += 6;
+
+Customize:
+	Custom  = (File_Custom*) ((LPBYTE)Multi + Multi->size);
+
+	count = SectionRead(Buffer, szCustomize);
+
+	if (count == -1){
+		count = 0;
+		goto Delete;
+	}
+	count++;
+
+	Header->Customize_Count = count;
+
+	int length=0;
+	for (int i=0; i < Header->Customize_Count; i++)
+	{
+		Custom = (File_Custom*) ( (LPBYTE)Custom + length );
+
+		StringRead (Buffer, String, 256, szCustomize, i);
 
 		token = wcstok(String, tokens);
 		if (token == NULL)
 			break;
-		wcscpy((wchar_t*)&Regex[i].Key, token);
-		EscapeSequence((wchar_t*)&Regex[i].Key);
+
+		short *MP_length = (short*)( (LPBYTE)&Custom->size_MatchPattern);
+		wchar_t *MP = (wchar_t*)((LPBYTE)&Custom->size_MatchPattern + sizeof(short));
+
+		*MP_length = wcslen(token);
+
+		wcscpy((wchar_t*)MP, token);
+		EscapeSequence((wchar_t*)MP);
 
 		token = wcstok(NULL, tokens);
-		if (token == NULL)
-			continue;
-		wcscpy((wchar_t*)&Regex[i].Data, token);
-		EscapeSequence((wchar_t*)&Regex[i].Data);
 
-		token = wcstok(NULL, L" *");
 		if (token == NULL)
 			continue;
-		wcscpy((wchar_t*)&Regex[i].Method, token);
-		
-		i++;
+
+		short *OP_length = (short*)( (LPBYTE) (MP + *MP_length) );
+		wchar_t *OP = (wchar_t*) ((LPBYTE) ( MP + *MP_length )+ sizeof(short)); 
+
+		*OP_length = wcslen(token);
+
+		wcscpy((wchar_t*)OP, token);
+		EscapeSequence((wchar_t*)OP);
+
+		length = ( *MP_length + *OP_length + sizeof(short) ) * 2;
+		memsize += length;
 	}
 
-	// ===----------------------------===
 
-	// "Combine"
+Delete:
 
-Combine:
+	DeletePattern  = (File_Delete*) ( (LPBYTE)Custom + length );
+	length=0;
 
-	Combine = (CombineData*)(sizeof(OrdData) * count + (LPBYTE)Regex);
-
-	count = SectionRead(Buffer, szCombine);
+	count = SectionRead(Buffer, szDelete);
 
 	if (count == -1){
 		count = 0;
-		goto Unique;
+		goto Delete;
 	}
 
 	count++;
 
-	Header->nComData = count;
+	Header->Back_Count = count;
 
-	memsize += sizeof(CombineData) * count;
-	//LocalReAlloc(Header, memsize, LMEM_ZEROINIT);
+	for (int i=0; i < Header->Back_Count; i++)
+	{
+		DeletePattern = (File_Delete*) ( (LPBYTE)DeletePattern + length );
 
-	i=0;
-	while (i < count){
-		StringRead (Buffer, String, 256, szCombine, i);
-
-		token = wcstok(String, tokens);
-		if (token == NULL)
-			continue;
-			wcscpy((wchar_t*)&Combine[i].Key, token);
-			EscapeSequence((wchar_t*)&Combine[i].Key);
-
-		token = wcstok(NULL, tokens);
-		if (token == NULL)
-			continue;
-			wcscpy((wchar_t*)&Combine[i].Data, token);
-			EscapeSequence((wchar_t*)&Combine[i].Data);
-		i++;
-	}
-
-	// ===----------------------------===
-
-	// "Unique"
-Unique:
-
-	Unique = (UniqueKey*)(sizeof(CombineData) * count + (LPBYTE)Combine);
-
-	count = SectionRead(Buffer, szUnique);
-
-	if (count == -1){
-		count = 0;
-		goto WriteFile;
-	}
-
-	count++;
-
-	Header->nUnKey = count;
-
-	memsize += sizeof(UniqueKey) * count;
-	LocalReAlloc(Header, memsize, LMEM_ZEROINIT);
-
-	i=0;
-	while (i < count){
-		StringRead (Buffer, String, 256, szUnique, i);
+		StringRead (Buffer, String, 256, szDelete, i);
 
 		token = wcstok(String, tokens);
 		if (token == NULL)
-			continue;
-		swscanf(token, L"%d+%d+%d+%d+%s", &Unique[i].CTRL, &Unique[i].L_ALT, &Unique[i].R_ALT, &Unique[i].SHIFT, &Unique[i].vKEY);
-		EscapeSequence((wchar_t*)&Unique[i].vKEY);
+			break;
+
+		short *MP_length = (short*)( (LPBYTE)&DeletePattern->size_MatchPattern);
+		wchar_t *MP = (wchar_t*)((LPBYTE)&DeletePattern->size_MatchPattern + sizeof(short));
+
+		*MP_length = wcslen(token);
+
+		wcscpy((wchar_t*)MP, token);
+		EscapeSequence((wchar_t*)MP);
 
 		token = wcstok(NULL, tokens);
+
 		if (token == NULL)
 			continue;
-		wcscpy((wchar_t*)&Unique[i].wChars, token);
-		EscapeSequence((wchar_t*)&Unique[i].wChars);
-		i++;
+
+		short *OP_length = (short*)( (LPBYTE) (MP + *MP_length) );
+		wchar_t *OP = (wchar_t*) ((LPBYTE) ( MP + *MP_length )+ sizeof(short)); 
+
+		*OP_length = wcslen(token);
+
+		wcscpy((wchar_t*)OP, token);
+		EscapeSequence((wchar_t*)OP);
+
+		length = ( *MP_length + *OP_length + sizeof(short) ) * 2;
+		memsize += length;
 	}
 
 	// ===----------------------------===
@@ -636,4 +655,28 @@ bool SaveScriptFile(char* szFileName){
 	CloseHandle(hFile);
 	VirtualFree(Buffer, size, MEM_DECOMMIT);
 	return true;
+}
+
+void Logger(HWND hWnd, char* fmt, ...)
+{
+#ifdef DEBUG
+	char Memory[100];
+	RECT rc;
+
+	va_list list;
+
+	va_start(list, fmt);
+	//Format
+	wvsprintf(Memory, fmt,list);
+
+	GetClientRect(hWnd, &rc);
+
+	rc.top += 50;
+	SetWindowText(hWnd, Memory);
+	
+	//Cleanup
+	va_end(list);
+#else
+	return;
+#endif
 }

@@ -5,34 +5,15 @@
 #endif
 
 #include <windows.h>
-#include "../KeyMagic/KeyMagic.h"
 
-//#define _DEBUG 1
+#define DEBUG 1
 
 struct KbFileHeader{
 	DWORD Magic;
-	WORD lvk;
-	WORD luc;
-	WORD nOrdData;
-	WORD nComData;
-	WORD nUnKey;
-	WORD RESERVE;
-};
-
-struct KbData{
-	wchar_t* vk;
-	wchar_t* uc;
-};
-
-struct OrdData{
-	const wchar_t Key[10];
-	const wchar_t Data[10];
-	const wchar_t Method;
-};
-
-struct CombineData{
-	const wchar_t Key;
-	const wchar_t Data[5];
+	short One_Count;
+	short Multi_Count;
+	short Customize_Count;
+	short Back_Count;
 };
 
 struct KM_ShortCut{
@@ -40,15 +21,32 @@ struct KM_ShortCut{
 	BYTE modkey;
 };
 
-struct UniqueKey{
+struct One2One{
+	const wchar_t *Input;
+	const wchar_t *Output;
+};
 
-	bool CTRL;
-	bool L_ALT;
-	bool R_ALT;
-	bool SHIFT;
+struct Internal_One2Multi{
+	const wchar_t Input_Key;
+	const bool CTRL;
+	const bool L_ALT;
+	const bool R_ALT;
+	const bool SHIFT;
 
-	char vKEY;
-	wchar_t wChars[5];
+	const wchar_t Output[1];
+};
+
+struct File_One2Multi{
+	short size;
+	Internal_One2Multi One2Multi;
+};
+
+struct File_Custom{
+	short size_MatchPattern;
+};
+
+struct File_Delete{
+	short size_MatchPattern;
 };
 
 void KEYMAGICDLL_API HookInit(HWND hWnd,HHOOK hKbHook,

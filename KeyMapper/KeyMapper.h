@@ -5,5 +5,3 @@
 #include <richedit.h>
 #include <shellapi.h>
 #include <stdio.h>
-
-#include "resource.h"

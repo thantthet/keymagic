@@ -20,8 +20,13 @@
 #include <shlobj.h>
 #include <stdio.h>
 
+#include "../KeyMagic/KeyMagic.h"
 #include "KeyMagicDll.h"
 #include "regex.h"
+
+HANDLE	hFile;
+LPVOID	FilePtr;
+HANDLE	hFileMap;
 
 #pragma data_seg(".keymagic")
 HHOOK hKeyHook = NULL;
@@ -34,47 +39,32 @@ char szDir[1000] = {0};
 //Make sure that section can READ WRITE and SHARE
 #pragma comment(linker, "/SECTION:.keymagic,RWS")
 
-HANDLE	hFile;
-LPVOID	FilePtr;
-HANDLE	hFileMap;
-
 KbFileHeader *FileHeader;
-KbData	data;
-OrdData	*OData;
-CombineData	*comdat;
-UniqueKey *UKey;
+One2One	Single_Input;
+File_One2Multi *Multi_Output;
+File_Custom *Custom_Patterns;
+File_Delete *Back_Patterns;
 KM_ShortCut *SC;
 
-wchar_t	LatestSent [5];
-wchar_t	LastInput [2];
-bool	LastIsCombine;
 bool	isActive = false;
-bool	isInterBack = false;
-UINT	CurOderIndx = 0;
-UINT	LastCombineLen;
 UINT	NumOfShortCut = 0;
 UINT	ActiveIndex = 0;
 
 bool	OpenForMapping(LPCSTR FileName);
-bool	CheckForCombinationKeys(wchar_t uVKey);
-bool	KeyProc(wchar_t wchar);
-bool	UniqueProc(char uVKey);
-void	MyBack();
-void	UpperOrLower (UINT *uVKey);
-wchar_t	SendStrokes (wchar_t* Strokes);
+bool	TranslateToAscii (UINT *uVKey);
+void	SendStrokes (wchar_t* Strokes, int len);
 LPCSTR	GetKeyBoard(UINT Index);
 int		ShortCutCheck (UINT uvKey);
 void	Logger(char* fmt, ...);
+bool	Do_Operation(const wchar_t user_input);
+wchar_t	Match_One2One(const wchar_t user_input);
+bool	Customize(const wchar_t *Input_Unicode, int length);
+wchar_t *Match_One2Multi(const wchar_t user_input, _Out_ int *length);
+void	kmBack(int count);
+bool	BackCustomize();
+int inner_back=0;
 
 //#define DEBUG 1
-
-//Will active in later version
-struct POSITION{
-	UINT LenToBack;
-	wchar_t CharToRestore;
-};
-
-POSITION Recent;
 
 int ShortCutCheck (UINT uvKey){
 	Logger("ShortCutCheck Entry");
@@ -128,7 +118,6 @@ LRESULT KEYMAGICDLL_API CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lP
 	}
 
 	else if (nCode == HC_ACTION && lParam){
-
 		if (!GetFocus())
 			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 
@@ -148,69 +137,118 @@ LRESULT KEYMAGICDLL_API CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lP
 		if (isActive == false)
 			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 
-		if (UniqueProc(wParam))
-			return 1;
-
-		Logger("Checking MenuKey and ControlKey");
-		if (GetKeyState(VK_MENU) & 0x8000 || GetKeyState(VK_CONTROL) & 0x8000)
-			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
+		wchar_t Input = wParam;
 
 		if (wParam == VK_BACK){
-			
-			if (LastIsCombine){
-				MyBack();
-				return 1;
+			if (inner_back < 1){
+				if (BackCustomize())
+					return 1;
+				else {
+					return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
+				}
 			}
-			LastInput[0] = NULL;
-			if (!isInterBack)
-				LatestSent[0] = NULL;
+
+			else if (inner_back)
+				inner_back--;
 		}
 
-		if (wParam == VK_RIGHT || wParam == VK_LEFT){
-			LastIsCombine = FALSE;
-		}
-
-		UINT uVKey;
-		Logger("Mapping Virtual Key : uVKey = %X",wParam);
-		uVKey = MapVirtualKey(wParam, MAPVK_VK_TO_CHAR);
-
-		if (!uVKey)
+		if (!TranslateToAscii((UINT*)&Input))
 			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 
-		UpperOrLower(&uVKey);
-
-		Logger("Processing wcsstr uVKey = %X",uVKey);
-		wchar_t* pdest = wcsstr(data.vk, (wchar_t*)&uVKey);
-		Logger("wcsstr done");
-
-		Logger("pdest = %X", pdest);
-		if (pdest){
-			int result = (int)(pdest - data.vk);
-			if (!GetFocus())
-				return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
-
-			if (KeyProc(data.uc[result]))
-				return 1;
-		}
-		
-		else if(CheckForCombinationKeys(uVKey))
-		{
-			LastIsCombine = TRUE;
-			return 1;
-		}
+		if (Do_Operation(Input))
+			return true;
 	}
 
 	return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 
 }
 
-wchar_t SendStrokes (wchar_t* Strokes)//Send Keys Strokes
-{
-	Logger("SendStrokes : FirstStroke %X",Strokes[1]);
-	HWND hwnd = GetFocus();
+bool Do_Operation(const wchar_t user_input){
+	wchar_t OneOutput;
+	wchar_t *MultiOutput;
 
+	OneOutput = Match_One2One(user_input);
+	int multi_len;
+	MultiOutput = Match_One2Multi(user_input, &multi_len);
+
+	if (OneOutput)
+		if (!Customize(&OneOutput, 1)){
+			Logger("OneOutput len = %d", 1);
+			SendStrokes(&OneOutput,1);
+			return true;
+		}
+		else {return true;}
+
+	else if (MultiOutput)
+		if (!Customize(MultiOutput, multi_len)){
+			Logger("MultiOutput len = %d", multi_len);
+			SendStrokes(MultiOutput, multi_len);
+			return true;
+		}
+		else {return true;}
+
+	return false;
+}
+
+void kmBack(int count){
+
+	if (!GetFocus())
+		return ;
+
+	inner_back = --count;
+	
+	for(int i=0; i < count; i++){
+		Logger("kmBack");
+		keybd_event(VK_BACK, 255, 0, 0);
+		keybd_event(VK_BACK, 2, KEYEVENTF_KEYUP, 0);
+	}
+
+}
+
+bool BackCustomize(){
+
+	HWND hEdit = GetFocus();
+	int kmLength = GetWindowTextLengthW(hEdit);
+	wchar_t *kmInputs = new wchar_t[kmLength * sizeof(wchar_t)];
+	int start;
+	SendMessage(hEdit, EM_GETSEL, (WPARAM) &start, NULL);
+	GetWindowTextW(hEdit, kmInputs, kmLength * sizeof(wchar_t));
+
+	if (kmLength < 1)
+		return false;
+
+	for (int i=0, length=0; i < FileHeader->Back_Count; i++){
+		short MP_length = (short)*((LPBYTE)&Back_Patterns->size_MatchPattern + length);
+		wchar_t *MP = (wchar_t*)((LPBYTE)&Back_Patterns->size_MatchPattern + sizeof(short) + length);
+		short OP_length = (short)*( (LPBYTE) (MP + MP_length));
+		wchar_t *OP = (wchar_t*) ((LPBYTE) ( MP + MP_length )+ sizeof(short)); 
+
+		wchar_t *temp_MP = new wchar_t[MP_length+1];
+
+		temp_MP[MP_length] = NULL;
+		wcsncpy(temp_MP, MP, MP_length);
+
+		Logger("BackCustomize");
+
+		wchar_t* found = wcsstr(&kmInputs[kmLength - MP_length], temp_MP);
+
+		if (found)
+		{
+			kmBack(MP_length);
+			SendStrokes(OP, OP_length);
+			return true;
+		}
+
+		length += (MP_length + OP_length + sizeof(short) ) *2 ;
+	}
+
+	return false;
+}
+
+void SendStrokes (wchar_t* Strokes, int len)//Send Keys Strokes
+{
+	HWND hwnd = GetFocus();
 	int i;
-	int len = wcslen(Strokes);
 
 	INPUT ip;
 	ip.type = INPUT_KEYBOARD;
@@ -219,88 +257,119 @@ wchar_t SendStrokes (wchar_t* Strokes)//Send Keys Strokes
 	ip.ki.wVk = 0;
 	ip.ki.time = 0;
 
-	for(i=0; i < len; i++){
-		//PostMessageW(hwnd, KM_CHAR, (WPARAM)Strokes[i], 0x210001);
-		ip.ki.wScan = Strokes[i];
+	Logger("SendStrokes len = %d", len);
 
+	for(i=0; i < len; i++){
+		if (!Strokes[i])
+			break;
+		ip.ki.wScan = Strokes[i];
 		SendInput(1, &ip, sizeof(INPUT));
 	}
-	LatestSent[0] = Strokes[i-1];
 
-	//i--;
-	//if (i > 0){
-	//	keystroke[0] = Strokes[i-1];
-	//	keystroke[1] = Strokes[i];
-	//}
-
-	//else{
-	//	keystroke[0] = Strokes[i];
-	//	keystroke[1] = 0;
-	//}
-
-	LastIsCombine = FALSE;
-	//PostedKey = 0;
-
-	Logger("SendStrokes : Return %X",Strokes[i]);
-	return Strokes[i];
 }
 
-bool CheckForCombinationKeys(wchar_t uVKey)//Check for combination (eg. HA HTOE YA PIN [VK = Q] in MM)
-{
-	Logger("CheckForCombinationKeys : uVKey %X",uVKey);
-	if (!FileHeader->nComData){
+bool Customize(const wchar_t *Input_Unicode, int input_length){
+
+	HWND hEdit = GetFocus();
+	int kmLength = GetWindowTextLengthW(hEdit);
+	wchar_t *kmInputs = new wchar_t[kmLength * sizeof(wchar_t)];
+
+	int start;
+	SendMessage(hEdit, EM_GETSEL, (WPARAM) &start, NULL);
+	GetWindowTextW(hEdit, kmInputs, kmLength * sizeof(wchar_t));
+
+	if (kmLength < 1)
 		return false;
-	}
-	
-	for (int i=0;FileHeader->nComData > i; i++){
-		if (comdat[i].Key == uVKey)
+
+	UINT length = 0;
+
+	wcsncpy(&kmInputs[kmLength], Input_Unicode, input_length);
+	kmInputs[kmLength+input_length] = NULL;
+
+	for (int i=0; i < FileHeader->Customize_Count; i++){
+		Logger("length %x", length);
+		short MP_length = (short)*((LPBYTE)&Custom_Patterns->size_MatchPattern + length);
+		Logger("MP_length %x", MP_length);
+		wchar_t *MP = (wchar_t*)((LPBYTE)&Custom_Patterns->size_MatchPattern + sizeof(short) + length);
+		Logger("MP %x", MP );
+		short OP_length = (short)*( (LPBYTE) (MP + MP_length));
+		Logger("OP_length %x", OP_length );
+		wchar_t *OP = (wchar_t*) ((LPBYTE) ( MP + MP_length )+ sizeof(short)); 
+		Logger("OP %x", OP );
+
+		wchar_t *temp_MP = new wchar_t[MP_length+1];
+		
+		temp_MP[MP_length] = NULL;
+		wcsncpy(temp_MP, MP, MP_length);
+
+		wchar_t* found = wcsstr(&kmInputs[input_length + kmLength - MP_length], temp_MP);
+
+		if (found)
 		{
-			HWND handle = GetFocus();
-			if (!handle){
-				Logger("CheckForCombinationKeys : Return false");
-				return false;
-			}
-			int j = 0;
-			do {
-				
-				INPUT ip;
-
-				ip.type = INPUT_KEYBOARD;
-				ip.ki.dwExtraInfo = 0;
-				ip.ki.dwFlags = KEYEVENTF_UNICODE;
-				ip.ki.wScan = comdat[i].Data[j];
-				ip.ki.wVk = 0;
-				ip.ki.time = 0;
-
-				SendInput(1, &ip, sizeof(INPUT));
-
-				j++;
-			}while (comdat[i].Data[j]);
-			LastCombineLen = j;
-			LatestSent[0] = LastInput[0] = comdat[i].Data[LastCombineLen-1];
-			Logger("CheckForCombinationKeys : Return true");
+			Logger("Customize : FOUND");
+			kmBack(MP_length);
+			SendStrokes(OP, OP_length);
 			return true;
 		}
+
+		length += ( MP_length + OP_length + sizeof(short) ) * 2;
+		delete temp_MP;
 	}
-	Logger("CheckForCombinationKeys : Return false");
+	
 	return false;
-}
+};
 
-void MyBack(){//Just deleteing series of chars(Combination Chars)
-	HWND handle = GetFocus();
-	if (!handle)
-		return;
+wchar_t *Match_One2Multi(const wchar_t user_input,_Out_ int *length){
+	bool isCTRL, isLALT, isRALT, isSHIFT;
+	BYTE KeyState[256];
+	Logger("Processing GetKeyboardState");
+	GetKeyboardState(KeyState);
 
-	for (LastCombineLen; LastCombineLen > 0; LastCombineLen--)
+	isCTRL = KeyState[VK_CONTROL] & 0x80;
+	isLALT = KeyState[VK_LMENU] & 0x80;
+	isRALT = KeyState[VK_RMENU] & 0x80;
+	isSHIFT = KeyState[VK_SHIFT] & 0x80;
+
+	File_One2Multi *O2M;
+	O2M = Multi_Output;
+
+	for (int i=0,next_loc=0; i < FileHeader->Multi_Count; i++)
 	{
-		//PostMessage(handle, KM_KEYEVENT, VK_BACK, NULL);
-		keybd_event(VK_BACK, 255, NULL, NULL);
-		keybd_event(VK_BACK, 2, KEYEVENTF_KEYUP, NULL);
-	}
-	LastCombineLen = 0;
-	isInterBack = true;
+		Internal_One2Multi *multi;
+		next_loc = O2M->size;
+		multi = &O2M->One2Multi;
 
-	LastIsCombine = FALSE;
+		if (multi->Input_Key != user_input){
+			goto Next;
+		}
+
+		if (wcsstr((const wchar_t*)L"~!@#$%^&*()_+|}{\":?><QWERTYUIOPASDFGHJKLZXCVBNM", &user_input))
+			isSHIFT = false;
+
+		if (multi->CTRL == isCTRL && multi->R_ALT == isRALT && multi->L_ALT == isLALT && multi->SHIFT == isSHIFT)
+		{
+			*length = O2M->size - ( sizeof(short) + sizeof(DWORD) + sizeof(wchar_t));
+			*length /= 2;
+			return (wchar_t*)multi->Output;
+		}
+Next:
+		O2M = (File_One2Multi*)(next_loc + (LPBYTE)O2M);
+	}
+
+	*length = 0;
+	return NULL;
+};
+
+wchar_t Match_One2One(const wchar_t user_input){
+	const wchar_t *found_location = wcsstr(Single_Input.Input, &user_input);
+	if (!found_location)
+		return NULL;
+	int found_index = found_location - Single_Input.Input;
+
+	if (found_index > FileHeader->One_Count)
+		return NULL;
+
+	return Single_Input.Output[found_index];
 }
 
 LRESULT KEYMAGICDLL_API CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lParam)
@@ -318,6 +387,8 @@ LRESULT KEYMAGICDLL_API CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lP
 	case WM_ACTIVATE:
 		if (LOWORD(cwp->wParam) == WA_INACTIVE){
 
+			//kmCursorPos = 0;
+
 			if (cwp->hwnd == Commander_hWnd)
 				break;
 
@@ -331,6 +402,8 @@ LRESULT KEYMAGICDLL_API CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lP
 			PostMessage(Commander_hWnd, KM_KILLFOCUS, 0,(LPARAM) cwp->hwnd);
 		}
 		if (LOWORD(cwp->wParam) == WA_ACTIVE){
+
+			//kmCursorPos = 0;
 
 			if (cwp->hwnd == Commander_hWnd)
 				break;
@@ -375,126 +448,14 @@ LRESULT KEYMAGICDLL_API CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lP
 
 LRESULT KEYMAGICDLL_API CALLBACK HookGetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
-
 	if (nCode < 0)
 		return CallNextHookEx(hGetMsgHook, nCode, wParam, lParam);
 
 	MSG* msg = (MSG*)lParam;
 	switch (msg->message){
-		case WM_KEYDOWN:
-		case WM_KEYUP:
-			if (msg->wParam == VK_LEFT || msg->wParam == VK_RIGHT){
-				LastIsCombine = FALSE;
-				LastInput[0] = NULL;
-				LatestSent[0] = NULL;
-			}
-			break;
 	}
 
 	return CallNextHookEx(hGetMsgHook, nCode, wParam, lParam);
-}
-bool UniqueProc(char uVKey){
-	Logger("UniqueProc : uVKey %X",uVKey);
-	bool isCTRL, isLALT, isRALT, isSHIFT;
-
-	//isCTRL = GetKeyState(VK_CONTROL) & 0x8000;
-	//isLALT = GetKeyState(VK_LMENU) & 0x8000;
-	//isRALT = GetKeyState(VK_RMENU) & 0x8000;
-	//isSHIFT = GetKeyState(VK_SHIFT) & 0x8000;
-
-	BYTE KeyState[256];
-	Logger("Processing GetKeyboardState");
-	GetKeyboardState(KeyState);
-
-	isCTRL = KeyState[VK_CONTROL] & 0x80;
-	isLALT = KeyState[VK_LMENU] & 0x80;
-	isRALT = KeyState[VK_RMENU] & 0x80;
-	isSHIFT = KeyState[VK_SHIFT] & 0x80;
-
-	Logger("UniqueProc : Loop Starting -> uVKey = %X, CTRL = %X, LALT = %X, RALT = %X, SHIFT = %X,", uVKey, KeyState[VK_CONTROL], KeyState[VK_LMENU], KeyState[VK_RMENU], KeyState[VK_SHIFT]);
-	for (int i=0; FileHeader->nUnKey > i; i++){
-		Logger("UniqueProc : Not found Yet i=%X",i);
-		if (UKey[i].vKEY != uVKey){
-			continue;
-		}
-
-		if (UKey[i].CTRL == isCTRL && UKey[i].R_ALT == isRALT && UKey[i].L_ALT == isLALT && UKey[i].SHIFT == isSHIFT)
-		{
-			Logger("UniqueProc : found uVKey = %X",UKey[i].wChars);
-			SendStrokes(UKey[i].wChars);
-			LastIsCombine = TRUE;
-			LastCombineLen = wcslen(UKey[i].wChars);
-			return true;
-		}
-
-	}
-
-	Logger("UniqueProc : return false");
-	return false;
-}
-
-bool KeyProc(wchar_t wchar){
-	Logger("KeyProc Entry");
-	for (int i=0;FileHeader->nOrdData > i; i++){
-		LastInput[1] = 0;
-		wchar_t Dest[5]={0};
-		Regex CheckKey((wchar_t*)OData[i].Key);
-		if (OData[i].Method == 'k'){
-			Dest[0] = LastInput[0];
-			if (!CheckKey.test(&LastInput[0]))
-			{
-				continue;
-			}
-		}
-		else if (OData[i].Method == 'e'){
-			Dest[0] = LatestSent[0];
-			if (!CheckKey.test(&LatestSent[0]))
-			{
-				continue;
-			}
-		}
-
-		Regex or((wchar_t*)OData[i].Data);
-
-		Dest[1] = wchar;
-		Logger("KeyProc : Matching Regex");
-		bool isMatch = or.test((wchar_t*)Dest);
-
-		if (isMatch){
-			Logger("KeyProc : isMatch true");
-			wchar_t Temp;
-
-			Temp = *(Dest+1);
-			*(Dest+1) = *Dest;
-			*Dest = Temp;
-			if (!LastIsCombine)
-				LastCombineLen = 1;
-			MyBack();
-			SendStrokes((wchar_t*)Dest);
-			return true;
-		}
-	}
-	
-	isInterBack = LastIsCombine = FALSE;
-	Logger("KeyProc : Posting KM_CHAR wchar = %X",wchar);
-	//PostMessageW(GetFocus(), KM_CHAR, wchar, 0x210001 );
-	
-	INPUT ip;
-
-	ip.type = INPUT_KEYBOARD;
-	ip.ki.dwExtraInfo = 0;
-	ip.ki.dwFlags = KEYEVENTF_UNICODE;
-	ip.ki.wScan = wchar;
-	ip.ki.wVk = 0;
-	ip.ki.time = 0;
-
-	SendInput(1, &ip, sizeof(INPUT));
-
-
-	LatestSent[0] = LastInput[0] = wchar;
-	//keystroke[0] = LastInput[0] = wchar;
-	//PostedKey = 0;
-	return true;
 }
 
 void KEYMAGICDLL_API HookInit(HWND hWnd,HHOOK hKbHook,HHOOK hWPHook, HHOOK hGMHook,LPCSTR ParentPath)
@@ -505,7 +466,6 @@ void KEYMAGICDLL_API HookInit(HWND hWnd,HHOOK hKbHook,HHOOK hWPHook, HHOOK hGMHo
 	hWndProcHook = hWPHook;
 	hGetMsgHook = hGMHook;
 	lstrcpy(szDir, ParentPath);
-
 }
 
 bool OpenKbFile(int Index)
@@ -531,11 +491,35 @@ bool OpenKbFile(int Index)
 		return false;
 	}
 
-	data.vk = (wchar_t*)((PBYTE)FilePtr+sizeof(KbFileHeader));
-	data.uc = (wchar_t*)((PBYTE)FilePtr+sizeof(KbFileHeader))+(WORD)FileHeader->lvk;
-	OData = (OrdData*)(FileHeader->luc+ data.uc);
-	comdat = (CombineData*)((PBYTE)OData+sizeof(OrdData)*FileHeader->nOrdData);
-	UKey = (UniqueKey*)((PBYTE)comdat+sizeof(CombineData)*FileHeader->nComData);
+	Single_Input.Input = (wchar_t*)((PBYTE)FilePtr+sizeof(KbFileHeader));
+	Single_Input.Output = (wchar_t*)((PBYTE)FilePtr+sizeof(KbFileHeader))+FileHeader->One_Count;
+	Multi_Output = (File_One2Multi*)(Single_Input.Output + FileHeader->One_Count);
+
+
+	int total_O2M_size = 0;
+	File_One2Multi *O2M;
+	O2M = Multi_Output;
+
+	for (int i=0; i < FileHeader->Multi_Count; i++)
+	{
+		total_O2M_size += O2M->size;
+		O2M = (File_One2Multi*)((LPBYTE)O2M + O2M->size);
+	}
+
+	Custom_Patterns = (File_Custom*)((LPBYTE)Multi_Output + total_O2M_size);
+
+	int total_CUS_size = 0;
+
+	for (int i=0; i < FileHeader->Customize_Count; i++)
+	{
+		short MP_length = (short)*((LPBYTE)&Custom_Patterns->size_MatchPattern + total_CUS_size);
+		wchar_t *MP = (wchar_t*)((LPBYTE)&Custom_Patterns->size_MatchPattern + sizeof(short) + total_CUS_size);
+		short OP_length = (short)*( (LPBYTE) (MP + MP_length));
+
+		total_CUS_size += (MP_length + OP_length + sizeof(short) ) * 2;
+	}
+
+	Back_Patterns = (File_Delete*)((PBYTE)Custom_Patterns + total_CUS_size);
 
 	ActiveIndex = Index;
 	isActive = true;
@@ -544,6 +528,7 @@ bool OpenKbFile(int Index)
 
 bool OpenForMapping(LPCSTR FileName)
 {
+
 	CloseMapping();
 
 	hFile = hFileMap = FilePtr = NULL;
@@ -620,18 +605,22 @@ LPCSTR GetKeyBoard(UINT Index){
 	if (szKBFile[1] == ':')
 		return szKBFile;
 	
-	if (SUCCEEDED(SHGetFolderPath(NULL,
-		CSIDL_COMMON_APPDATA,
-		NULL,
-		SHGFP_TYPE_CURRENT,
-		szAllUser))){
-		lstrcpy(szKBPath, szAllUser);
-			PathAppend(szKBPath, "KeyMagic");
-			PathAppend(szKBPath, szKBFile);
-			return szKBPath;
-	}
-	return NULL;
-};
+	//if (SUCCEEDED(SHGetFolderPath(NULL,
+	//	CSIDL_COMMON_APPDATA,
+	//	NULL,
+	//	SHGFP_TYPE_CURRENT,
+	//	szAllUser))){
+	//	lstrcpy(szKBPath, szAllUser);
+	//		PathAppend(szKBPath, "KeyMagic");
+	//		PathAppend(szKBPath, szKBFile);
+	//		return szKBPath;
+	//}
+
+	lstrcpy(szKBPath, szDir);
+	PathAppend(szKBPath, szKBFile);
+
+	return szKBPath;
+}
 
 void GetShortCuts(){
 	Logger("GetShortCuts Entry");
@@ -664,99 +653,112 @@ void GetShortCuts(){
 	Logger("GetShortCuts Return : NumOfShortCut = %X ", NumOfShortCut);
 }
 
-void UpperOrLower (UINT *uVKey){
-	Logger("UpperAndLower Entry");
+bool TranslateToAscii (UINT *uVKey){
+	Logger("TranslateToAscii Entry");
 
 	bool shiftDown;// = GetKeyState(VK_SHIFT) & 0x8000;
 	bool capsToggled;// = GetKeyState(VK_CAPITAL) & 0x1;
 	bool isUp = false;
 
-	BYTE KeyStatus[256];
-	GetKeyboardState(KeyStatus);
+	BYTE KeyStates[256];
+	GetKeyboardState(KeyStates);
 
-	shiftDown = KeyStatus[VK_SHIFT] & 0x80;
-	capsToggled = KeyStatus[VK_CAPITAL] & 0x1;
+	shiftDown = KeyStates[VK_SHIFT] & 0x80;
+	capsToggled = KeyStates[VK_CAPITAL] & 0x1;
 
 	Logger("UpperAndLower : isUp = %X", isUp);
 
-	if ( (!shiftDown && capsToggled) || (shiftDown && !capsToggled) )
-	{
-		isUp = true;
-	}
+ 	WORD TransedChar = NULL;
+	UINT ScanCode = MapVirtualKey(*uVKey, MAPVK_VK_TO_VSC);
+	if (!ScanCode)
+		return false;
 
-	if ( isUp ){
-		switch (*uVKey)
-		{
-		case '0':
-			*uVKey = ')';
-			break;
-		case '1':
-			*uVKey = '!';
-			break;
-		case '2':
-			*uVKey = '@';
-			break;
-		case '3':
-			*uVKey = '#';
-			break;
-		case '4':
-			*uVKey = '$';
-			break;
-		case '5':
-			*uVKey = '%';
-			break;
-		case '6':
-			*uVKey = '^';
-			break;
-		case '7':
-			*uVKey = '&';
-			break;
-		case '8':
-			*uVKey = '*';
-			break;
-		case '9':
-			*uVKey = '(';
-			break;
-		case '-':
-			*uVKey = '_';
-			break;
-		case '=':
-			*uVKey = '+';
-			break;
-		case '`':
-			*uVKey = '~';
-			break;
-		case '[':
-			*uVKey = '{';
-			break;
-		case ']':
-			*uVKey = '}';
-			break;
-		case '\\':
-			*uVKey = '|';
-			break;
-		case ';':
-			*uVKey = ':';
-			break;
-		case '\'':
-			*uVKey = '"';
-			break;
-		case ',':
-			*uVKey = '<';
-			break;
-		case '.':
-			*uVKey = '>';
-			break;
-		case '/':
-			*uVKey = '?';
-			break;
-		}
-	}
+	int Return = ToAscii(*uVKey, ScanCode, KeyStates, &TransedChar, 0);
 
-	else if ( (*uVKey >= 'A') && (*uVKey <= 'Z') &&!isUp)
-		*uVKey += 32;
+	if (!Return)
+		return false;
 
-	Logger("UpperAndLower Return");
+	*uVKey = TransedChar;
+
+	//if ( (!shiftDown && capsToggled) || (shiftDown && !capsToggled) )
+	//{
+	//	isUp = true;
+	//}
+	//
+	//if ( isUp ){
+	//	switch (*uVKey)
+	//	{
+	//	case '0':
+	//		*uVKey = ')';
+	//		break;
+	//	case '1':
+	//		*uVKey = '!';
+	//		break;
+	//	case '2':
+	//		*uVKey = '@';
+	//		break;
+	//	case '3':
+	//		*uVKey = '#';
+	//		break;
+	//	case '4':
+	//		*uVKey = '$';
+	//		break;
+	//	case '5':
+	//		*uVKey = '%';
+	//		break;
+	//	case '6':
+	//		*uVKey = '^';
+	//		break;
+	//	case '7':
+	//		*uVKey = '&';
+	//		break;
+	//	case '8':
+	//		*uVKey = '*';
+	//		break;
+	//	case '9':
+	//		*uVKey = '(';
+	//		break;
+	//	case '-':
+	//		*uVKey = '_';
+	//		break;
+	//	case '=':
+	//		*uVKey = '+';
+	//		break;
+	//	case '`':
+	//		*uVKey = '~';
+	//		break;
+	//	case '[':
+	//		*uVKey = '{';
+	//		break;
+	//	case ']':
+	//		*uVKey = '}';
+	//		break;
+	//	case '\\':
+	//		*uVKey = '|';
+	//		break;
+	//	case ';':
+	//		*uVKey = ':';
+	//		break;
+	//	case '\'':
+	//		*uVKey = '"';
+	//		break;
+	//	case ',':
+	//		*uVKey = '<';
+	//		break;
+	//	case '.':
+	//		*uVKey = '>';
+	//		break;
+	//	case '/':
+	//		*uVKey = '?';
+	//		break;
+	//	}
+	//}
+
+	//else if ( (*uVKey >= 'A') && (*uVKey <= 'Z') &&!isUp)
+	//	*uVKey += 32;
+
+	Logger("TranslateToAscii Return");
+	return true;
 }
 
 void Logger(char* fmt, ...)
