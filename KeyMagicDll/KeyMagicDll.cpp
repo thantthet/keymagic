@@ -62,12 +62,13 @@ bool	Customize(const wchar_t *Input_Unicode, int length);
 wchar_t *Match_One2Multi(const wchar_t user_input, _Out_ int *length);
 void	kmBack(int count);
 bool	BackCustomize();
-int inner_back=0;
+int		inner_back=0;
 
-//#define DEBUG 1
+char Debug[1000];
+int DebugLoc=0;
 
 int ShortCutCheck (UINT uvKey){
-	Logger("ShortCutCheck Entry");
+//	Logger("ShortCutCheck Entry");
 	bool isCTRL, isALT, isSHIFT;
 
 	BYTE KeyStatus[256];
@@ -77,9 +78,9 @@ int ShortCutCheck (UINT uvKey){
 	isALT = KeyStatus[VK_MENU] & 0x80;
 	isSHIFT = KeyStatus[VK_SHIFT] & 0x80;
 
-	Logger("ShortCutCheck StartChecking");
+//	Logger("ShortCutCheck StartChecking");
 	for (int i=0; i < NumOfShortCut; i++){
-		Logger("ShortCutCheck : Not Found Yet i = %X",i);
+//		Logger("ShortCutCheck : Not Found Yet i = %X",i);
 		if (uvKey != SC[i].ukey){
 			continue;
 		}
@@ -101,7 +102,7 @@ int ShortCutCheck (UINT uvKey){
 
 		return i;
 	}
-	Logger("ShortCutCheck : return -1");
+//	Logger("ShortCutCheck : return -1");
 
 	return -1;
 }
@@ -141,6 +142,7 @@ LRESULT KEYMAGICDLL_API CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lP
 
 		if (wParam == VK_BACK){
 			if (inner_back < 1){
+				Logger("UnInnerBack wParam = %X lParam %X", wParam, lParam);
 				if (BackCustomize())
 					return 1;
 				else {
@@ -148,8 +150,10 @@ LRESULT KEYMAGICDLL_API CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lP
 				}
 			}
 
-			else if (inner_back)
+			else if (inner_back){
+				Logger("InnerBack wParam = %X lParam %X", wParam, lParam);
 				inner_back--;
+			}
 		}
 
 		if (!TranslateToAscii((UINT*)&Input))
@@ -173,7 +177,7 @@ bool Do_Operation(const wchar_t user_input){
 
 	if (OneOutput)
 		if (!Customize(&OneOutput, 1)){
-			Logger("OneOutput len = %d", 1);
+//			Logger("OneOutput len = %d", 1);
 			SendStrokes(&OneOutput,1);
 			return true;
 		}
@@ -181,7 +185,7 @@ bool Do_Operation(const wchar_t user_input){
 
 	else if (MultiOutput)
 		if (!Customize(MultiOutput, multi_len)){
-			Logger("MultiOutput len = %d", multi_len);
+//			Logger("MultiOutput len = %d", multi_len);
 			SendStrokes(MultiOutput, multi_len);
 			return true;
 		}
@@ -198,7 +202,7 @@ void kmBack(int count){
 	inner_back = --count;
 	
 	for(int i=0; i < count; i++){
-		Logger("kmBack");
+//		Logger("kmBack");
 		keybd_event(VK_BACK, 255, 0, 0);
 		keybd_event(VK_BACK, 2, KEYEVENTF_KEYUP, 0);
 	}
@@ -228,13 +232,13 @@ bool BackCustomize(){
 		temp_MP[MP_length] = NULL;
 		wcsncpy(temp_MP, MP, MP_length);
 
-		Logger("BackCustomize");
+//		Logger("BackCustomize");
 
 		wchar_t* found = wcsstr(&kmInputs[kmLength - MP_length], temp_MP);
 
 		if (found)
 		{
-			kmBack(MP_length);
+			kmBack(++MP_length);
 			SendStrokes(OP, OP_length);
 			return true;
 		}
@@ -257,7 +261,7 @@ void SendStrokes (wchar_t* Strokes, int len)//Send Keys Strokes
 	ip.ki.wVk = 0;
 	ip.ki.time = 0;
 
-	Logger("SendStrokes len = %d", len);
+//	Logger("SendStrokes len = %d", len);
 
 	for(i=0; i < len; i++){
 		if (!Strokes[i])
@@ -287,15 +291,15 @@ bool Customize(const wchar_t *Input_Unicode, int input_length){
 	kmInputs[kmLength+input_length] = NULL;
 
 	for (int i=0; i < FileHeader->Customize_Count; i++){
-		Logger("length %x", length);
+//		Logger("length %x", length);
 		short MP_length = (short)*((LPBYTE)&Custom_Patterns->size_MatchPattern + length);
-		Logger("MP_length %x", MP_length);
+//		Logger("MP_length %x", MP_length);
 		wchar_t *MP = (wchar_t*)((LPBYTE)&Custom_Patterns->size_MatchPattern + sizeof(short) + length);
-		Logger("MP %x", MP );
+//		Logger("MP %x", MP );
 		short OP_length = (short)*( (LPBYTE) (MP + MP_length));
-		Logger("OP_length %x", OP_length );
+//		Logger("OP_length %x", OP_length );
 		wchar_t *OP = (wchar_t*) ((LPBYTE) ( MP + MP_length )+ sizeof(short)); 
-		Logger("OP %x", OP );
+//		Logger("OP %x", OP );
 
 		wchar_t *temp_MP = new wchar_t[MP_length+1];
 		
@@ -306,7 +310,7 @@ bool Customize(const wchar_t *Input_Unicode, int input_length){
 
 		if (found)
 		{
-			Logger("Customize : FOUND");
+//			Logger("Customize : FOUND");
 			kmBack(MP_length);
 			SendStrokes(OP, OP_length);
 			return true;
@@ -322,7 +326,7 @@ bool Customize(const wchar_t *Input_Unicode, int input_length){
 wchar_t *Match_One2Multi(const wchar_t user_input,_Out_ int *length){
 	bool isCTRL, isLALT, isRALT, isSHIFT;
 	BYTE KeyState[256];
-	Logger("Processing GetKeyboardState");
+//	Logger("Processing GetKeyboardState");
 	GetKeyboardState(KeyState);
 
 	isCTRL = KeyState[VK_CONTROL] & 0x80;
@@ -623,7 +627,7 @@ LPCSTR GetKeyBoard(UINT Index){
 }
 
 void GetShortCuts(){
-	Logger("GetShortCuts Entry");
+//	Logger("GetShortCuts Entry");
 	char szINI[MAX_PATH]={0};
 	char szKBNames[MAX_PATH]={0};
 	char szKBP[] ="KeyBoardPaths";
@@ -650,11 +654,11 @@ void GetShortCuts(){
 
 	LocalReAlloc(SC, sizeof(KM_ShortCut)*NumOfShortCut, LPTR);
 
-	Logger("GetShortCuts Return : NumOfShortCut = %X ", NumOfShortCut);
+//	Logger("GetShortCuts Return : NumOfShortCut = %X ", NumOfShortCut);
 }
 
 bool TranslateToAscii (UINT *uVKey){
-	Logger("TranslateToAscii Entry");
+//	Logger("TranslateToAscii Entry");
 
 	bool shiftDown;// = GetKeyState(VK_SHIFT) & 0x8000;
 	bool capsToggled;// = GetKeyState(VK_CAPITAL) & 0x1;
@@ -666,10 +670,13 @@ bool TranslateToAscii (UINT *uVKey){
 	shiftDown = KeyStates[VK_SHIFT] & 0x80;
 	capsToggled = KeyStates[VK_CAPITAL] & 0x1;
 
-	Logger("UpperAndLower : isUp = %X", isUp);
+//	Logger("UpperAndLower : isUp = %X", isUp);
 
  	WORD TransedChar = NULL;
 	UINT ScanCode = MapVirtualKey(*uVKey, MAPVK_VK_TO_VSC);
+
+//	Logger("uVKey = %X", *uVKey);
+
 	if (!ScanCode)
 		return false;
 
@@ -678,6 +685,7 @@ bool TranslateToAscii (UINT *uVKey){
 	if (!Return)
 		return false;
 
+//	Logger("uVKey = %X TransedChar = %X Return = %X ScanCode = %X", *uVKey, TransedChar, Return, ScanCode);
 	*uVKey = TransedChar;
 
 	//if ( (!shiftDown && capsToggled) || (shiftDown && !capsToggled) )
@@ -757,7 +765,7 @@ bool TranslateToAscii (UINT *uVKey){
 	//else if ( (*uVKey >= 'A') && (*uVKey <= 'Z') &&!isUp)
 	//	*uVKey += 32;
 
-	Logger("TranslateToAscii Return");
+//	Logger("TranslateToAscii Return");
 	return true;
 }
 
