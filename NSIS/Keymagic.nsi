@@ -1,5 +1,5 @@
 ;Define application version
-!define VERSION "1.1 Build 3"
+!define VERSION "1.2 Beta"
 
 ; Define the application name
 !define APPNAME "Keymagic"
@@ -97,7 +97,7 @@ SubSection "Keymagic" PackageKeymagic
 	CreateShortCut "$DESKTOP\Keymagic.lnk" "$INSTDIR\Keymagic.exe" "-s"
 	
 	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "Keymagic" "$INSTDIR\Keymagic.exe -s"
-	WriteRegStr HKCR ".kmk" "" "Keymagic.Keymap.File"
+	WriteRegStr HKCR ".km2" "" "Keymagic.Keymap.File"
 	WriteRegStr HKCR "Keymagic.Keymap.File" "" "Keymagic Keymap"
 	WriteRegStr HKCR "Keymagic.Keymap.File\DefaultIcon" "" "$INSTDIR\Icons\Keymap.ico"
 	WriteRegStr HKCR "Keymagic.Keymap.File\shell\Install\command" "" "$INSTDIR\KeyMagic.exe -i %1"
@@ -129,10 +129,10 @@ SubSection "Keymagic" PackageKeymagic
 	Section "Keymaps Files" Keymap
 	SetOverwrite on
 	SetOutPath "$INSTDIR\Keyboards\"
-	File ".\Keyboards\Myanmar3.kmk"
-	File ".\Keyboards\Parabaik.kmk"
-	File ".\Keyboards\Uniburma.kmk"
-	File ".\Keyboards\Zawgyi.kmk"
+	File ".\Keyboards\Myanmar3.km2"
+	File ".\Keyboards\Parabaik.km2"
+	File ".\Keyboards\Uniburma.km2"
+	File ".\Keyboards\Zawgyi.km2"
 	SectionEnd
 	
 	Section "Keyscripts Files" Keyscript
@@ -193,10 +193,10 @@ SubSection un.Keymagic
 	Delete  "$INSTDIR\Docs\License.txt"
 	Delete  "$INSTDIR\Docs\Help.chm"
 	RMDir  "$INSTDIR\Docs\"
-	Delete  "$INSTDIR\Keyboards\Myanmar3.kmk"
-	Delete  "$INSTDIR\Keyboards\Parabaik.kmk"
-	Delete  "$INSTDIR\Keyboards\Uniburma.kmk"
-	Delete  "$INSTDIR\Keyboards\Zawgyi.kmk"
+	Delete  "$INSTDIR\Keyboards\Myanmar3.km2"
+	Delete  "$INSTDIR\Keyboards\Parabaik.km2"
+	Delete  "$INSTDIR\Keyboards\Uniburma.km2"
+	Delete  "$INSTDIR\Keyboards\Zawgyi.km2"
 	RMDir  "$INSTDIR\Keyboards"
 	Delete  "$INSTDIR\Keyscripts\Myanmar3.kms"
 	Delete  "$INSTDIR\Keyscripts\Parabaik.kms"
@@ -210,7 +210,7 @@ SubSection un.Keymagic
 	Delete "$SMPROGRAMS\${APPNAME}\Keymagic.lnk"
 	Delete "$DESKTOP\Keymagic.lnk"
 	
-	DeleteRegKey HKCR ".kmk"
+	DeleteRegKey HKCR ".km2"
 	DeleteRegKey HKCR "Keymagic.Keymap.File"
 	SectionEnd
 

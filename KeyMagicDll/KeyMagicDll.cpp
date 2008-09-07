@@ -22,11 +22,13 @@
 
 #include "../KeyMagic/KeyMagic.h"
 #include "KeyMagicDll.h"
+#include "K_Internal_Editor.h"
 #include "regex.h"
 
 HANDLE	hFile;
 LPVOID	FilePtr;
 HANDLE	hFileMap;
+K_Internal_Editor Internal_Text;
 
 #pragma data_seg(".keymagic")
 HHOOK hKeyHook = NULL;
@@ -66,6 +68,12 @@ int		inner_back=0;
 
 char Debug[1000];
 int DebugLoc=0;
+
+struct Keymagic_Internal_Editor{
+	UINT CaretLocation;
+	wchar_t Texts[50];
+	UINT Text_Length;
+};
 
 int ShortCutCheck (UINT uvKey){
 //	Logger("ShortCutCheck Entry");
@@ -142,16 +150,17 @@ LRESULT KEYMAGICDLL_API CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lP
 
 		if (wParam == VK_BACK){
 			if (inner_back < 1){
-				Logger("UnInnerBack wParam = %X lParam %X", wParam, lParam);
+				//Logger("UnInnerBack wParam = %X lParam %X", wParam, lParam);
 				if (BackCustomize())
 					return 1;
 				else {
+					Internal_Text.Delete();
 					return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 				}
 			}
 
 			else if (inner_back){
-				Logger("InnerBack wParam = %X lParam %X", wParam, lParam);
+				//Logger("InnerBack wParam = %X lParam %X", wParam, lParam);
 				inner_back--;
 			}
 		}
@@ -170,7 +179,9 @@ LRESULT KEYMAGICDLL_API CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lP
 bool Do_Operation(const wchar_t user_input){
 	wchar_t OneOutput;
 	wchar_t *MultiOutput;
-
+#ifdef DEBUG
+	Internal_Text.SetHandle(Commander_hWnd);
+#endif
 	OneOutput = Match_One2One(user_input);
 	int multi_len;
 	MultiOutput = Match_One2Multi(user_input, &multi_len);
@@ -205,6 +216,7 @@ void kmBack(int count){
 //		Logger("kmBack");
 		keybd_event(VK_BACK, 255, 0, 0);
 		keybd_event(VK_BACK, 2, KEYEVENTF_KEYUP, 0);
+		Internal_Text.Delete();
 	}
 
 }
@@ -212,13 +224,15 @@ void kmBack(int count){
 bool BackCustomize(){
 
 	HWND hEdit = GetFocus();
-	int kmLength = GetWindowTextLengthW(hEdit);
-	wchar_t *kmInputs = new wchar_t[kmLength * sizeof(wchar_t)];
-	int start;
-	SendMessage(hEdit, EM_GETSEL, (WPARAM) &start, NULL);
-	GetWindowTextW(hEdit, kmInputs, kmLength * sizeof(wchar_t));
+	//int kmLength = GetWindowTextLengthW(hEdit);
+	//wchar_t *kmInputs = new wchar_t[kmLength * sizeof(wchar_t)];
+	//int start;
+	//SendMessage(hEdit, EM_GETSEL, (WPARAM) &start, NULL);
+	//GetWindowTextW(hEdit, kmInputs, kmLength * sizeof(wchar_t));
 
-	if (kmLength < 1)
+	//if (kmLength < 1)
+
+	if (Internal_Text.GetTextLength() < 1) 
 		return false;
 
 	for (int i=0, length=0; i < FileHeader->Back_Count; i++){
@@ -232,17 +246,25 @@ bool BackCustomize(){
 		temp_MP[MP_length] = NULL;
 		wcsncpy(temp_MP, MP, MP_length);
 
-//		Logger("BackCustomize");
+		//Logger("BackCustomize");
 
-		wchar_t* found = wcsstr(&kmInputs[kmLength - MP_length], temp_MP);
+		wchar_t* Str = Internal_Text.GetText(MP_length);
+
+		if (Str == NULL)
+			goto BC_Next;
+
+		wchar_t* found = wcsstr(Str, temp_MP);
 
 		if (found)
 		{
 			kmBack(++MP_length);
+			if (OP_length ==4 && !wcsnicmp(OP, L"null", 4))
+				return true;
+			
 			SendStrokes(OP, OP_length);
 			return true;
 		}
-
+BC_Next:
 		length += (MP_length + OP_length + sizeof(short) ) *2 ;
 	}
 
@@ -270,25 +292,30 @@ void SendStrokes (wchar_t* Strokes, int len)//Send Keys Strokes
 		SendInput(1, &ip, sizeof(INPUT));
 	}
 
+	Internal_Text.AppendText(Strokes, len);
+
 }
 
 bool Customize(const wchar_t *Input_Unicode, int input_length){
 
 	HWND hEdit = GetFocus();
-	int kmLength = GetWindowTextLengthW(hEdit);
-	wchar_t *kmInputs = new wchar_t[kmLength * sizeof(wchar_t)];
+	//int kmLength = GetWindowTextLengthW(hEdit);
+	//wchar_t *kmInputs = new wchar_t[kmLength * sizeof(wchar_t)];
 
-	int start;
-	SendMessage(hEdit, EM_GETSEL, (WPARAM) &start, NULL);
-	GetWindowTextW(hEdit, kmInputs, kmLength * sizeof(wchar_t));
+	//int start;
+	//SendMessage(hEdit, EM_GETSEL, (WPARAM) &start, NULL);
+	//GetWindowTextW(hEdit, kmInputs, kmLength * sizeof(wchar_t));
 
-	if (kmLength < 1)
+	//if (kmLength < 1)
+
+	if (Internal_Text.GetTextLength() < 1) 
 		return false;
 
 	UINT length = 0;
 
-	wcsncpy(&kmInputs[kmLength], Input_Unicode, input_length);
-	kmInputs[kmLength+input_length] = NULL;
+	Internal_Text.AppendText((wchar_t*)Input_Unicode, input_length);
+	//wcsncpy(&kmInputs[kmLength], Input_Unicode, input_length);
+	//kmInputs[kmLength+input_length] = NULL;
 
 	for (int i=0; i < FileHeader->Customize_Count; i++){
 //		Logger("length %x", length);
@@ -306,19 +333,28 @@ bool Customize(const wchar_t *Input_Unicode, int input_length){
 		temp_MP[MP_length] = NULL;
 		wcsncpy(temp_MP, MP, MP_length);
 
-		wchar_t* found = wcsstr(&kmInputs[input_length + kmLength - MP_length], temp_MP);
+		wchar_t* Str = Internal_Text.GetText(MP_length);
+
+		if (Str == NULL)
+			goto C_Next;
+
+		wchar_t* found = wcsstr(Str, temp_MP);
 
 		if (found)
 		{
 //			Logger("Customize : FOUND");
+			Internal_Text.Delete();
 			kmBack(MP_length);
 			SendStrokes(OP, OP_length);
 			return true;
 		}
-
+C_Next:
 		length += ( MP_length + OP_length + sizeof(short) ) * 2;
 		delete temp_MP;
 	}
+
+	for (int i=0; i < input_length; i++)
+		Internal_Text.Delete();
 	
 	return false;
 };
@@ -343,12 +379,13 @@ wchar_t *Match_One2Multi(const wchar_t user_input,_Out_ int *length){
 		next_loc = O2M->size;
 		multi = &O2M->One2Multi;
 
-		if (multi->Input_Key != user_input){
+		if (wcsstr((const wchar_t*)L"~!@#$%^&*()_+|}{\":?><QWERTYUIOPASDFGHJKLZXCVBNM", &user_input) && (multi->SHIFT == false) )
+			isSHIFT = false;
+
+		if (multi->Input_Key != user_input)
+		{
 			goto Next;
 		}
-
-		if (wcsstr((const wchar_t*)L"~!@#$%^&*()_+|}{\":?><QWERTYUIOPASDFGHJKLZXCVBNM", &user_input))
-			isSHIFT = false;
 
 		if (multi->CTRL == isCTRL && multi->R_ALT == isRALT && multi->L_ALT == isLALT && multi->SHIFT == isSHIFT)
 		{
@@ -365,6 +402,17 @@ Next:
 };
 
 wchar_t Match_One2One(const wchar_t user_input){
+	bool isCTRL, isMENU;
+	BYTE KeyState[256];
+
+	GetKeyboardState(KeyState);
+
+	isCTRL = KeyState[VK_CONTROL] & 0x80;
+	isMENU = KeyState[VK_MENU] & 0x80;
+
+	if (isCTRL || isMENU)
+		return NULL;
+
 	const wchar_t *found_location = wcsstr(Single_Input.Input, &user_input);
 	if (!found_location)
 		return NULL;
@@ -666,9 +714,11 @@ bool TranslateToAscii (UINT *uVKey){
 
 	BYTE KeyStates[256];
 	GetKeyboardState(KeyStates);
+	KeyStates[VK_CONTROL]=KeyStates[VK_MENU]=KeyStates[VK_LMENU]=KeyStates[VK_RMENU]=0;
 
 	shiftDown = KeyStates[VK_SHIFT] & 0x80;
 	capsToggled = KeyStates[VK_CAPITAL] & 0x1;
+	
 
 //	Logger("UpperAndLower : isUp = %X", isUp);
 
@@ -688,83 +738,6 @@ bool TranslateToAscii (UINT *uVKey){
 //	Logger("uVKey = %X TransedChar = %X Return = %X ScanCode = %X", *uVKey, TransedChar, Return, ScanCode);
 	*uVKey = TransedChar;
 
-	//if ( (!shiftDown && capsToggled) || (shiftDown && !capsToggled) )
-	//{
-	//	isUp = true;
-	//}
-	//
-	//if ( isUp ){
-	//	switch (*uVKey)
-	//	{
-	//	case '0':
-	//		*uVKey = ')';
-	//		break;
-	//	case '1':
-	//		*uVKey = '!';
-	//		break;
-	//	case '2':
-	//		*uVKey = '@';
-	//		break;
-	//	case '3':
-	//		*uVKey = '#';
-	//		break;
-	//	case '4':
-	//		*uVKey = '$';
-	//		break;
-	//	case '5':
-	//		*uVKey = '%';
-	//		break;
-	//	case '6':
-	//		*uVKey = '^';
-	//		break;
-	//	case '7':
-	//		*uVKey = '&';
-	//		break;
-	//	case '8':
-	//		*uVKey = '*';
-	//		break;
-	//	case '9':
-	//		*uVKey = '(';
-	//		break;
-	//	case '-':
-	//		*uVKey = '_';
-	//		break;
-	//	case '=':
-	//		*uVKey = '+';
-	//		break;
-	//	case '`':
-	//		*uVKey = '~';
-	//		break;
-	//	case '[':
-	//		*uVKey = '{';
-	//		break;
-	//	case ']':
-	//		*uVKey = '}';
-	//		break;
-	//	case '\\':
-	//		*uVKey = '|';
-	//		break;
-	//	case ';':
-	//		*uVKey = ':';
-	//		break;
-	//	case '\'':
-	//		*uVKey = '"';
-	//		break;
-	//	case ',':
-	//		*uVKey = '<';
-	//		break;
-	//	case '.':
-	//		*uVKey = '>';
-	//		break;
-	//	case '/':
-	//		*uVKey = '?';
-	//		break;
-	//	}
-	//}
-
-	//else if ( (*uVKey >= 'A') && (*uVKey <= 'Z') &&!isUp)
-	//	*uVKey += 32;
-
 //	Logger("TranslateToAscii Return");
 	return true;
 }
@@ -781,9 +754,6 @@ void Logger(char* fmt, ...)
 	//Format
 	wvsprintf(Memory, fmt,list);
 
-	GetClientRect(Commander_hWnd, &rc);
-
-	rc.top += 50;
 	SetWindowText(Commander_hWnd, Memory);
 	
 	//Cleanup

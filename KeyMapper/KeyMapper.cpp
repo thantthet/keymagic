@@ -20,9 +20,11 @@
 #include "../KeyMagicDll/KeyMagicDll.h"
 
 // Global Variables:
-HINSTANCE hInst;								// current instance
+HINSTANCE hInst; // current instance
+HWND hwndMain;
 HWND hEdit;
 LOGFONTW lf;
+char szOpenedFileName[260];
 char* lpCmd;
 // Forward declarations of functions included in this code module:
 INT_PTR CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -41,16 +43,20 @@ bool CommandLine(LPTSTR lpCmdLine);
 
 void Logger(HWND hWnd, char* fmt, ...);
 
-int APIENTRY WinMain(HINSTANCE hInstance,
+char* szMainClassName = "Keymagic_KMPER";
+
+int APIENTRY _tWinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      LPTSTR    lpCmdLine,
                      int       nCmdShow)
 {
+	MSG messages;
+    WNDCLASSEX wincl;
 
 	hInst = hInstance;
 
-	LoadLibrary("RICHED32.dll");
 	lpCmd = lpCmdLine;
+
 	DialogBox(hInst, MAKEINTRESOURCE(IDD_MAIN), NULL, WndProc);
 
 	return 0;
@@ -74,10 +80,12 @@ bool CommandLine(){
 	return false;
 }
 
+
+
 INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	int wmId, wmEvent;
-	char szFileName[256];
+	char szFileName[260];
 
 	switch (message)
 	{
@@ -88,7 +96,7 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			EndDialog(hWnd, 0);
 		}
 
-		SendMessage(hWnd, WM_SETICON, ICON_BIG, (LPARAM)LoadIcon(hInst, "IDI_KEYMAPPER"));
+		SendMessage(hWnd, WM_SETICON, ICON_BIG, (LPARAM)LoadIcon(hInst, MAKEINTRESOURCE(IDI_KEYMAPPER)));
 
 		return (INT_PTR)TRUE;
 
@@ -98,25 +106,37 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Parse the menu selections:
 		switch (wmId)
 		{
-		case IDC_OPEN:
+		case ID_FILE_OPEN:
 			
 			if (OpenDialog(hWnd, szFileName, 256) == false)
 				break;
 			OpenScriptFile(szFileName);
+			SendDlgItemMessage(hWnd, IDC_SCRIPT, EM_SETMODIFY, false, 0);
 			break;
 
-		case IDC_SAVE:
+		case ID_FILE_SAVE:
+			if (szOpenedFileName[0] == NULL){
+				if (SaveDialog(hWnd, szFileName, 256, "Keymagic Script File(*.kms)\0*.kms\0\0") == false)
+					break;
+			}
+
+			SaveScriptFile(szOpenedFileName);
+			SendDlgItemMessage(hWnd, IDC_SCRIPT, EM_SETMODIFY, false, 0);
+			break;
+
+		case ID_FILE_SAVEAS:
 
 			if (SaveDialog(hWnd, szFileName, 256, "Keymagic Script File(*.kms)\0*.kms\0\0") == false)
 				break;
 			SaveScriptFile(szFileName);
+			SendDlgItemMessage(hWnd, IDC_SCRIPT, EM_SETMODIFY, false, 0);
 			break;
 
-		case IDC_COMPLIE:
+		case ID_EDIT_MAKEKEYBOARD:
 			StartComplie();
 			break;
 
-		case IDC_FONT:
+		case ID_EDIT_FONT:
 			CHOOSEFONTW cf;
 
 			cf.lStructSize = sizeof(CHOOSEFONT);
@@ -128,10 +148,17 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				SendMessage(hEdit, WM_SETFONT, (WPARAM)CreateFontIndirectW(&lf), true);
 			break;
 
-		case IDC_EXIT:
+		case ID_FILE_EXIT:
 			EndDialog(hWnd, 0);
 			break;
+
+		case ID_HELP_ABOUT:
+			DialogBoxA(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+			break;
 		}
+		break;
+	case WM_SIZE:
+		MoveWindow(GetDlgItem(hWnd, IDC_SCRIPT), 0, 0, LOWORD(lParam), HIWORD(lParam), TRUE);
 		break;
 
 	case WM_DROPFILES:
@@ -143,6 +170,10 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_CLOSE:
+		if (SendDlgItemMessage(hWnd, IDC_SCRIPT, EM_GETMODIFY, 0, 0)){
+			if (MessageBox(hWnd, "The file is not saved. Are you sure want to exit without saving?", "Keymagic", MB_YESNO | MB_ICONEXCLAMATION) == IDNO)
+				break;
+		}
 		EndDialog(hWnd, 0);
 		break;
 	}
@@ -292,7 +323,17 @@ NoFont:
 
 	SendMessage(hEdit, EM_SETMODIFY, 0, 0);
 
+
+	lstrcpy(szOpenedFileName, szFileName);
+
 	return true;
+}
+
+bool isTRUE(wchar_t *pMem, wchar_t *Matcher)
+{
+	if (wcsstr(pMem, (const wchar_t*)Matcher))
+		return true;
+	return false;
 }
 
 void StartComplie(){
@@ -378,9 +419,21 @@ Multi:
 		token = wcstok(String, tokens);
 		if (token == NULL)
 			continue;
+
 		Multi->size = sizeof(short) + sizeof (DWORD);
-		wcscpy((wchar_t*)&Multi->One2Multi.Input_Key, token);
+
+		wchar_t *vKey = wcsrchr(token, '+');
+		if (vKey)
+			wcscpy((wchar_t*)&Multi->One2Multi.Input_Key, vKey + 1);
+		else
+			wcscpy((wchar_t*)&Multi->One2Multi.Input_Key, token);
+
 		EscapeSequence((wchar_t*)&Multi->One2Multi.Input_Key);
+
+		Multi->One2Multi.SHIFT = isTRUE(token,L"SHIFT");
+		Multi->One2Multi.CTRL = isTRUE(token,L"CTRL");
+		Multi->One2Multi.L_ALT = isTRUE(token,L"L_ALT");
+		Multi->One2Multi.R_ALT = isTRUE(token,L"R_ALT");
 
 		token = wcstok(NULL, tokens);
 		if (token == NULL)
@@ -457,7 +510,7 @@ Delete:
 
 	if (count == -1){
 		count = 0;
-		goto Delete;
+		goto WriteFile;
 	}
 
 	count++;
@@ -504,7 +557,7 @@ WriteFile:
 
 	char szFileName[256];
 
-	if (!SaveDialog(GetFocus(), szFileName, 256, "Keymagic's Key Map(*.kmk)\0*.kmk\0\0"))
+	if (!SaveDialog(GetFocus(), szFileName, 256, "Keymagic's Key Map(*.km2)\0*.km2\0\0"))
 		goto End;
 
 	HANDLE hFile = CreateFile(szFileName, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -626,15 +679,16 @@ bool SaveScriptFile(char* szFileName){
 	}
 
 	int size = GetWindowTextLengthW(hEdit);
-	size += 5;
 
 	if (size == NULL){
 		return false;
 	}
 
+	size *= 3;
+
 	LPVOID Buffer = VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE);
 
-	int readsize = GetWindowTextW(hEdit,(LPWSTR) Buffer, size);
+	int readsize = GetWindowTextW(hEdit,(LPWSTR) Buffer, size/2);
 
 	if (readsize == NULL){
 		CloseHandle(hFile);
@@ -646,14 +700,12 @@ bool SaveScriptFile(char* szFileName){
 
 	WriteFile(hFile, Buffer, readsize, &cbWritten, NULL);
 
-	if (cbWritten != readsize){
-		CloseHandle(hFile);
-		VirtualFree(Buffer, size, MEM_DECOMMIT);
-		return false;
-	}
-
 	CloseHandle(hFile);
 	VirtualFree(Buffer, size, MEM_DECOMMIT);
+
+	if (cbWritten != readsize)
+		return false;
+
 	return true;
 }
 

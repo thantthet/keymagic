@@ -6,7 +6,7 @@
 
 #include <windows.h>
 
-#define DEBUG 1
+//#define DEBUG 1
 
 struct KbFileHeader{
 	DWORD Magic;
@@ -27,11 +27,11 @@ struct One2One{
 };
 
 struct Internal_One2Multi{
-	const wchar_t Input_Key;
-	const bool CTRL;
-	const bool L_ALT;
-	const bool R_ALT;
-	const bool SHIFT;
+	wchar_t Input_Key;
+	bool CTRL;
+	bool L_ALT;
+	bool R_ALT;
+	bool SHIFT;
 
 	const wchar_t Output[1];
 };

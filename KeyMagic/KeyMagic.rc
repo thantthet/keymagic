@@ -200,7 +200,7 @@ IDB_BK                  BITMAP                  "bk.bmp"
 
 STRINGTABLE 
 BEGIN
-    IDS_EN_TITLE            "KeyMagic 1.2 Private Demo"
+    IDS_EN_TITLE            "KeyMagic 1.2 Beta"
 END
 
 #endif    // English (U.S.) resources

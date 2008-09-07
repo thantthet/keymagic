@@ -467,7 +467,7 @@ bool OpenDialog(HWND hwnd, char* szFileName,DWORD nMaxFile)
 	ofn.lStructSize = sizeof(ofn);
 	ofn.hwndOwner = hwnd;
 	ofn.hInstance = hInst;
-	ofn.lpstrFilter = "Keymap File(*.kmk)\0*.kmk\0\0";
+	ofn.lpstrFilter = "Keymap File(*.km2)\0*.km2\0\0";
 	ofn.lpstrFile = szFileName;
 	ofn.nMaxFile = nMaxFile;
 	ofn.lpstrTitle = "Open File...";
@@ -505,7 +505,7 @@ bool AddKeyBoardToList(HWND hWnd,char* lpKBPath){
 	GetFileTitle(lpKBPath, lpName, MAX_PATH);
 
 	if (lpName [lstrlen(lpName)-4] != '.')
-		lstrcat(lpName, ".kmk");
+		lstrcat(lpName, ".km2");
 
 	wsprintf(lpPath, "KeyBoards\\%s", lpName);
 
@@ -612,9 +612,11 @@ bool DeleteKeyFile(){
 
 void GetHotKey(WORD wHotkey, LPSTR ShortCutDisplay){
 
-	BYTE vkey[1],  modkey;
+	BYTE *vkey, modkey;
 
+	vkey = new BYTE[2];
 	vkey[0] = wHotkey;
+
 	modkey = wHotkey >> 8;
 	ShortCutDisplay[0] = NULL;
 

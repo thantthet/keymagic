@@ -80,6 +80,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	DialogBox(hInst, MAKEINTRESOURCE(IDD_MAINBOX), NULL, WndProc);
 
 	ReleaseMutex(MtxHANDLE);
+	ScannerAndInject();
 	return (int) 0;
 }
 
@@ -148,9 +149,8 @@ bool WorkOnCommand(LPTSTR lpCmdLine){
 			hide = true;
 			return false;
 		case 'u':
-			FreeLibrary(LoadLibrary("KeymagicDll.dll"));
 			UnHook();
-			Scanner();
+			ScannerAndInject();
 			return true;
 		}
 	}
@@ -168,7 +168,7 @@ bool AddKeyBoard(char* lpKBPath){
 	GetFileTitle(lpKBPath, lpName, MAX_PATH);
 
 	if (lpName [lstrlen(lpName)-4] != '.')
-		lstrcat(lpName, ".kmk");
+		lstrcat(lpName, ".km2");
 
 	wsprintf(lpPath, "KeyBoards\\%s", lpName);
 

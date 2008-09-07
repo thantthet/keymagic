@@ -44,8 +44,8 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				UsePrecompiledHeader="2"
+				RuntimeLibrary="0"
+				UsePrecompiledHeader="0"
 				WarningLevel="1"
 				DebugInformationFormat="4"
 			/>
@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../Release/KeyMagicDll.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib $(NOINHERIT)"
+				AdditionalDependencies="../Release/KeyMagicDll.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Advapi32.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib psapi.lib $(NOINHERIT)"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -133,7 +133,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../Release/KeyMagicDll.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Advapi32.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib $(NOINHERIT)"
+				AdditionalDependencies="../Release/KeyMagicDll.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Advapi32.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib psapi.lib $(NOINHERIT)"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -177,6 +177,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DllUnload.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\KeyMagic.cpp"
 				>
 			</File>
@@ -196,6 +200,10 @@
 			>
 			<File
 				RelativePath=".\DlgProc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DllUnload.h"
 				>
 			</File>
 			<File
