@@ -452,6 +452,8 @@ LRESULT KEYMAGICDLL_API CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lP
 				break;
 
 			PostMessage(Commander_hWnd, KM_KILLFOCUS, 0,(LPARAM) cwp->hwnd);
+
+			Internal_Text.Restart();
 		}
 		if (LOWORD(cwp->wParam) == WA_ACTIVE){
 
@@ -505,6 +507,29 @@ LRESULT KEYMAGICDLL_API CALLBACK HookGetMsgProc(int nCode, WPARAM wParam, LPARAM
 
 	MSG* msg = (MSG*)lParam;
 	switch (msg->message){
+		case WM_KEYDOWN:
+			switch (msg->wParam){
+				case VK_LEFT:
+				case VK_RIGHT:
+				case VK_DOWN:
+				case VK_UP:
+					Internal_Text.Restart();
+					break;
+				case VK_CONTROL:
+					Internal_Text.CtrlKeyDown();
+					break;
+				default:
+					Internal_Text.KeyDown();
+					break;
+			}
+			break;
+		case WM_KEYUP:
+			switch (msg->wParam){
+				case VK_CONTROL:
+					Internal_Text.CtrlKeyUp();
+					break;
+			}
+			break;
 	}
 
 	return CallNextHookEx(hGetMsgHook, nCode, wParam, lParam);

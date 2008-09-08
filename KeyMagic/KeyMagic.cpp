@@ -21,7 +21,6 @@
 #include "DllUnload.h"
 #include "../KeyMagicDll/KeyMagicDll.h"
 
-
 TCHAR szKBP[]="KeyBoardPaths";
 TCHAR szMS[]="MenuDisplays";
 TCHAR szSC[]="ShortCuts";
@@ -95,6 +94,16 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		lstrcatA((LPSTR)buildTime," - ");
 		lstrcatA((LPSTR)buildTime,__TIME__);
 		SendDlgItemMessageA(hDlg, IDC_COMPLIE, WM_SETTEXT, 0, (LPARAM)buildTime);
+		SendDlgItemMessage(hDlg, IDC_ATEXT, WM_SETTEXT, 0, (LPARAM)
+			"\nCopyright (C) 2008  KeyMagic Project\n"
+			"http://keymagic.googlecode.com\n\n"
+
+			"This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation.\n\n"
+
+			"This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.\n\n"
+
+			"You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA"
+			);
 
 		return (INT_PTR)TRUE;
 
@@ -197,6 +206,7 @@ bool AddKeyBoard(char* lpKBPath){
 	if (!WritePrivateProfileString(szKBP, lpName, lpPath, szINIFile)){
 		return false;
 	}
+
 	if (!WritePrivateProfileString(szMD, lpName, lpName, szINIFile)){
 		return false;
 	}

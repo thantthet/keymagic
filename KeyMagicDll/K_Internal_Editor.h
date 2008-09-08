@@ -40,12 +40,18 @@ class K_Internal_Editor {
 #endif
 		~K_Internal_Editor(){}
 
-		UINT GetCaretLocation()
+		virtual void Restart()
+		{
+			RtlZeroMemory(Text, 50);
+			CaretLocation = TextLength = 0;
+		}
+
+		virtual UINT GetCaretLocation()
 		{
 			return CaretLocation;
 		}
 
-		bool SetCaretLocation(UINT Location)
+		virtual bool SetCaretLocation(UINT Location)
 		{
 			if (Location > TextLength)
 				return false;
@@ -53,7 +59,7 @@ class K_Internal_Editor {
 			return true;
 		}
 
-		wchar_t* GetText(UINT Length)
+		virtual wchar_t* GetText(UINT Length)
 		{
 			int Loc = CaretLocation-Length;
 
@@ -63,7 +69,7 @@ class K_Internal_Editor {
 	 		return &Text[Loc];
 		}
 
-		bool AppendText(wchar_t* TextToAppend, UINT length)
+		virtual bool AppendText(wchar_t* TextToAppend, UINT length)
 		{
 			if (TextLength >= 50)
 			{
@@ -78,7 +84,7 @@ class K_Internal_Editor {
 			return true;
 		}
 
-		bool Delete(){
+		virtual bool Delete(){
 			if (TextLength <= 0)
 				return false;
 
@@ -90,16 +96,34 @@ class K_Internal_Editor {
 			return true;
 		}
 
-		UINT GetTextLength(void)
+		virtual UINT GetTextLength(void)
 		{
 			return TextLength;
+		}
+
+		virtual void CtrlKeyDown()
+		{
+			isControlDown = true;
+		}
+
+		virtual void CtrlKeyUp()
+		{
+			isControlDown = false;
+		}
+
+		virtual void KeyDown()
+		{
+			if (isControlDown)
+				Restart();
 		}
 
 	private:
 #ifdef DEBUG
 		HWND Commander_hWnd;
 #endif
+
 		UINT CaretLocation;
 		UINT TextLength;
 		wchar_t Text[50];
+		bool isControlDown;
 };

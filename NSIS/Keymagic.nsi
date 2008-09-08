@@ -49,7 +49,7 @@ Section "" mainSection
 	
 	Delete "$DESKTOP\Keymagic.lnk"
 	Delete "$SMPROGRAMS\${APPNAME}\Keymagic.lnk"
-	Delete "$SMPROGRAMS\${APPNAME}\Keymap Generator.lnk"
+	Delete "$SMPROGRAMS\${APPNAME}\Keyboard Maker.lnk"
 	Delete "$SMPROGRAMS\${APPNAME}\User Manual.pdf"
 	Delete "$SMPROGRAMS\${APPNAME}\Uninstall.lnk"
 	
@@ -92,7 +92,7 @@ SubSection "Keymagic" PackageKeymagic
 	
 	CreateDirectory "$SMPROGRAMS\${APPNAME}\"
 	CreateDirectory "$APPDATA\Keymagic\Keyboards\"
-	CreateShortCut "$SMPROGRAMS\${APPNAME}\Keymagic.lnk" "$INSTDIR\Keymagic.exe"
+	CreateShortCut "$SMPROGRAMS\${APPNAME}\Keymagic.lnk" "$INSTDIR\Keymagic.exe" "-s"
 	
 	CreateShortCut "$DESKTOP\Keymagic.lnk" "$INSTDIR\Keymagic.exe" "-s"
 	
@@ -117,7 +117,7 @@ SubSection "Keymagic" PackageKeymagic
 	File ".\GUI\Keyscript.ico"
 	
 	CreateDirectory "$SMPROGRAMS\${APPNAME}\"
-	CreateShortCut "$SMPROGRAMS\${APPNAME}\Keymap Generator.lnk" "$INSTDIR\Keymapper.exe"
+	CreateShortCut "$SMPROGRAMS\${APPNAME}\Keyboard Maker.lnk" "$INSTDIR\Keymapper.exe"
 	
 	WriteRegStr HKCR ".kms" "" "Keymagic.Keyscript.File"
 	WriteRegStr HKCR "Keymagic.Keyscript.File" "" "Keymagic Keymap Script"
@@ -126,7 +126,7 @@ SubSection "Keymagic" PackageKeymagic
 	WriteRegStr HKCR "Keymagic.Keyscript.File\shell\Open\command" "" "$INSTDIR\Keymapper.exe -o %1"
 	SectionEnd
 	
-	Section "Keymaps Files" Keymap
+	Section "Keyboard Files" Keymap
 	SetOverwrite on
 	SetOutPath "$INSTDIR\Keyboards\"
 	File ".\Keyboards\Myanmar3.km2"
@@ -191,7 +191,7 @@ SubSection un.Keymagic
 	Delete  "$INSTDIR\Docs\Changelog.txt"
 	Delete  "$INSTDIR\Docs\GPL.txt"
 	Delete  "$INSTDIR\Docs\License.txt"
-	Delete  "$INSTDIR\Docs\Help.chm"
+	Delete  "$INSTDIR\Docs\User Manual.pdf"
 	RMDir  "$INSTDIR\Docs\"
 	Delete  "$INSTDIR\Keyboards\Myanmar3.km2"
 	Delete  "$INSTDIR\Keyboards\Parabaik.km2"
@@ -226,7 +226,7 @@ SubSection un.Keymagic
 	RMDir  "$INSTDIR\Icons\"
 	RMDir  "$INSTDIR\"
 	
-	Delete "$SMPROGRAMS\${APPNAME}\Keymap Generator.lnk"
+	Delete "$SMPROGRAMS\${APPNAME}\Keyboard Maker.lnk"
 	
 	DeleteRegKey HKCR ".kms"
 	DeleteRegKey HKCR "Keymagic.Keyscript.File"
@@ -250,6 +250,7 @@ Section un.
 	
 	; Delete Shortcuts	
 	Delete "$SMPROGRAMS\${APPNAME}\Uninstall.lnk"
+	Delete "$SMPROGRAMS\${APPNAME}\User Manual.lnk"
 	
 	; Remove remaining directories
 	RMDir "$SMPROGRAMS\Keymagic"

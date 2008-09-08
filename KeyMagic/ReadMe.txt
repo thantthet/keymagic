@@ -34,18 +34,6 @@ KeyMagic.ico
     This is an icon file, which is used as the application's icon (32x32).
     This icon is included by the main resource file KeyMagic.rc.
 
-small.ico
-    This is an icon file, which contains a smaller version (16x16)
-    of the application's icon. This icon is included by the main resource
-    file KeyMagic.rc.
-
-/////////////////////////////////////////////////////////////////////////////
-Other standard files:
-
-StdAfx.h, StdAfx.cpp
-    These files are used to build a precompiled header (PCH) file
-    named KeyMagic.pch and a precompiled types file named StdAfx.obj.
-
 /////////////////////////////////////////////////////////////////////////////
 Other notes:
 
