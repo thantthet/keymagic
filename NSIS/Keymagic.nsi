@@ -1,5 +1,5 @@
 ;Define application version
-!define VERSION "1.2 Beta"
+!define VERSION "1.2 Beta 2"
 
 ; Define the application name
 !define APPNAME "Keymagic"
@@ -62,8 +62,10 @@ Section "" mainSection
 	File ".\doc\Changelog.txt"
 	File ".\doc\GPL.txt"
 	File ".\doc\License.txt"
-	File ".\doc\User Manual.pdf"
-	CreateShortCut "$SMPROGRAMS\${APPNAME}\User Manual.lnk" "$INSTDIR\Docs\User Manual.pdf"
+	File ".\doc\User Manual MM.pdf"
+	File ".\doc\User Manual EN.pdf"
+	CreateShortCut "$SMPROGRAMS\${APPNAME}\User Manual.lnk" "$INSTDIR\Docs\User Manual MM.pdf"
+	CreateShortCut "$SMPROGRAMS\${APPNAME}\User Manual.lnk" "$INSTDIR\Docs\User Manual EN.pdf"
 	
 	SetShellVarContext current
 	
@@ -182,6 +184,9 @@ SubSection un.Keymagic
 	
 	SetShellVarContext all
 	
+	Exec '"$INSTDIR\Keymagic.exe" -u'
+	Sleep "1000"
+	
 	Delete "$INSTDIR\Keymagic.exe"
 	Delete "$INSTDIR\KeyMagicDll.dll"
 	Delete "$INSTDIR\KeyMagic.ini"
@@ -191,7 +196,8 @@ SubSection un.Keymagic
 	Delete  "$INSTDIR\Docs\Changelog.txt"
 	Delete  "$INSTDIR\Docs\GPL.txt"
 	Delete  "$INSTDIR\Docs\License.txt"
-	Delete  "$INSTDIR\Docs\User Manual.pdf"
+	Delete  "$INSTDIR\Docs\User Manual MM.pdf"
+	Delete  "$INSTDIR\Docs\User Manual EN.pdf"
 	RMDir  "$INSTDIR\Docs\"
 	Delete  "$INSTDIR\Keyboards\Myanmar3.km2"
 	Delete  "$INSTDIR\Keyboards\Parabaik.km2"

@@ -152,8 +152,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,1,0,0
- PRODUCTVERSION 1,1,0,0
+ FILEVERSION 1,2,0,2
+ PRODUCTVERSION 1,2,0,2
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -169,12 +169,12 @@ BEGIN
         BLOCK "000004b0"
         BEGIN
             VALUE "FileDescription", "KeyMagic Program Manager"
-            VALUE "FileVersion", "1.1.0.0"
+            VALUE "FileVersion", "1.2.0.2"
             VALUE "InternalName", "KeyMagic"
             VALUE "LegalCopyright", "Copyright (C) 2008"
             VALUE "OriginalFilename", "KeyMagic.exe"
             VALUE "ProductName", "KeyMagic Input Customizer"
-            VALUE "ProductVersion", "1.0.0.0"
+            VALUE "ProductVersion", "1.2.0.2"
         END
     END
     BLOCK "VarFileInfo"
@@ -198,7 +198,7 @@ IDB_BK                  BITMAP                  "bk.bmp"
 
 STRINGTABLE 
 BEGIN
-    IDS_EN_TITLE            "KeyMagic 1.2 Beta"
+    IDS_EN_TITLE            "KeyMagic 1.2 Beta 2"
 END
 
 #endif    // English (U.S.) resources

@@ -170,10 +170,10 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_CLOSE:
-		if (SendDlgItemMessage(hWnd, IDC_SCRIPT, EM_GETMODIFY, 0, 0)){
-			if (MessageBox(hWnd, "The file is not saved. Are you sure want to exit without saving?", "Keymagic", MB_YESNO | MB_ICONEXCLAMATION) == IDNO)
-				break;
-		}
+		//if (SendDlgItemMessage(hWnd, IDC_SCRIPT, EM_GETMODIFY, 0, 0)){
+		//	if (MessageBox(hWnd, "The file is not saved. Are you sure want to exit without saving?", "Keymagic", MB_YESNO | MB_ICONEXCLAMATION) == IDNO)
+		//		break;
+		//}
 		EndDialog(hWnd, 0);
 		break;
 	}
@@ -598,7 +598,8 @@ int SectionRead(wchar_t* Buffer, wchar_t* SecName){
 	end = (wchar_t*) wcsstr( start, L"\r\n" );
 	end--;
 
-	while ( start[0] != '[' || end[0] != L']') {
+	while ( start[0] != '[' || end[0] != L']')
+	{
 		i++;
 		start = (wchar_t*) wcsstr( end, L"\r\n");
 		if (start == NULL)

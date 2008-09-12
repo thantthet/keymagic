@@ -33,15 +33,20 @@ class K_Internal_Editor {
 			CaretLocation = 0;
 			TextLength = 0;
 		}
+
+		~K_Internal_Editor(){}
+
 #ifdef DEBUG
 		void SetHandle(HWND hWnd){
 			Commander_hWnd = hWnd;
 		}
 #endif
-		~K_Internal_Editor(){}
 
 		virtual void Restart()
 		{
+#ifdef DEBUG
+			Logger(Commander_hWnd, "Restarted");
+#endif
 			RtlZeroMemory(Text, 50);
 			CaretLocation = TextLength = 0;
 		}
@@ -79,7 +84,7 @@ class K_Internal_Editor {
 			wcsncat(Text, TextToAppend, length);
 			CaretLocation = TextLength = wcslen(Text);
 #ifdef DEBUG
-			Logger(Commander_hWnd, "%x %x %x", Text[TextLength], Text[TextLength-1], Text[TextLength-2]);
+			Logger(Commander_hWnd, "%x %x %x", Text[TextLength-1], Text[TextLength-2], Text[TextLength-3]);
 #endif
 			return true;
 		}
@@ -91,7 +96,7 @@ class K_Internal_Editor {
 			Text[--TextLength] = NULL;
 			CaretLocation = TextLength;
 #ifdef DEBUG
-			Logger(Commander_hWnd, "%x %x %x", Text[TextLength], Text[TextLength-1], Text[TextLength-2]);
+			Logger(Commander_hWnd, "%x %x %x", Text[TextLength-1], Text[TextLength-2], Text[TextLength-3]);
 #endif
 			return true;
 		}
@@ -101,19 +106,19 @@ class K_Internal_Editor {
 			return TextLength;
 		}
 
-		virtual void CtrlKeyDown()
+		virtual void KeyDown(int vKey)
 		{
-			isControlDown = true;
-		}
+			bool isCTRL, isALT;
+			BYTE KeyStatus[256];
+			GetKeyboardState(KeyStatus);
 
-		virtual void CtrlKeyUp()
-		{
-			isControlDown = false;
-		}
+			isCTRL = KeyStatus[VK_CONTROL] & 0x80;
+			isALT = KeyStatus[VK_MENU] & 0x80;
 
-		virtual void KeyDown()
-		{
-			if (isControlDown)
+			if (vKey == VK_CONTROL || vKey == VK_MENU)
+				return;
+
+			if (isCTRL || isALT)
 				Restart();
 		}
 
@@ -121,7 +126,6 @@ class K_Internal_Editor {
 #ifdef DEBUG
 		HWND Commander_hWnd;
 #endif
-
 		UINT CaretLocation;
 		UINT TextLength;
 		wchar_t Text[50];

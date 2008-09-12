@@ -67,8 +67,11 @@ typedef struct tagMYITEM
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 void				SetHook (HWND hwnd);
 void				UnHook ();
-bool				AddKeyBoard(char* lpKBPath);
-bool				WorkOnCommand(LPTSTR lpCmdLine);
+BOOL				AddKeyBoard(char* lpKBPath);
+BOOL				WorkOnCommand(LPTSTR lpCmdLine);
+BOOL				IsAdmin();
+
+extern BOOL bAdmin;
 
 extern TCHAR szKBP[];
 extern TCHAR szMS[];

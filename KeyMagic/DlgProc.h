@@ -17,6 +17,13 @@
 #include <windows.h>
 #include "keyMagic.h"
 
+enum RightMenuCmd{
+	RMCMD_EXIT=100,
+	RMCMD_MANAGE,
+	RMCMD_STARTUP,
+	RMCMD_ABOUT
+};
+
 INT_PTR CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 void				OnInitDlg(HWND hWnd);
 void				SetKbData(HWND hWnd);

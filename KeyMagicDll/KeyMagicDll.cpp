@@ -148,7 +148,8 @@ LRESULT KEYMAGICDLL_API CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lP
 
 		wchar_t Input = wParam;
 
-		if (wParam == VK_BACK){
+		if (wParam == VK_BACK)
+		{
 			if (inner_back < 1){
 				//Logger("UnInnerBack wParam = %X lParam %X", wParam, lParam);
 				if (BackCustomize())
@@ -162,16 +163,16 @@ LRESULT KEYMAGICDLL_API CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lP
 			else if (inner_back){
 				//Logger("InnerBack wParam = %X lParam %X", wParam, lParam);
 				inner_back--;
+				return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 			}
 		}
 
-		if (!TranslateToAscii((UINT*)&Input))
-			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
-
-		if (Do_Operation(Input))
-			return true;
+		if (TranslateToAscii((UINT*)&Input)){
+			if (Do_Operation(Input))
+				return true;
+			Internal_Text.AppendText(&Input, 1);
+		}
 	}
-
 	return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 
 }
@@ -210,9 +211,10 @@ void kmBack(int count){
 	if (!GetFocus())
 		return ;
 
-	inner_back = --count;
+	inner_back = count;
 	
-	for(int i=0; i < count; i++){
+	for(int i=0; i < count; i++)
+	{
 //		Logger("kmBack");
 		keybd_event(VK_BACK, 255, 0, 0);
 		keybd_event(VK_BACK, 2, KEYEVENTF_KEYUP, 0);
@@ -236,36 +238,36 @@ bool BackCustomize(){
 		return false;
 
 	for (int i=0, length=0; i < FileHeader->Back_Count; i++){
-		short MP_length = (short)*((LPBYTE)&Back_Patterns->size_MatchPattern + length);
+		short MP_Length = (short)*((LPBYTE)&Back_Patterns->size_MatchPattern + length);
 		wchar_t *MP = (wchar_t*)((LPBYTE)&Back_Patterns->size_MatchPattern + sizeof(short) + length);
-		short OP_length = (short)*( (LPBYTE) (MP + MP_length));
-		wchar_t *OP = (wchar_t*) ((LPBYTE) ( MP + MP_length )+ sizeof(short)); 
+		short OP_Length = (short)*( (LPBYTE) (MP + MP_Length));
+		wchar_t *OP = (wchar_t*) ((LPBYTE) ( MP + MP_Length )+ sizeof(short)); 
 
-		wchar_t *temp_MP = new wchar_t[MP_length+1];
+		wchar_t *Temp_MP = new wchar_t[MP_Length+1];
 
-		temp_MP[MP_length] = NULL;
-		wcsncpy(temp_MP, MP, MP_length);
+		Temp_MP[MP_Length] = NULL;
+		wcsncpy(Temp_MP, MP, MP_Length);
 
 		//Logger("BackCustomize");
 
-		wchar_t* Str = Internal_Text.GetText(MP_length);
+		wchar_t* Str = Internal_Text.GetText(MP_Length);
 
 		if (Str == NULL)
 			goto BC_Next;
 
-		wchar_t* found = wcsstr(Str, temp_MP);
+		wchar_t* found = wcsstr(Str, Temp_MP);
 
 		if (found)
 		{
-			kmBack(++MP_length);
-			if (OP_length ==4 && !wcsnicmp(OP, L"null", 4))
+			kmBack(MP_Length);
+			if (OP_Length == 4 && !wcsnicmp(OP, L"null", 4))
 				return true;
 			
-			SendStrokes(OP, OP_length);
+			SendStrokes(OP, OP_Length);
 			return true;
 		}
 BC_Next:
-		length += (MP_length + OP_length + sizeof(short) ) *2 ;
+		length += (MP_Length + OP_Length + sizeof(short) ) *2 ;
 	}
 
 	return false;
@@ -296,7 +298,13 @@ void SendStrokes (wchar_t* Strokes, int len)//Send Keys Strokes
 
 }
 
-bool Customize(const wchar_t *Input_Unicode, int input_length){
+bool Customize(const wchar_t *Input_Unicode, int Input_Length){
+
+	short MP_Length;
+	wchar_t *MP;
+	short OP_Length;
+	wchar_t *OP;
+	wchar_t *Temp_MP;
 
 	HWND hEdit = GetFocus();
 	//int kmLength = GetWindowTextLengthW(hEdit);
@@ -313,48 +321,51 @@ bool Customize(const wchar_t *Input_Unicode, int input_length){
 
 	UINT length = 0;
 
-	Internal_Text.AppendText((wchar_t*)Input_Unicode, input_length);
-	//wcsncpy(&kmInputs[kmLength], Input_Unicode, input_length);
+	SendStrokes((wchar_t*)Input_Unicode, Input_Length);
+	//wcsncpy(&kmInputs[kmLength], Input_Unicode, Input_Length);
 	//kmInputs[kmLength+input_length] = NULL;
 
 	for (int i=0; i < FileHeader->Customize_Count; i++){
-//		Logger("length %x", length);
-		short MP_length = (short)*((LPBYTE)&Custom_Patterns->size_MatchPattern + length);
-//		Logger("MP_length %x", MP_length);
-		wchar_t *MP = (wchar_t*)((LPBYTE)&Custom_Patterns->size_MatchPattern + sizeof(short) + length);
-//		Logger("MP %x", MP );
-		short OP_length = (short)*( (LPBYTE) (MP + MP_length));
-//		Logger("OP_length %x", OP_length );
-		wchar_t *OP = (wchar_t*) ((LPBYTE) ( MP + MP_length )+ sizeof(short)); 
-//		Logger("OP %x", OP );
-
-		wchar_t *temp_MP = new wchar_t[MP_length+1];
-		
-		temp_MP[MP_length] = NULL;
-		wcsncpy(temp_MP, MP, MP_length);
-
-		wchar_t* Str = Internal_Text.GetText(MP_length);
-
-		if (Str == NULL)
-			goto C_Next;
-
-		wchar_t* found = wcsstr(Str, temp_MP);
-
-		if (found)
+		__try
 		{
-//			Logger("Customize : FOUND");
-			Internal_Text.Delete();
-			kmBack(MP_length);
-			SendStrokes(OP, OP_length);
-			return true;
+	//		Logger("length %x", length);
+			MP_Length = (short)*((LPBYTE)&Custom_Patterns->size_MatchPattern + length);
+	//		Logger("MP_Length %x", MP_Length);
+			MP = (wchar_t*)((LPBYTE)&Custom_Patterns->size_MatchPattern + sizeof(short) + length);
+	//		Logger("MP %x", MP );
+			OP_Length = (short)*( (LPBYTE) (MP + MP_Length));
+	//		Logger("OP_Length %x", OP_Length );
+			OP = (wchar_t*) ((LPBYTE) ( MP + MP_Length )+ sizeof(short)); 
+	//		Logger("OP %x", OP );
+
+			Temp_MP = new wchar_t[MP_Length+1];
+			
+			Temp_MP[MP_Length] = NULL;
+			wcsncpy(Temp_MP, MP, MP_Length);
+
+			wchar_t* Str = Internal_Text.GetText(MP_Length);
+
+			if (Str == NULL)
+				__leave;
+
+			Str = wcsstr(Str, Temp_MP);
+
+			if (Str)
+			{
+	//			Logger("Customize : FOUND");
+				kmBack(MP_Length);
+				SendStrokes(OP, OP_Length);
+				return true;
+			}
 		}
-C_Next:
-		length += ( MP_length + OP_length + sizeof(short) ) * 2;
-		delete temp_MP;
+		__finally
+		{
+			length += ( MP_Length + OP_Length + sizeof(short) ) * 2;
+			delete Temp_MP;
+		}
 	}
 
-	for (int i=0; i < input_length; i++)
-		Internal_Text.Delete();
+	kmBack(Input_Length);
 	
 	return false;
 };
@@ -452,9 +463,11 @@ LRESULT KEYMAGICDLL_API CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lP
 				break;
 
 			PostMessage(Commander_hWnd, KM_KILLFOCUS, 0,(LPARAM) cwp->hwnd);
-
+#ifdef Debug
 			Internal_Text.Restart();
+#endif
 		}
+
 		if (LOWORD(cwp->wParam) == WA_ACTIVE){
 
 			//kmCursorPos = 0;
@@ -508,26 +521,24 @@ LRESULT KEYMAGICDLL_API CALLBACK HookGetMsgProc(int nCode, WPARAM wParam, LPARAM
 	MSG* msg = (MSG*)lParam;
 	switch (msg->message){
 		case WM_KEYDOWN:
-			switch (msg->wParam){
+			switch (msg->wParam)
+			{
 				case VK_LEFT:
 				case VK_RIGHT:
 				case VK_DOWN:
 				case VK_UP:
 					Internal_Text.Restart();
 					break;
-				case VK_CONTROL:
-					Internal_Text.CtrlKeyDown();
-					break;
 				default:
-					Internal_Text.KeyDown();
+					Internal_Text.KeyDown(msg->wParam);
 					break;
 			}
 			break;
-		case WM_KEYUP:
-			switch (msg->wParam){
-				case VK_CONTROL:
-					Internal_Text.CtrlKeyUp();
-					break;
+		case WM_LBUTTONDOWN:
+		case WM_RBUTTONDOWN:
+			{
+				Internal_Text.Restart();
+				break;
 			}
 			break;
 	}
@@ -589,11 +600,11 @@ bool OpenKbFile(int Index)
 
 	for (int i=0; i < FileHeader->Customize_Count; i++)
 	{
-		short MP_length = (short)*((LPBYTE)&Custom_Patterns->size_MatchPattern + total_CUS_size);
+		short MP_Length = (short)*((LPBYTE)&Custom_Patterns->size_MatchPattern + total_CUS_size);
 		wchar_t *MP = (wchar_t*)((LPBYTE)&Custom_Patterns->size_MatchPattern + sizeof(short) + total_CUS_size);
-		short OP_length = (short)*( (LPBYTE) (MP + MP_length));
+		short OP_Length = (short)*( (LPBYTE) (MP + MP_Length));
 
-		total_CUS_size += (MP_length + OP_length + sizeof(short) ) * 2;
+		total_CUS_size += (MP_Length + OP_Length + sizeof(short) ) * 2;
 	}
 
 	Back_Patterns = (File_Delete*)((PBYTE)Custom_Patterns + total_CUS_size);

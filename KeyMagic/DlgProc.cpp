@@ -84,24 +84,52 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Parse the menu selections:
 		switch (wmId){
 		case IDC_APPLY:
-			if (kbindex == -1)
-				goto Loc1;
+			
+			if (!bAdmin)
+			{
+				MessageBox (hWnd,
+					"Sorry! You do not have permission to change.\n"
+					"Please turn off UAC or run Keymagic as an Administrator.",
+					"Keymagic", MB_OK | MB_ICONEXCLAMATION);
+				break;
+			}
 
-			Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, kbindex, 0);
-			SendDlgItemMessage(hWnd, IDC_DISPLAY, WM_GETTEXT, 30, (LPARAM)Data->Display);
-			Data->wHotkey = (WORD)SendDlgItemMessage(hWnd, IDC_SHORTCUT, HKM_GETHOTKEY, 0, 0);
-			SendDlgItemMessage(hWnd, IDC_PATH, WM_GETTEXT, MAX_PATH, (LPARAM)Data->Path);
-			Loc1:
-			SetKbData(hWnd);
-			DeleteKeyFile();
-			restart(hWnd);
+			__try
+			{
+				if (kbindex == -1)
+					__leave;
 
-			SendMessage(LastHWND, KM_RESCAN, 0, 0);
+				Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, kbindex, 0);
+				SendDlgItemMessage(hWnd, IDC_DISPLAY, WM_GETTEXT, 30, (LPARAM)Data->Display);
+				Data->wHotkey = (WORD)SendDlgItemMessage(hWnd, IDC_SHORTCUT, HKM_GETHOTKEY, 0, 0);
+				SendDlgItemMessage(hWnd, IDC_PATH, WM_GETTEXT, MAX_PATH, (LPARAM)Data->Path);
+			}
+
+			__finally
+			{
+				SetKbData(hWnd);
+				DeleteKeyFile();
+				restart(hWnd);
+				SendMessage(LastHWND, KM_RESCAN, 0, 0);
+			}
+
 			break;
 
 		case IDC_DONE:
-			if (kbindex == -1)
-				goto Loc2;
+
+			if (!bAdmin)
+			{
+				MessageBox (hWnd,
+					"Sorry! You do not have permission to change.\n"
+					"Please turn off UAC or run Keymagic as an Administrator.",
+					"Keymagic", MB_OK | MB_ICONEXCLAMATION);
+				break;
+			}
+
+			__try
+			{
+				if (kbindex == -1)
+					__leave;
 
 			hList = GetDlgItem(hWnd, IDC_KEYBOARDS);
 
@@ -109,14 +137,17 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SendDlgItemMessage(hWnd, IDC_DISPLAY, WM_GETTEXT, 30, (LPARAM)Data->Display);
 			Data->wHotkey = (WORD)SendDlgItemMessage(hWnd, IDC_SHORTCUT, HKM_GETHOTKEY, 0, 0);
 			SendDlgItemMessage(hWnd, IDC_PATH, WM_GETTEXT, MAX_PATH, (LPARAM)Data->Path);
-			Loc2:
-			SetKbData(hWnd);
+			}
 
+			__finally
+			{
+			SetKbData(hWnd);
 			ShowWindow(hWnd, SW_HIDE);
 			DeleteKeyFile();
 			restart(hWnd);
-
 			SendMessage(LastHWND, KM_RESCAN, 0, 0);
+			}
+
 			break;
 
 		case IDC_CANCEL:
@@ -223,10 +254,11 @@ next:
 
 		else if (lParam==WM_RBUTTONDOWN) {
 			hMenu = CreatePopupMenu();
-			AppendMenu(hMenu, MF_BYCOMMAND, 101, "Manage &Keyboards");
-			AppendMenu(hMenu, MF_BYCOMMAND, 102, "&Run at Startup");
-			AppendMenu(hMenu, MF_BYCOMMAND, 103, "&About");
-			AppendMenu(hMenu, MF_BYCOMMAND, 100, "E&xit");
+
+			AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_MANAGE, "Manage &Keyboards");
+			AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_STARTUP, "&Run at Startup");
+			AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_ABOUT, "&About");
+			AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_EXIT, "E&xit");
 			CreateMyMenu(hWnd, hMenu);
 
 			StartupFlag = GetPrivateProfileInt("Settings", "Startup", 0, szINIFile);
@@ -237,25 +269,32 @@ next:
 
 			SetForegroundWindow(hWnd);
 
-			BOOL CMD= TrackPopupMenu(hMenu, TPM_RIGHTBUTTON | TPM_LEFTBUTTON | TPM_RETURNCMD,
+			enum RightMenuCmd CMD_RETURN = (RightMenuCmd)TrackPopupMenu(hMenu, TPM_RIGHTBUTTON | TPM_LEFTBUTTON | TPM_RETURNCMD,
 				pt.x, pt.y, 0, hWnd, NULL);
 
-			switch (CMD){
-				case 100:
+			switch (CMD_RETURN){
+				case RMCMD_EXIT:
 					PostQuitMessage(0);
 					break;
-				case 101:
+				case RMCMD_MANAGE:
 					ShowWindow(hWnd, SW_SHOW);
 					break;
-				case 102:
-					StartupFlag =! StartupFlag;
-					Startup(StartupFlag);
+				case RMCMD_STARTUP:
+					if (bAdmin)
+					{
+						StartupFlag =! StartupFlag;
+						Startup(StartupFlag);
+					}
+					else
+					MessageBox (hWnd,
+						"Sorry! You do not have permission to change.\n"
+						"Please turn off UAC or run Keymagic as an Administrator.",
+						"Keymagic", MB_OK | MB_ICONEXCLAMATION);
 					break;
-				case 103:
+				case RMCMD_ABOUT:
 					DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 					break;
 			}
-
 			DestroyMyMenu(hMenu);
 
 			DestroyMenu(hMenu);
@@ -335,7 +374,6 @@ void OnInitDlg(HWND hWnd){
 	PathAppend(szKBPath, "Keyboards");
 	CreateDirectory(szKBPath, NULL);
 next:
-	LoadString(hInst, IDS_EN_TITLE, szTitle, MAX_LOADSTRING);
 	SetWindowText(hWnd, szTitle);
 
 	GetKeyBoards();
@@ -437,6 +475,7 @@ void DeleteDlgData(HWND hWnd){
 }
 
 void SetKbData(HWND hWnd){
+
 	char shortcut[10], szNormal[] = "Normal";
 	KeyFileData *Data;
 	int count = SendMessage(hList, LB_GETCOUNT, 0, 0);
@@ -696,14 +735,24 @@ void GetKeyBoards(){
 };
 
 void Startup(BOOL isEnable){
+
+	if (bAdmin)
+	{
+
+	}
 	HKEY hkHLM, hkRun;
+
 	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, NULL, NULL, KEY_ALL_ACCESS, &hkHLM) != ERROR_SUCCESS)
 		return;
+
 	if (RegOpenKeyEx(hkHLM, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", NULL, KEY_ALL_ACCESS, &hkRun) != ERROR_SUCCESS)
 		return;
-	if (!isEnable){
+
+	if (!isEnable)
+	{
 		RegDeleteValue(hkRun, "Keymagic");
 	}
+
 	else{
 		char FileName[MAX_PATH];
 		GetModuleFileName(hInst, FileName, MAX_PATH);

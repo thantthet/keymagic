@@ -44,6 +44,7 @@ bool hide = false;
 HMENU hKeyMenu;
 char szINIFile[MAX_PATH];
 char szCurDir[MAX_PATH];
+BOOL bAdmin;
 
 int APIENTRY WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
@@ -57,21 +58,28 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	GetModuleFileName(hInst, szCurDir, MAX_PATH);
 
 	int i;
-	for (i=lstrlen(szCurDir); szCurDir[i] != '\\'; i--){
-	}
+	for (i=lstrlen(szCurDir); szCurDir[i] != '\\'; i--){}
+
 	szCurDir[i] = NULL;
 
 	lstrcpy(szINIFile,szCurDir);
 
 	PathAppend(szINIFile, "KeyMagic.ini");
 
+	bAdmin = IsAdmin();
+
 	if (WorkOnCommand(lpCmdLine))
 		return 0;
 
+	LoadString(hInst, IDS_EN_TITLE, szTitle, MAX_LOADSTRING);
+
+	if (bAdmin)
+		lstrcat(szTitle, " (Administrator)");
+
 	if (OpenMutexW(SYNCHRONIZE, NULL, L"\u1000\u102E\u1038\u1019\u1000\u1039\u1002\u103A\u1005\u1039")){
-		HWND prevhandle = FindWindow(NULL, "KeyMagic 1.2");
-		ShowWindow(prevhandle, SW_SHOW);
-		ExitProcess(0);
+		HWND hPreHandle = FindWindow(NULL, szTitle);
+		ShowWindow(hPreHandle, SW_SHOW);
+		return 0;
 	}
 
 	HANDLE MtxHANDLE= CreateMutexW(NULL, TRUE, L"\u1000\u102E\u1038\u1019\u1000\u1039\u1002\u103A\u1005\u1039");
@@ -79,10 +87,154 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	DialogBox(hInst, MAKEINTRESOURCE(IDD_MAINBOX), NULL, WndProc);
 
 	ReleaseMutex(MtxHANDLE);
-	ScannerAndInject();
 	return (int) 0;
 }
 
+BOOL IsAdmin()
+{
+   BOOL   fReturn         = FALSE;
+   DWORD  dwStatus;
+   DWORD  dwAccessMask;
+   DWORD  dwAccessDesired;
+   DWORD  dwACLSize;
+   DWORD  dwStructureSize = sizeof(PRIVILEGE_SET);
+   PACL   pACL            = NULL;
+   PSID   psidAdmin       = NULL;
+
+   HANDLE hToken              = NULL;
+   HANDLE hImpersonationToken = NULL;
+
+   PRIVILEGE_SET   ps;
+   GENERIC_MAPPING GenericMapping;
+
+   PSECURITY_DESCRIPTOR     psdAdmin           = NULL;
+   SID_IDENTIFIER_AUTHORITY SystemSidAuthority = SECURITY_NT_AUTHORITY;
+
+
+   /*
+      Determine if the current thread is running as a user that is a member of
+      the local admins group.  To do this, create a security descriptor that
+      has a DACL which has an ACE that allows only local aministrators access.
+      Then, call AccessCheck with the current thread's token and the security
+      descriptor.  It will say whether the user could access an object if it
+      had that security descriptor.  Note: you do not need to actually create
+      the object.  Just checking access against the security descriptor alone
+      will be sufficient.
+   */
+   const DWORD ACCESS_READ  = 1;
+   const DWORD ACCESS_WRITE = 2;
+
+
+   __try
+   {
+
+      /*
+         AccessCheck() requires an impersonation token.  We first get a primary
+         token and then create a duplicate impersonation token.  The
+         impersonation token is not actually assigned to the thread, but is
+         used in the call to AccessCheck.  Thus, this function itself never
+         impersonates, but does use the identity of the thread.  If the thread
+         was impersonating already, this function uses that impersonation context.
+      */
+      if (!OpenThreadToken(GetCurrentThread(), TOKEN_DUPLICATE|TOKEN_QUERY, 
+		  TRUE, &hToken))
+      {
+         if (GetLastError() != ERROR_NO_TOKEN)
+            __leave;
+
+         if (!OpenProcessToken(GetCurrentProcess(), 
+			 TOKEN_DUPLICATE|TOKEN_QUERY, &hToken))
+            __leave;
+      }
+
+      if (!DuplicateToken (hToken, SecurityImpersonation, 
+		  &hImpersonationToken))
+		  __leave;
+
+
+      /*
+        Create the binary representation of the well-known SID that
+        represents the local administrators group.  Then create the security
+        descriptor and DACL with an ACE that allows only local admins access.
+        After that, perform the access check.  This will determine whether
+        the current user is a local admin.
+      */
+      if (!AllocateAndInitializeSid(&SystemSidAuthority, 2,
+                                    SECURITY_BUILTIN_DOMAIN_RID,
+                                    DOMAIN_ALIAS_RID_ADMINS,
+                                    0, 0, 0, 0, 0, 0, &psidAdmin))
+         __leave;
+
+      psdAdmin = LocalAlloc(LPTR, SECURITY_DESCRIPTOR_MIN_LENGTH);
+      if (psdAdmin == NULL)
+         __leave;
+
+      if (!InitializeSecurityDescriptor(psdAdmin, 
+		  SECURITY_DESCRIPTOR_REVISION))
+         __leave;
+
+      // Compute size needed for the ACL.
+      dwACLSize = sizeof(ACL) + sizeof(ACCESS_ALLOWED_ACE) +
+                  GetLengthSid(psidAdmin) - sizeof(DWORD);
+
+      pACL = (PACL)LocalAlloc(LPTR, dwACLSize);
+      if (pACL == NULL)
+         __leave;
+
+      if (!InitializeAcl(pACL, dwACLSize, ACL_REVISION2))
+         __leave;
+
+      dwAccessMask= ACCESS_READ | ACCESS_WRITE;
+
+      if (!AddAccessAllowedAce(pACL, ACL_REVISION2, dwAccessMask, 
+		  psidAdmin))
+         __leave;
+
+      if (!SetSecurityDescriptorDacl(psdAdmin, TRUE, pACL, FALSE))
+         __leave;
+
+      /*
+         AccessCheck validates a security descriptor somewhat; set the group
+         and owner so that enough of the security descriptor is filled out to
+         make AccessCheck happy.
+      */
+      SetSecurityDescriptorGroup(psdAdmin, psidAdmin, FALSE);
+      SetSecurityDescriptorOwner(psdAdmin, psidAdmin, FALSE);
+
+      if (!IsValidSecurityDescriptor(psdAdmin))
+         __leave;
+
+      dwAccessDesired = ACCESS_READ;
+
+      /*
+         Initialize GenericMapping structure even though you
+         do not use generic rights.
+      */
+      GenericMapping.GenericRead    = ACCESS_READ;
+      GenericMapping.GenericWrite   = ACCESS_WRITE;
+      GenericMapping.GenericExecute = 0;
+      GenericMapping.GenericAll     = ACCESS_READ | ACCESS_WRITE;
+
+      if (!AccessCheck(psdAdmin, hImpersonationToken, dwAccessDesired,
+                       &GenericMapping, &ps, &dwStructureSize, &dwStatus,
+                       &fReturn))
+      {
+         fReturn = FALSE;
+         __leave;
+      }
+   }
+   __finally
+   {
+      // Clean up.
+      if (pACL) LocalFree(pACL);
+      if (psdAdmin) LocalFree(psdAdmin);
+      if (psidAdmin) FreeSid(psidAdmin);
+      if (hImpersonationToken) CloseHandle (hImpersonationToken);
+      if (hToken) CloseHandle (hToken);
+   }
+
+   return fReturn;
+}
 // Message handler for about box.
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -143,7 +295,7 @@ VOID UnHook ()
 	UnhookWindowsHookEx(hGM);
 }
 
-bool WorkOnCommand(LPTSTR lpCmdLine){
+BOOL WorkOnCommand(LPTSTR lpCmdLine){
 
 	if (!lstrlen(lpCmdLine)){
 		return false;
@@ -158,6 +310,11 @@ bool WorkOnCommand(LPTSTR lpCmdLine){
 			hide = true;
 			return false;
 		case 'u':
+			HWND hPreHandle = FindWindow(NULL, szTitle);
+			if (hPreHandle)
+			{
+				SendMessage(hPreHandle, WM_CLOSE, 0, 0);
+			}
 			UnHook();
 			ScannerAndInject();
 			return true;
@@ -166,7 +323,14 @@ bool WorkOnCommand(LPTSTR lpCmdLine){
 	return false;
 }
 
-bool AddKeyBoard(char* lpKBPath){
+BOOL AddKeyBoard(char* lpKBPath){
+
+	if (bAdmin)
+		MessageBox (GetDesktopWindow(),
+			"Sorry! The Keyboard cannot be added.\n"
+			"Please turn off UAC or run Keymagic as an Administrator.",
+			"Keymagic", MB_OK | MB_ICONEXCLAMATION);
+
 	char lpPath[MAX_PATH];
 	char lpName[MAX_PATH];
 	char szKBPath[MAX_PATH];
