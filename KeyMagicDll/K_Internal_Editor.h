@@ -27,6 +27,7 @@ void Logger(HWND hWnd, char* fmt, ...)
 }
 
 class K_Internal_Editor {
+#define MAX_STORELEN 200
 	public:
 		K_Internal_Editor()
 		{
@@ -47,7 +48,7 @@ class K_Internal_Editor {
 #ifdef DEBUG
 			Logger(Commander_hWnd, "Restarted");
 #endif
-			RtlZeroMemory(Text, 50);
+			RtlZeroMemory(Text, MAX_STORELEN);
 			CaretLocation = TextLength = 0;
 		}
 
@@ -68,7 +69,7 @@ class K_Internal_Editor {
 		{
 			int Loc = CaretLocation-Length;
 
-			if ( (Loc < 0) || (Loc+Length > 50) )
+			if ( (Loc < 0) || (Loc+Length > MAX_STORELEN) )
 				return NULL;
 
 	 		return &Text[Loc];
@@ -76,10 +77,10 @@ class K_Internal_Editor {
 
 		virtual bool AppendText(wchar_t* TextToAppend, UINT length)
 		{
-			if (TextLength >= 50)
+			if (TextLength >= MAX_STORELEN)
 			{
 				TextLength = 0;
-				RtlZeroMemory(Text, 50);
+				RtlZeroMemory(Text, MAX_STORELEN);
 			}
 			wcsncat(Text, TextToAppend, length);
 			CaretLocation = TextLength = wcslen(Text);
@@ -128,6 +129,6 @@ class K_Internal_Editor {
 #endif
 		UINT CaretLocation;
 		UINT TextLength;
-		wchar_t Text[50];
+		wchar_t Text[MAX_STORELEN];
 		bool isControlDown;
 };

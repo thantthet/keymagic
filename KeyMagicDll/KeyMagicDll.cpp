@@ -307,14 +307,6 @@ bool Customize(const wchar_t *Input_Unicode, int Input_Length){
 	wchar_t *Temp_MP;
 
 	HWND hEdit = GetFocus();
-	//int kmLength = GetWindowTextLengthW(hEdit);
-	//wchar_t *kmInputs = new wchar_t[kmLength * sizeof(wchar_t)];
-
-	//int start;
-	//SendMessage(hEdit, EM_GETSEL, (WPARAM) &start, NULL);
-	//GetWindowTextW(hEdit, kmInputs, kmLength * sizeof(wchar_t));
-
-	//if (kmLength < 1)
 
 	if (Internal_Text.GetTextLength() < 1) 
 		return false;
@@ -322,8 +314,6 @@ bool Customize(const wchar_t *Input_Unicode, int Input_Length){
 	UINT length = 0;
 
 	SendStrokes((wchar_t*)Input_Unicode, Input_Length);
-	//wcsncpy(&kmInputs[kmLength], Input_Unicode, Input_Length);
-	//kmInputs[kmLength+input_length] = NULL;
 
 	for (int i=0; i < FileHeader->Customize_Count; i++){
 		__try
@@ -348,11 +338,14 @@ bool Customize(const wchar_t *Input_Unicode, int Input_Length){
 			if (Str == NULL)
 				__leave;
 
+			//if (RegularExpression(Str, Temp_MP, OP))
+			//	return true;
+
 			Str = wcsstr(Str, Temp_MP);
 
 			if (Str)
 			{
-	//			Logger("Customize : FOUND");
+//				Logger("Customize : FOUND");
 				kmBack(MP_Length);
 				SendStrokes(OP, OP_Length);
 				return true;
@@ -369,6 +362,12 @@ bool Customize(const wchar_t *Input_Unicode, int Input_Length){
 	
 	return false;
 };
+
+//BOOL RegularExpression(wchar_t* EditStr,wchar_t* InputStr,wchar_t* OutputStr)
+//{
+//	if (wcsnicmp(InputStr, "regex:", 6))
+//		return true;
+//}
 
 wchar_t *Match_One2Multi(const wchar_t user_input,_Out_ int *length){
 	bool isCTRL, isLALT, isRALT, isSHIFT;

@@ -321,7 +321,7 @@ NoFont:
 
 	CloseHandle(hFile);
 
-	SendMessage(hEdit, EM_SETMODIFY, 0, 0);
+//	SendMessage(hEdit, EM_SETMODIFY, 0, 0);
 
 
 	lstrcpy(szOpenedFileName, szFileName);
@@ -544,8 +544,8 @@ Delete:
 		wchar_t *OP = (wchar_t*) ((LPBYTE) ( MP + *MP_length )+ sizeof(short)); 
 
 		*OP_length = wcslen(token);
-
 		wcscpy((wchar_t*)OP, token);
+
 		EscapeSequence((wchar_t*)OP);
 
 		length = ( *MP_length + *OP_length + sizeof(short) ) * 2;

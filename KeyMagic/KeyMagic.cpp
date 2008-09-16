@@ -30,6 +30,7 @@ TCHAR szKeymagic[] = "Keymagic";
 // Global Variables:
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
+TCHAR szWindowClass[MAX_LOADSTRING];
 
 #pragma data_seg(".keymagic")
 HHOOK hKH = NULL;
@@ -39,6 +40,9 @@ HHOOK hGM = NULL;
 
 //Make sure that section can READ WRITE and SHARE
 #pragma comment(linker, "/SECTION:.keymagic,RWS")
+
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow);
+ATOM MyRegisterClass(HINSTANCE hInstance);
 
 bool hide = false;
 HMENU hKeyMenu;
@@ -52,7 +56,6 @@ int APIENTRY WinMain(HINSTANCE hInstance,
                      int       nCmdShow)
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
-
 	hInst = hInstance;
 
 	GetModuleFileName(hInst, szCurDir, MAX_PATH);
@@ -222,7 +225,9 @@ BOOL IsAdmin()
          fReturn = FALSE;
          __leave;
       }
+
    }
+
    __finally
    {
       // Clean up.
@@ -234,6 +239,7 @@ BOOL IsAdmin()
    }
 
    return fReturn;
+
 }
 // Message handler for about box.
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)

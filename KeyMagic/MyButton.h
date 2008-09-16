@@ -15,7 +15,7 @@
 //Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <windows.h>
 
-struct MenuCr{
+struct ButtonCr{
 	COLORREF Text;
 	COLORREF Frame;
 	COLORREF Fill;
@@ -23,4 +23,4 @@ struct MenuCr{
 
 void DrawMyButton(LPDRAWITEMSTRUCT lpdis);
 
-extern MenuCr Up, Down, Hover;
+extern ButtonCr Up, Down, Hover;

@@ -18,7 +18,8 @@
 #include "Keymagic.h"
 #include "MyButton.h"
 
-MenuCr Up, Down;
+ButtonCr Up, Down;
+
 void DrawMyButton(LPDRAWITEMSTRUCT lpdis)
 {
    if (lpdis->CtlType != ODT_BUTTON)
