@@ -1,5 +1,5 @@
 ;Define application version
-!define VERSION "1.2 Beta 2"
+!define VERSION "1.2"
 
 ; Define the application name
 !define APPNAME "Keymagic"

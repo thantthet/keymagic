@@ -359,6 +359,12 @@ next:
 	case WM_CLOSE:
 		restart(hWnd);
 		ShowWindow(hWnd, SW_HIDE);
+		if (hThread)
+		{
+			PostThreadMessage(ThreadID, WM_QUIT, 0, 0);
+			TerminateThread(hThread, 0);
+			hThread=0;
+		}
 		return 0;
 
 	case WM_DESTROY:
@@ -611,10 +617,21 @@ DWORD WINAPI TYM (LPVOID lpParameter)
 			Sleep(400);
 		else
 			Sleep(100);
+
+		if (PeekMessage(&message, (HWND)-1, WM_QUIT, WM_QUIT, PM_REMOVE))
+			goto Exit;
 	}
 	txPos=0;
 	Sleep(700);
 	goto loop;
+
+	Exit:
+
+	BitBlt(local_hdc_window, 210, 33, size.cx, size.cy, local_hdc_window_copy, 0,0, SRCCOPY);
+
+	ReleaseDC((HWND)lpParameter, local_hdc_text);
+	DeleteDC(local_hdc_window);
+	DeleteDC(local_hdc_window_copy);
 
 	ExitThread(true);
 }
@@ -631,7 +648,8 @@ VOID onPaint(HWND hWnd)
 	pGraphics->DrawImage(*Logo, 0, 0, Logo->m_pBitmap->GetWidth(), Logo->m_pBitmap->GetHeight());
 	if (hThread)
 	{
-		TerminateThread(hThread, 1);
+		PostThreadMessage(ThreadID, WM_QUIT, 0, 0);
+		TerminateThread(hThread, 0);
 		hThread=0;
 	}
 	
