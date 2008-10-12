@@ -386,7 +386,6 @@ void OnCreate(HWND hWnd, LPCREATESTRUCT lpcs){
 	HMENU hMenu;
 	KeyFileData *Data;
 	char szKBPath[MAX_PATH];
-	char* szBtn;
 
 	LoadIcon(hInst, (LPCSTR)IDI_KEYMAGIC);
 
@@ -515,10 +514,7 @@ next:
 
 	SendMessage(hRemove, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	if (bAdmin) szBtn = "OK";
-	else szBtn = "(SI) OK";
-
-	hDone = CreateWindowEx (0, "Button", szBtn,
+	hDone = CreateWindowEx (0, "Button", "(SI) OK",
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, (HMENU)IDC_DONE,
 		lpcs -> hInstance, NULL);
@@ -532,10 +528,7 @@ next:
 
 	SendMessage(hCancel, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	if (bAdmin) szBtn = "Apply";
-	else szBtn = "(SI) Apply";
-
-	hApply = CreateWindowEx (0, "Button", szBtn,
+	hApply = CreateWindowEx (0, "Button", "(SI) Apply",
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, (HMENU)IDC_APPLY,
 		lpcs -> hInstance, NULL);
