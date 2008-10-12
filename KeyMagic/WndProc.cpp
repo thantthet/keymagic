@@ -1,4 +1,4 @@
-//Dialog Procedures
+//Windows Procedures
 //Copyright (C) 2008  KeyMagic Project
 //http://keymagic.googlecode.com
 //
@@ -18,17 +18,43 @@
 #include "KeyMagic.h"
 #include "MyMenu.h"
 #include "MyButton.h"
-#include "DlgProc.h"
+#include "WndProc.h"
+#include "CGdiPlusBitmap.h"
 
 strDelete *szFileToDelete;
 int cbFileToDelete = 0;
 int kbindex=-1;
-HWND hList;
 HWND LastHWND;
 UINT KeyBoardNum;
 DWORD StartupFlag;
 
-INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+CGdiPlusBitmapResource *Logo;
+Gdiplus::Bitmap *Bmpbk;
+
+int WndHeight, WndWidth;
+HWND	hList,
+		hPath,
+		hDisplay,
+		hShortcut,
+		hAdd,
+		hRemove,
+		hDone,
+		hCancel,
+		hApply,
+		hPathChk,
+		hLogo,
+		hBK,
+		hgbKeyboard,
+		hgbOption,
+		hgbHotkey,
+		hgbDisplay,
+		hgbLocation;
+
+DWORD WINAPI TYM (LPVOID lpParameter);
+HANDLE hThread=0;
+DWORD ThreadID=0;
+int txPos=0;
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	HMENU hMenu;
 	POINT pt;
@@ -49,22 +75,14 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		SendMessage((HWND)lParam, KM_RESCAN, 0, 0);
 		break;
 
-	case WM_INITDIALOG:
-		OnInitDlg(hWnd);
+	case WM_CREATE:
+		OnCreate(hWnd,(LPCREATESTRUCT) lParam);
 		Up.Fill = RGB(240,250,255);
 		Up.Frame = RGB(153,217,234);
 		Up.Text = RGB(10,120,245);
 		Down.Fill = RGB(210,240,255);
 		Down.Frame = RGB(110,205,220);
 		Down.Text = RGB(10,120,245);
-		break;
-
-	case WM_TIMER:
-		if (wParam == 100){
-			ShowWindow(hWnd, SW_HIDE);
-			hide = false;
-			KillTimer(hWnd, 100);
-		}
 		break;
 
 	case WM_SYSCOMMAND:
@@ -131,21 +149,21 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				if (kbindex == -1)
 					__leave;
 
-			hList = GetDlgItem(hWnd, IDC_KEYBOARDS);
+				hList = GetDlgItem(hWnd, IDC_KEYBOARDS);
 
-			Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, kbindex, 0);
-			SendDlgItemMessage(hWnd, IDC_DISPLAY, WM_GETTEXT, 30, (LPARAM)Data->Display);
-			Data->wHotkey = (WORD)SendDlgItemMessage(hWnd, IDC_SHORTCUT, HKM_GETHOTKEY, 0, 0);
-			SendDlgItemMessage(hWnd, IDC_PATH, WM_GETTEXT, MAX_PATH, (LPARAM)Data->Path);
+				Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, kbindex, 0);
+				SendDlgItemMessage(hWnd, IDC_DISPLAY, WM_GETTEXT, 30, (LPARAM)Data->Display);
+				Data->wHotkey = (WORD)SendDlgItemMessage(hWnd, IDC_SHORTCUT, HKM_GETHOTKEY, 0, 0);
+				SendDlgItemMessage(hWnd, IDC_PATH, WM_GETTEXT, MAX_PATH, (LPARAM)Data->Path);
 			}
 
 			__finally
 			{
-			SetKbData(hWnd);
-			ShowWindow(hWnd, SW_HIDE);
-			DeleteKeyFile();
-			restart(hWnd);
-			SendMessage(LastHWND, KM_RESCAN, 0, 0);
+				SetKbData(hWnd);
+				ShowWindow(hWnd, SW_HIDE);
+				DeleteKeyFile();
+				restart(hWnd);
+				SendMessage(LastHWND, KM_RESCAN, 0, 0);
 			}
 
 			break;
@@ -159,17 +177,17 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if (wmEvent == LBN_SELCHANGE){
 
 				CheckDlgButton(hWnd, IDC_DIR, false);
-				EnableWindow(GetDlgItem(hWnd,IDC_PATH), false);
+				EnableWindow(hPath, false);
 				if (kbindex == -1)
 					goto next;
 				
 				Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, kbindex, 0);
 				if (!Data)
-					break;
+					goto next;
 
-				SendDlgItemMessage(hWnd, IDC_DISPLAY, WM_GETTEXT, 30, (LPARAM)Data->Display);
-				Data->wHotkey = (WORD)SendDlgItemMessage(hWnd, IDC_SHORTCUT, HKM_GETHOTKEY, 0, 0);
-				SendDlgItemMessage(hWnd, IDC_PATH, WM_GETTEXT, MAX_PATH, (LPARAM)Data->Path);
+				SendMessage(hDisplay, WM_GETTEXT, 30, (LPARAM)Data->Display);
+				Data->wHotkey = (WORD)SendMessage(hShortcut, HKM_GETHOTKEY, 0, 0);
+				SendMessage(hPath, WM_GETTEXT, MAX_PATH, (LPARAM)Data->Path);
 next:
 				kbindex = SendMessage(hList, LB_GETCURSEL, 0, 0);
 				if (kbindex == -1)
@@ -178,11 +196,11 @@ next:
 				Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, kbindex, 0);
 				if (!Data)
 					break;
-				SendDlgItemMessage(hWnd, IDC_DISPLAY, WM_SETTEXT, 0, (LPARAM)Data->Display);
-				SendDlgItemMessage(hWnd, IDC_SHORTCUT, HKM_SETHOTKEY, Data->wHotkey, 0);
-				SendDlgItemMessage(hWnd, IDC_PATH, WM_SETTEXT, 0, (LPARAM)Data->Path);
+				SendMessage(hDisplay, WM_SETTEXT, 0, (LPARAM)Data->Display);
+				SendMessage(hShortcut, HKM_SETHOTKEY, Data->wHotkey, 0);
+				SendMessage(hPath, WM_SETTEXT, 0, (LPARAM)Data->Path);
 				if (Data->Path[1] == ':'){
-					EnableWindow(GetDlgItem(hWnd,IDC_PATH), true);
+					EnableWindow(hPath, true);
 					CheckDlgButton(hWnd, IDC_DIR, true);
 				}
 			}
@@ -192,9 +210,9 @@ next:
 			UINT state;
 			state = IsDlgButtonChecked(hWnd, IDC_DIR);
 			if (state == BST_CHECKED)
-				EnableWindow(GetDlgItem(hWnd,IDC_PATH), true);
+				EnableWindow(hPath, true);
 			else
-				EnableWindow(GetDlgItem(hWnd,IDC_PATH), false);
+				EnableWindow(hPath, false);
 			break;
 
 		case IDC_ADD:
@@ -203,7 +221,7 @@ next:
 				break;
 
 			AddKeyBoardToList(hWnd ,szFileName);
-			SendDlgItemMessage(hWnd, IDC_DISPLAY, EM_SETMODIFY, TRUE, 0);
+			SendMessage(hDisplay, EM_SETMODIFY, TRUE, 0);
 			
 			break;
 
@@ -239,6 +257,10 @@ next:
 		}
 		break;
 
+	case WM_PAINT:
+		onPaint(hWnd);
+		break;
+
 	case WM_TRAY:
 
 		if (lParam==WM_LBUTTONDOWN) {
@@ -269,7 +291,7 @@ next:
 
 			SetForegroundWindow(hWnd);
 
-			enum RightMenuCmd CMD_RETURN = (RightMenuCmd)TrackPopupMenu(hMenu, TPM_RIGHTBUTTON | TPM_LEFTBUTTON | TPM_RETURNCMD,
+			RightMenuCmd CMD_RETURN = (RightMenuCmd)TrackPopupMenu(hMenu, TPM_RIGHTBUTTON | TPM_LEFTBUTTON | TPM_RETURNCMD,
 				pt.x, pt.y, 0, hWnd, NULL);
 
 			switch (CMD_RETURN){
@@ -277,6 +299,11 @@ next:
 					PostQuitMessage(0);
 					break;
 				case RMCMD_MANAGE:
+					if (IsWindowVisible(hWnd))
+						break;
+					if (!bAdmin)
+						MessageBox(hWnd, "Attention: To save changes, please run Keymagic as an administration. "
+						"If not, any changes you have made will be unsaved.", "Keymagic", MB_OK | MB_ICONEXCLAMATION);
 					ShowWindow(hWnd, SW_SHOW);
 					break;
 				case RMCMD_STARTUP:
@@ -302,12 +329,9 @@ next:
 			PostMessage(hWnd, WM_NULL, 0, 0);
 		}
 		break;
-	case WM_CTLCOLORDLG:
-		return (INT_PTR)CreateSolidBrush(RGB(236, 244, 255));
-	//	break;
 
 	case WM_CTLCOLORSTATIC:
-		SetBkColor((HDC)wParam, RGB(236, 244, 255));
+		//SetBkColor((HDC)wParam, RGB(236, 244, 255));
 		return (INT_PTR)CreateSolidBrush(RGB(236, 244, 255));
 
 	case WM_MEASUREITEM:
@@ -321,11 +345,21 @@ next:
 
 		break;
 
-	case WM_CLOSE:
+	case WM_GETMINMAXINFO:
+		LPMINMAXINFO mminfo;
+		mminfo = (LPMINMAXINFO)lParam;
+		mminfo->ptMinTrackSize.x = 350;
+		mminfo->ptMinTrackSize.y = 350;
+		break;
 
+	case WM_SIZE:
+		OnSize(wParam, lParam);
+		break;
+
+	case WM_CLOSE:
 		restart(hWnd);
 		ShowWindow(hWnd, SW_HIDE);
-		break;
+		return 0;
 
 	case WM_DESTROY:
 
@@ -344,19 +378,17 @@ next:
 		EndDialog(hWnd,0);
 		break;
 	}
-	return (INT_PTR)FALSE;
+	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-void OnInitDlg(HWND hWnd){
+void OnCreate(HWND hWnd, LPCREATESTRUCT lpcs){
+
 	HMENU hMenu;
 	KeyFileData *Data;
 	char szKBPath[MAX_PATH];
+	char* szBtn;
 
 	LoadIcon(hInst, (LPCSTR)IDI_KEYMAGIC);
-
-	//if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath)){
-	//	goto next;
-	//}
 
 	if (!GetModuleFileName(GetModuleHandle(NULL), szKBPath, MAX_PATH))
 		goto next;
@@ -369,13 +401,10 @@ void OnInitDlg(HWND hWnd){
 		}
 	}
 
-	//PathAppend(szKBPath, "KeyMagic");
 	CreateDirectory(szKBPath, NULL);
 	PathAppend(szKBPath, "Keyboards");
 	CreateDirectory(szKBPath, NULL);
 next:
-	SetWindowText(hWnd, szTitle);
-
 	GetKeyBoards();
 
 	if (hKeyMenu){
@@ -399,33 +428,394 @@ next:
 
 	AppendMenu(hMenu, MF_SEPARATOR, 0, 0);
 	AppendMenu(hMenu, MF_BYCOMMAND, IDM_ABOUT, "&About");
-	EnableWindow(GetDlgItem(hWnd,IDC_PATH), false);
-	hList = GetDlgItem(hWnd, IDC_KEYBOARDS);
+	CreateMyMenu(hWnd, hKeyMenu);
+
+	LOGFONT lf;
+	memset(&lf, 0, sizeof(lf));
+	lf.lfHeight = -MulDiv(8, GetDeviceCaps(GetDC(hWnd), LOGPIXELSY), 72);
+	lf.lfWeight = FW_NORMAL;
+	lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
+	lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
+	lf.lfQuality = PROOF_QUALITY;
+	lf.lfPitchAndFamily = FF_DONTCARE;
+	lstrcpy(lf.lfFaceName, "Microsoft Sans Serif");
+
+	HFONT hf = CreateFontIndirect(&lf);
+
+	hgbKeyboard = CreateWindowEx(0, "Button", "Installed Keyboard",
+		WS_VISIBLE | WS_CHILD | BS_GROUPBOX,
+		0,0,0,0, hWnd, (HMENU) 1, lpcs->hInstance, NULL);
+
+	SendMessage(hgbKeyboard, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
+
+	hgbOption = CreateWindowEx(0, "Button", "Options",
+		WS_VISIBLE | WS_CHILD | BS_GROUPBOX,
+		0,0,0,0, hWnd, (HMENU) 1, lpcs->hInstance, NULL);
+
+	SendMessage(hgbOption, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
+
+	hgbHotkey = CreateWindowEx(0, "Button", "Hotkey",
+		WS_VISIBLE | WS_CHILD | BS_GROUPBOX,
+		0,0,0,0, hWnd, (HMENU) 1, lpcs->hInstance, NULL);
+
+	SendMessage(hgbHotkey, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
+
+	hgbDisplay = CreateWindowEx(0, "Button", "Menu Text",
+		WS_VISIBLE | WS_CHILD | BS_GROUPBOX,
+		0,0,0,0, hWnd, (HMENU) 1, lpcs->hInstance, NULL);
+
+	SendMessage(hgbDisplay, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
+
+	hgbLocation = CreateWindowEx(0, "Button", "Keyboard Path",
+		WS_VISIBLE | WS_CHILD | BS_GROUPBOX,
+		0,0,0,0, hWnd, (HMENU) 1, lpcs->hInstance, NULL);
+
+	SendMessage(hgbLocation, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
+
+	hList = CreateWindowEx (0, "ListBox", NULL,
+		WS_VSCROLL | WS_BORDER | WS_CHILD | WS_VISIBLE | LBS_NOINTEGRALHEIGHT | LBS_NOTIFY ,
+		0, 0, 0, 0, hWnd, (HMENU)IDC_KEYBOARDS,
+		lpcs -> hInstance, NULL);
+
+	SendMessage(hList, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
+
+	hPath = CreateWindowEx (WS_EX_CLIENTEDGE, "Edit", NULL,
+		WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL | ES_AUTOVSCROLL,
+		0, 0, 0, 0, hWnd, (HMENU)IDC_PATH,
+		lpcs -> hInstance, NULL);
+
+	SendMessage(hPath, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
+	EnableWindow(hPath, false);
+
+	hDisplay = CreateWindowEx (WS_EX_CLIENTEDGE, "Edit", NULL,
+		WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL | ES_AUTOVSCROLL,
+		0, 0, 0, 0, hWnd, (HMENU)IDC_DISPLAY,
+		lpcs -> hInstance, NULL);
+
+	SendMessage(hDisplay, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
+
+	hShortcut = CreateWindowEx (WS_EX_CLIENTEDGE, HOTKEY_CLASS, NULL,
+		WS_CHILD | WS_VISIBLE,
+		0, 0, 0, 0, hWnd, (HMENU)IDC_SHORTCUT,
+		lpcs -> hInstance, NULL);
+
+	SendMessage(hShortcut, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
+
+	hAdd = CreateWindowEx (0, "Button", "Add",
+		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+		0, 0, 0, 0, hWnd, (HMENU)IDC_ADD,
+		lpcs -> hInstance, NULL);
+
+	SendMessage(hAdd, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
+
+	hRemove = CreateWindowEx (0, "Button", "Remove",
+		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+		0, 0, 0, 0, hWnd, (HMENU)IDC_REMOVE,
+		lpcs -> hInstance, NULL);
+
+	SendMessage(hRemove, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
+
+	if (bAdmin) szBtn = "OK";
+	else szBtn = "(SI) OK";
+
+	hDone = CreateWindowEx (0, "Button", szBtn,
+		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+		0, 0, 0, 0, hWnd, (HMENU)IDC_DONE,
+		lpcs -> hInstance, NULL);
+
+	SendMessage(hDone, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
+
+	hCancel = CreateWindowEx (0, "Button", "Cancel",
+		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+		0, 0, 0, 0, hWnd, (HMENU)IDC_CANCEL,
+		lpcs -> hInstance, NULL);
+
+	SendMessage(hCancel, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
+
+	if (bAdmin) szBtn = "Apply";
+	else szBtn = "(SI) Apply";
+
+	hApply = CreateWindowEx (0, "Button", szBtn,
+		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+		0, 0, 0, 0, hWnd, (HMENU)IDC_APPLY,
+		lpcs -> hInstance, NULL);
+
+	SendMessage(hApply, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
+
+	hPathChk = CreateWindowEx (0, "Button", "Use from this path",
+		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_CHECKBOX | BS_AUTOCHECKBOX,
+		0, 0, 0, 0, hWnd, (HMENU)IDC_DIR,
+		lpcs -> hInstance, NULL);
+
+	SendMessage(hPathChk, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
+
+	//hBK = CreateWindowEx (0, "Static", NULL,
+	//	WS_CHILD | WS_VISIBLE | SS_BITMAP | SS_REALSIZEIMAGE,
+	//	0, 0, 0, 0, hWnd, (HMENU)0,
+	//	lpcs -> hInstance, NULL);
+
+	//SendMessage(hBK, STM_SETIMAGE, IMAGE_BITMAP,
+	//	(LPARAM)LoadImage(lpcs->hInstance,
+	//	MAKEINTRESOURCE(IDB_BK), IMAGE_BITMAP, 0, 0, LR_DEFAULTSIZE));
+
+	Logo = new CGdiPlusBitmapResource;
+	Logo->Load(IDB_LOGO, "PNG", lpcs -> hInstance);
+
+	Bmpbk = new Gdiplus::Bitmap(lpcs -> hInstance, MAKEINTRESOURCEW(IDB_BK));
 
 	UpdateDlgData(hWnd);
-	
-	if (hide == true)
-		SetTimer(hWnd, 100, USER_TIMER_MINIMUM, NULL);
 
-	CreateMyMenu(hWnd, hKeyMenu);
 }
 
-bool UpdateDlgData(HWND hWnd){
+DWORD WINAPI TYM (LPVOID lpParameter)
+{
+	PAINTSTRUCT ps;
+	MSG message;
+
+	TCHAR szTWM[] = "type with me....";
+	int lnTWM = lstrlen(szTWM);
+
+	Sleep(1000);
+
+	HDC local_hdc_window = GetDC((HWND)lpParameter);
+	HDC local_hdc_text = CreateCompatibleDC(GetDC(0));
+	HDC local_hdc_window_copy = CreateCompatibleDC(GetDC(0));
+
+	LOGFONT lf;
+	memset(&lf, 0, sizeof(lf));
+	lf.lfHeight = -MulDiv(10, GetDeviceCaps(local_hdc_text, LOGPIXELSY), 72);
+	lf.lfWeight = FW_NORMAL;
+	lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
+	lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
+	lf.lfQuality = PROOF_QUALITY;
+	lf.lfPitchAndFamily = FF_DONTCARE;
+	lstrcpy(lf.lfFaceName, "Microsoft Sans Serif");
+
+	HFONT hf = CreateFontIndirect(&lf);
+	SelectObject(local_hdc_text, hf);
+
+	SIZE size;
+	GetTextExtentPoint(local_hdc_text, szTWM, lnTWM, &size);
+
+	SetBkMode(local_hdc_text, TRANSPARENT);
+	SetTextColor(local_hdc_text, RGB(255,255,255));
+
+	restart:
+
+	SelectObject(local_hdc_text, CreateCompatibleBitmap(local_hdc_window, size.cx, size.cy));
+
+	SelectObject(local_hdc_window_copy,CreateCompatibleBitmap(local_hdc_window, size.cx, size.cy));
+	BitBlt(local_hdc_window_copy, 0,0, size.cx, size.cy, local_hdc_window, 210, 33, SRCCOPY);
+
+	loop:
+	for (txPos; txPos < lnTWM; txPos++)
+	{
+		BitBlt(local_hdc_text, 0, 0, size.cx,size.cy,local_hdc_window_copy, 0, 0, SRCCOPY);
+		TextOut(local_hdc_text, 0, 0, szTWM, txPos);
+		BitBlt(local_hdc_window, 210, 33, size.cx, size.cy, local_hdc_text, 0,0, SRCCOPY);
+
+		if (szTWM[txPos] != ' ')
+			Sleep(400);
+		else
+			Sleep(100);
+	}
+	txPos=0;
+	Sleep(700);
+	goto loop;
+
+	ExitThread(true);
+}
+
+VOID onPaint(HWND hWnd)
+{
+	HDC	hdc;
+	PAINTSTRUCT ps;
+	Gdiplus::Graphics*	pGraphics;
+
+	hdc = BeginPaint(hWnd, &ps);
+	pGraphics = new Gdiplus::Graphics(hdc);
+	pGraphics->DrawImage(Bmpbk, 0, 0, WndWidth, Bmpbk->GetHeight());
+	pGraphics->DrawImage(*Logo, 0, 0, Logo->m_pBitmap->GetWidth(), Logo->m_pBitmap->GetHeight());
+	if (hThread)
+	{
+		TerminateThread(hThread, 1);
+		hThread=0;
+	}
+	
+	hThread = CreateThread(NULL, NULL, TYM, hWnd, 0, &ThreadID);
+	EndPaint(hWnd, &ps);
+
+}
+
+VOID OnSize(WPARAM wParam, LPARAM lParam)
+{
+	int TopBorder,
+		BottomBorder,
+		RightBorder,
+		LeftBorder,
+		
+		Width,
+		Height,
+		HalfWidth,
+		HalfHeight,
+
+		BtnHeight,
+		EditHeight;
+
+	TopBorder = 70;
+	BottomBorder = 5;
+	RightBorder = 5;
+	LeftBorder = 5;
+
+	BtnHeight = 24;
+	EditHeight = 24;
+
+	WndHeight = HIWORD(lParam);
+	WndWidth = LOWORD(lParam);
+
+	Height = HIWORD(lParam) - (TopBorder + BottomBorder);
+	Width = LOWORD(lParam) - (LeftBorder + RightBorder);
+
+	HalfWidth = Width / 2;
+	HalfHeight = Height / 2;
+
+	float ListWidth = Width;
+
+	ListWidth /= 6;
+
+	MoveWindow(hBK,
+		0, 0, LOWORD(lParam), 67, TRUE);
+
+	InvalidateRect(hLogo, 0, TRUE);
+
+	MoveWindow(hgbKeyboard,
+		LeftBorder,
+		TopBorder,
+		HalfWidth - LeftBorder - ListWidth,
+		Height - (BtnHeight + BottomBorder) - 10,
+		TRUE);
+
+	MoveWindow(hgbOption,
+		HalfWidth - ListWidth + LeftBorder,
+		TopBorder,
+		HalfWidth + ListWidth,
+		Height - (BtnHeight + BottomBorder) - 10,
+		TRUE);
+
+	MoveWindow(hgbHotkey,
+		HalfWidth - ListWidth + LeftBorder + 10,
+		TopBorder + 15,
+		HalfWidth + ListWidth - 20,
+		50,
+		TRUE);
+
+	MoveWindow(hgbDisplay,
+		HalfWidth - ListWidth + LeftBorder + 10,
+		Height / 2 + 22,
+		HalfWidth + ListWidth - 20,
+		50,
+		TRUE);
+
+	MoveWindow(hList,
+		LeftBorder + 10,
+		TopBorder + 20,
+		HalfWidth - LeftBorder - ListWidth - 20,
+		Height - (BtnHeight + BottomBorder) - 40,
+		TRUE);
+
+	MoveWindow(hShortcut,
+		HalfWidth + LeftBorder - ListWidth + 20,
+		TopBorder + 32,
+		ListWidth + HalfWidth - RightBorder - 33,
+		EditHeight,
+		TRUE);
+
+	MoveWindow(hDisplay,
+		HalfWidth + LeftBorder - ListWidth + 20,
+		(TopBorder + HalfHeight) - (EditHeight + BottomBorder) - 3,
+		ListWidth + HalfWidth - RightBorder - 33,
+		EditHeight, TRUE);
+
+	MoveWindow(hgbLocation,
+		HalfWidth - ListWidth + LeftBorder + 10,
+		(TopBorder + Height) - (EditHeight + BottomBorder + BtnHeight) - 60,
+		HalfWidth + ListWidth - 20,
+		70,
+		TRUE);
+
+	MoveWindow(hPath,
+		HalfWidth + LeftBorder - ListWidth + 20,
+		(TopBorder + Height) - (EditHeight + BottomBorder + BtnHeight) - 20,
+		ListWidth + HalfWidth - RightBorder - 33,
+		EditHeight,
+		TRUE);
+
+	MoveWindow(hPathChk,
+		HalfWidth + LeftBorder - ListWidth + 20,
+		(TopBorder + Height) - (EditHeight + BottomBorder + BtnHeight) - 20 - BtnHeight,
+		ListWidth + HalfWidth - RightBorder - 33,
+		EditHeight,
+		TRUE);
+
+	int BtnSpace = 3;
+	int BtnWidth = HalfWidth / 3 - BtnSpace;
+
+	MoveWindow(hAdd,
+		LeftBorder,
+		(TopBorder + Height) - (BtnHeight + BottomBorder),
+		BtnWidth,
+		BtnHeight,
+		TRUE);
+
+	MoveWindow(hRemove,
+		BtnWidth + LeftBorder + BtnSpace,
+		(TopBorder + Height) - (BtnHeight + BottomBorder),
+		BtnWidth,
+		BtnHeight,
+		TRUE);
+
+	POINT pt;
+	RECT rc;
+	GetWindowRect (hgbOption, &rc);
+	pt.x = rc.left;
+	pt.y = rc.top;
+	ScreenToClient (GetParent(hgbOption), &pt);
+	GetClientRect (hgbOption, &rc);
+	rc.left = pt.x;
+	rc.top = pt.y;
+	rc.right += rc.left;
+	rc.bottom += rc.top;
+
+
+	BtnSpace = 1;
+	BtnWidth = (rc.right - rc.left) / 3 - (BtnSpace * 2);
+
+	MoveWindow(hDone,
+		HalfWidth + LeftBorder - ListWidth,
+		(TopBorder + Height) - (BtnHeight + BottomBorder),
+		BtnWidth,
+		BtnHeight,
+		TRUE);
+
+	MoveWindow(hCancel,
+		(rc.right - rc.left) / 2 + rc.left - (BtnWidth/2),
+		(TopBorder + Height) - (BtnHeight + BottomBorder),
+		BtnWidth,
+		BtnHeight,
+		TRUE);
+
+	MoveWindow(hApply,
+		rc.right - BtnWidth,
+		(TopBorder + Height) - (BtnHeight + BottomBorder),
+		BtnWidth,
+		BtnHeight,
+		TRUE);
+
+}
+
+BOOL UpdateDlgData(HWND hWnd){
 	KeyFileData *Data;
 	char szKBPath[MAX_PATH], szKBNames[500], szCurDir[MAX_PATH], szMenuDisplay[MAX_PATH], szShortCut[10];
-	HWND hDisplay,hHotKey;
-
-	hDisplay = GetDlgItem(hWnd, IDC_DISPLAY);
-	hHotKey = GetDlgItem(hWnd, IDC_SHORTCUT);
-	
-	//if (FAILED(SHGetFolderPath(NULL,
-	//	CSIDL_COMMON_APPDATA,
-	//	NULL,
-	//	SHGFP_TYPE_CURRENT,
-	//	szKBPath))){
-	//		error("SHGetFolderPath");
-	//		return false;
-	//}
 
 	if (!GetModuleFileName(GetModuleHandle(NULL), szKBPath, MAX_PATH))
 		return false;
@@ -437,8 +827,6 @@ bool UpdateDlgData(HWND hWnd){
 			break;
 		}
 	}
-
-	//PathAppend(szKBPath, "KeyMagic");
 
 	GetPrivateProfileString(szKBP, NULL, NULL, (LPSTR)szKBNames, 500, szINIFile);
 
@@ -497,7 +885,7 @@ void SetKbData(HWND hWnd){
 	}
 }
 
-bool OpenDialog(HWND hwnd, char* szFileName,DWORD nMaxFile)
+BOOL OpenDialog(HWND hwnd, char* szFileName,DWORD nMaxFile)
 {
 	OPENFILENAME ofn = {0};
 
@@ -517,7 +905,7 @@ bool OpenDialog(HWND hwnd, char* szFileName,DWORD nMaxFile)
 	return true;
 }
 
-void restart (HWND hWnd){
+VOID restart (HWND hWnd){
 	DeleteDlgData(hWnd);
 	UpdateDlgData(hWnd);
 	kbindex = -1;
@@ -534,7 +922,7 @@ void restart (HWND hWnd){
 	CreateMyMenu(hWnd, hKeyMenu);
 }
 
-bool AddKeyBoardToList(HWND hWnd,char* lpKBPath){
+BOOL AddKeyBoardToList(HWND hWnd,char* lpKBPath){
 	char lpPath[MAX_PATH];
 	char lpName[MAX_PATH];
 	char szKBPath[MAX_PATH];
@@ -587,7 +975,7 @@ bool AddKeyBoardToList(HWND hWnd,char* lpKBPath){
 	return true;
 }
 
-bool RemoveKeyBoard(){
+BOOL RemoveKeyBoard(){
 	KeyFileData *Data;
 
 	kbindex = SendMessage(hList, LB_GETCURSEL, 0, 0);
@@ -613,7 +1001,7 @@ bool RemoveKeyBoard(){
 	return true;
 }
 
-bool DeleteKeyFile(){
+BOOL DeleteKeyFile(){
 	char szKBPath[MAX_PATH],szToDelete[MAX_PATH];
 
 	if (!cbFileToDelete)
@@ -649,7 +1037,7 @@ bool DeleteKeyFile(){
 	return true;
 }
 
-void GetHotKey(WORD wHotkey, LPSTR ShortCutDisplay){
+VOID GetHotKey(WORD wHotkey, LPSTR ShortCutDisplay){
 
 	BYTE *vkey, modkey;
 
@@ -676,7 +1064,7 @@ void GetHotKey(WORD wHotkey, LPSTR ShortCutDisplay){
 	lstrcat(ShortCutDisplay, (LPCSTR)&vkey[0]);
 }
 
-void error(LPCSTR lpszFunction) 
+VOID error(LPCSTR lpszFunction) 
 {
 	int *Buffer;
 	//Get Last Error Code and Translate to text
@@ -688,7 +1076,7 @@ void error(LPCSTR lpszFunction)
 	MessageBoxA(NULL, (LPCSTR)Buffer, lpszFunction, MB_OK | MB_ICONHAND | MB_APPLMODAL);
 }
 
-void GetKeyBoards(){
+VOID GetKeyBoards(){
 
 	char szMenuDisplay[MAX_PATH];
 	char szKBNames[500];
@@ -734,7 +1122,7 @@ void GetKeyBoards(){
 
 };
 
-void Startup(BOOL isEnable){
+VOID Startup(BOOL isEnable){
 
 	if (bAdmin)
 	{

@@ -17,7 +17,7 @@
 
 #include "MyMenu.h"
 #include "MyButton.h"
-#include "DlgProc.h"
+#include "WndProc.h"
 #include "DllUnload.h"
 #include "../KeyMagicDll/KeyMagicDll.h"
 
@@ -44,18 +44,25 @@ HHOOK hGM = NULL;
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow);
 ATOM MyRegisterClass(HINSTANCE hInstance);
 
-bool hide = false;
 HMENU hKeyMenu;
 char szINIFile[MAX_PATH];
 char szCurDir[MAX_PATH];
 BOOL bAdmin;
+
+char szMainClassName[] = "Keymagic";
+HWND hwndMain;
+HACCEL hAccel;
+
+ULONG_PTR m_gdiplusToken;
 
 int APIENTRY WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      LPTSTR    lpCmdLine,
                      int       nCmdShow)
 {
-	UNREFERENCED_PARAMETER(hPrevInstance);
+	OSVERSIONINFO osvi;
+	BOOL bIsWindowsVistaLater;
+
 	hInst = hInstance;
 
 	GetModuleFileName(hInst, szCurDir, MAX_PATH);
@@ -76,19 +83,78 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	LoadString(hInst, IDS_EN_TITLE, szTitle, MAX_LOADSTRING);
 
-	if (bAdmin)
+	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
+    osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+
+    GetVersionEx(&osvi);
+
+    bIsWindowsVistaLater = osvi.dwMajorVersion >= 6;
+
+	if (bAdmin && bIsWindowsVistaLater)
 		lstrcat(szTitle, " (Administrator)");
 
 	if (OpenMutexW(SYNCHRONIZE, NULL, L"\u1000\u102E\u1038\u1019\u1000\u1039\u1002\u103A\u1005\u1039")){
 		HWND hPreHandle = FindWindow(NULL, szTitle);
 		ShowWindow(hPreHandle, SW_SHOW);
+		SetForegroundWindow(hPreHandle);
 		return 0;
 	}
 
-	HANDLE MtxHANDLE= CreateMutexW(NULL, TRUE, L"\u1000\u102E\u1038\u1019\u1000\u1039\u1002\u103A\u1005\u1039");
+	HANDLE MtxHANDLE = CreateMutexW(NULL, TRUE, L"\u1000\u102E\u1038\u1019\u1000\u1039\u1002\u103A\u1005\u1039");
 
-	DialogBox(hInst, MAKEINTRESOURCE(IDD_MAINBOX), NULL, WndProc);
+	MSG messages;
+    WNDCLASSEX wincl;
 
+    hInst = hInstance;
+    wincl.hInstance = hInstance;
+    wincl.lpszClassName = szMainClassName;
+    wincl.lpfnWndProc = WndProc;
+    wincl.style = CS_DBLCLKS;
+    wincl.cbSize = sizeof (WNDCLASSEX);
+
+	wincl.hIcon = LoadIcon (hInst, MAKEINTRESOURCE(IDI_KEYMAGIC));
+    wincl.hIconSm = LoadIcon (hInst, MAKEINTRESOURCE(IDI_KEYMAGIC));
+    wincl.hCursor = LoadCursor (NULL, IDC_ARROW);
+    wincl.lpszMenuName = NULL;
+    wincl.cbClsExtra = 0;
+    wincl.cbWndExtra = 0;
+	wincl.hbrBackground = CreateSolidBrush(RGB(236, 244, 255));
+
+    RegisterClassEx (&wincl);
+
+	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+	Gdiplus::GdiplusStartup(&m_gdiplusToken, &gdiplusStartupInput, NULL);
+
+    hwndMain = CreateWindowEx (
+        0,szMainClassName, szTitle, WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT,CW_USEDEFAULT,
+        580, 480,
+        HWND_DESKTOP,NULL,
+        hInst,NULL
+		);
+
+	if (!hwndMain)
+	{
+		ReleaseMutex(MtxHANDLE);
+		return 0;
+	}
+
+	ShowWindow (hwndMain, SW_HIDE);
+
+    hAccel = LoadAccelerators(hInst, "ACCLC"); 
+
+    while (GetMessage (&messages, NULL, 0, 0))
+    {
+        if (!IsDialogMessage (NULL, &messages))
+        {
+			if(!TranslateAccelerator(hwndMain, hAccel, &messages)){
+				TranslateMessage(&messages);
+				DispatchMessage(&messages);
+			}
+		}
+	}
+
+	Gdiplus::GdiplusShutdown(m_gdiplusToken);
 	ReleaseMutex(MtxHANDLE);
 	return (int) 0;
 }
@@ -312,14 +378,12 @@ BOOL WorkOnCommand(LPTSTR lpCmdLine){
 			if (AddKeyBoard(&lpCmdLine[3]))
 				MessageBox(GetDesktopWindow(), "The keyboard has been successfully added.", "KeyMagic", MB_ICONINFORMATION | MB_OK);
 			return true;
-		case 's':
-			hide = true;
-			return false;
 		case 'u':
 			HWND hPreHandle = FindWindow(NULL, szTitle);
 			if (hPreHandle)
 			{
 				SendMessage(hPreHandle, WM_CLOSE, 0, 0);
+				Sleep(1000);
 			}
 			UnHook();
 			ScannerAndInject();

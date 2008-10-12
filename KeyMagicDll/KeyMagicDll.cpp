@@ -692,17 +692,6 @@ LPCSTR GetKeyBoard(UINT Index){
 	if (szKBFile[1] == ':')
 		return szKBFile;
 	
-	//if (SUCCEEDED(SHGetFolderPath(NULL,
-	//	CSIDL_COMMON_APPDATA,
-	//	NULL,
-	//	SHGFP_TYPE_CURRENT,
-	//	szAllUser))){
-	//	lstrcpy(szKBPath, szAllUser);
-	//		PathAppend(szKBPath, "KeyMagic");
-	//		PathAppend(szKBPath, szKBFile);
-	//		return szKBPath;
-	//}
-
 	lstrcpy(szKBPath, szDir);
 	PathAppend(szKBPath, szKBFile);
 

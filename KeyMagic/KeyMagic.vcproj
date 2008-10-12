@@ -41,10 +41,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				EnableIntrinsicFunctions="true"
+				WholeProgramOptimization="false"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
+				MinimalRebuild="false"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="0"
+				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="1"
 				DebugInformationFormat="4"
@@ -60,8 +63,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../Release/KeyMagicDll.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Advapi32.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib psapi.lib $(NOINHERIT)"
+				AdditionalDependencies="../Release/KeyMagicDll.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Advapi32.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib psapi.lib gdiplus.lib Ole32.lib msvcrtd.lib $(NOINHERIT)"
 				LinkIncremental="2"
+				IgnoreAllDefaultLibraries="false"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -133,10 +137,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../Release/KeyMagicDll.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Advapi32.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib psapi.lib $(NOINHERIT)"
+				AdditionalDependencies="../Release/KeyMagicDll.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Advapi32.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib psapi.lib gdiplus.lib Ole32.lib $(NOINHERIT)"
 				LinkIncremental="1"
 				EnableUAC="true"
 				UACExecutionLevel="0"
+				IgnoreAllDefaultLibraries="false"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -175,10 +180,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\DlgProc.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\DllUnload.cpp"
 				>
 			</File>
@@ -194,6 +195,10 @@
 				RelativePath=".\MyMenu.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\WndProc.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -201,7 +206,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\DlgProc.h"
+				RelativePath=".\CGdiPlusBitmap.h"
 				>
 			</File>
 			<File
@@ -228,6 +233,10 @@
 				RelativePath=".\targetver.h"
 				>
 			</File>
+			<File
+				RelativePath=".\WndProc.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -235,7 +244,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\bk.bmp"
+				RelativePath=".\Res\bk.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\Res\key.png"
 				>
 			</File>
 			<File
@@ -248,6 +261,10 @@
 			</File>
 			<File
 				RelativePath=".\manifest.manifest"
+				>
+			</File>
+			<File
+				RelativePath=".\Res\shield.ico"
 				>
 			</File>
 		</Filter>

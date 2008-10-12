@@ -15,6 +15,7 @@
 //Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <windows.h>
+#include <gdiplus.h>
 #include "keyMagic.h"
 
 enum RightMenuCmd{
@@ -24,20 +25,22 @@ enum RightMenuCmd{
 	RMCMD_ABOUT
 };
 
-INT_PTR CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
-void				OnInitDlg(HWND hWnd);
-void				SetKbData(HWND hWnd);
-void				DeleteDlgData(HWND hWnd);
-bool				OpenDialog(HWND hwnd, char* szFileName,DWORD nMaxFile);
-bool				RemoveKeyBoard();
-bool				DeleteKeyFile();
-bool				AddKeyBoardToList(HWND hWnd, char* szFileName);
-void				GetHotKey(WORD wHotkey, LPSTR ShortCutDisplay);
-bool				UpdateDlgData(HWND hWnd);
-void				restart(HWND hWnd);
-void				error(LPCSTR lpszFunction) ;
-void				GetKeyBoards();
-void				Startup(BOOL isEnable);
+LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
+VOID				OnCreate(HWND hWnd, LPCREATESTRUCT lpcs);
+VOID				SetKbData(HWND hWnd);
+VOID				DeleteDlgData(HWND hWnd);
+BOOL				OpenDialog(HWND hwnd, char* szFileName,DWORD nMaxFile);
+BOOL				RemoveKeyBoard();
+BOOL				DeleteKeyFile();
+BOOL				AddKeyBoardToList(HWND hWnd, char* szFileName);
+VOID				GetHotKey(WORD wHotkey, LPSTR ShortCutDisplay);
+BOOL				UpdateDlgData(HWND hWnd);
+VOID				restart(HWND hWnd);
+VOID				error(LPCSTR lpszFunction) ;
+VOID				GetKeyBoards();
+VOID				Startup(BOOL isEnable);
+VOID				OnSize(WPARAM wParam, LPARAM lParam);
+VOID				onPaint(HWND hWnd);
 
 extern strDelete *szFileToDelete;
 extern int cbFileToDelete;

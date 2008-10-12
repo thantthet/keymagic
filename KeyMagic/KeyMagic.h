@@ -22,6 +22,7 @@
 #include <shlobj.h>
 #include <shellapi.h>
 #include <Commdlg.h>
+#include <gdiplus.h>
 
 //Custom message IDs
 #define TRAY_ID 100
@@ -42,7 +43,6 @@ extern char szCurDir[MAX_PATH];
 
 extern void	GetKeyBoards();
 extern void	SetHook (HWND hwnd);
-extern bool hide;
 
 struct KeyFileData{
 	bool isNew;

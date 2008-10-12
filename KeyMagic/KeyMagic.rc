@@ -34,13 +34,14 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_KEYMAGIC            ICON                    "KeyMagic.ico"
+IDI_BSHIELD             ICON                    "Res\\shield.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Accelerator
 //
 
-IDC_KEYMAGIC ACCELERATORS 
+ACCLC ACCELERATORS 
 BEGIN
     "?",            IDM_ABOUT,              ASCII,  ALT
     "/",            IDM_ABOUT,              ASCII,  ALT
@@ -54,11 +55,11 @@ END
 
 IDD_ABOUTBOX DIALOGEX 0, 0, 286, 196
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "About KeyMagic"
+CAPTION "About Keymagic"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    ICON            IDI_KEYMAGIC,IDC_STATIC,16,18,21,20
-    LTEXT           "KeyMagic 1.2 Beta",IDC_STATIC,43,18,61,8,SS_NOPREFIX
+    ICON            IDI_KEYMAGIC,IDC_STATIC,16,18,20,20
+    LTEXT           "Keymagic 1.2",IDC_STATIC,43,18,61,8,SS_NOPREFIX
     DEFPUSHBUTTON   "OK",IDOK,229,175,50,14,WS_GROUP
     LTEXT           "Complie Info",IDC_COMPLIE,7,181,94,8,WS_DISABLED
     LTEXT           "ABOUT TEXT HERE",IDC_ATEXT,43,33,226,137
@@ -70,14 +71,14 @@ CAPTION "Keymagic"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         130,IDC_STATIC,"Static",SS_BITMAP | SS_REALSIZEIMAGE,0,0,317,41
-    LISTBOX         IDC_KEYBOARDS,11,57,92,132,WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    LISTBOX         IDC_KEYBOARDS,11,57,92,132,WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "Added Keyboards",IDC_STATIC,6,45,103,168
     GROUPBOX        "Hotkey",IDC_STATIC,119,60,184,31
     GROUPBOX        "Menu Display Text",IDC_STATIC,119,101,184,33
     GROUPBOX        "Location",IDC_STATIC,120,141,183,43
     CONTROL         "&Cancel",IDC_CANCEL,"Button",BS_OWNERDRAW | WS_TABSTOP,189,193,49,14
-    CONTROL         "&OK",IDC_DONE,"Button",BS_OWNERDRAW | WS_TABSTOP,122,193,49,14
-    CONTROL         "&Apply",IDC_APPLY,"Button",BS_OWNERDRAW | WS_TABSTOP,255,193,49,14
+    CONTROL         "(SI)&OK",IDC_DONE,"Button",BS_OWNERDRAW | WS_TABSTOP,122,193,49,14
+    CONTROL         "(SI) &Apply",IDC_APPLY,"Button",BS_OWNERDRAW | WS_TABSTOP,255,193,49,14
     EDITTEXT        IDC_DISPLAY,125,114,172,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_PATH,125,165,172,14,ES_AUTOHSCROLL
     CONTROL         "",IDC_SHORTCUT,"msctls_hotkey32",WS_BORDER | WS_TABSTOP,126,72,171,14
@@ -189,7 +190,7 @@ END
 // Bitmap
 //
 
-IDB_BK                  BITMAP                  "bk.bmp"
+IDB_BK                  BITMAP                  "Res\\bk.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -198,11 +199,29 @@ IDB_BK                  BITMAP                  "bk.bmp"
 
 STRINGTABLE 
 BEGIN
-    IDS_EN_TITLE            "KeyMagic 1.2 Beta 2"
-    IDC_KEYMAGIC            "KEYMAGIC"
+    IDS_EN_TITLE            "KeyMagic 1.2"
 END
 
 #endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) (unknown sub-lang: 0x12) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENE)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, 0x12
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// PNG
+//
+
+IDB_LOGO                PNG                  "Res\\key.png"
+#endif    // English (U.S.) (unknown sub-lang: 0x12) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

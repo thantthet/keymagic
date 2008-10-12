@@ -146,7 +146,7 @@ void DrawMyMenu(LPDRAWITEMSTRUCT lpdis){
 		DrawText(lpdis->hDC, Temp, lstrlen(Temp), &lpdis->rcItem, DT_VCENTER);
 
 		lpdis->rcItem.right -= 8;
-		DrawText(lpdis->hDC, szShortCut, lstrlen(szShortCut), &lpdis->rcItem,DT_VCENTER | DT_RIGHT);
+		DrawText(lpdis->hDC, szShortCut, lstrlen(szShortCut), &lpdis->rcItem, DT_VCENTER | DT_RIGHT);
 
 		SelectObject(lpdis->hDC, hOldBrush);
 		SelectObject(lpdis->hDC, hOldPen);

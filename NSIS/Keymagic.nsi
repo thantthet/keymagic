@@ -184,31 +184,42 @@ SubSection un.Keymagic
 	
 	SetShellVarContext all
 	
+	Processes::FindProcess "Keymagic"
+	Pop $R0
+	
+	StrCmp $R0 "1" running notrunning
+	
+	running:
+	
+	Processes::KillProcess "Keymagic"
+	
 	Exec '"$INSTDIR\Keymagic.exe" -u'
-	Sleep "1000"
+	Sleep "3000"
+	
+	notrunning:
 	
 	Delete "$INSTDIR\Keymagic.exe"
 	Delete "$INSTDIR\KeyMagicDll.dll"
 	Delete "$INSTDIR\KeyMagic.ini"
 	Delete "$INSTDIR\Icons\Keymap.ico"
 	RMDir  "$INSTDIR\Icons\"
-	Delete  "$INSTDIR\Docs\Authors.txt"
-	Delete  "$INSTDIR\Docs\Changelog.txt"
-	Delete  "$INSTDIR\Docs\GPL.txt"
-	Delete  "$INSTDIR\Docs\License.txt"
-	Delete  "$INSTDIR\Docs\User Manual MM.pdf"
-	Delete  "$INSTDIR\Docs\User Manual EN.pdf"
+	Delete "$INSTDIR\Docs\Authors.txt"
+	Delete "$INSTDIR\Docs\Changelog.txt"
+	Delete "$INSTDIR\Docs\GPL.txt"
+	Delete "$INSTDIR\Docs\License.txt"
+	Delete "$INSTDIR\Docs\User Manual MM.pdf"
+	Delete "$INSTDIR\Docs\User Manual EN.pdf"
 	RMDir  "$INSTDIR\Docs\"
-	Delete  "$INSTDIR\Keyboards\Myanmar3.km2"
-	Delete  "$INSTDIR\Keyboards\Parabaik.km2"
-	Delete  "$INSTDIR\Keyboards\Uniburma.km2"
-	Delete  "$INSTDIR\Keyboards\Zawgyi.km2"
+	Delete "$INSTDIR\Keyboards\Myanmar3.km2"
+	Delete "$INSTDIR\Keyboards\Parabaik.km2"
+	Delete "$INSTDIR\Keyboards\Uniburma.km2"
+	Delete "$INSTDIR\Keyboards\Zawgyi.km2"
 	RMDir  "$INSTDIR\Keyboards"
-	Delete  "$INSTDIR\Keyscripts\Myanmar3.kms"
-	Delete  "$INSTDIR\Keyscripts\Parabaik.kms"
-	Delete  "$INSTDIR\Keyscripts\Uniburma.kms"
-	Delete  "$INSTDIR\Keyscripts\Zawgyi.kms"
-	RMDir  "$INSTDIR\Keyscripts"
+	Delete "$INSTDIR\Keyscripts\Myanmar3.kms"
+	Delete "$INSTDIR\Keyscripts\Parabaik.kms"
+	Delete "$INSTDIR\Keyscripts\Uniburma.kms"
+	Delete "$INSTDIR\Keyscripts\Zawgyi.kms"
+	RMDir  $INSTDIR\Keyscripts"
 	RMDir  "$INSTDIR\"
 	
 	DeleteRegValue HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "Keymagic"
@@ -230,7 +241,7 @@ SubSection un.Keymagic
 	Delete "$INSTDIR\Keymapper.exe"
 	Delete "$INSTDIR\Icons\Keyscript.ico"
 	RMDir  "$INSTDIR\Icons\"
-	RMDir  "$INSTDIR\"
+	RMDir  /r "$INSTDIR\"
 	
 	Delete "$SMPROGRAMS\${APPNAME}\Keyboard Maker.lnk"
 	
