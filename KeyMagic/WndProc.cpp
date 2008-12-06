@@ -32,28 +32,21 @@ CGdiPlusBitmapResource *Logo;
 Gdiplus::Bitmap *Bmpbk;
 
 int WndHeight, WndWidth;
-HWND	hList,
-		hPath,
-		hDisplay,
-		hShortcut,
-		hAdd,
-		hRemove,
-		hDone,
-		hCancel,
-		hApply,
-		hPathChk,
-		hLogo,
-		hBK,
-		hgbKeyboard,
-		hgbOption,
-		hgbHotkey,
-		hgbDisplay,
+HWND	hList, hPath,
+		hDisplay, hShortcut,
+		hAdd, hRemove,
+		hDone, hCancel,
+		hApply, hPathChk,
+		hLogo, hBK,
+		hgbKeyboard, hgbOption,
+		hgbHotkey, hgbDisplay,
 		hgbLocation;
 
-DWORD WINAPI TYM (LPVOID lpParameter);
+DWORD WINAPI TWM (LPVOID lpParameter);
 HANDLE hThread=0;
 DWORD ThreadID=0;
 int txPos=0;
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	HMENU hMenu;
@@ -276,16 +269,20 @@ next:
 
 		else if (lParam==WM_RBUTTONDOWN) {
 			hMenu = CreatePopupMenu();
+			int isPortable = GetPrivateProfileInt("Settings", "Portable", 0, szINIFile);
 
 			AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_MANAGE, "Manage &Keyboards");
-			AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_STARTUP, "&Run at Startup");
+			if (!isPortable)
+				AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_STARTUP, "&Run at Startup");
 			AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_ABOUT, "&About");
 			AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_EXIT, "E&xit");
 			CreateMyMenu(hWnd, hMenu);
 
-			StartupFlag = GetPrivateProfileInt("Settings", "Startup", 0, szINIFile);
-
-			StartupFlag ? CheckMenuItem(hMenu, 102, MF_CHECKED) : CheckMenuItem(hMenu, 102, MF_UNCHECKED);
+			if (!isPortable)
+			{
+				StartupFlag = GetPrivateProfileInt("Settings", "Startup", 0, szINIFile);
+				StartupFlag ? CheckMenuItem(hMenu, 102, MF_CHECKED) : CheckMenuItem(hMenu, 102, MF_UNCHECKED);
+			}
 
 			GetCursorPos(&pt);
 
@@ -310,7 +307,7 @@ next:
 					if (bAdmin)
 					{
 						StartupFlag =! StartupFlag;
-						Startup(StartupFlag);
+						SetStartup(StartupFlag);
 					}
 					else
 					MessageBox (hWnd,
@@ -387,11 +384,20 @@ next:
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-void OnCreate(HWND hWnd, LPCREATESTRUCT lpcs){
-
+void OnCreate(HWND hWnd, LPCREATESTRUCT lpcs)
+{
+	OSVERSIONINFO osvi;
+	BOOL bIsWindowsVistaLater;
 	HMENU hMenu;
 	KeyFileData *Data;
 	char szKBPath[MAX_PATH];
+
+	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
+    osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+
+    GetVersionEx(&osvi);
+
+    bIsWindowsVistaLater = osvi.dwMajorVersion >= 6;
 
 	LoadIcon(hInst, (LPCSTR)IDI_KEYMAGIC);
 
@@ -520,7 +526,7 @@ next:
 
 	SendMessage(hRemove, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	hDone = CreateWindowEx (0, "Button", "(SI) OK",
+	hDone = CreateWindowEx (0,"Button", bIsWindowsVistaLater ? "(SI) OK" : "OK",
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, (HMENU)IDC_DONE,
 		lpcs -> hInstance, NULL);
@@ -534,7 +540,7 @@ next:
 
 	SendMessage(hCancel, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	hApply = CreateWindowEx (0, "Button", "(SI) Apply",
+	hApply = CreateWindowEx (0, "Button", bIsWindowsVistaLater ? "(SI) Apply" : "Apply",
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, (HMENU)IDC_APPLY,
 		lpcs -> hInstance, NULL);
@@ -566,7 +572,7 @@ next:
 
 }
 
-DWORD WINAPI TYM (LPVOID lpParameter)
+DWORD WINAPI TWM (LPVOID lpParameter)
 {
 	PAINTSTRUCT ps;
 	MSG message;
@@ -653,7 +659,7 @@ VOID onPaint(HWND hWnd)
 		hThread=0;
 	}
 	
-	hThread = CreateThread(NULL, NULL, TYM, hWnd, 0, &ThreadID);
+	hThread = CreateThread(NULL, NULL, TWM, hWnd, 0, &ThreadID);
 	EndPaint(hWnd, &ps);
 
 }
@@ -1133,34 +1139,62 @@ VOID GetKeyBoards(){
 
 };
 
-VOID Startup(BOOL isEnable){
+BOOL Run(LPSTR lpszFileName, LPSTR lpszDirectory, LPSTR lpParameters)
+{
+    SHELLEXECUTEINFOA TempInfo = {0};
 
-	if (bAdmin)
-	{
+    TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
+	TempInfo.nShow = SW_HIDE;
+    TempInfo.fMask = 0;
+    TempInfo.hwnd = NULL;
+    TempInfo.lpFile = lpszFileName;
+    TempInfo.lpParameters = lpParameters;
+    TempInfo.lpDirectory = lpszDirectory;
+    TempInfo.nShow = SW_HIDE;
 
-	}
-	HKEY hkHLM, hkRun;
+    BOOL bRet = ::ShellExecuteExA(&TempInfo);
 
-	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, NULL, NULL, KEY_ALL_ACCESS, &hkHLM) != ERROR_SUCCESS)
-		return;
+    return bRet;
+}
 
-	if (RegOpenKeyEx(hkHLM, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", NULL, KEY_ALL_ACCESS, &hkRun) != ERROR_SUCCESS)
-		return;
+VOID SetStartup(BOOL isEnable){
+	//HKEY hkHLM, hkRun;
+
+	//if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, NULL, NULL, KEY_ALL_ACCESS, &hkHLM) != ERROR_SUCCESS)
+	//	return;
+
+	//if (RegOpenKeyEx(hkHLM, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", NULL, KEY_ALL_ACCESS, &hkRun) != ERROR_SUCCESS)
+	//	return;
+	char TaskScheduler[MAX_PATH];
+	PROCESS_INFORMATION pi;
+	STARTUPINFO si;
+
+	ZeroMemory( &si, sizeof(si) );
+    si.cb = sizeof(si);
+	si.wShowWindow = SW_MINIMIZE;
+	ZeroMemory( &pi, sizeof(pi) );
+
+	lstrcpy(TaskScheduler, szCurDir);
+	lstrcat(TaskScheduler, "\\SetElevatedStartupTask.exe");
 
 	if (!isEnable)
 	{
-		RegDeleteValue(hkRun, "Keymagic");
+		//RegDeleteValue(hkRun, "Keymagic");
+		//if (CreateProcess(TaskScheduler, cmd, 0, 0, 0, 0, 0, szCurDir, &si, &pi))
+		if (Run(TaskScheduler, szCurDir, "-d"))
+			WritePrivateProfileString("Settings", "Startup", "0", szINIFile);
 	}
 
 	else{
 		char FileName[MAX_PATH];
 		GetModuleFileName(hInst, FileName, MAX_PATH);
-		lstrcat(FileName, " -s");
-		RegSetValueEx(hkRun, "Keymagic", NULL, REG_SZ, (BYTE*)FileName, lstrlen(FileName));
+		//lstrcat(FileName, " -s");
+		//RegSetValueEx(hkRun, "Keymagic", NULL, REG_SZ, (BYTE*)FileName, lstrlen(FileName));
+
+		if (Run(TaskScheduler, szCurDir, NULL))
+			WritePrivateProfileString("Settings", "Startup", "1", szINIFile);
 	}
 
-	isEnable ? WritePrivateProfileString("Settings", "Startup", "1", szINIFile) : WritePrivateProfileString("Settings", "Startup", "0", szINIFile);
-
-	RegCloseKey(hkRun);
-	RegCloseKey(hkHLM);
+	//RegCloseKey(hkRun);
+	//RegCloseKey(hkHLM);
 }

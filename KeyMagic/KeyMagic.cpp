@@ -91,7 +91,11 @@ int APIENTRY WinMain(HINSTANCE hInstance,
     bIsWindowsVistaLater = osvi.dwMajorVersion >= 6;
 
 	if (bAdmin && bIsWindowsVistaLater)
+	{
 		lstrcat(szTitle, " (Administrator)");
+		ChangeWindowMessageFilter(KM_KILLFOCUS, MSGFLT_ADD);
+		ChangeWindowMessageFilter(KM_GETFOCUS, MSGFLT_ADD);
+	}
 
 	if (OpenMutexW(SYNCHRONIZE, NULL, L"\u1000\u102E\u1038\u1019\u1000\u1039\u1002\u103A\u1005\u1039")){
 		HWND hPreHandle = FindWindow(NULL, szTitle);
@@ -253,7 +257,7 @@ BOOL IsAdmin()
       if (!InitializeAcl(pACL, dwACLSize, ACL_REVISION2))
          __leave;
 
-      dwAccessMask= ACCESS_READ | ACCESS_WRITE;
+      dwAccessMask = ACCESS_READ | ACCESS_WRITE;
 
       if (!AddAccessAllowedAce(pACL, ACL_REVISION2, dwAccessMask, 
 		  psidAdmin))
@@ -321,11 +325,9 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		SendDlgItemMessage(hDlg, IDC_ATEXT, WM_SETTEXT, 0, (LPARAM)
 			"\nCopyright (C) 2008  KeyMagic Project\n"
 			"http://keymagic.googlecode.com\n\n"
-
 			"This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation.\n\n"
-
-			"This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.\n\n"
-
+			"This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
+			"See the GNU General Public License for more details.\n\n"
 			"You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA"
 			);
 
@@ -351,13 +353,11 @@ VOID SetHook (HWND hwnd)
 			return ;
 	}
 
-	hKH = SetWindowsHookEx(WH_KEYBOARD, &HookKeyProc, hMod, NULL);
+	//hKH = SetWindowsHookEx(WH_KEYBOARD, &HookKeyProc, hMod, NULL);
+	//hWPH = SetWindowsHookEx(WH_CALLWNDPROC, &HookWndProc, hMod, NULL);
+	//hGM = SetWindowsHookEx(WH_GETMESSAGE, &HookGetMsgProc, hMod, NULL);
 
-	hWPH = SetWindowsHookEx(WH_CALLWNDPROC, &HookWndProc, hMod, NULL);
-
-	hGM = SetWindowsHookEx(WH_GETMESSAGE, &HookGetMsgProc, hMod, NULL);
-
-	HookInit(hwnd,hKH, hWPH, hGM, szCurDir);
+	HookInit(hwnd, hMod, szCurDir);
 }
 
 VOID UnHook ()

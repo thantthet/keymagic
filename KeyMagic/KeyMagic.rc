@@ -53,15 +53,15 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 286, 196
+IDD_ABOUTBOX DIALOGEX 0, 0, 286, 202
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About Keymagic"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    ICON            IDI_KEYMAGIC,IDC_STATIC,16,18,20,20
+    ICON            IDI_KEYMAGIC,IDC_STATIC,16,18,21,20
     LTEXT           "Keymagic 1.2",IDC_STATIC,43,18,61,8,SS_NOPREFIX
-    DEFPUSHBUTTON   "OK",IDOK,229,175,50,14,WS_GROUP
-    LTEXT           "Complie Info",IDC_COMPLIE,7,181,94,8,WS_DISABLED
+    DEFPUSHBUTTON   "OK",IDOK,229,181,50,14,WS_GROUP
+    LTEXT           "Complie Info",IDC_COMPLIE,7,187,94,8,WS_DISABLED
     LTEXT           "ABOUT TEXT HERE",IDC_ATEXT,43,33,226,137
 END
 
@@ -102,7 +102,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 279
         TOPMARGIN, 7
-        BOTTOMMARGIN, 189
+        BOTTOMMARGIN, 195
     END
 
     IDD_MAINBOX, DIALOG
@@ -220,7 +220,7 @@ LANGUAGE LANG_ENGLISH, 0x12
 // PNG
 //
 
-IDB_LOGO                PNG                  "Res\\key.png"
+IDB_LOGO                PNG                     "Res\\key.png"
 #endif    // English (U.S.) (unknown sub-lang: 0x12) resources
 /////////////////////////////////////////////////////////////////////////////
 

@@ -117,22 +117,29 @@ int ShortCutCheck (UINT uvKey){
 
 LRESULT KEYMAGICDLL_API CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
+	UINT Input = 0;
+	int index;
 
-	if (nCode < 0){
+	if (nCode < 0)
+	{
 		return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 	}
 
-	if (nCode == HC_ACTION && lParam & 0x80000000){
+	if (nCode == HC_ACTION && lParam & 0x80000000)
+	{
 		return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 	}
 
-	else if (nCode == HC_ACTION && lParam){
+	else if (nCode == HC_ACTION && lParam)
+	{
 		if (!GetFocus())
 			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 
-		int index = ShortCutCheck(wParam);
+		index = ShortCutCheck(wParam);
+
 		if (index >= 0){
-			if ( (ActiveIndex == index && isActive) || index == 0){
+			if ( (ActiveIndex == index && isActive) || index == 0)
+			{
 				isActive = false;
 				PostMessage(Commander_hWnd, KM_GETFOCUS, 0, 0);
 			}
@@ -146,11 +153,12 @@ LRESULT KEYMAGICDLL_API CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lP
 		if (isActive == false)
 			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 
-		wchar_t Input = wParam;
+		Input = wParam;
 
 		if (wParam == VK_BACK)
 		{
-			if (inner_back < 1){
+			if (inner_back < 1)
+			{
 				//Logger("UnInnerBack wParam = %X lParam %X", wParam, lParam);
 				if (BackCustomize())
 					return 1;
@@ -160,17 +168,19 @@ LRESULT KEYMAGICDLL_API CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lP
 				}
 			}
 
-			else if (inner_back){
+			else if (inner_back)
+			{
 				//Logger("InnerBack wParam = %X lParam %X", wParam, lParam);
 				inner_back--;
 				return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 			}
 		}
 
-		if (TranslateToAscii((UINT*)&Input)){
+		if (TranslateToAscii((UINT*)&Input))
+		{
 			if (Do_Operation(Input))
 				return true;
-			Internal_Text.AppendText(&Input, 1);
+			Internal_Text.AppendText((wchar_t*)&Input, 1);
 		}
 	}
 	return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
@@ -545,13 +555,16 @@ LRESULT KEYMAGICDLL_API CALLBACK HookGetMsgProc(int nCode, WPARAM wParam, LPARAM
 	return CallNextHookEx(hGetMsgHook, nCode, wParam, lParam);
 }
 
-void KEYMAGICDLL_API HookInit(HWND hWnd,HHOOK hKbHook,HHOOK hWPHook, HHOOK hGMHook,LPCSTR ParentPath)
+void KEYMAGICDLL_API HookInit(HWND hWnd, HMODULE hMod, LPCSTR ParentPath)
 {
 
 	Commander_hWnd = hWnd;
-	hKeyHook = hKbHook;
-	hWndProcHook = hWPHook;
-	hGetMsgHook = hGMHook;
+	//hKeyHook = hKbHook;
+	hKeyHook = SetWindowsHookEx(WH_KEYBOARD, &HookKeyProc, hMod, NULL);
+	//hWndProcHook = hWPHook;
+	hWndProcHook = SetWindowsHookEx(WH_CALLWNDPROC, &HookWndProc, hMod, NULL);
+	//hGetMsgHook = hGMHook;
+	hGetMsgHook = SetWindowsHookEx(WH_GETMESSAGE, &HookGetMsgProc, hMod, NULL);
 	lstrcpy(szDir, ParentPath);
 }
 

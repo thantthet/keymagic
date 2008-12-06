@@ -38,7 +38,7 @@ BOOL				UpdateDlgData(HWND hWnd);
 VOID				restart(HWND hWnd);
 VOID				error(LPCSTR lpszFunction) ;
 VOID				GetKeyBoards();
-VOID				Startup(BOOL isEnable);
+VOID				SetStartup(BOOL isEnable);
 VOID				OnSize(WPARAM wParam, LPARAM lParam);
 VOID				onPaint(HWND hWnd);
 
