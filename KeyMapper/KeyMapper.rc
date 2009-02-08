@@ -170,6 +170,8 @@ BEGIN
     POPUP "&File"
     BEGIN
         MENUITEM "&Open",                       ID_FILE_OPEN
+        MENUITEM "&Save",                       ID_FILE_SAVE
+        MENUITEM "Save &As",                    ID_FILE_SAVEAS
         MENUITEM SEPARATOR
         MENUITEM "Exit",                        ID_FILE_EXIT
     END

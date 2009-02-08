@@ -86,11 +86,22 @@ SubSection "Keymagic" PackageKeymagic
 	SetOutPath "$INSTDIR\"
 	File ".\Keymagic.exe"
 	File ".\KeyMagicDll.dll"
-	SetOverwrite off
-	File ".\KeyMagic.ini"
-	SetOverwrite on
+	
+	File ".\SetElevatedStartupTask.exe"
+	File /oname=KeyMagic.ini Normal.ini
+	
 	SetOutPath "$INSTDIR\Icons\"
 	File ".\GUI\Keymap.ico"	
+	
+	File /oname=$TEMP\nsisos.dll nsisos.dll
+	CallInstDLL $TEMP\nsisos.dll osversion
+	StrCpy $R0 $0
+	${If} $R0 >= "6"
+		Exec '"$INSTDIR\SetElevatedStartupTask.exe"'
+	${Else}
+		WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "Keymagic" "$INSTDIR\Keymagic.exe -s"
+	${EndIf}
+	Delete $TEMP\nsisos.dll
 	
 	CreateDirectory "$SMPROGRAMS\${APPNAME}\"
 	CreateDirectory "$APPDATA\Keymagic\Keyboards\"
@@ -98,14 +109,14 @@ SubSection "Keymagic" PackageKeymagic
 	
 	CreateShortCut "$DESKTOP\Keymagic.lnk" "$INSTDIR\Keymagic.exe" "-s"
 	
-	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "Keymagic" "$INSTDIR\Keymagic.exe -s"
+	
 	WriteRegStr HKCR ".km2" "" "Keymagic.Keymap.File"
 	WriteRegStr HKCR "Keymagic.Keymap.File" "" "Keymagic Keymap"
 	WriteRegStr HKCR "Keymagic.Keymap.File\DefaultIcon" "" "$INSTDIR\Icons\Keymap.ico"
 	WriteRegStr HKCR "Keymagic.Keymap.File\shell\Install\command" "" "$INSTDIR\KeyMagic.exe -i %1"
 	SectionEnd
 	
-	Section "Keymapper for Keymagic's keymap file" Keymapper
+	Section "Keymapper for Keymagic's Keymap file" Keymapper
 	UserInfo::GetAccountType
 	Pop $1
 	StrCmp $1 "Admin" 0 +2
@@ -148,6 +159,12 @@ SubSection "Keymagic" PackageKeymagic
 	
 SubSectionEnd
 
+Section /o "Portable" Portable
+	SetOverwrite on
+	SetOutPath "$INSTDIR\Keyscripts\"
+	File /oname=KeyMagic.ini Portable.ini
+SectionEnd
+
 ;--------------------------------
 ;Descriptions
 
@@ -160,6 +177,7 @@ SubSectionEnd
 	!insertmacro MUI_DESCRIPTION_TEXT ${Keymapper} 'Keymagic Keymapper.'
 	!insertmacro MUI_DESCRIPTION_TEXT ${Keymap} 'Keymagic Keymap files.'
 	!insertmacro MUI_DESCRIPTION_TEXT ${Keyscript} 'Keymagic Keyscript files.'
+	!insertmacro MUI_DESCRIPTION_TEXT ${Portable} 'Make Keymagic portable.'
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------

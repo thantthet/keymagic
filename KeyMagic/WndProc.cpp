@@ -89,6 +89,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 
+	case WM_SHOWWINDOW:
+		ShowNotifyIcon(hWnd, "KeyMagic", MAKEINTRESOURCE(IDI_KEYMAGIC));
+		break;
+
 	case WM_COMMAND:
 		wmId    = LOWORD(wParam);
 		wmEvent = HIWORD(wParam);
@@ -283,6 +287,11 @@ next:
 				StartupFlag = GetPrivateProfileInt("Settings", "Startup", 0, szINIFile);
 				StartupFlag ? CheckMenuItem(hMenu, 102, MF_CHECKED) : CheckMenuItem(hMenu, 102, MF_UNCHECKED);
 			}
+			else
+			{
+				WritePrivateProfileString("Settings", "Startup", "0", szINIFile);
+				SetStartup(false);
+			}
 
 			GetCursorPos(&pt);
 
@@ -293,6 +302,16 @@ next:
 
 			switch (CMD_RETURN){
 				case RMCMD_EXIT:
+					UnHook();
+					NOTIFYICONDATA nid;
+					ZeroMemory(&nid, sizeof(nid));
+					nid.cbSize = sizeof(NOTIFYICONDATA);
+					nid.hWnd = hWnd;
+ 					nid.uID = TRAY_ID;
+					Shell_NotifyIcon(NIM_DELETE, &nid);
+					DestroyMyMenu(hKeyMenu);
+					DeleteDlgData(hWnd);
+					EndDialog(hWnd, 0);
 					PostQuitMessage(0);
 					break;
 				case RMCMD_MANAGE:
@@ -333,7 +352,6 @@ next:
 
 	case WM_MEASUREITEM:
 		OnMenuMeasure(hWnd, (LPMEASUREITEMSTRUCT)lParam);
-
 		break;
 
 	case WM_DRAWITEM:
@@ -363,23 +381,6 @@ next:
 			hThread=0;
 		}
 		return 0;
-
-	case WM_DESTROY:
-
-		UnHook();
-
-		NOTIFYICONDATA nid;
-		nid.cbSize = sizeof(NOTIFYICONDATA);
-		nid.hWnd = hWnd;
-		nid.uID = TRAY_ID;
-		Shell_NotifyIcon(NIM_DELETE, &nid);
-
-		DestroyMyMenu(hKeyMenu);
-
-		DeleteDlgData(hWnd);
-
-		EndDialog(hWnd,0);
-		break;
 	}
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
@@ -419,15 +420,7 @@ next:
 	GetKeyBoards();
 
 	if (hKeyMenu){
-		NOTIFYICONDATA nid;
-		nid.cbSize = sizeof(NOTIFYICONDATA);
-		nid.hWnd = hWnd;
-		nid.uID = TRAY_ID;
-		nid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
-		nid.uCallbackMessage = WM_TRAY;
-		nid.hIcon = LoadIcon(hInst, MAKEINTRESOURCE(IDI_KEYMAGIC));
-		lstrcpy(nid.szTip, "KeyMagic");
-		Shell_NotifyIcon(NIM_ADD,&nid);
+		ShowNotifyIcon(hWnd, "KeyMagic", MAKEINTRESOURCE(IDI_KEYMAGIC));
 		UpdateWindow(hWnd);
 	}
 
@@ -569,7 +562,6 @@ next:
 	Bmpbk = new Gdiplus::Bitmap(lpcs -> hInstance, MAKEINTRESOURCEW(IDB_BK));
 
 	UpdateDlgData(hWnd);
-
 }
 
 DWORD WINAPI TWM (LPVOID lpParameter)
@@ -1078,7 +1070,18 @@ VOID GetHotKey(WORD wHotkey, LPSTR ShortCutDisplay){
 
 	vkey[1] = 0;
 
-	lstrcat(ShortCutDisplay, (LPCSTR)&vkey[0]);
+	if (vkey[0] >= VK_F1 && vkey[0] <= VK_F12)
+	{
+		char FunctionKey[3];
+		int Function = vkey[0] - 0x6F;
+		wsprintf(FunctionKey, "F%x", Function);
+		lstrcat(ShortCutDisplay, FunctionKey);
+		return;
+	}
+
+	WORD TransedChar = MapVirtualKey(vkey[0], MAPVK_VK_TO_CHAR);
+
+	lstrcat(ShortCutDisplay, (LPCSTR)&TransedChar);
 }
 
 VOID error(LPCSTR lpszFunction) 
@@ -1158,43 +1161,80 @@ BOOL Run(LPSTR lpszFileName, LPSTR lpszDirectory, LPSTR lpParameters)
 }
 
 VOID SetStartup(BOOL isEnable){
-	//HKEY hkHLM, hkRun;
 
-	//if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, NULL, NULL, KEY_ALL_ACCESS, &hkHLM) != ERROR_SUCCESS)
-	//	return;
+	OSVERSIONINFO osvi;
+	BOOL bIsWindowsVistaLater;
 
-	//if (RegOpenKeyEx(hkHLM, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", NULL, KEY_ALL_ACCESS, &hkRun) != ERROR_SUCCESS)
-	//	return;
-	char TaskScheduler[MAX_PATH];
-	PROCESS_INFORMATION pi;
-	STARTUPINFO si;
+	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
+    osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 
-	ZeroMemory( &si, sizeof(si) );
-    si.cb = sizeof(si);
-	si.wShowWindow = SW_MINIMIZE;
-	ZeroMemory( &pi, sizeof(pi) );
+	GetVersionEx(&osvi);
 
-	lstrcpy(TaskScheduler, szCurDir);
-	lstrcat(TaskScheduler, "\\SetElevatedStartupTask.exe");
+	bIsWindowsVistaLater = osvi.dwMajorVersion >= 6;
 
-	if (!isEnable)
-	{
-		//RegDeleteValue(hkRun, "Keymagic");
-		//if (CreateProcess(TaskScheduler, cmd, 0, 0, 0, 0, 0, szCurDir, &si, &pi))
-		if (Run(TaskScheduler, szCurDir, "-d"))
+	if (!bIsWindowsVistaLater){
+		HKEY hkHLM, hkRun;
+
+		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, NULL, NULL, KEY_ALL_ACCESS, &hkHLM) != ERROR_SUCCESS)
+			return;
+
+		if (RegOpenKeyEx(hkHLM, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", NULL, KEY_ALL_ACCESS, &hkRun) != ERROR_SUCCESS)
+			return;
+
+		if (!isEnable)
+		{
+			RegDeleteValue(hkRun, "Keymagic");
 			WritePrivateProfileString("Settings", "Startup", "0", szINIFile);
-	}
+		}
 
-	else{
-		char FileName[MAX_PATH];
-		GetModuleFileName(hInst, FileName, MAX_PATH);
-		//lstrcat(FileName, " -s");
-		//RegSetValueEx(hkRun, "Keymagic", NULL, REG_SZ, (BYTE*)FileName, lstrlen(FileName));
-
-		if (Run(TaskScheduler, szCurDir, NULL))
+		else
+		{
+			char FileName[MAX_PATH];
+			GetModuleFileName(hInst, FileName, MAX_PATH);
+			lstrcat(FileName, " -s");
+			RegSetValueEx(hkRun, "Keymagic", NULL, REG_SZ, (BYTE*)FileName, lstrlen(FileName));
 			WritePrivateProfileString("Settings", "Startup", "1", szINIFile);
+		}
+		RegCloseKey(hkRun);
+		RegCloseKey(hkHLM);
 	}
+	else {
+		char TaskScheduler[MAX_PATH];
+		PROCESS_INFORMATION pi;
+		STARTUPINFO si;
 
-	//RegCloseKey(hkRun);
-	//RegCloseKey(hkHLM);
+		ZeroMemory( &si, sizeof(si) );
+		si.cb = sizeof(si);
+		si.wShowWindow = SW_MINIMIZE;
+		ZeroMemory( &pi, sizeof(pi) );
+
+		lstrcpy(TaskScheduler, szCurDir);
+		lstrcat(TaskScheduler, "\\SetElevatedStartupTask.exe");
+
+		if (!isEnable)
+		{
+			if (Run(TaskScheduler, szCurDir, "-d"))
+				WritePrivateProfileString("Settings", "Startup", "0", szINIFile);
+		}
+
+		else{
+			char FileName[MAX_PATH];
+			GetModuleFileName(hInst, FileName, MAX_PATH);
+
+			if (Run(TaskScheduler, szCurDir, NULL))
+				WritePrivateProfileString("Settings", "Startup", "1", szINIFile);
+		}
+	}
+}
+
+VOID ShowNotifyIcon(HWND hWnd, LPCSTR szTip, LPCSTR lpIconName){
+	NOTIFYICONDATA nid;
+	nid.cbSize = sizeof(NOTIFYICONDATA);
+	nid.hWnd = hWnd;
+	nid.uID = TRAY_ID;
+	nid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
+	nid.uCallbackMessage = WM_TRAY;
+	nid.hIcon = LoadIcon(hInst, MAKEINTRESOURCE(lpIconName));
+	lstrcpy(nid.szTip, szTip);
+	Shell_NotifyIcon(NIM_ADD, &nid);
 }

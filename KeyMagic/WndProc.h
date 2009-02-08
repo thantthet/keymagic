@@ -41,6 +41,7 @@ VOID				GetKeyBoards();
 VOID				SetStartup(BOOL isEnable);
 VOID				OnSize(WPARAM wParam, LPARAM lParam);
 VOID				onPaint(HWND hWnd);
+VOID				ShowNotifyIcon(HWND hWnd, LPCSTR szTip, LPCSTR lpIconName);
 
 extern strDelete *szFileToDelete;
 extern int cbFileToDelete;

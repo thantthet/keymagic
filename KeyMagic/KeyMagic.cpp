@@ -31,16 +31,7 @@ TCHAR szKeymagic[] = "Keymagic";
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];
-
-#pragma data_seg(".keymagic")
-HHOOK hKH = NULL;
-HHOOK hWPH = NULL;
-HHOOK hGM = NULL;
-#pragma data_seg()
-
-//Make sure that section can READ WRITE and SHARE
-#pragma comment(linker, "/SECTION:.keymagic,RWS")
-
+HookHandles Hooks;
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow);
 ATOM MyRegisterClass(HINSTANCE hInstance);
 
@@ -92,9 +83,19 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	if (bAdmin && bIsWindowsVistaLater)
 	{
+		typedef BOOL (__stdcall *ChangeWMFilter) (__in UINT message,__in DWORD dwFlag);
+		ChangeWMFilter lpChangeWMFilter;
+		HMODULE hUser;
+
 		lstrcat(szTitle, " (Administrator)");
-		ChangeWindowMessageFilter(KM_KILLFOCUS, MSGFLT_ADD);
-		ChangeWindowMessageFilter(KM_GETFOCUS, MSGFLT_ADD);
+
+		hUser = GetModuleHandle("USER32");
+		
+		lpChangeWMFilter = (ChangeWMFilter)GetProcAddress(hUser, "ChangeWindowMessageFilter");
+		if (lpChangeWMFilter){
+			lpChangeWMFilter(KM_KILLFOCUS, MSGFLT_ADD);
+			lpChangeWMFilter(KM_GETFOCUS, MSGFLT_ADD);
+		}
 	}
 
 	if (OpenMutexW(SYNCHRONIZE, NULL, L"\u1000\u102E\u1038\u1019\u1000\u1039\u1002\u103A\u1005\u1039")){
@@ -356,15 +357,14 @@ VOID SetHook (HWND hwnd)
 	//hKH = SetWindowsHookEx(WH_KEYBOARD, &HookKeyProc, hMod, NULL);
 	//hWPH = SetWindowsHookEx(WH_CALLWNDPROC, &HookWndProc, hMod, NULL);
 	//hGM = SetWindowsHookEx(WH_GETMESSAGE, &HookGetMsgProc, hMod, NULL);
-
-	HookInit(hwnd, hMod, szCurDir);
+	HookInit(hwnd, hMod, szCurDir, &Hooks);
 }
 
 VOID UnHook ()
 {
-	UnhookWindowsHookEx(hKH);
-	UnhookWindowsHookEx(hWPH);
-	UnhookWindowsHookEx(hGM);
+	bool ret = UnhookWindowsHookEx(Hooks.hGetMsgHook);
+	ret = UnhookWindowsHookEx(Hooks.hKeyHook);
+	ret = UnhookWindowsHookEx(Hooks.hWndProcHook);
 }
 
 BOOL WorkOnCommand(LPTSTR lpCmdLine){

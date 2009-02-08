@@ -16,6 +16,13 @@ struct KbFileHeader{
 	short Back_Count;
 };
 
+typedef struct tagHookHandles
+{
+	HHOOK hKeyHook;
+	HHOOK hWndProcHook;
+	HHOOK hGetMsgHook;
+} HookHandles, NEAR *PHookHandles, FAR *LPHookHandles;
+
 struct KM_ShortCut{
 	BYTE ukey;
 	BYTE modkey;
@@ -49,7 +56,7 @@ struct File_Delete{
 	short size_MatchPattern;
 };
 
-void KEYMAGICDLL_API HookInit(HWND hWnd, HMODULE hMod, LPCSTR ParentPath);
+void KEYMAGICDLL_API HookInit(HWND hWnd, HMODULE hMod, LPCSTR ParentPath, LPHookHandles Hooks);
 
 LRESULT KEYMAGICDLL_API CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam);
 LRESULT KEYMAGICDLL_API CALLBACK HookGetMsgProc(int nCode, WPARAM wParam, LPARAM lParam);

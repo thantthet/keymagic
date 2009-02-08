@@ -61,7 +61,7 @@ struct strDelete{
 typedef struct tagMYITEM 
 { 
     int   cchItemText; 
-    char  szItemText[1]; 
+    char  szItemText[1];
 } MYITEM, NEAR *PMYITEM, FAR *LPMYITEM;
 
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);

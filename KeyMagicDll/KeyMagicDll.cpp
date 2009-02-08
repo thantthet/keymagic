@@ -86,29 +86,15 @@ int ShortCutCheck (UINT uvKey){
 	isALT = KeyStatus[VK_MENU] & 0x80;
 	isSHIFT = KeyStatus[VK_SHIFT] & 0x80;
 
+	BYTE MOD_KEY = (isALT ? 4 : 0) + (isCTRL ? 2 : 0) + (isSHIFT ? 1 : 0);
+
 //	Logger("ShortCutCheck StartChecking");
 	for (int i=0; i < NumOfShortCut; i++){
 //		Logger("ShortCutCheck : Not Found Yet i = %X",i);
-		if (uvKey != SC[i].ukey){
-			continue;
+		if (uvKey == SC[i].ukey && MOD_KEY == SC[i].modkey){
+			return TRUE;
 		}
 
-		if (SC[i].modkey & HOTKEYF_SHIFT){
-			if (isSHIFT == false)
-				continue;
-		}
-
-		if (SC[i].modkey & HOTKEYF_CONTROL){
-			if (isCTRL == false)
-				continue;
-		}
-
-		if (SC[i].modkey & HOTKEYF_ALT){
-			if (isALT == false)
-				continue;
-		}
-
-		return i;
 	}
 //	Logger("ShortCutCheck : return -1");
 
@@ -194,7 +180,7 @@ bool Do_Operation(const wchar_t user_input){
 	Internal_Text.SetHandle(Commander_hWnd);
 #endif
 	OneOutput = Match_One2One(user_input);
-	int multi_len;
+	int multi_len=0;
 	MultiOutput = Match_One2Multi(user_input, &multi_len);
 
 	if (OneOutput)
@@ -399,15 +385,12 @@ wchar_t *Match_One2Multi(const wchar_t user_input,_Out_ int *length){
 		next_loc = O2M->size;
 		multi = &O2M->One2Multi;
 
-		if (wcsstr((const wchar_t*)L"~!@#$%^&*()_+|}{\":?><QWERTYUIOPASDFGHJKLZXCVBNM", &user_input) && (multi->SHIFT == false) )
-			isSHIFT = false;
-
 		if (multi->Input_Key != user_input)
 		{
 			goto Next;
 		}
 
-		if (multi->CTRL == isCTRL && multi->R_ALT == isRALT && multi->L_ALT == isLALT && multi->SHIFT == isSHIFT)
+		if (multi->CTRL == isCTRL && multi->R_ALT == isRALT && multi->L_ALT == isLALT)
 		{
 			*length = O2M->size - ( sizeof(short) + sizeof(DWORD) + sizeof(wchar_t));
 			*length /= 2;
@@ -555,16 +538,16 @@ LRESULT KEYMAGICDLL_API CALLBACK HookGetMsgProc(int nCode, WPARAM wParam, LPARAM
 	return CallNextHookEx(hGetMsgHook, nCode, wParam, lParam);
 }
 
-void KEYMAGICDLL_API HookInit(HWND hWnd, HMODULE hMod, LPCSTR ParentPath)
+void KEYMAGICDLL_API HookInit(HWND hWnd, HMODULE hMod, LPCSTR ParentPath, LPHookHandles Hooks)
 {
 
 	Commander_hWnd = hWnd;
 	//hKeyHook = hKbHook;
-	hKeyHook = SetWindowsHookEx(WH_KEYBOARD, &HookKeyProc, hMod, NULL);
+	Hooks->hKeyHook = SetWindowsHookEx(WH_KEYBOARD, &HookKeyProc, hMod, NULL);
 	//hWndProcHook = hWPHook;
-	hWndProcHook = SetWindowsHookEx(WH_CALLWNDPROC, &HookWndProc, hMod, NULL);
+	Hooks->hWndProcHook = SetWindowsHookEx(WH_CALLWNDPROC, &HookWndProc, hMod, NULL);
 	//hGetMsgHook = hGMHook;
-	hGetMsgHook = SetWindowsHookEx(WH_GETMESSAGE, &HookGetMsgProc, hMod, NULL);
+	Hooks->hGetMsgHook = SetWindowsHookEx(WH_GETMESSAGE, &HookGetMsgProc, hMod, NULL);
 	lstrcpy(szDir, ParentPath);
 }
 
@@ -745,22 +728,24 @@ void GetShortCuts(){
 bool TranslateToAscii (UINT *uVKey){
 //	Logger("TranslateToAscii Entry");
 
-	bool shiftDown;// = GetKeyState(VK_SHIFT) & 0x8000;
-	bool capsToggled;// = GetKeyState(VK_CAPITAL) & 0x1;
-	bool isUp = false;
+	//bool shiftDown;// = GetKeyState(VK_SHIFT) & 0x8000;
+	//bool capsToggled;// = GetKeyState(VK_CAPITAL) & 0x1;
+	//bool isUp = false;
 
 	BYTE KeyStates[256];
+
 	GetKeyboardState(KeyStates);
 	KeyStates[VK_CONTROL]=KeyStates[VK_MENU]=KeyStates[VK_LMENU]=KeyStates[VK_RMENU]=0;
 
-	shiftDown = KeyStates[VK_SHIFT] & 0x80;
-	capsToggled = KeyStates[VK_CAPITAL] & 0x1;
+	//shiftDown = KeyStates[VK_SHIFT] & 0x80;
+	//capsToggled = KeyStates[VK_CAPITAL] & 0x1;
 	
 
 //	Logger("UpperAndLower : isUp = %X", isUp);
 
  	WORD TransedChar = NULL;
 	UINT ScanCode = MapVirtualKey(*uVKey, MAPVK_VK_TO_VSC);
+	//TransedChar = MapVirtualKey(*uVKey, MAPVK_VK_TO_CHAR);
 
 //	Logger("uVKey = %X", *uVKey);
 
@@ -773,7 +758,10 @@ bool TranslateToAscii (UINT *uVKey){
 		return false;
 
 //	Logger("uVKey = %X TransedChar = %X Return = %X ScanCode = %X", *uVKey, TransedChar, Return, ScanCode);
-	*uVKey = TransedChar;
+	if (TransedChar > 33 || TransedChar < 126)
+		*uVKey = TransedChar;
+	else
+		return false;
 
 //	Logger("TranslateToAscii Return");
 	return true;

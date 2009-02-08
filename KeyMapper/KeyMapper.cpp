@@ -18,6 +18,8 @@
 #include "KeyMapper.h"
 #include "resource.h"
 #include "../KeyMagicDll/KeyMagicDll.h"
+#include "KParser.h"
+#include "RegularExpressionClass.h"
 
 // Global Variables:
 HINSTANCE hInst; // current instance
@@ -36,6 +38,7 @@ bool OpenScriptFile(char* szFileName);
 bool SaveScriptFile(char* szFileName);
 
 void StartComplie();
+VOID Compile();
 int SectionRead(wchar_t* Buffer, wchar_t* SecName);
 void StringRead(wchar_t* Buffer, wchar_t* lpBufOut, size_t cbBufSize, wchar_t* SecName, UINT StringNum);
 void EscapeSequence(wchar_t* toCheck);
@@ -68,7 +71,7 @@ bool CommandLine(){
 	
 	if (lpCmd[1] == 'c'){
 		OpenScriptFile(&lpCmd[3]);
-		StartComplie();
+		Compile();
 		return true;
 	}
 
@@ -133,7 +136,7 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 
 		case ID_EDIT_MAKEKEYBOARD:
-			StartComplie();
+			Compile();
 			break;
 
 		case ID_EDIT_FONT:
@@ -267,8 +270,6 @@ bool OpenScriptFile(char* szFileName){
 		return false;
 	}
 
-	SetWindowTextW(hEdit, FilePtr);
-
 	lf.lfHeight = -MulDiv(11, GetDeviceCaps(GetDC(hEdit), LOGPIXELSY), 72);
 	lf.lfWidth = 0;
 	lf.lfEscapement = 0;
@@ -318,11 +319,11 @@ Font:
 NoFont:
 
 	CloseHandle(hMapFile);
-
 	CloseHandle(hFile);
 
 //	SendMessage(hEdit, EM_SETMODIFY, 0, 0);
-
+	SetWindowTextW(hEdit, FilePtr);
+	SendMessage(hEdit, EM_SETSEL, -1, 0);
 
 	lstrcpy(szOpenedFileName, szFileName);
 
@@ -334,6 +335,34 @@ bool isTRUE(wchar_t *pMem, wchar_t *Matcher)
 	if (wcsstr(pMem, (const wchar_t*)Matcher))
 		return true;
 	return false;
+}
+
+void CALLBACK CallbackMatch(RegularExpression * cre,const REMatchInfo & Matches,unsigned LineIndex,unsigned StartOfLine)
+{
+	OutputDebugString("Match Found\r\n");
+
+	OutputDebugString(Matches[0].string.c_str());
+
+	OutputDebugString("\r\n");
+
+	for (REMatchInfo::const_iterator cit = Matches.begin() + 1; cit != Matches.end() - 2; ++cit)
+	{
+		OutputDebugString(cit->string.c_str());
+		OutputDebugString("\r\n");
+	}
+}
+
+VOID Compile()
+{
+	int iChar = GetWindowTextLength(hEdit);
+	CHAR* cScript = new CHAR[iChar+2];
+	int iFetched = GetWindowText(hEdit, cScript, iChar+1);
+	KParser kp(cScript);
+	RegularExpression regex;
+	regex.SetExpression("\\$.*\\(.*\"(.+)\".*\\).*:.*\\$.*\\(.*\"(.+)\".*\\)");
+	regex.SetStringToMatch(kp.GetLine(1));
+	regex.OnMatchingGlobal = CallbackMatch;
+	bool success = regex.Match();
 }
 
 void StartComplie(){
@@ -699,12 +728,12 @@ bool SaveScriptFile(char* szFileName){
 
 	DWORD cbWritten;
 
-	WriteFile(hFile, Buffer, readsize, &cbWritten, NULL);
+	WriteFile(hFile, Buffer, size, &cbWritten, NULL);
 
 	CloseHandle(hFile);
 	VirtualFree(Buffer, size, MEM_DECOMMIT);
 
-	if (cbWritten != readsize)
+	if (cbWritten != size)
 		return false;
 
 	return true;
