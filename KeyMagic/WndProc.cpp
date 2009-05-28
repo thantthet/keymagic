@@ -966,10 +966,13 @@ BOOL AddKeyBoardToList(HWND hWnd,char* lpKBPath){
 	//PathAppend(szKBPath, "KeyMagic");
 	PathAppend(szKBPath, lpPath);
 
-	if (!CopyFile(lpKBPath, szKBPath, false)){
-		if (IDNO == MessageBox(hWnd, "File copying fail! \n Do you want to use from current path?", szKeymagic, MB_ICONERROR | MB_YESNO))
-			return false;
-		lstrcpy(lpPath, lpKBPath);
+	if (lstrcmpi(lpKBPath, szKBPath))
+	{
+		if (!CopyFile(lpKBPath, szKBPath, false)){
+			if (IDNO == MessageBox(hWnd, "File copying fail! \n Do you want to use from current path?", szKeymagic, MB_ICONERROR | MB_YESNO))
+				return false;
+			lstrcpy(lpPath, lpKBPath);
+		}
 	}
 
 	SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)lpName);

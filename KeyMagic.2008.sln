@@ -10,6 +10,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeyMagicDll", "KeyMagicDll\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeyMapper", "KeyMapper\KeyMapper.vcproj", "{F7090DE5-9DCE-4177-82EC-F5481209A7E3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "parser", "parser\parser.vcproj", "{6E4BEF0C-2C1E-42B9-AC85-F96FEF1E3638}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -28,6 +30,10 @@ Global
 		{F7090DE5-9DCE-4177-82EC-F5481209A7E3}.Debug|Win32.Build.0 = Debug|Win32
 		{F7090DE5-9DCE-4177-82EC-F5481209A7E3}.Release|Win32.ActiveCfg = Release|Win32
 		{F7090DE5-9DCE-4177-82EC-F5481209A7E3}.Release|Win32.Build.0 = Release|Win32
+		{6E4BEF0C-2C1E-42B9-AC85-F96FEF1E3638}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6E4BEF0C-2C1E-42B9-AC85-F96FEF1E3638}.Debug|Win32.Build.0 = Debug|Win32
+		{6E4BEF0C-2C1E-42B9-AC85-F96FEF1E3638}.Release|Win32.ActiveCfg = Release|Win32
+		{6E4BEF0C-2C1E-42B9-AC85-F96FEF1E3638}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

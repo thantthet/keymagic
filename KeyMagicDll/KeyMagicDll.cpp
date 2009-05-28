@@ -94,7 +94,6 @@ int ShortCutCheck (UINT uvKey){
 		if (uvKey == SC[i].ukey && MOD_KEY == SC[i].modkey){
 			return TRUE;
 		}
-
 	}
 //	Logger("ShortCutCheck : return -1");
 

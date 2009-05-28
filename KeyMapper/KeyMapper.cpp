@@ -121,9 +121,13 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if (szOpenedFileName[0] == NULL){
 				if (SaveDialog(hWnd, szFileName, 256, "Keymagic Script File(*.kms)\0*.kms\0\0") == false)
 					break;
+				lstrcpy(szOpenedFileName, szFileName);
 			}
 
-			SaveScriptFile(szOpenedFileName);
+			if (!SaveScriptFile(szOpenedFileName))
+			{
+				MessageBox(hWnd, "File cannot be saved", "Error", MB_OK | MB_ICONERROR);
+			}
 			SendDlgItemMessage(hWnd, IDC_SCRIPT, EM_SETMODIFY, false, 0);
 			break;
 
@@ -298,14 +302,23 @@ bool OpenScriptFile(char* szFileName){
 		wcsncpy(Name, FontName, 4);
 		if (wcsicmp(Name, L"Font") != 0)
 			continue;
-		Font = wcspbrk(FontName, L" =");
+		/*Font = wcspbrk(FontName, L" =");
 		Font++;
 		for (wchar_t *Finder=(wchar_t*)0xDEAD; Finder != NULL; Finder){
 			Finder = wcspbrk(Font++, L" =");
 			if (Finder == NULL)
 				goto Font;
 		}
-		break;
+		break;*/
+		int iChar = GetWindowTextLength(hEdit);
+		CHAR* cScript = new CHAR[iChar+2];
+		int iFetched = GetWindowText(hEdit, cScript, iChar+1);
+		KParser kp(cScript);
+		RegularExpression regex;
+		regex.SetExpression("\\$.*\\(.*\"(.+)\".*\\).*:.*\\$.*\\(.*\"(.+)\".*\\)");
+		regex.SetStringToMatch(kp.GetLine(1));
+		//regex.OnMatchingGlobal = CallbackMatch;
+		bool success = regex.Match();
 	}
 
 	goto NoFont;
@@ -318,14 +331,16 @@ Font:
 
 NoFont:
 
-	CloseHandle(hMapFile);
-	CloseHandle(hFile);
-
 //	SendMessage(hEdit, EM_SETMODIFY, 0, 0);
 	SetWindowTextW(hEdit, FilePtr);
 	SendMessage(hEdit, EM_SETSEL, -1, 0);
 
 	lstrcpy(szOpenedFileName, szFileName);
+
+
+	UnmapViewOfFile(FilePtr);
+	CloseHandle(hMapFile);
+	CloseHandle(hFile);
 
 	return true;
 }
@@ -701,7 +716,7 @@ void EscapeSequence(wchar_t* toCheck){
 }
 
 bool SaveScriptFile(char* szFileName){
-	HANDLE hFile = CreateFile(szFileName, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hFile = CreateFile(szFileName, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if (hFile == INVALID_HANDLE_VALUE){
 		CloseHandle(hFile);
@@ -714,11 +729,11 @@ bool SaveScriptFile(char* szFileName){
 		return false;
 	}
 
-	size *= 3;
+	size++;
 
-	LPVOID Buffer = VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE);
+	LPWSTR Buffer = (LPWSTR)VirtualAlloc(NULL, size*sizeof(WCHAR), MEM_COMMIT, PAGE_READWRITE);
 
-	int readsize = GetWindowTextW(hEdit,(LPWSTR) Buffer, size/2);
+	int readsize = GetWindowTextW(hEdit,(LPWSTR) Buffer, size);
 
 	if (readsize == NULL){
 		CloseHandle(hFile);
@@ -728,12 +743,12 @@ bool SaveScriptFile(char* szFileName){
 
 	DWORD cbWritten;
 
-	WriteFile(hFile, Buffer, size, &cbWritten, NULL);
+	WriteFile(hFile, Buffer, (size-1)*sizeof(WCHAR), &cbWritten, NULL);
 
 	CloseHandle(hFile);
-	VirtualFree(Buffer, size, MEM_DECOMMIT);
+	VirtualFree(Buffer, size*sizeof(WCHAR), MEM_DECOMMIT);
 
-	if (cbWritten != size)
+	if (cbWritten != (size-1)*sizeof(WCHAR))
 		return false;
 
 	return true;
