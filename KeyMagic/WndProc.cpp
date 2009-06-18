@@ -15,14 +15,19 @@
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "KeyMagic.h"
 #include "MyMenu.h"
 #include "MyButton.h"
 #include "WndProc.h"
 #include "CGdiPlusBitmap.h"
+#include <sys/stat.h>
+#include <errno.h>
 
-strDelete *szFileToDelete;
-int cbFileToDelete = 0;
+
+using namespace std;
+
+//strDelete *szFileToDelete;
+vector<char*> szFileToDelete;
+//int cbFileToDelete = 0;
 int kbindex=-1;
 HWND LastHWND;
 UINT KeyBoardNum;
@@ -849,7 +854,8 @@ BOOL UpdateDlgData(HWND hWnd){
 			GetPrivateProfileString(szKBP, &szKBNames[i], NULL, szKBPath, MAX_PATH, szINIFile);
 			WORD wHotkey = GetPrivateProfileInt(szSC, &szKBNames[i], 0, szINIFile);
 
-			Data = (KeyFileData*)LocalAlloc(LPTR, sizeof(KeyFileData));
+			//Data = (KeyFileData*)LocalAlloc(LPTR, sizeof(KeyFileData));
+			Data = new KeyFileData;
 			Data->isNew = FALSE;
 			lstrcpy(Data->Name,  &szKBNames[i]);
 			lstrcpy(Data->Display, szMenuDisplay);
@@ -866,7 +872,8 @@ void DeleteDlgData(HWND hWnd){
 	int count = SendMessage(hList, LB_GETCOUNT, 0, 0);
 	for (int i=0;count > i; i++){
 		Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, i, NULL);
-		LocalFree(Data);
+		//LocalFree(Data);
+		delete Data;
 	}
 	SendMessage(hList, LB_RESETCONTENT, 0, 0);
 }
@@ -976,7 +983,8 @@ BOOL AddKeyBoardToList(HWND hWnd,char* lpKBPath){
 	}
 
 	SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)lpName);
-	Data = (KeyFileData*)LocalAlloc(LPTR, sizeof(KeyFileData));
+	//Data = (KeyFileData*)LocalAlloc(LPTR, sizeof(KeyFileData));
+	Data = new KeyFileData;
 	lstrcpy(Data->Name, lpName);
 	lstrcpy(Data->Display, lpName);
 	lstrcpy(Data->Path, lpPath);
@@ -998,15 +1006,21 @@ BOOL RemoveKeyBoard(){
 	Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, kbindex, 0);
 
 	if (Data->Path[1] != ':'){
-		if (cbFileToDelete == 0){
-			szFileToDelete = (strDelete*)VirtualAlloc(NULL, sizeof(strDelete)*20, MEM_COMMIT, PAGE_READWRITE);
-		}
+		//if (cbFileToDelete == 0){
+		//	szFileToDelete = (strDelete*)VirtualAlloc(NULL, sizeof(strDelete)*20, MEM_COMMIT, PAGE_READWRITE);
+		//}
 
-		cbFileToDelete++;
-		lstrcpy(szFileToDelete[cbFileToDelete].Path, Data->Path);
+		//cbFileToDelete++;
+		//lstrcpy(szFileToDelete[cbFileToDelete].Path, Data->Path);
+		char * wcPath;
+		int wclen = strlen(Data->Path);
+		wcPath = new char[wclen];
+		strcpy(wcPath, Data->Path);
+		szFileToDelete.push_back(wcPath);
 	}
 
-	LocalFree(Data);
+	//LocalFree(Data);
+	delete Data;
 	SendMessage(hList, LB_DELETESTRING, kbindex, 0);
 	kbindex=-1;
 	SendMessage(hList, LB_SETCURSEL, 0, 0);
@@ -1016,14 +1030,15 @@ BOOL RemoveKeyBoard(){
 BOOL DeleteKeyFile(){
 	char szKBPath[MAX_PATH],szToDelete[MAX_PATH];
 
-	if (!cbFileToDelete)
-		return false;
-
-	//if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath)){
-	//	cbFileToDelete=0;
-	//	error("SHGetFolderPath");
+	//if (!cbFileToDelete)
 	//	return false;
-	//}
+	if (!szFileToDelete.size())
+
+	if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath)){
+		//cbFileToDelete=0;
+		error("SHGetFolderPath");
+		return false;
+	}
 
 	if (!GetModuleFileName(GetModuleHandle(NULL), szKBPath, MAX_PATH))
 		return false;
@@ -1037,15 +1052,26 @@ BOOL DeleteKeyFile(){
 	}
 	//PathAppend(szKBPath, "KeyMagic");
 
-	for (int i=1; i <= cbFileToDelete; i++){
+	//for (int i=1; i <= cbFileToDelete; i++){
+	//	lstrcpy(szToDelete, szKBPath);
+	//	PathAppend(szToDelete, szFileToDelete[i].Path);
+	//	DeleteFile(szToDelete);
+	//}
+
+	vector<char*>::iterator it;
+
+	for ( it=szFileToDelete.begin() ; it < szFileToDelete.end(); it++ )
+	{
 		lstrcpy(szToDelete, szKBPath);
-		PathAppend(szToDelete, szFileToDelete[i].Path);
+		PathAppend(szToDelete, (LPCSTR)*it);
 		DeleteFile(szToDelete);
 	}
 
-	VirtualFree(szFileToDelete, sizeof(strDelete)*20, MEM_DECOMMIT);
+	szFileToDelete.clear();
 
-	cbFileToDelete=0;
+	//VirtualFree(szFileToDelete, sizeof(strDelete)*20, MEM_DECOMMIT);
+
+	//cbFileToDelete=0;
 	return true;
 }
 

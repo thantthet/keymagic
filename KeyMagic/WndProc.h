@@ -16,7 +16,7 @@
 
 #include <windows.h>
 #include <gdiplus.h>
-#include "keyMagic.h"
+#include "KeyMagic.h"
 
 enum RightMenuCmd{
 	RMCMD_EXIT=100,
@@ -43,7 +43,7 @@ VOID				OnSize(WPARAM wParam, LPARAM lParam);
 VOID				onPaint(HWND hWnd);
 VOID				ShowNotifyIcon(HWND hWnd, LPCSTR szTip, LPCSTR lpIconName);
 
-extern strDelete *szFileToDelete;
-extern int cbFileToDelete;
+extern vector<char*> szFileToDelete;
+//extern int cbFileToDelete;
 extern int kbindex;
 extern HWND hList;

@@ -46,10 +46,11 @@ One2One	Single_Input;
 File_One2Multi *Multi_Output;
 File_Custom *Custom_Patterns;
 File_Delete *Back_Patterns;
-KM_ShortCut *SC;
+//KM_ShortCut *vtSC;
+vector<KM_ShortCut> vtSC;
 
 bool	isActive = false;
-UINT	NumOfShortCut = 0;
+//UINT	NumOfShortCut = 0;
 UINT	ActiveIndex = 0;
 
 bool	OpenForMapping(LPCSTR FileName);
@@ -89,9 +90,17 @@ int ShortCutCheck (UINT uvKey){
 	BYTE MOD_KEY = (isALT ? 4 : 0) + (isCTRL ? 2 : 0) + (isSHIFT ? 1 : 0);
 
 //	Logger("ShortCutCheck StartChecking");
-	for (int i=0; i < NumOfShortCut; i++){
+/*	for (int i=0; i < NumOfShortCut; i++){
 //		Logger("ShortCutCheck : Not Found Yet i = %X",i);
-		if (uvKey == SC[i].ukey && MOD_KEY == SC[i].modkey){
+		if (uvKey == vtSC[i].ukey && MOD_KEY == vtSC[i].modkey){
+			return TRUE;
+		}
+	}
+*/
+	vector<KM_ShortCut>::iterator it;
+	for (it=vtSC.begin(); it < vtSC.end(); it++ )
+	{
+		if (uvKey == ((KM_ShortCut)*it).ukey && MOD_KEY == ((KM_ShortCut)*it).modkey){
 			return TRUE;
 		}
 	}
@@ -496,7 +505,8 @@ LRESULT KEYMAGICDLL_API CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lP
 		break;
 
 	case KM_RESCAN:
-		LocalFree(SC);
+		//LocalFree(vtSC);
+		vtSC.clear();
 		GetShortCuts();
 	}
 
@@ -705,21 +715,26 @@ void GetShortCuts(){
 
 	GetPrivateProfileString(szKBP, NULL, NULL, (LPSTR)szKBNames, 500, szINI);
 
-	SC = (KM_ShortCut*) LocalAlloc(LPTR, sizeof(KM_ShortCut)*50);
+	//vtSC = (KM_ShortCut*) LocalAlloc(LPTR, sizeof(KM_ShortCut)*50);
 
-	NumOfShortCut=0;
-	for (int i=0,j=0,Length = lstrlen(&szKBNames[i]);
+	//NumOfShortCut=0;
+	for (int i=0,Length = lstrlen(&szKBNames[i]);
 		Length > 0;
-		i+=Length+1, Length = lstrlen(&szKBNames[i]),j++){
+		i+=Length+1, Length = lstrlen(&szKBNames[i])){
 			WORD Hotkey = GetPrivateProfileInt(szSC, &szKBNames[i], 0, szINI);
 			if (Hotkey){
-				SC[j].ukey = (char) Hotkey;
-				SC[j].modkey = Hotkey >> 8;
+			//	vtSC[j].ukey = (char) Hotkey;
+			//	vtSC[j].modkey = Hotkey >> 8;
+				KM_ShortCut * SC = new KM_ShortCut;
+				SC->ukey = (char) Hotkey;
+				SC->modkey = Hotkey >> 8;
+
+				vtSC.push_back(*SC);
 			}
-			NumOfShortCut++;
+			//NumOfShortCut++;
 	}
 
-	LocalReAlloc(SC, sizeof(KM_ShortCut)*NumOfShortCut, LPTR);
+	//LocalReAlloc(vtSC, sizeof(KM_ShortCut)*NumOfShortCut, LPTR);
 
 //	Logger("GetShortCuts Return : NumOfShortCut = %X ", NumOfShortCut);
 }

@@ -28,7 +28,8 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 		GetShortCuts();
 		break;
 	case DLL_PROCESS_DETACH:
-		LocalFree(SC);
+		//LocalFree(vtSC);
+		vtSC.clear();
 		CloseMapping();
 		break;
 	}

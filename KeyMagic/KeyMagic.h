@@ -24,6 +24,10 @@
 #include <Commdlg.h>
 #include <gdiplus.h>
 
+#include <vector>
+
+using namespace std;
+
 //Custom message IDs
 #define TRAY_ID 100
 #define WM_TRAY WM_USER + 10

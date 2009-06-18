@@ -5,6 +5,9 @@
 #endif
 
 #include <windows.h>
+#include <vector>
+
+using namespace std;
 
 //#define DEBUG 1
 
@@ -66,4 +69,5 @@ bool	OpenKbFile(int Index);
 void	CloseMapping();
 void	GetShortCuts();
 
-extern KM_ShortCut *SC;
+//extern KM_ShortCut *vtSC;
+extern vector<KM_ShortCut> vtSC;

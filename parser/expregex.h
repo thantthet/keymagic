@@ -2,7 +2,7 @@
 
 enum OP_CODE {
 	
-}
+};
 
 class expRegex {
 public:
