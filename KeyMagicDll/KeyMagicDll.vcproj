@@ -175,6 +175,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\common.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\dllmain.cpp"
 				>
 				<FileConfiguration
@@ -197,11 +201,15 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\KeyMagicDll.cpp"
+				RelativePath=".\Hooks.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\regex.cpp"
+				RelativePath=".\InputProcessor.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\KeyMagicDll.cpp"
 				>
 			</File>
 		</Filter>
@@ -211,7 +219,19 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\K_Internal_Editor.h"
+				RelativePath=".\common.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Hooks.h"
+				>
+			</File>
+			<File
+				RelativePath=".\InputProcessor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\InternalEditor.h"
 				>
 			</File>
 			<File
@@ -219,11 +239,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\regex.h"
+				RelativePath=".\resource.h"
 				>
 			</File>
 			<File
-				RelativePath=".\resource.h"
+				RelativePath=".\shortcut.h"
 				>
 			</File>
 			<File

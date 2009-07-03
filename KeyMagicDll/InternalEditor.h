@@ -1,63 +1,39 @@
+#ifndef INTERNALEDITOR_H_
+#define INTERNALEDITOR_H_
+
+#pragma once
+
 #include <windows.h>
 #include <shlwapi.h>
 #include <shlobj.h>
 #include <shellapi.h>
 #include <Commdlg.h>
 
-
-void Logger(HWND hWnd, char* fmt, ...)
-{
-#ifdef DEBUG
-	char Memory[100];
-	RECT rc;
-
-	va_list list;
-
-	va_start(list, fmt);
-	//Format
-	wvsprintf(Memory, fmt,list);
-
-	SetWindowText(hWnd, Memory);
-	
-	//Cleanup
-	va_end(list);
-#else
-	return;
-#endif
-}
-
-class K_Internal_Editor {
 #define MAX_STORELEN 200
+
+class classInternalEditor {
+
 	public:
-		K_Internal_Editor()
+		classInternalEditor()
 		{
 			CaretLocation = 0;
 			TextLength = 0;
 		}
 
-		~K_Internal_Editor(){}
+		~classInternalEditor(){}
 
-#ifdef DEBUG
-		void SetHandle(HWND hWnd){
-			Commander_hWnd = hWnd;
-		}
-#endif
-
-		virtual void Restart()
+		void Restart()
 		{
-#ifdef DEBUG
-			Logger(Commander_hWnd, "Restarted");
-#endif
 			RtlZeroMemory(Text, MAX_STORELEN);
 			CaretLocation = TextLength = 0;
 		}
 
-		virtual UINT GetCaretLocation()
+		UINT GetCaretLocation()
 		{
 			return CaretLocation;
 		}
 
-		virtual bool SetCaretLocation(UINT Location)
+		bool SetCaretLocation(UINT Location)
 		{
 			if (Location > TextLength)
 				return false;
@@ -65,9 +41,9 @@ class K_Internal_Editor {
 			return true;
 		}
 
-		virtual wchar_t* GetText(UINT Length)
+		wchar_t* GetTextBackward(UINT Length)
 		{
-			int Loc = CaretLocation-Length;
+			int Loc = CaretLocation - Length;
 
 			if ( (Loc < 0) || (Loc+Length > MAX_STORELEN) )
 				return NULL;
@@ -75,7 +51,7 @@ class K_Internal_Editor {
 	 		return &Text[Loc];
 		}
 
-		virtual bool AppendText(wchar_t* TextToAppend, UINT length)
+		bool AppendText(const wchar_t* TextToAppend, UINT length)
 		{
 			if (TextLength >= MAX_STORELEN)
 			{
@@ -84,51 +60,52 @@ class K_Internal_Editor {
 			}
 			wcsncat(Text, TextToAppend, length);
 			CaretLocation = TextLength = wcslen(Text);
-#ifdef DEBUG
-			Logger(Commander_hWnd, "%x %x %x", Text[TextLength-1], Text[TextLength-2], Text[TextLength-3]);
-#endif
 			return true;
 		}
 
-		virtual bool Delete(){
+		bool Delete(){
 			if (TextLength <= 0)
 				return false;
 
 			Text[--TextLength] = NULL;
 			CaretLocation = TextLength;
-#ifdef DEBUG
-			Logger(Commander_hWnd, "%x %x %x", Text[TextLength-1], Text[TextLength-2], Text[TextLength-3]);
-#endif
 			return true;
 		}
 
-		virtual UINT GetTextLength(void)
+		UINT GetTextLength(void)
 		{
 			return TextLength;
 		}
 
-		virtual void KeyDown(int vKey)
+		void KeyDown(int vKey)
 		{
 			bool isCTRL, isALT;
+
+			if (vKey == VK_CONTROL || vKey == VK_MENU)
+				return;
+
 			BYTE KeyStatus[256];
 			GetKeyboardState(KeyStatus);
 
 			isCTRL = KeyStatus[VK_CONTROL] & 0x80;
 			isALT = KeyStatus[VK_MENU] & 0x80;
 
-			if (vKey == VK_CONTROL || vKey == VK_MENU)
-				return;
-
 			if (isCTRL || isALT)
 				Restart();
 		}
+		
+		void dump()
+		{
+			OutputDebugString("\"");
+			OutputDebugStringW(Text);
+			OutputDebugString("\"\n");
+		}
 
 	private:
-#ifdef DEBUG
-		HWND Commander_hWnd;
-#endif
 		UINT CaretLocation;
 		UINT TextLength;
 		wchar_t Text[MAX_STORELEN];
 		bool isControlDown;
 };
+
+#endif

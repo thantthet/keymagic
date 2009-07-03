@@ -116,7 +116,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -172,6 +172,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\main.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\parser.cpp"
 				>
 			</File>
@@ -186,15 +190,35 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\binarray.h"
+				>
+			</File>
+			<File
+				RelativePath=".\common.h"
+				>
+			</File>
+			<File
 				RelativePath=".\expregex.h"
 				>
 			</File>
 			<File
-				RelativePath=".\global.h"
+				RelativePath=".\keymap.h"
+				>
+			</File>
+			<File
+				RelativePath=".\klf.h"
 				>
 			</File>
 			<File
 				RelativePath=".\lexscanner.h"
+				>
+			</File>
+			<File
+				RelativePath=".\parser.h"
+				>
+			</File>
+			<File
+				RelativePath=".\rule.h"
 				>
 			</File>
 			<File

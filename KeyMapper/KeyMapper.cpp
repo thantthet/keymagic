@@ -19,7 +19,7 @@
 #include "resource.h"
 #include "../KeyMagicDll/KeyMagicDll.h"
 #include "KParser.h"
-#include "RegularExpressionClass.h"
+//#include "RegularExpressionClass.h"
 
 // Global Variables:
 HINSTANCE hInst; // current instance
@@ -38,7 +38,7 @@ bool OpenScriptFile(char* szFileName);
 bool SaveScriptFile(char* szFileName);
 
 void StartComplie();
-VOID Compile();
+//VOID Compile();
 int SectionRead(wchar_t* Buffer, wchar_t* SecName);
 void StringRead(wchar_t* Buffer, wchar_t* lpBufOut, size_t cbBufSize, wchar_t* SecName, UINT StringNum);
 void EscapeSequence(wchar_t* toCheck);
@@ -71,7 +71,7 @@ bool CommandLine(){
 	
 	if (lpCmd[1] == 'c'){
 		OpenScriptFile(&lpCmd[3]);
-		Compile();
+		//Compile();
 		return true;
 	}
 
@@ -140,7 +140,7 @@ INT_PTR CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 
 		case ID_EDIT_MAKEKEYBOARD:
-			Compile();
+			//Compile();
 			break;
 
 		case ID_EDIT_FONT:
@@ -310,7 +310,7 @@ bool OpenScriptFile(char* szFileName){
 				goto Font;
 		}
 		break;*/
-		int iChar = GetWindowTextLength(hEdit);
+		/*int iChar = GetWindowTextLength(hEdit);
 		CHAR* cScript = new CHAR[iChar+2];
 		int iFetched = GetWindowText(hEdit, cScript, iChar+1);
 		KParser kp(cScript);
@@ -318,7 +318,7 @@ bool OpenScriptFile(char* szFileName){
 		regex.SetExpression("\\$.*\\(.*\"(.+)\".*\\).*:.*\\$.*\\(.*\"(.+)\".*\\)");
 		regex.SetStringToMatch(kp.GetLine(1));
 		//regex.OnMatchingGlobal = CallbackMatch;
-		bool success = regex.Match();
+		bool success = regex.Match();*/
 	}
 
 	goto NoFont;
@@ -352,7 +352,7 @@ bool isTRUE(wchar_t *pMem, wchar_t *Matcher)
 	return false;
 }
 
-void CALLBACK CallbackMatch(RegularExpression * cre,const REMatchInfo & Matches,unsigned LineIndex,unsigned StartOfLine)
+/*void CALLBACK CallbackMatch(RegularExpression * cre,const REMatchInfo & Matches,unsigned LineIndex,unsigned StartOfLine)
 {
 	OutputDebugString("Match Found\r\n");
 
@@ -378,7 +378,7 @@ VOID Compile()
 	regex.SetStringToMatch(kp.GetLine(1));
 	regex.OnMatchingGlobal = CallbackMatch;
 	bool success = regex.Match();
-}
+}*/
 
 void StartComplie(){
 	int cbCount, Length;

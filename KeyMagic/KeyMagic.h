@@ -13,6 +13,10 @@
 //You should have received a copy of the GNU General Public License
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+#ifndef KEYMGAIC_H_
+#define KEYMGAIC_H_
+
 #pragma once
 
 #include "resource.h"
@@ -87,3 +91,5 @@ extern HINSTANCE hInst;								// current instance
 extern TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 extern HMENU hKeyMenu;
 extern UINT KeyBoardNum;
+
+#endif

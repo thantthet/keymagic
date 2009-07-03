@@ -15,7 +15,7 @@
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#include "KeyMagicDll.h"
+#include "common.h"
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
@@ -30,7 +30,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	case DLL_PROCESS_DETACH:
 		//LocalFree(vtSC);
 		vtSC.clear();
-		CloseMapping();
+		//CloseMapping();
 		break;
 	}
 	return TRUE;

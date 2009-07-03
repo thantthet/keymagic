@@ -1,6 +1,12 @@
-#include <iostream>
-#include <vector>
-#include <wchar.h>
+#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_NON_CONFORMING_SWPRINTFS
+
+#ifndef _SCRIPT_H
+#define _SCRIPT_H
+
+#pragma once
+
+#include "common.h"
 
 using namespace std;
 
@@ -10,19 +16,38 @@ class script
 {
 public:
 
-	script (){};
+	script::script (){};
 
-	script (wchar_t * script)
+	script::script (wchar_t * Script)
 	{
-		loadScript(script);
+		loadSource(Script);
 	}
 
-	void loadScript(wchar_t * script)
+	script::~script ()
+	{
+		if (s)
+			delete [] s;
+		s = NULL;
+		stLinePos.~vector();
+	}
+
+	void copy(script * src)
+	{
+		size_t input_length = wcschr(src->s, EOS) - src->s;
+		s = new wchar_t[input_length+2];
+		wcsncpy(s, src->s, input_length);
+		s[input_length] = EOS;
+		s[input_length+1] = NULL;
+		stLinePos = src->stLinePos;
+	}
+
+	void loadSource(wchar_t * script)
 	{
 		size_t input_length = wcslen(script);
 		s = new wchar_t[input_length+2];
 		wcscpy(s, script);
 		s[input_length] = EOS;
+		s[input_length+1] = NULL;
 		parse_lines();
 	}
 
@@ -40,22 +65,22 @@ public:
 
 	wchar_t wCharAt(int index)
 	{
-		if (index > length)
+		if (index > spt_length)
 			return NULL;
 		return s[index];
 	}
 
-	wchar_t * lpwCharAt(int index)
+	wchar_t * lpwStrAt(int index)
 	{
-		if (index > length)
+		if (index > spt_length)
 			return NULL;
 		return &s[index];
 	}
 
 private:
-	wchar_t* s;
+	wchar_t * s;
 	vector<int> stLinePos;
-	size_t length;
+	size_t spt_length;
 
 	void parse_lines()
 	{
@@ -75,6 +100,8 @@ private:
 
 		stLinePos.push_back(i);
 
-		length = i;
+		spt_length = i;
 	}
 };
+
+#endif
