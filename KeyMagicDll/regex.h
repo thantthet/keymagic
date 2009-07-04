@@ -41,23 +41,23 @@ struct Burglish_Regex_Match{
 struct Burglish_Regex_Results{
 	int length;
 	Burglish_Regex_Match res[MAXRESULT];
-	wchar_t* pointer;
+	const wchar_t* pointer;
 };
 
 /* regex headers */
 class Regex{
 	public:
-		Regex(wchar_t* pattern, bool global=false, bool greedy=false);
+		Regex(const wchar_t* pattern, bool global=false, bool greedy=false);
 		~Regex();
 		void compile();
-		bool test(wchar_t* srcStr);
+		bool test(const wchar_t* srcStr);
 		void sub(wchar_t*srcStr, wchar_t* replStr, wchar_t* destStr);
-		wchar_t* pattern;
+		const wchar_t* pattern;
 		bool global;
 		bool greedy;
 	private:
-		bool exec(wchar_t* srcStr);
-		int check(int chIdx, wchar_t* inputStr, int strIdx);
+		bool exec(const wchar_t* srcStr);
+		int check(int chIdx, const wchar_t* inputStr, int strIdx);
 		Burglish_Regex r;/* compiled regex */
 		Burglish_Regex_Results gr;/* executed group result */
 		wchar_t buffer[MAXSOURCESTRLEN];

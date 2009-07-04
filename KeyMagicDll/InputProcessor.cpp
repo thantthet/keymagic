@@ -24,7 +24,7 @@ bool AppendVariableValue(std::vector<wchar_t*> vTstr, int index, std::wstring * 
 	return false;
 }
 
-std::wstring * MakePureStr(WORD * raw_str, int len)
+std::wstring * MakePureStr(WORD * raw_str, int len, bool isRegex)
 {
 	std::wstring * s = new std::wstring;
 	std::vector<wchar_t*> vTstr = klf.getStrings();
@@ -42,7 +42,9 @@ std::wstring * MakePureStr(WORD * raw_str, int len)
 			len--;
 			size = *raw_str++;
 			len--;
+			isRegex ? s->append(L"(") : s->append(L"");
 			s->append((wchar_t*)raw_str, size);	
+			isRegex ? s->append(L")") : s->append(L"");
 			len -= size;
 			raw_str += size;
 			break;
@@ -51,14 +53,18 @@ std::wstring * MakePureStr(WORD * raw_str, int len)
 			len--;
 			index = (short)*raw_str++;
 			len--;
+			isRegex ? s->append(L"(") : s->append(L"");
 			AppendVariableValue(vTstr, index, s);
+			isRegex ? s->append(L")") : s->append(L"");
 			break;
 		case opPREDEFINED:
 			raw_str++;
+			isRegex ? s->append(L"(") : s->append(L"");
 			if (structPREdef * structPd = getPreDef((emPreDef)*raw_str++))
 			{
 				s->append(structPd->value);
 			}
+			isRegex ? s->append(L")") : s->append(L"");
 			break;
 		case opREFERENCE:
 			raw_str++;
@@ -98,7 +104,7 @@ void SendStrokes (std::wstring * s)//Send Keys Strokes
 
 void backspace(int count)
 {
-	if (!GetFocus())
+	if (!GetFocus() || count < 1)
 		return ;
 
 	DontEatBackspace = count;
@@ -112,6 +118,60 @@ void backspace(int count)
 
 }
 
+int estimate_len (const wchar_t * pattern)
+{
+	int length = 0;
+	bool opened_square_bracket = false;
+
+	while (*pattern)
+	{
+		switch (*pattern++)
+		{
+		case '[':
+			opened_square_bracket = true;
+			length ++ ;
+			break;
+
+		case ']':
+			opened_square_bracket = false;
+			break;
+
+		case '(':
+		case ')':
+			break;
+		
+		case '\\':
+			pattern += 2;
+			if (!opened_square_bracket)
+				length++;
+			break;
+		default:
+			if (!opened_square_bracket)
+				length ++ ;
+		}
+	}
+	return length;
+}
+
+signed int get_match_len(const wchar_t * s1, const wchar_t * s2)
+{
+	int length = 0;
+
+	int s1len = wcslen(s1);
+	int s2len = wcslen(s2);
+
+	if (s1len < s2len)
+		return s1len - s2len;
+
+	while (*s1)
+	{
+		if (*s1++ == *s2++)
+			length ++ ;
+		else
+			break;
+	}
+	return length;
+}
 bool MatchRules(wchar_t wcInput)
 {
 	OutputDebugString("Before\n");
@@ -123,22 +183,38 @@ bool MatchRules(wchar_t wcInput)
 	for (std::vector<structRule>::iterator it = Rules.begin(); it != Rules.end(); it++)
 	{
 		size_t len = wcslen((wchar_t*)(*it).strInRule);
-		std::wstring * s_in = MakePureStr((*it).strInRule, len);
+		std::wstring * s_in = MakePureStr((*it).strInRule, len, true);
 
-		wchar_t * src = InternalEditor.GetTextBackward(s_in->length());
+		wchar_t * src = InternalEditor.GetTextBackward(estimate_len(s_in->c_str()));
 		if (s_in->size() && src)
 		{
-			if (!wcscmp(src, s_in->c_str()))
-			{	
+			Regex * r = new Regex(s_in->c_str());
+			if (r->test(src))
+
+			//if (!wcscmp(src, s_in->c_str()))
+			{
 				//Delete recent appended temporary input
 				InternalEditor.Delete();
 
 				len = wcslen((wchar_t*)(*it).strOutRule);
-				std::wstring * s_out = MakePureStr((*it).strOutRule, len);
+				std::wstring * s_out = MakePureStr((*it).strOutRule, len, false);
 
-				s_in->find_first_not_of
+				int src_len = wcslen(src);
 
-				backspace(s_in->length()-1);
+				if (src_len)
+				{
+					int match_len = get_match_len(s_out->c_str(), src);
+					int len_to_delete = s_out->length() - match_len;
+
+					if (len_to_delete ==  src_len)
+					{
+						//len_to_delete--;
+						backspace(0-match_len);
+						len_to_delete = src_len;
+					}
+
+					s_out->erase(0, s_out->length() - len_to_delete);
+				}
 
 				SendStrokes(s_out);
 

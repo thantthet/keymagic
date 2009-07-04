@@ -22,7 +22,7 @@
 //#include <stdlib.h> will need for malloc
 
 /* pass regex pattern to constructor */
-Regex::Regex(wchar_t* pat, bool global, bool greedy){
+Regex::Regex(const wchar_t* pat, bool global, bool greedy){
 	this->pattern=pat;
 	this->global=global;
 	this->greedy=greedy;
@@ -163,7 +163,7 @@ void Regex::compile(){
 }
 
 /* pattern matching for one regex char */
-int Regex::check(int chIdx, wchar_t* inputStr, int strIdx){
+int Regex::check(int chIdx, const wchar_t* inputStr, int strIdx){
 	int matchCount=0;
 	int repeatCount=0;
 	
@@ -234,11 +234,11 @@ int Regex::check(int chIdx, wchar_t* inputStr, int strIdx){
 }
 
 /* regex test */
-bool Regex::test(wchar_t*str){
+bool Regex::test(const wchar_t*str){
 	return this->exec(str);
 }
 
-bool Regex::exec(wchar_t*str){
+bool Regex::exec(const wchar_t*str){
 	/* if compile doesnt succeeded, stop here */
 	if(this->error) 
 		return false;
