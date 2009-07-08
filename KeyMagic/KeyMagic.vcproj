@@ -65,7 +65,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="../Release/KeyMagicDll.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Advapi32.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib psapi.lib gdiplus.lib Ole32.lib msvcrtd.lib $(NOINHERIT)"
 				LinkIncremental="2"
-				UACExecutionLevel="2"
+				UACExecutionLevel="1"
 				IgnoreAllDefaultLibraries="false"
 				GenerateDebugInformation="true"
 				SubSystem="2"

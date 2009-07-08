@@ -9,27 +9,27 @@ LRESULT parser::checkToken (int * objIndex, emType Type)
 	if ( tokens.size() - 1 < (*objIndex))
 	{
 		wchar_t str[50];
-		swprintf(str, _T("No more token => nObjIndex = %d\n"), *objIndex);
+		swprintf(str, L"No more token => nObjIndex = %d\n", *objIndex);
 		Debug(str);
 		return false;
 	}
 
 	wchar_t str[50];
-	swprintf(str, _T("\nObjIndex = %d, TypeWanted = %s\n"), *objIndex, Type2Str(Type));
+	swprintf(str, L"\nObjIndex = %d, TypeWanted = %s\n", *objIndex, Type2Str(Type));
 	Debug(str);
 	int pos = tokens.at(*objIndex).iStartIndex;
-	wsprintf(str, _T("Parsing at line %d, pos %d\n"), Script.getLineNum(pos), Script.getPosLine(pos));
+	wsprintf(str, L"Parsing at line %d, pos %d\n", Script.getLineNum(pos), Script.getPosLine(pos));
 	Debug(str);
 
 	if (tokens.at(*objIndex).Type != Type)
 	{
-		DumpToken(_T("NOT MATCHED: "), tokens.at(*objIndex));
+		DumpToken(L"NOT MATCHED: ", tokens.at(*objIndex));
 		return false;
 	}
 
 	LRESULT retValue;
 
-	DumpToken(_T("MATCHED FOUND: "), tokens.at(*objIndex));
+	DumpToken(L"MATCHED FOUND: ", tokens.at(*objIndex));
 	retValue = (LRESULT)tokens.at(*objIndex).Value;
 
 	(*objIndex)++;
@@ -54,7 +54,7 @@ bool parser::complexstr(int * objIndex, wstring * varValue)
 	{
 		wchar_t str[50];
 		int pos = tokens.at(*objIndex).iStartIndex;
-		swprintf(str, _T("ERROR : Syntax error : %s : Line=%d Pos=%d\n"), tokens.at(*objIndex).Value, Script.getLineNum(pos), Script.getPosLine(pos));
+		swprintf(str, L"ERROR : Syntax error : %s : Line=%d Pos=%d\n", tokens.at(*objIndex).Value, Script.getLineNum(pos), Script.getPosLine(pos));
 		Debug(str);
 		return false;
 	}
@@ -84,7 +84,7 @@ bool parser::vardeclaration(int * objIndex)
 
 	if (!checkToken( objIndex, T_ASSIGN ))
 	{
-		Debug(_T("Not a vardeclaration\n"));
+		Debug(L"Not a vardeclaration\n");
 		*objIndex = OriginalIndex;
 		return false;
 	}
@@ -120,11 +120,19 @@ void parser::setVar(wchar_t * varName, wchar_t * varValue)
 
 bool parser::pattern(int * objIndex, wstring * outStr)
 {
-	if (!checkToken(objIndex, T_ANDOP))
-		return false;
+	if (checkToken(objIndex, T_ADDOP))
+	{
+		if (condition(objIndex, outStr))
+			return true;
+	}
+	else if (checkToken(objIndex, T_ANDOP))
+	{
+		outStr->push_back(opAND);
+		if (condition(objIndex, outStr))
+			return true;
+	}
 
-	condition(objIndex, outStr);
-	return true;
+	return false;
 }
 
 // Return :	int: VariableIndex
@@ -142,7 +150,7 @@ wchar_t * parser::identifier(int * objIndex)
 	{
 		wchar_t str[50];
 		int pos = tokens.at((*objIndex)-1).iStartIndex;
-		wsprintf(str, _T("ERROR: '%s' : undeclared identifier : Line=%d Pos=%d\n"), varName, Script.getLineNum(pos), Script.getPosLine(pos));
+		wsprintf(str, L"ERROR: '%s' : undeclared identifier : Line=%d Pos=%d\n", varName, Script.getLineNum(pos), Script.getPosLine(pos));
 		Debug(str);
 		Exit(0);
 		return false;
@@ -154,8 +162,8 @@ wchar_t * parser::identifier(int * objIndex)
 
 	if (wchar_t * moder = (wchar_t *)checkToken(objIndex, T_MODIFIER))
 	{
-		strValue->append<int>(1,opMODIFIER);
-		strValue->append<int>(1,opANYOF);
+		strValue->push_back(opMODIFIER);
+		strValue->push_back(opANYOF);
 	}
 
 	return (wchar_t*)strValue->c_str();
@@ -175,31 +183,31 @@ bool parser::context(int * objIndex, wstring * outStr)
 {
 	if (wchar_t * s = (wchar_t*)checkToken(objIndex, T_STRING))
 	{
-		outStr->append<int>(1,opSTRING);
-		outStr->append<int>(1,wcslen(s));
+		outStr->push_back(opSTRING);
+		outStr->push_back(wcslen(s));
 		outStr->append(s);
 		return true;
 	}
 
 	else if (wchar_t * s = identifier(objIndex))
 	{
-		outStr->append<int>(1,opVARIABLE);
+		outStr->push_back(opVARIABLE);
 		outStr->append(s);
 		return true;
 	}
 
 	else if (wchar_t * s = (wchar_t*)checkToken(objIndex, T_REFERENCE))
 	{
-		outStr->append<int>(1,opREFERENCE);
-		outStr->append(s);
+		outStr->push_back(opREFERENCE);
+		outStr->push_back(atoi((char*)s));
 		return true;
 	}
 
 	else if (wchar_t * s = (wchar_t*)checkToken(objIndex, T_PREDEFINED))
 	{
-		outStr->append<int>(1, opPREDEFINED);
+		outStr->push_back(opPREDEFINED);
 		structPREdef * preDef = getPreDef(s, true);
-		outStr->append<int>(1, preDef->preDef);
+		outStr->push_back(preDef->preDef);
 		return true;
 	}
 
@@ -209,6 +217,16 @@ bool parser::context(int * objIndex, wstring * outStr)
 bool parser::condition(int * objIndex, wstring * outStr)
 {
 	if (!context(objIndex, outStr))
+		return false;
+
+	pattern(objIndex, outStr);
+
+	return true;
+}
+
+bool parser::vk_status(int * objIndex, wstring * outStr)
+{
+	if (!checkToken(objIndex, T_ADDOP))
 		return false;
 
 	pattern(objIndex, outStr);
@@ -226,7 +244,7 @@ bool parser::rule(int * objIndex)
 
 	if (!checkToken(objIndex, T_PRINT))
 	{
-		Debug(_T("error: Not a rule\n"));
+		Debug(L"error: Not a rule\n");
 		return false;
 	}
 

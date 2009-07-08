@@ -24,6 +24,11 @@ class classInternalEditor {
 
 		void Restart()
 		{
+
+#ifdef _DEBUG
+			OutputDebugStringA("InternalEditor::Restart\n");
+#endif
+
 			RtlZeroMemory(Text, MAX_STORELEN);
 			CaretLocation = TextLength = 0;
 		}
@@ -53,6 +58,12 @@ class classInternalEditor {
 
 		bool AppendText(const wchar_t* TextToAppend, UINT length)
 		{
+
+#ifdef _DEBUG
+			OutputDebugStringA("InternalEditor::AppendText\n");
+			dump();
+#endif
+
 			if (TextLength >= MAX_STORELEN)
 			{
 				TextLength = 0;
@@ -63,12 +74,42 @@ class classInternalEditor {
 			return true;
 		}
 
-		bool Delete(){
+		bool AddInput(UINT Char)
+		{
+
+#ifdef _DEBUG
+			OutputDebugStringA("InternalEditor::AddInput\n");
+#endif
+
+			if (isCTRL || isALT)
+			{
+
+#ifdef _DEBUG
+			OutputDebugStringA("(isCTRL || isALT) == true\n");
+#endif
+
+				return false;
+			}
+			return AppendText((wchar_t*)&Char, 1);
+		}
+
+		bool Delete()
+		{
+
+#ifdef _DEBUG
+			OutputDebugStringA("InternalEditor::Delete\n");	
+#endif
+
 			if (TextLength <= 0)
 				return false;
 
 			Text[--TextLength] = NULL;
 			CaretLocation = TextLength;
+
+#ifdef _DEBUG
+			dump();	
+#endif
+
 			return true;
 		}
 
@@ -77,28 +118,72 @@ class classInternalEditor {
 			return TextLength;
 		}
 
-		void KeyDown(int vKey)
+		void KeyDown(WPARAM wParam, LPARAM lParam)
 		{
-			bool isCTRL, isALT;
-
-			if (vKey == VK_CONTROL || vKey == VK_MENU)
-				return;
-
+#ifdef _DEBUG
+			OutputDebugString("Internal Editor::KeyDown\n");
+			wchar_t str[100];
+			swprintf(str, L"lParam = 0x%.8x %d wParam = 0x%.8x %d\n", 
+				lParam, lParam, 
+				wParam, wParam);
+			Debug(str);
+#endif
+			switch (wParam)
+			{
+				case VK_LEFT:
+				case VK_RIGHT:
+				case VK_DOWN:
+				case VK_UP:
+					Restart();
+					break;
+				case VK_CONTROL:
+					isCTRL = true;
+					return;
+				case VK_MENU:
+					isALT = true;
+					return;
+			}
+/*
 			BYTE KeyStatus[256];
 			GetKeyboardState(KeyStatus);
 
 			isCTRL = KeyStatus[VK_CONTROL] & 0x80;
 			isALT = KeyStatus[VK_MENU] & 0x80;
-
+*/
 			if (isCTRL || isALT)
 				Restart();
+
+		}
+
+		void KeyUp(WPARAM wParam, LPARAM lParam)
+		{
+#ifdef _DEBUG
+			OutputDebugString("Internal Editor::KeyUp\n");
+			wchar_t str[100];
+			swprintf(str, L"lParam = 0x%.8x %d wParam = 0x%.8x %d\n", 
+				lParam, lParam, 
+				wParam, wParam);
+			Debug(str);
+#endif
+			if (wParam == VK_CONTROL)
+			{
+				isCTRL = false;
+				return;
+			}
+			else if((wParam == VK_MENU))
+			{
+				isALT = false;
+				return;
+			}
 		}
 		
 		void dump()
 		{
+#ifdef _DEBUG
 			OutputDebugString("\"");
 			OutputDebugStringW(Text);
 			OutputDebugString("\"\n");
+#endif
 		}
 
 	private:
@@ -106,6 +191,7 @@ class classInternalEditor {
 		UINT TextLength;
 		wchar_t Text[MAX_STORELEN];
 		bool isControlDown;
+		bool isCTRL, isALT, isSHIFT;
 };
 
 #endif

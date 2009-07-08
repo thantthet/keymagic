@@ -17,6 +17,11 @@
  *
  */
 
+/*
+* History
+* July 05 2009 : Changed wchar_t * to const wchar_t * for compatibility
+*/
+
 #include "regex.h"
 
 //#include <stdlib.h> will need for malloc
@@ -375,14 +380,14 @@ bool Regex::exec(const wchar_t*str){
 }
 
 /* regex substitution */
-void Regex::sub(wchar_t*srcStr, wchar_t* replStr, wchar_t* destStr){
+void Regex::sub(const wchar_t*srcStr, const wchar_t* replStr, wchar_t* destStr){
 
 	/* check string is not compile yet, 
 	* try to compile here */
 	if(gr.pointer!=srcStr){
 		if(!this->exec(srcStr)){
 			/* if compile fail, no replacing will occur */
-			destStr=srcStr;
+			*destStr=NULL;
 			return;
 		}
 	}
@@ -398,7 +403,7 @@ void Regex::sub(wchar_t*srcStr, wchar_t* replStr, wchar_t* destStr){
 		/* if within range of "replace" source string */
 		if(srcIdx>=gr.res[resIdx].range[0].start && srcIdx<=gr.res[resIdx].range[0].end ){
 		
-			wchar_t*rs=replStr;
+			const wchar_t * rs = replStr;
 		
 			/* loop for replStr */
 			while(*rs){

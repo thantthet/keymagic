@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "../global/global.h"
 #include "script.h"
 
 class lexscanner
@@ -61,10 +62,10 @@ private:
 			kToken.iLength = 1;
 			kToken.iStartIndex = scannedIndex;
 			kToken.Type = T_NEWLINE;
-			kToken.Value = _T("\n");
+			kToken.Value = L"\n";
 			tokens.push_back(kToken);
 
-			DumpToken(_T("New Object Assigned:"), kToken);
+			DumpToken(L"New Object Assigned:", kToken);
 
 			scannedIndex++;
 
@@ -103,13 +104,20 @@ private:
 	{
 		int scannedIndex = 0, lineNum=1;
 
+		bool noAdd = false;
+
 		while (s.wCharAt(scannedIndex) != EOS || !s.wCharAt(scannedIndex))
 		{
 			structToken kToken;
+			vector<structToken>::iterator it;
+			vector<structToken>::reverse_iterator rit;
 			int retlen;
 
 			if (isNewLine(&scannedIndex))
+			{
+				noAdd = false;
 				continue;
+			}
 
 			while (s.wCharAt(scannedIndex) == ' ' || s.wCharAt(scannedIndex) == '\t') {scannedIndex++; }
 
@@ -133,7 +141,7 @@ private:
 				else
 				{
 					wchar_t str[50];
-					swprintf(str, _T("ERROR: Parse error => Line: %d Pos: %d\n"), s.getLineNum(scannedIndex), s.getPosLine(scannedIndex));
+					swprintf(str, L"ERROR: Parse error => Line: %d Pos: %d\n", s.getLineNum(scannedIndex), s.getPosLine(scannedIndex));
 					Debug(str);
 					Exit(0);
 				}
@@ -161,18 +169,41 @@ private:
 					tokens.push_back(kToken);
 					scannedIndex += wlen;
 
-					DumpToken(_T("New Object Assigned:"), kToken);
+					DumpToken(L"New Object Assigned:", kToken);
 				}
 				break;
 			case '+':
+
+				if (!noAdd)
+				{
+					kToken.iLength = 1;
+					kToken.iStartIndex = scannedIndex;
+					kToken.Type = T_ADDOP;
+					kToken.Value = wPlus;
+					tokens.push_back(kToken);
+
+					DumpToken(L"New Object Assigned:", kToken);
+					scannedIndex++;
+				}
+				else
+				{
+					wchar_t str[50];
+					swprintf(str, L"ERROR: Unexpected '%s' => Line: %d Pos: %d\n", wPlus, s.getLineNum(scannedIndex), s.getPosLine(scannedIndex));
+					Debug(str);
+					Exit(0);
+				}
+				break;
 			case '&':
+
 				kToken.iLength = 1;
 				kToken.iStartIndex = scannedIndex;
 				kToken.Type = T_ANDOP;
-				kToken.Value = wPlus;
+				kToken.Value = wAND;
 				tokens.push_back(kToken);
 
-				DumpToken(_T("New Object Assigned:"), kToken);
+				DumpToken(L"New Object Assigned:", kToken);
+
+				noAdd = true;
 
 				scannedIndex++;
 				break;
@@ -198,7 +229,7 @@ private:
 
 				scannedIndex++;
 
-				DumpToken(_T("New Object Assigned:"), kToken);
+				DumpToken(L"New Object Assigned:", kToken);
 				
 				break;
 			case 'u':
@@ -209,6 +240,7 @@ private:
 					return false;
 				break;
 			case '"':
+			case '\'':
 				retlen = parse_string (&s, scannedIndex);
 				if (retlen > 0)
 					scannedIndex += retlen;
@@ -223,7 +255,7 @@ private:
 				if (isPreDefined(&scannedIndex))
 					break;
 				wchar_t str[50];
-				swprintf(str, _T("ERROR: Parse error => Line: %d Pos: %d\n"), s.getLineNum(scannedIndex), s.getPosLine(scannedIndex));
+				swprintf(str, L"ERROR: Parse error => Line: %d Pos: %d\n", s.getLineNum(scannedIndex), s.getPosLine(scannedIndex));
 				Debug(str);
 				Exit(0);
 				break;
@@ -274,7 +306,7 @@ private:
 
 		tokens.push_back(kToken);
 
-		DumpToken(_T("New Object Assigned:"), kToken);
+		DumpToken(L"New Object Assigned:", kToken);
 
 		return wlen+1;
 	}
@@ -307,7 +339,7 @@ private:
 		wcsncpy(wNew, s->lpwStrAt(scannedIndex), wlen);
 		wNew[wlen] = NULL;
 
-		swscanf(wNew, _T("%x"), wNew);
+		swscanf(wNew, L"%x", wNew);
 
 		structToken kToken;
 
@@ -318,7 +350,7 @@ private:
 
 		tokens.push_back(kToken);
 
-		DumpToken(_T("New Object Assigned:"), kToken);
+		DumpToken(L"New Object Assigned:", kToken);
 
 		return wlen+1;
 	}
@@ -366,21 +398,21 @@ private:
 		int scannedIndex = *index;
 		if (s->wCharAt(scannedIndex) == '/' && s->wCharAt(scannedIndex+1) == '/')
 		{
-			wchar_t * lineEnd = wcspbrk(s->lpwStrAt(scannedIndex), _T("\r\n"));
+			wchar_t * lineEnd = wcspbrk(s->lpwStrAt(scannedIndex), L"\r\n");
 			(*index) = lineEnd - s->lpwStrAt(0);
 			return true;
 		}
 		else if (s->wCharAt(scannedIndex) == '/' && s->wCharAt(scannedIndex+1) == '*')
 		{
 			scannedIndex++;
-			wchar_t * commentEnd = wcsstr(s->lpwStrAt(scannedIndex), _T("*/"));
+			wchar_t * commentEnd = wcsstr(s->lpwStrAt(scannedIndex), L"*/");
 			if (commentEnd)
 			{
 				(*index) = (commentEnd+2) - s->lpwStrAt(0);
 				return true;
 			}
 		}
-		Debug(_T("/ cannot be parsed"));
+		Debug(L"/ cannot be parsed");
 		Exit(0);
 		return false;
 	}
@@ -389,10 +421,12 @@ private:
 	{
 		wchar_t * sEnd;
 
+		wchar_t wcQuote =  s->wCharAt(scannedIndex);
+
 		scannedIndex++;
 
 		do {
-			sEnd = wcschr(s->lpwStrAt(scannedIndex), '"');
+			sEnd = wcschr(s->lpwStrAt(scannedIndex), wcQuote);
 		} while (sEnd && *(sEnd-1) == '\\');
 		
 
@@ -412,7 +446,7 @@ private:
 
 		tokens.push_back(kToken);
 
-		DumpToken(_T("New Object Assigned:"), kToken);
+		DumpToken(L"New Object Assigned:", kToken);
 
 		return (wlen+2);
 	}

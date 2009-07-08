@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "../global/global.h"
 #include "lexscanner.h"
 #include "klf.h"
 
@@ -61,6 +62,7 @@ private:
 	wchar_t * identifier( int * objIndex );
 	void setVar(wchar_t * name, wchar_t * value);
 	bool newline( int * objIndex );
+	bool vk_status(int * objIndex, wstring * outStr );
 	bool condition( int * objIndex, wstring * outStr );
 	bool context( int * objIndex, wstring * outStr );
 	bool expression( int * objIndex );

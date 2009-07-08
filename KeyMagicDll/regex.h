@@ -51,7 +51,7 @@ class Regex{
 		~Regex();
 		void compile();
 		bool test(const wchar_t* srcStr);
-		void sub(wchar_t*srcStr, wchar_t* replStr, wchar_t* destStr);
+		void sub(const wchar_t*srcStr, const wchar_t* replStr, wchar_t* destStr);
 		const wchar_t* pattern;
 		bool global;
 		bool greedy;

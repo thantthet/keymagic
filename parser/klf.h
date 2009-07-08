@@ -7,15 +7,16 @@
 #include <fstream>
 #include <vector>
 
-#include "common.h"
+#include "../global/global.h"
 #include "keymap.h"
 
-#define opSTRING	0x0AA0
-#define opVARIABLE	0x0BBB
-#define opREFERENCE	0x0CC0
-#define opPREDEFINED	0x0DD0
-#define opMODIFIER	0x0EE0
-#define opANYOF		0x0FF0
+#define opSTRING	0x1111
+#define opVARIABLE	0x2222
+#define opREFERENCE	0x3333
+#define opPREDEFINED	0x4444
+#define opMODIFIER	0x5555
+#define opANYOF		0x6666
+#define opAND		0x7777
 
 struct structRule{
 

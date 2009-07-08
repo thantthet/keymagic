@@ -1,3 +1,5 @@
+#define DEBUG 1
+
 #include "common.h"
 
 #pragma data_seg(".keymagic")
@@ -8,10 +10,11 @@ HWND hwndKWindows = NULL;
 char szDir[1000] = {0};
 #pragma data_seg()
 
-#define DEBUG 1
-
 //Make sure that section can READ WRITE and SHARE
 #pragma comment(linker, "/SECTION:.keymagic,RWS")
+
+std::vector<KM_ShortCut> vtSC;
+classInternalEditor InternalEditor;
 
 bool LoadKeymapFile(int index)
 {

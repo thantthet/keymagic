@@ -11,11 +11,24 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 		return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 	}
 
+/*#ifdef _DEBUG
+	OutputDebugString("HookKeyProc\n");
+	wchar_t str[100];
+	swprintf(str, L"lParam = 0x%.8x wParam = 0x%.8x\n", lParam, wParam);
+	Debug(str);
+#endif*/
+	//Key Up
 	if (nCode == HC_ACTION && lParam & 0x80000000)
 	{
 		return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 	}
-
+	//Menu Mode is active
+	if (nCode == HC_ACTION && lParam & 0x10000000)
+	{
+		Debug(L"Menu Mode ACTIVE\n");
+		return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
+	}
+	//Key Down
 	else if (nCode == HC_ACTION && lParam)
 	{
 		if (!GetFocus())
@@ -30,7 +43,6 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 				PostMessage(hwndKWindows, KM_GETFOCUS, 0, 0);
 			}
 			else{
-				//LoadAndMap(index);
 				PostMessage(hwndKWindows, KM_GETFOCUS, index, 0);
 			}
 			return 1;
@@ -41,34 +53,6 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 
 		if (ProcessInput(wParam))
 			return true;
-
-		//if (wParam == VK_BACK)
-		//{
-		//	if (inner_back < 1)
-		//	{
-		//		//Logger("UnInnerBack wParam = %X lParam %X", wParam, lParam);
-		//		if (BackCustomize())
-		//			return 1;
-		//		else {
-		//			InternalEditor.Delete();
-		//			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
-		//		}
-		//	}
-
-		//	else if (inner_back)
-		//	{
-		//		//Logger("InnerBack wParam = %X lParam %X", wParam, lParam);
-		//		inner_back--;
-		//		return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
-		//	}
-		//}
-
-		//if (TranslateToAscii((UINT*)&Input))
-		//{
-		//	//if (Do_Operation(Input))
-		//	//	return true;
-		//	InternalEditor.AppendText((wchar_t*)&Input, 1);
-		//}
 	}
 	return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 
@@ -89,8 +73,6 @@ LRESULT CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 	case WM_ACTIVATE:
 		if (LOWORD(cwp->wParam) == WA_INACTIVE){
 
-			//kmCursorPos = 0;
-
 			if (cwp->hwnd == hwndKWindows)
 				break;
 
@@ -102,14 +84,12 @@ LRESULT CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				break;
 
 			PostMessage(hwndKWindows, KM_KILLFOCUS, 0,(LPARAM) cwp->hwnd);
-#ifdef Debug
+#ifdef _TRACK_WND_RPOC_
 			InternalEditor.Restart();
 #endif
 		}
 
 		if (LOWORD(cwp->wParam) == WA_ACTIVE){
-
-			//kmCursorPos = 0;
 
 			if (cwp->hwnd == hwndKWindows)
 				break;
@@ -139,7 +119,6 @@ LRESULT CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 			}
 			else
 			{
-				//LoadAndMap(cwp->wParam);
 				LoadKeymapFile(cwp->wParam);
 				ActiveIndex = cwp->wParam;
 			}
@@ -147,7 +126,6 @@ LRESULT CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case KM_RESCAN:
-		//LocalFree(vtSC);
 		vtSC.clear();
 		GetShortCuts();
 	}
@@ -162,28 +140,26 @@ LRESULT CALLBACK HookGetMsgProc(int nCode, WPARAM wParam, LPARAM lParam)
 		return CallNextHookEx(hGetMsgHook, nCode, wParam, lParam);
 
 	MSG* msg = (MSG*)lParam;
-	switch (msg->message){
+	switch (msg->message)
+	{
+#ifdef _TRACK_WND_RPOC_
 		case WM_KEYDOWN:
-			switch (msg->wParam)
-			{
-				case VK_LEFT:
-				case VK_RIGHT:
-				case VK_DOWN:
-				case VK_UP:
-					InternalEditor.Restart();
-					break;
-				default:
-					InternalEditor.KeyDown(msg->wParam);
-					break;
-			}
+			if (isActive)
+				InternalEditor.KeyDown(msg->wParam, msg->lParam);
+			break;
+		case WM_KEYUP:
+			if (isActive)
+				InternalEditor.KeyUp(msg->wParam, msg->lParam);
 			break;
 		case WM_LBUTTONDOWN:
 		case WM_RBUTTONDOWN:
 			{
-				InternalEditor.Restart();
+				if (isActive)
+					InternalEditor.Restart();
 				break;
 			}
 			break;
+#endif
 	}
 
 	return CallNextHookEx(hGetMsgHook, nCode, wParam, lParam);

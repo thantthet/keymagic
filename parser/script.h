@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "common.h"
+#include "../global/global.h"
 
 using namespace std;
 

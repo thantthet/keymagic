@@ -201,6 +201,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\global\global.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Hooks.cpp"
 				>
 			</File>
@@ -224,6 +228,10 @@
 			>
 			<File
 				RelativePath=".\common.h"
+				>
+			</File>
+			<File
+				RelativePath="..\global\global.h"
 				>
 			</File>
 			<File

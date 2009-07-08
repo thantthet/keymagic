@@ -3,6 +3,8 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
+#define _TRACK_WND_RPOC_
+
 #include <windows.h>
 #include <vector>
 #include <Userenv.h>
@@ -21,8 +23,8 @@ struct KM_ShortCut{
 	BYTE modkey;
 };
 
-static std::vector<KM_ShortCut> vtSC;
-static classInternalEditor InternalEditor;
+extern std::vector<KM_ShortCut> vtSC;
+extern classInternalEditor InternalEditor;
 
 extern void GetShortCuts();
 extern void Logger(char* fmt, ...);
