@@ -41,7 +41,7 @@ bool parser::validVarName(wchar_t * VarName)
 	return true;
 }
 
-bool parser::complexstr(int * objIndex, wstring * varValue)
+bool parser::complexExpression(int * objIndex, wstring * varValue)
 {
 	
 	wchar_t * retVal=0;
@@ -65,7 +65,7 @@ bool parser::complexstr(int * objIndex, wstring * varValue)
 	int OriginalIndex = *objIndex;
 
 	if (checkToken(objIndex, T_ADDOP))
-		if (!complexstr(objIndex, varValue))
+		if (!complexExpression(objIndex, varValue))
 			*objIndex = OriginalIndex;
 	return true;
 }
@@ -92,7 +92,7 @@ bool parser::vardeclaration(int * objIndex)
 
 	wstring * varValue = new wstring;
 
-	if (!complexstr(objIndex, varValue))
+	if (!complexExpression(objIndex, varValue))
 	{
 		varValue->~basic_string();
 		*objIndex = OriginalIndex;
@@ -122,12 +122,6 @@ bool parser::pattern(int * objIndex, wstring * outStr)
 {
 	if (checkToken(objIndex, T_ADDOP))
 	{
-		if (condition(objIndex, outStr))
-			return true;
-	}
-	else if (checkToken(objIndex, T_ANDOP))
-	{
-		outStr->push_back(opAND);
 		if (condition(objIndex, outStr))
 			return true;
 	}
@@ -186,8 +180,30 @@ int parser::getVar(wchar_t * value)
 	return kmklf.is_exist(value)+1;
 }
 
+bool parser::combination(int * objIndex, wstring * outStr)
+{
+	if (wchar_t * s = (wchar_t*)checkToken(objIndex, T_PREDEFINED))
+	{
+		outStr->push_back(opPREDEFINED);
+		structPREdef * preDef = getPreDef(s, true);
+		outStr->push_back(preDef->preDef);
+	}
+	else {return false;}
+
+	int OriginalIndex = *objIndex;
+
+	if (checkToken(objIndex, T_ANDOP))
+	{
+		if (!combination(objIndex, outStr))
+			*objIndex = OriginalIndex;
+	}
+	return true;
+}
+
 bool parser::context(int * objIndex, wstring * outStr)
 {
+	int OriginalIndex = *objIndex;
+
 	if (wchar_t * s = (wchar_t*)checkToken(objIndex, T_STRING))
 	{
 		outStr->push_back(opSTRING);
@@ -218,6 +234,16 @@ bool parser::context(int * objIndex, wstring * outStr)
 		structPREdef * preDef = getPreDef(s, true);
 		outStr->push_back(preDef->preDef);
 		return true;
+	}
+	else if (checkToken(objIndex, T_COMBINE_START))
+	{
+
+		outStr->push_back(opAND);
+
+		if (combination(objIndex, outStr))
+			if (checkToken(objIndex, T_COMBINE_END))
+				return true;
+		*objIndex = OriginalIndex;
 	}
 
 	return false;

@@ -12,10 +12,7 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 	}
 
 #ifdef _DEBUG
-	OutputDebugString("HookKeyProc\n");
-	wchar_t str[100];
-	swprintf(str, L"lParam = 0x%.8x wParam = 0x%.8x\n", lParam, wParam);
-	Debug(str);
+	Debug(L"HookKeyProc\nlParam = 0x%.8x wParam = 0x%.8x\n", lParam, wParam);
 #endif
 
 	//Key Up

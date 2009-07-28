@@ -63,10 +63,11 @@ private:
 	void setVar(wchar_t * name, wchar_t * value);
 	bool newline( int * objIndex );
 	bool vk_status(int * objIndex, wstring * outStr );
+	bool combination(int * objIndex, wstring * outStr);
 	bool condition( int * objIndex, wstring * outStr );
 	bool context( int * objIndex, wstring * outStr );
 	bool expression( int * objIndex );
-	bool complexstr( int * objIndex, wstring * value );
+	bool complexExpression( int * objIndex, wstring * value );
 	bool vardeclaration( int * objIndex );
 	bool pattern( int * objIndex, wstring * outStr );
 	bool rule( int * objIndex );

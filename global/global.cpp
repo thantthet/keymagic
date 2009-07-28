@@ -23,7 +23,7 @@ void pre_define()
 	push_pre_define_value(pdVK_RETURN,	L"VK_RETURN",	L"\x000D");
 	push_pre_define_value(pdVK_SHIFT,	L"VK_SHIFT",	L"\x0010");
 	push_pre_define_value(pdVK_CONTROL,	L"VK_CONTROL",	L"\x0011");
-	push_pre_define_value(pdVK_MENU,	L"VK_MENU",		L"\x0012");
+	push_pre_define_value(pdVK_MENU,	L"VK_ALT",		L"\x0012");
 	push_pre_define_value(pdVK_PAUSE,	L"VK_PAUSE",	L"\x0013");
 	push_pre_define_value(pdVK_CAPITAL,	L"VK_CAPITAL",	L"\x0014");
 	push_pre_define_value(pdVK_KANJI,	L"VK_KANJI",	L"\x0019");
@@ -158,14 +158,30 @@ wchar_t * Type2Str(emType Type)
 	case T_PREDEFINED:
 		return L"PREDEFINED";
 		break;
+	case T_COMBINE_START:
+		return L"T_COMBINE_START";
+		break;
+	case T_COMBINE_END:
+		return L"T_COMBINE_END";
+		break;
 	}
 	return L"UNKNOWN";
 }
 
-void Debug(wchar_t * string)
+void Debug(LPCWSTR fmt, ...)
 {
-	OutputDebugStringW(string);
+    WCHAR pBuffer[1024];
+
+    va_list args = NULL;
+    va_start(args, fmt);
+
+    wvsprintfW(pBuffer, fmt, args);
+
+    va_end(args);
+
+	OutputDebugStringW(pBuffer);
 }
+
 
 void DumpToken(wchar_t * d,structToken kToken)
 {

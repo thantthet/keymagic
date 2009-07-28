@@ -24,7 +24,9 @@ enum emType {
 	T_IDENTIFIER,
 	T_MODIFIER,
 	T_PRINT,
-	T_PREDEFINED
+	T_PREDEFINED,
+	T_COMBINE_START,
+	T_COMBINE_END
 };
 
 enum emPreDef {
@@ -97,7 +99,7 @@ extern std::vector<structPREdef> vTpreDef;
 extern void push_pre_define_value( emPreDef preDef, const wchar_t * name, const wchar_t * value );
 extern void pre_define();
 extern wchar_t * Type2Str(emType Type);
-extern void Debug(wchar_t * string);
+extern void Debug(LPCWSTR pMessage, ...);
 extern void DumpToken(wchar_t * d,structToken kToken);
 extern void Exit(int _Code);
 extern void PrintLastError();

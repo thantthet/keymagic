@@ -10,7 +10,7 @@
 #include <Commdlg.h>
 
 #define MAX_STORELEN 200
-//#define RESTART_IE 0
+#define RESTART_IE 1
 
 class classInternalEditor {
 
@@ -27,7 +27,7 @@ class classInternalEditor {
 		{
 #ifdef RESTART_IE
 #ifdef _DEBUG
-			OutputDebugStringA("InternalEditor::Restart\n");
+			Debug(L"InternalEditor::Restart\n");
 #endif
 			RtlZeroMemory(Text, MAX_STORELEN);
 			CaretLocation = TextLength = 0;
@@ -61,7 +61,7 @@ class classInternalEditor {
 		{
 
 #ifdef _DEBUG
-			OutputDebugStringA("InternalEditor::AppendText\n");
+			Debug(L"InternalEditor::AppendText\n");
 			dump();
 #endif
 
@@ -79,18 +79,16 @@ class classInternalEditor {
 		{
 
 #ifdef _DEBUG
-			OutputDebugStringA("InternalEditor::AddInput\n");
+			Debug(L"InternalEditor::AddInput\n");
 #endif
 
-			if (isCTRL || isALT)
-			{
-
-#ifdef _DEBUG
-			OutputDebugStringA("(isCTRL || isALT) == true\n");
-#endif
-
-				return false;
-			}
+//			if ((isCTRL == true && isALT == false) || (isCTRL == false && isALT == true))
+//			{
+//#ifdef _DEBUG
+//			Debug(L"(isCTRL == true && isALT == false) || (isCTRL == false && isALT == true)\n");
+//#endif
+//				return false;
+//			}
 			return AppendText((wchar_t*)&Char, 1);
 		}
 
@@ -98,13 +96,20 @@ class classInternalEditor {
 		{
 
 #ifdef _DEBUG
-			OutputDebugStringA("InternalEditor::Delete\n");	
+			Debug(L"InternalEditor::Delete\n");	
 #endif
+//			if (isCTRL || isALT)
+//			{
+//#ifdef _DEBUG
+//			Debug("(isCTRL || isALT) == true\n");
+//#endif
+//				return false;
+//			}
 
 			if (TextLength < count)
 				return false;
 
-			TextLength = TextLength-count;
+			TextLength = TextLength - count;
 			Text[TextLength] = NULL;
 			CaretLocation = TextLength;
 
@@ -123,12 +128,7 @@ class classInternalEditor {
 		void KeyDown(WPARAM wParam, LPARAM lParam)
 		{
 #ifdef _DEBUG
-			OutputDebugString("Internal Editor::KeyDown\n");
-			wchar_t str[100];
-			swprintf(str, L"lParam = 0x%.8x %d wParam = 0x%.8x %d\n", 
-				lParam, lParam, 
-				wParam, wParam);
-			Debug(str);
+			Debug(L"Internal Editor::KeyDown\nlParam = 0x%.8x %d wParam = 0x%.8x %d\n", lParam, lParam, wParam, wParam);
 #endif
 			switch (wParam)
 			{
@@ -136,6 +136,10 @@ class classInternalEditor {
 				case VK_RIGHT:
 				case VK_DOWN:
 				case VK_UP:
+				case VK_END:
+				case VK_HOME:
+				case VK_PRIOR:
+				case VK_NEXT:
 					Restart();
 					break;
 				case VK_CONTROL:
@@ -160,12 +164,7 @@ class classInternalEditor {
 		void KeyUp(WPARAM wParam, LPARAM lParam)
 		{
 #ifdef _DEBUG
-			OutputDebugString("Internal Editor::KeyUp\n");
-			wchar_t str[100];
-			swprintf(str, L"lParam = 0x%.8x %d wParam = 0x%.8x %d\n", 
-				lParam, lParam, 
-				wParam, wParam);
-			Debug(str);
+			Debug(L"Internal Editor::KeyUp\nlParam = 0x%.8x %d wParam = 0x%.8x %d\n", lParam, lParam, wParam, wParam);
 #endif
 			if (wParam == VK_CONTROL)
 			{
@@ -182,9 +181,7 @@ class classInternalEditor {
 		void dump()
 		{
 #ifdef _DEBUG
-			OutputDebugString("\"");
-			OutputDebugStringW(Text);
-			OutputDebugString("\"\n");
+			Debug(L"\"%s\"\n", Text);
 #endif
 		}
 

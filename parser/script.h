@@ -54,7 +54,7 @@ public:
 	int getLineNum(int pos)
 	{
 		int i ;
-		for (i = 0; i < stLinePos.size() && stLinePos[i] < pos; i++){}
+		for (i = 0; i < stLinePos.size() && stLinePos[i] <= pos; i++){}
 		return i;
 	}
 
@@ -75,6 +75,11 @@ public:
 		if (index > spt_length)
 			return NULL;
 		return &s[index];
+	}
+
+	size_t length()
+	{
+		return spt_length;
 	}
 
 private:

@@ -7,6 +7,7 @@
 #pragma once
 
 #include "../global/global.h"
+#include <boost/regex.hpp>
 #include "script.h"
 
 class lexscanner
@@ -37,7 +38,7 @@ public:
 
 private:
 	vector<structToken> tokens;
-	wchar_t * wPlus, * wASSIGN, * wPRINT, * wAND , * wStar;
+	wchar_t * wPlus, * wASSIGN, * wPRINT, * wAND , * wStar, * wLess, * wGreater;
 	script s;
 
 	void init_vars()
@@ -47,6 +48,8 @@ private:
 		wPRINT = L"=>";
 		wAND = L"&";
 		wStar = L"*";
+		wLess = L"<";
+		wGreater = L">";
 	}
 
 	bool isNewLine(int * Index)
@@ -187,6 +190,32 @@ private:
 					DumpToken(L"New Object Assigned:", kToken);
 				}
 				break;
+			case '<':
+				noAdd = true;
+
+				kToken.iLength = 1;
+				kToken.iStartIndex = scannedIndex;
+				kToken.Type = T_COMBINE_START;
+				kToken.Value = wLess;
+				tokens.push_back(kToken);
+
+				DumpToken(L"New Object Assigned:", kToken);
+				scannedIndex++;
+
+				break;
+			case '>':
+				noAdd = false;
+
+				kToken.iLength = 1;
+				kToken.iStartIndex = scannedIndex;
+				kToken.Type = T_COMBINE_END;
+				kToken.Value = wGreater;
+				tokens.push_back(kToken);
+
+				DumpToken(L"New Object Assigned:", kToken);
+				scannedIndex++;
+
+				break;
 			case '+':
 
 				if (!noAdd)
@@ -217,8 +246,6 @@ private:
 				tokens.push_back(kToken);
 
 				DumpToken(L"New Object Assigned:", kToken);
-
-				noAdd = true;
 
 				scannedIndex++;
 				break;
@@ -402,10 +429,11 @@ private:
 
 		scannedIndex++;
 
+		sEnd = s->lpwStrAt(scannedIndex);
 		do {
-			sEnd = wcschr(s->lpwStrAt(scannedIndex), wcQuote);
+			sEnd++;
+			sEnd = wcschr(sEnd, wcQuote);
 		} while (sEnd && *(sEnd-1) == '\\');
-		
 
 		if (!sEnd)
 			return -1;
@@ -415,8 +443,11 @@ private:
 		wcsncpy(wNew, s->lpwStrAt(scannedIndex), wlen);
 		wNew[wlen] = NULL;
 
+		static boost::wregex e(L"\\\\(.)");
+		wcscpy(wNew, boost::regex_replace(std::wstring(wNew), e, std::wstring(L"$1")).c_str());
+
 		structToken kToken;
-		kToken.iLength = wlen;
+		kToken.iLength = wcslen(wNew);
 		kToken.iStartIndex = scannedIndex;
 		kToken.Type = T_STRING;
 		kToken.Value = wNew;
