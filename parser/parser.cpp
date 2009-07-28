@@ -64,7 +64,7 @@ bool parser::complexstr(int * objIndex, wstring * varValue)
 	
 	int OriginalIndex = *objIndex;
 
-	if (checkToken(objIndex, T_ANDOP))
+	if (checkToken(objIndex, T_ADDOP))
 		if (!complexstr(objIndex, varValue))
 			*objIndex = OriginalIndex;
 	return true;
@@ -163,7 +163,14 @@ wchar_t * parser::identifier(int * objIndex)
 	if (wchar_t * moder = (wchar_t *)checkToken(objIndex, T_MODIFIER))
 	{
 		strValue->push_back(opMODIFIER);
-		strValue->push_back(opANYOF);
+		if (wcscmp(moder, L"*")==0)
+			strValue->push_back(opANYOF);
+		else if (wcsncmp(moder, L"$", 1)==0)
+		{
+			int index=0;
+			swscanf(&moder[1], L"%d", &index);
+			strValue->push_back(index);
+		}
 	}
 
 	return (wchar_t*)strValue->c_str();
@@ -199,7 +206,9 @@ bool parser::context(int * objIndex, wstring * outStr)
 	else if (wchar_t * s = (wchar_t*)checkToken(objIndex, T_REFERENCE))
 	{
 		outStr->push_back(opREFERENCE);
-		outStr->push_back(atoi((char*)s));
+		int index=0;
+		swscanf(s, L"%d", &index);
+		outStr->push_back(index);
 		return true;
 	}
 

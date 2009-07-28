@@ -127,8 +127,8 @@ private:
 				if (s.wCharAt(scannedIndex+2) == ']')
 				{
 					wchar_t* wModer = new wchar_t[2];
-					wModer[1]=NULL;
 					wModer[0]=s.wCharAt(scannedIndex+1);
+					wModer[1]=NULL;
 
 					kToken.iLength = 3;
 					kToken.iStartIndex = scannedIndex;
@@ -137,6 +137,21 @@ private:
 					tokens.push_back(kToken);
 
 					scannedIndex += 3;
+				}
+				else if (s.wCharAt(scannedIndex+3) == ']')
+				{
+					wchar_t* wModer = new wchar_t[3];
+					wModer[0]=s.wCharAt(scannedIndex+1);
+					wModer[1]=s.wCharAt(scannedIndex+2);
+					wModer[2]=NULL;
+
+					kToken.iLength = 4;
+					kToken.iStartIndex = scannedIndex;
+					kToken.Type = T_MODIFIER;
+					kToken.Value = wModer;
+					tokens.push_back(kToken);
+
+					scannedIndex += 4;
 				}
 				else
 				{
@@ -268,7 +283,7 @@ private:
 	wchar_t * WholeWord(wchar_t * s)
 	{
 		while (*s != EOS){
-			if ((*s < '0' || *s > '9') && (*s < 'A' || *s > 'Z') && (*s < 'a' || *s > 'z'))
+			if ((*s < '0' || *s > '9') && (*s < 'A' || *s > 'Z') && (*s < 'a' || *s > 'z') && *s != '_')
 				break;
 			s++;
 		}
@@ -353,44 +368,6 @@ private:
 		DumpToken(L"New Object Assigned:", kToken);
 
 		return wlen+1;
-	}
-
-	bool isModedVar(wchar_t * keyword, int wlen, int * scannedIndex)
-	{
-		if (wlen < 5){return false;}
-		
-		if (keyword[wlen-1] != ']' || keyword[wlen-3] != '[')
-		{
-			return false;
-		}
-
-		int varlen = wlen - 3;
-
-		wchar_t * varname = new wchar_t[varlen+1];
-		wcsncpy(varname, keyword,  varlen);
-		varname[varlen] = NULL;
-
-		structToken kToken;
-
-		kToken.iLength = varlen;
-		kToken.iStartIndex = *scannedIndex;
-		kToken.Type = T_IDENTIFIER;
-		kToken.Value = varname;
-		tokens.push_back(kToken);
-
-		wchar_t* wModer = new wchar_t[2];
-		wModer[1]=NULL;
-		wModer[0]=keyword[wlen-2];
-
-		kToken.iLength = 3;
-		kToken.iStartIndex = (*scannedIndex) - varlen;
-		kToken.Type = T_MODIFIER;
-		kToken.Value = wModer;
-		tokens.push_back(kToken);
-
-		(*scannedIndex) += wlen;
-
-		return true;
 	}
 
 	bool isComment(script * s, int * index)

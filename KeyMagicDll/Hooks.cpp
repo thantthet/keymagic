@@ -11,12 +11,13 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 		return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 	}
 
-/*#ifdef _DEBUG
+#ifdef _DEBUG
 	OutputDebugString("HookKeyProc\n");
 	wchar_t str[100];
 	swprintf(str, L"lParam = 0x%.8x wParam = 0x%.8x\n", lParam, wParam);
 	Debug(str);
-#endif*/
+#endif
+
 	//Key Up
 	if (nCode == HC_ACTION && lParam & 0x80000000)
 	{
@@ -51,7 +52,7 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 		if (isActive == false)
 			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 
-		if (ProcessInput(wParam))
+		if (ProcessInput(wParam, lParam))
 			return true;
 	}
 	return CallNextHookEx(hKeyHook, nCode, wParam, lParam);

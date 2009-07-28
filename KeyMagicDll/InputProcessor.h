@@ -5,8 +5,8 @@
 
 #include "../global/global.h"
 #include "common.h"
-#include "regex.h"
+#include <boost/regex.hpp>
 
-extern bool ProcessInput(wchar_t wcInput);
+extern bool ProcessInput(wchar_t wcInput, LPARAM lParam);
 
 #endif

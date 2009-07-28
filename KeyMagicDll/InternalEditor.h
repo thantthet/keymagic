@@ -10,6 +10,7 @@
 #include <Commdlg.h>
 
 #define MAX_STORELEN 200
+//#define RESTART_IE 0
 
 class classInternalEditor {
 
@@ -24,13 +25,13 @@ class classInternalEditor {
 
 		void Restart()
 		{
-
+#ifdef RESTART_IE
 #ifdef _DEBUG
 			OutputDebugStringA("InternalEditor::Restart\n");
 #endif
-
 			RtlZeroMemory(Text, MAX_STORELEN);
 			CaretLocation = TextLength = 0;
+#endif
 		}
 
 		UINT GetCaretLocation()
@@ -93,17 +94,18 @@ class classInternalEditor {
 			return AppendText((wchar_t*)&Char, 1);
 		}
 
-		bool Delete()
+		bool Delete(int count = 1)
 		{
 
 #ifdef _DEBUG
 			OutputDebugStringA("InternalEditor::Delete\n");	
 #endif
 
-			if (TextLength <= 0)
+			if (TextLength < count)
 				return false;
 
-			Text[--TextLength] = NULL;
+			TextLength = TextLength-count;
+			Text[TextLength] = NULL;
 			CaretLocation = TextLength;
 
 #ifdef _DEBUG
