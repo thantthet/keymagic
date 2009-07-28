@@ -185,13 +185,12 @@ void Debug(LPCWSTR fmt, ...)
 
 void DumpToken(wchar_t * d,structToken kToken)
 {
-	wchar_t str[500];
-	swprintf(
-		str,
-		L"%s => Length = %d, StartIndex = %d, Type = %s, Value = '%s'\n", d, 
-		kToken.iLength, kToken.iStartIndex, Type2Str(kToken.Type), kToken.Value
+	Debug(
+		L"%s => Length = %d, StartIndex = %d, Type = %s, Value = '%s'\n", 
+		d, kToken.iLength, kToken.iStartIndex, 
+		Type2Str(kToken.Type), 
+		kToken.Value
 		);
-	Debug(str);
 }
 
 void Exit(int _Code)

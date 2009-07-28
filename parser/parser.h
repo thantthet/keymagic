@@ -14,7 +14,7 @@ class parser
 {
 
 public:
-	parser::parser(wchar_t * in_s)
+	parser::parser(const wchar_t * in_s)
 	{
 		Script.loadSource(in_s);
 		Scanner.setScript(&Script);
@@ -35,7 +35,7 @@ public:
 		kmklf.~Kmklf();
 	}
 
-	void generate(char * szPath)
+	void generate(wchar_t * szPath)
 	{
 		kmklf.toFile(szPath);
 	}

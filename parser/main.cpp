@@ -44,9 +44,30 @@ L"'@' => u103f + u1011\n";
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	parser p(source);
+	if (argc < 3)
+	{
+		std::wcerr << L"Usage: " << argv[0] << L" <script file path> <output file path>";
+		return false;
+	}
+	std::wstring buf;
+	std::wstring line;
+	std::wifstream in (argv[1]);
+
+	if (in==0)
+	{
+		std::cerr << "File cannot be opened!";
+		return 0;
+	}
+	
+	while(std::getline(in,line))
+	{
+		buf += line;
+		buf += L"\r\n";
+	}
+
+	parser p(buf.c_str());
 	p.begin_parse();
-	p.generate("C:\\test.bin");
+	p.generate(argv[2]);
 	//Kmklf kmklf;
 	//kmklf.fromFile("C:\\test.bin");
 	//kmklf.toFile("C:\\test2.bin");

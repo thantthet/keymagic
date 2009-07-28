@@ -41,7 +41,7 @@ public:
 		stLinePos = src->stLinePos;
 	}
 
-	void loadSource(wchar_t * script)
+	void loadSource(const wchar_t * script)
 	{
 		size_t input_length = wcslen(script);
 		s = new wchar_t[input_length+2];

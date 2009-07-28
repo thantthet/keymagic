@@ -536,9 +536,7 @@ bool ProcessInput(wchar_t wcInput, LPARAM lParam)
 		return false;
 	}
 
-	wchar_t str[30];
-	swprintf(str, L"CTRL = %x ALT = %x\n", KeyStatus[VK_CONTROL], KeyStatus[VK_MENU]);
-	Debug(str);
+	Debug(L"CTRL = %x ALT = %x\n", KeyStatus[VK_CONTROL], KeyStatus[VK_MENU]);
 
 	if (TranslateToAscii((UINT*)&wcInput))
 	{

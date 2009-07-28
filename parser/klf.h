@@ -98,10 +98,25 @@ public:
 
 	bool fromFile(const char * szPath)
 	{
+		int cchWideChar = MultiByteToWideChar(CP_ACP, 0, szPath, -1, 0, 0);
+
+		wchar_t * lpWideCharStr = new wchar_t[cchWideChar];
+
+		MultiByteToWideChar(CP_ACP, 0, szPath, -1, lpWideCharStr, cchWideChar);
+
+		bool ret = fromFile(lpWideCharStr);
+
+		delete[] lpWideCharStr;
+
+		return ret;
+	}
+
+	bool fromFile(const wchar_t * szPath)
+	{
 		FileHeader fh;
 		FILE * hFile;
 
-		hFile = fopen(szPath, "rb");
+		hFile = _wfopen(szPath, L"rb");
 		if (!hFile)
 		{
 			PrintLastError();
@@ -156,7 +171,7 @@ public:
 		return true;
 	}
 
-	bool toFile(const char * szPath)
+	bool toFile(const wchar_t * szPath)
 	{
 		FileHeader fh;
 
@@ -217,11 +232,11 @@ private:
 
 	FILE * pFile;
 
-	bool create_file(const char * szPath)
+	bool create_file(const wchar_t * szPath)
 	{
 
 		if (!pFile)
-			pFile = fopen(szPath, "wb");
+			pFile = _wfopen(szPath, L"wb");
 
 		if (pFile == NULL)
 		{
