@@ -108,6 +108,7 @@ LRESULT CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 
 	case KM_SETKBID:
 		isActive = cwp->lParam;
+
 		if (isActive)
 		{
 			if (cwp->wParam == ActiveIndex)
@@ -117,10 +118,13 @@ LRESULT CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 			}
 			else
 			{
-				LoadKeymapFile(cwp->wParam);
 				ActiveIndex = cwp->wParam;
+				LoadKeymapFile(ActiveIndex);
 			}
 		}
+		else
+			ActiveIndex = -1;
+
 		break;
 
 	case KM_RESCAN:

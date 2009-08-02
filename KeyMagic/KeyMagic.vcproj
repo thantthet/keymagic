@@ -187,6 +187,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\global\global.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\KeyMagic.cpp"
 				>
 			</File>
@@ -214,6 +218,10 @@
 			</File>
 			<File
 				RelativePath=".\DllUnload.h"
+				>
+			</File>
+			<File
+				RelativePath="..\global\global.h"
 				>
 			</File>
 			<File

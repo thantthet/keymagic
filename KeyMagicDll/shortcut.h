@@ -5,7 +5,7 @@
 
 static bool isActive = false;
 //UINT	NumOfShortCut = 0;
-static UINT ActiveIndex = 0;
+static UINT ActiveIndex = -1;
 
 int ShortCutCheck (UINT uvKey){
 //	Logger("ShortCutCheck Entry");

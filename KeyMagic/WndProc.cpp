@@ -21,7 +21,7 @@
 #include "CGdiPlusBitmap.h"
 #include <sys/stat.h>
 #include <errno.h>
-
+#include "../global/global.h"
 
 using namespace std;
 
@@ -29,9 +29,9 @@ using namespace std;
 vector<char*> szFileToDelete;
 //int cbFileToDelete = 0;
 int kbindex=-1;
-HWND LastHWND;
-UINT KeyBoardNum;
-DWORD StartupFlag;
+static HWND LastHWND;
+static UINT KeyBoardNum;
+static DWORD StartupFlag;
 
 CGdiPlusBitmapResource *Logo;
 Gdiplus::Bitmap *Bmpbk;
@@ -66,7 +66,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case KM_GETFOCUS:
-		CheckMenuRadioItem(hKeyMenu, IDKM_NORMAL, 
+		Debug(L"lParam(HWND)=0x%.8x, wParam=%d\n",lParam, wParam);
+		CheckMenuRadioItem(hKeyMenu, IDKM_NORMAL,
 			KeyBoardNum + IDKM_ID , 
 			wParam + IDKM_NORMAL, 
 			MF_BYCOMMAND);
@@ -141,7 +142,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				MessageBox (hWnd,
 					"Sorry! You do not have permission to change.\n"
-					"Please turn off UAC or run Keymagic as an Administrator.",
+					"If you are on Windows Vista, turn off UAC or run Keymagic as an Administrator.",
 					"Keymagic", MB_OK | MB_ICONEXCLAMATION);
 				break;
 			}
@@ -235,7 +236,8 @@ next:
 
 		case IDKM_NORMAL:
 
-			SendMessage(LastHWND, KM_SETKBID, -1, 0);
+			Debug(L"LastHWND=0x%.8x, wmId=%d, Active=%d\n", LastHWND, -1, false);
+			SendMessage(LastHWND, KM_SETKBID, -1, false);
 			CheckMenuRadioItem(hKeyMenu, IDKM_NORMAL,
 				KeyBoardNum + IDKM_ID, 
 				IDKM_NORMAL, 
@@ -244,8 +246,10 @@ next:
 			break;
 
 		default:
-			if (wmId >= IDKM_ID && wmId <= IDKM_ID + KeyBoardNum){
+			if (wmId >= IDKM_ID && wmId <= IDKM_ID + KeyBoardNum)
+			{
 
+				Debug(L"LastHWND=0x%.8x, wmId=%d, Active=%d\n",LastHWND, wmId, true);
 				SendMessage(LastHWND, KM_SETKBID, wmId - IDKM_NORMAL, true);
 
 				if (MF_CHECKED & GetMenuState(hKeyMenu, wmId, MF_BYCOMMAND))
