@@ -10,7 +10,7 @@
 #include <Commdlg.h>
 
 #define MAX_STORELEN 200
-#define RESTART_IE 1
+//#define RESTART_IE 1
 
 class classInternalEditor {
 
@@ -98,16 +98,12 @@ class classInternalEditor {
 #ifdef _DEBUG
 			Debug(L"InternalEditor::Delete\n");	
 #endif
-//			if (isCTRL || isALT)
-//			{
-//#ifdef _DEBUG
-//			Debug("(isCTRL || isALT) == true\n");
-//#endif
-//				return false;
-//			}
 
 			if (TextLength < count)
+			{
+				Text[0] = NULL;
 				return false;
+			}
 
 			TextLength = TextLength - count;
 			Text[TextLength] = NULL;

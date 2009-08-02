@@ -59,15 +59,17 @@ int _tmain(int argc, _TCHAR* argv[])
 		return 0;
 	}
 	
-	while(std::getline(in,line))
+	while(std::getline(in, line))
 	{
 		buf += line;
 		buf += L"\r\n";
 	}
 
 	parser p(buf.c_str());
-	p.begin_parse();
-	p.generate(argv[2]);
+	if (p.begin_parse())
+		p.generate(argv[2]);
+	else
+		std::cout << "Parsing failed!";
 	//Kmklf kmklf;
 	//kmklf.fromFile("C:\\test.bin");
 	//kmklf.toFile("C:\\test2.bin");

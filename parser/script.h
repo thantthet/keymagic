@@ -106,6 +106,8 @@ private:
 		stLinePos.push_back(i);
 
 		spt_length = i;
+
+		Debug(L"%d", spt_length);
 	}
 };
 

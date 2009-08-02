@@ -185,7 +185,7 @@ bool parser::combination(int * objIndex, wstring * outStr)
 	if (wchar_t * s = (wchar_t*)checkToken(objIndex, T_PREDEFINED))
 	{
 		outStr->push_back(opPREDEFINED);
-		structPREdef * preDef = getPreDef(s, true);
+		structPREdef * preDef = getPreDef(s, wcslen(s), true);
 		outStr->push_back(preDef->preDef);
 	}
 	else {return false;}
@@ -231,7 +231,7 @@ bool parser::context(int * objIndex, wstring * outStr)
 	else if (wchar_t * s = (wchar_t*)checkToken(objIndex, T_PREDEFINED))
 	{
 		outStr->push_back(opPREDEFINED);
-		structPREdef * preDef = getPreDef(s, true);
+		structPREdef * preDef = getPreDef(s, wcslen(s), true);
 		outStr->push_back(preDef->preDef);
 		return true;
 	}

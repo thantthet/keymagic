@@ -30,7 +30,7 @@ extern void GetShortCuts();
 extern void Logger(char* fmt, ...);
 extern LPCSTR GetKeyBoard(UINT Index, char * szKBPath);
 extern bool LoadKeymapFile(int index);
-extern bool TranslateToAscii (UINT *uVKey);
+extern bool TranslateToAscii (WORD *uVKey);
 extern Kmklf klf;
 
 #endif

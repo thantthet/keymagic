@@ -7,6 +7,7 @@
 #include "common.h"
 #include <boost/regex.hpp>
 
-extern bool ProcessInput(wchar_t wcInput, LPARAM lParam);
+bool ProcessInput(WORD wcInput, LPARAM lParam);
+bool MatchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStatus);
 
 #endif

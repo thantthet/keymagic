@@ -47,6 +47,44 @@ enum emPreDef {
 	pdVK_NEXT,
 	pdVK_DELETE,
 
+	pdVK_KEY_0,
+	pdVK_KEY_1,
+	pdVK_KEY_2,
+	pdVK_KEY_3,
+	pdVK_KEY_4,
+	pdVK_KEY_5,
+	pdVK_KEY_6,
+	pdVK_KEY_7,
+	pdVK_KEY_8,
+	pdVK_KEY_9,
+
+	pdVK_KEY_A,
+	pdVK_KEY_B,
+	pdVK_KEY_C,
+	pdVK_KEY_D,
+	pdVK_KEY_E,
+	pdVK_KEY_F,
+	pdVK_KEY_G,
+	pdVK_KEY_H,
+	pdVK_KEY_I,
+	pdVK_KEY_J,
+	pdVK_KEY_K,
+	pdVK_KEY_L,
+	pdVK_KEY_M,
+	pdVK_KEY_N,
+	pdVK_KEY_O,
+	pdVK_KEY_P,
+	pdVK_KEY_Q,
+	pdVK_KEY_R,
+	pdVK_KEY_S,
+	pdVK_KEY_T,
+	pdVK_KEY_U,
+	pdVK_KEY_V,
+	pdVK_KEY_W,
+	pdVK_KEY_X,
+	pdVK_KEY_Y,
+	pdVK_KEY_Z,
+
 	pdVK_NUMPAD0,
 	pdVK_NUMPAD1,
 	pdVK_NUMPAD2,
@@ -76,7 +114,26 @@ enum emPreDef {
 	pdVK_F9,
 	pdVK_F10,
 	pdVK_F11,
-	pdVK_F12
+	pdVK_F12,
+
+	pdVK_OEM_1,
+	pdVK_OEM_PLUS,
+	pdVK_OEM_COMMA,
+	pdVK_OEM_MINUS,
+	pdVK_OEM_PERIOD,
+	pdVK_OEM_2,
+	pdVK_OEM_3,
+
+	pdVK_OEM_4,
+	pdVK_OEM_5,
+	pdVK_OEM_6,
+	pdVK_OEM_7,
+	pdVK_OEM_8,
+
+	pdVK_OEM_AX,
+	pdVK_OEM_102,
+	pdVK_ICO_HELP,
+	pdVK_ICO_00,
 };
 
 struct structPREdef
@@ -104,7 +161,7 @@ extern void DumpToken(wchar_t * d,structToken kToken);
 extern void Exit(int _Code);
 extern void PrintLastError();
 extern structPREdef * getPreDef(emPreDef preDef);
-extern structPREdef * getPreDef(wchar_t * wcSrc, bool isName);
+extern structPREdef * getPreDef(wchar_t * wcSrc, int length,  bool isName);
 
 
 #endif

@@ -21,13 +21,13 @@ public:
 	lexscanner::lexscanner(script * s_input)
 	{
 		init_vars();
-		s.copy(s_input);
+		scpt.copy(s_input);
 		scan();
 	}
 
 	void lexscanner::setScript(script * s_input)
 	{
-		s.copy(s_input);
+		scpt.copy(s_input);
 		scan();
 	}
 
@@ -39,7 +39,7 @@ public:
 private:
 	vector<structToken> tokens;
 	wchar_t * wPlus, * wASSIGN, * wPRINT, * wAND , * wStar, * wLess, * wGreater;
-	script s;
+	script scpt;
 
 	void init_vars()
 	{
@@ -57,10 +57,10 @@ private:
 		structToken kToken;
 		int scannedIndex = *Index;
 
-		if (s.wCharAt(scannedIndex) == '\r')
+		if (scpt.wCharAt(scannedIndex) == '\r')
 			scannedIndex++;
 
-		if (s.wCharAt(scannedIndex) == '\n')
+		if (scpt.wCharAt(scannedIndex) == '\n')
 		{
 			kToken.iLength = 1;
 			kToken.iStartIndex = scannedIndex;
@@ -72,7 +72,7 @@ private:
 
 			scannedIndex++;
 
-			if (s.wCharAt(scannedIndex) == '\r')
+			if (scpt.wCharAt(scannedIndex) == '\r' || scpt.wCharAt(scannedIndex) == '\n')
 				scannedIndex++;
 
 			isNewLine(&scannedIndex);
@@ -82,20 +82,21 @@ private:
 		return false;
 	}
 
-	bool isPreDefined(int * Index)
+	bool isPreDefined(int * Index, int length)
 	{
 		structToken kToken;
 		int scannedIndex = *Index;
 
 		structPREdef * preDef;
-		if (preDef = getPreDef(s.lpwStrAt(scannedIndex), true))
+		
+		if (preDef = getPreDef(scpt.lpwStrAt(scannedIndex), length, true))
 		{
 			kToken.iLength = 4;
 			kToken.iStartIndex = scannedIndex;
 			kToken.Type = T_PREDEFINED;
 			kToken.Value = preDef->name;
 			tokens.push_back(kToken);
-			scannedIndex+=wcslen( preDef->name);
+			scannedIndex+=length;
 			*Index = scannedIndex;
 			return true;
 		}
@@ -109,7 +110,7 @@ private:
 
 		bool noAdd = false;
 
-		while (s.wCharAt(scannedIndex) != EOS || !s.wCharAt(scannedIndex))
+		while (scpt.wCharAt(scannedIndex) != EOS || !scpt.wCharAt(scannedIndex))
 		{
 			structToken kToken;
 			vector<structToken>::iterator it;
@@ -122,15 +123,30 @@ private:
 				continue;
 			}
 
-			while (s.wCharAt(scannedIndex) == ' ' || s.wCharAt(scannedIndex) == '\t') {scannedIndex++; }
+			while (scpt.wCharAt(scannedIndex) == ' ' || scpt.wCharAt(scannedIndex) == '\t') {scannedIndex++; }
 
-			switch (s.wCharAt(scannedIndex))
+			switch (scpt.wCharAt(scannedIndex))
 			{
+			case '\r':
+			case '\n':
+				kToken.iLength = 1;
+				kToken.iStartIndex = scannedIndex;
+				kToken.Type = T_NEWLINE;
+				kToken.Value = L"\n";
+				tokens.push_back(kToken);
+
+				DumpToken(L"New Object Assigned:", kToken);
+
+				scannedIndex++;
+
+				if (scpt.wCharAt(scannedIndex) == '\r' || scpt.wCharAt(scannedIndex) == '\n')
+					scannedIndex++;
+				break;
 			case '[':
-				if (s.wCharAt(scannedIndex+2) == ']')
+				if (scpt.wCharAt(scannedIndex+2) == ']')
 				{
 					wchar_t* wModer = new wchar_t[2];
-					wModer[0]=s.wCharAt(scannedIndex+1);
+					wModer[0]=scpt.wCharAt(scannedIndex+1);
 					wModer[1]=NULL;
 
 					kToken.iLength = 3;
@@ -141,11 +157,11 @@ private:
 
 					scannedIndex += 3;
 				}
-				else if (s.wCharAt(scannedIndex+3) == ']')
+				else if (scpt.wCharAt(scannedIndex+3) == ']')
 				{
 					wchar_t* wModer = new wchar_t[3];
-					wModer[0]=s.wCharAt(scannedIndex+1);
-					wModer[1]=s.wCharAt(scannedIndex+2);
+					wModer[0]=scpt.wCharAt(scannedIndex+1);
+					wModer[1]=scpt.wCharAt(scannedIndex+2);
 					wModer[2]=NULL;
 
 					kToken.iLength = 4;
@@ -158,25 +174,23 @@ private:
 				}
 				else
 				{
-					wchar_t str[50];
-					swprintf(str, L"ERROR: Parse error => Line: %d Pos: %d\n", s.getLineNum(scannedIndex), s.getPosLine(scannedIndex));
-					Debug(str);
+					Debug(L"ERROR: Parse error => Line: %d Pos: %d\n", scpt.getLineNum(scannedIndex), scpt.getPosLine(scannedIndex));
 					Exit(0);
 				}
 				break;
 			case '$':
-				retlen = reference(&s, scannedIndex);
+				retlen = reference(scannedIndex);
 				if (retlen > 0)
 					scannedIndex += retlen;
 				else
 				{
-					wchar_t * sEnd = WholeWord(s.lpwStrAt(scannedIndex+1));
-					if (sEnd == s.lpwStrAt(scannedIndex))
+					wchar_t * sEnd = WholeWord(scpt.lpwStrAt(scannedIndex+1));
+					if (sEnd == scpt.lpwStrAt(scannedIndex))
 						return false;
 					scannedIndex++;
-					int wlen = sEnd - s.lpwStrAt(scannedIndex);
+					int wlen = sEnd - scpt.lpwStrAt(scannedIndex);
 					wchar_t * wNew = new wchar_t[wlen+1];
-					wcsncpy(wNew, s.lpwStrAt(scannedIndex), wlen);
+					wcsncpy(wNew, scpt.lpwStrAt(scannedIndex), wlen);
 					wNew[wlen] = NULL;
 
 					kToken.iLength = wlen;
@@ -217,7 +231,7 @@ private:
 
 				break;
 			case '+':
-
+				Debug(L"+");
 				if (!noAdd)
 				{
 					kToken.iLength = 1;
@@ -231,14 +245,11 @@ private:
 				}
 				else
 				{
-					wchar_t str[50];
-					swprintf(str, L"ERROR: Unexpected '%s' => Line: %d Pos: %d\n", wPlus, s.getLineNum(scannedIndex), s.getPosLine(scannedIndex));
-					Debug(str);
+					Debug(L"ERROR: Unexpected '%s' => Line: %d Pos: %d\n", wPlus, scpt.getLineNum(scannedIndex), scpt.getPosLine(scannedIndex));
 					Exit(0);
 				}
 				break;
 			case '&':
-
 				kToken.iLength = 1;
 				kToken.iStartIndex = scannedIndex;
 				kToken.Type = T_ANDOP;
@@ -250,7 +261,7 @@ private:
 				scannedIndex++;
 				break;
 			case '=':
-				if (s.wCharAt(scannedIndex+1) == '>')
+				if (scpt.wCharAt(scannedIndex+1) == '>')
 				{
 					kToken.iLength = 2;
 					kToken.iStartIndex = scannedIndex;
@@ -274,8 +285,9 @@ private:
 				DumpToken(L"New Object Assigned:", kToken);
 				
 				break;
+			case 'U':
 			case 'u':
-				retlen = unicode(&s, scannedIndex);
+				retlen = unicode(scannedIndex);
 				if (retlen > 0)
 					scannedIndex += retlen;
 				else
@@ -283,22 +295,28 @@ private:
 				break;
 			case '"':
 			case '\'':
-				retlen = parse_string (&s, scannedIndex);
+				retlen = parse_string (scannedIndex);
 				if (retlen > 0)
 					scannedIndex += retlen;
 				else
 					return false;
 				break;
 			case '/':
-				if (!isComment(&s, &scannedIndex))
+				if (!isComment(&scannedIndex))
 					return false;
 				break;
 			default:
-				if (isPreDefined(&scannedIndex))
+				wchar_t * end = WholeWord(scpt.lpwStrAt(scannedIndex));
+				int wwlength = end - scpt.lpwStrAt(scannedIndex);
+				wchar_t * wholeWord = new wchar_t [wwlength];
+
+				wcsncpy(wholeWord, scpt.lpwStrAt(scannedIndex), wwlength);
+
+				if (isPreDefined(&scannedIndex, wwlength))
 					break;
-				wchar_t str[50];
-				swprintf(str, L"ERROR: Parse error => Line: %d Pos: %d\n", s.getLineNum(scannedIndex), s.getPosLine(scannedIndex));
-				Debug(str);
+				
+				
+				Debug(L"ERROR: Parse error '%s' => Line: %d Pos: %d\n", wholeWord, scpt.getLineNum(scannedIndex), scpt.getPosLine(scannedIndex));
 				Exit(0);
 				break;
 			}
@@ -318,15 +336,15 @@ private:
 		return s;
 	}
 
-	int reference (script * s,  int scannedIndex)
+	int reference (int scannedIndex)
 	{
 		scannedIndex++;
 
-		wchar_t * sEnd = WholeWord(s->lpwStrAt(scannedIndex));
+		wchar_t * sEnd = WholeWord(scpt.lpwStrAt(scannedIndex));
 		if (!sEnd)
 			return false;
 
-		for (wchar_t * w = sEnd-1; w >= s->lpwStrAt(scannedIndex); w--)
+		for (wchar_t * w = sEnd-1; w >= scpt.lpwStrAt(scannedIndex); w--)
 		{
 			if (!isdigit(*w))
 			{
@@ -334,9 +352,9 @@ private:
 			}
 		}
 		
-		int wlen = sEnd - s->lpwStrAt(scannedIndex);
+		int wlen = sEnd - scpt.lpwStrAt(scannedIndex);
 		wchar_t * wNew = new wchar_t[wlen+1];
-		wcsncpy(wNew, s->lpwStrAt(scannedIndex), wlen);
+		wcsncpy(wNew, scpt.lpwStrAt(scannedIndex), wlen);
 		wNew[wlen] = NULL;
 
 		structToken kToken;
@@ -360,15 +378,15 @@ private:
 		return false;
 	}
 
-	int unicode (script * s,  int scannedIndex)
+	int unicode (int scannedIndex)
 	{
 		scannedIndex++;
 
-		wchar_t * sEnd = WholeWord(s->lpwStrAt(scannedIndex));
+		wchar_t * sEnd = WholeWord(scpt.lpwStrAt(scannedIndex));
 		if (!sEnd)
 			return false;
 
-		for (wchar_t * w = sEnd-1; w > s->lpwStrAt(scannedIndex); w--)
+		for (wchar_t * w = sEnd-1; w > scpt.lpwStrAt(scannedIndex); w--)
 		{
 			if (!isxdigit(*w))
 			{
@@ -376,9 +394,9 @@ private:
 			}
 		}
 		
-		int wlen = sEnd - s->lpwStrAt(scannedIndex);
+		int wlen = sEnd - scpt.lpwStrAt(scannedIndex);
 		wchar_t * wNew = new wchar_t[wlen+1];
-		wcsncpy(wNew, s->lpwStrAt(scannedIndex), wlen);
+		wcsncpy(wNew, scpt.lpwStrAt(scannedIndex), wlen);
 		wNew[wlen] = NULL;
 
 		swscanf(wNew, L"%x", wNew);
@@ -397,22 +415,22 @@ private:
 		return wlen+1;
 	}
 
-	bool isComment(script * s, int * index)
+	bool isComment( int * index)
 	{
 		int scannedIndex = *index;
-		if (s->wCharAt(scannedIndex) == '/' && s->wCharAt(scannedIndex+1) == '/')
+		if (scpt.wCharAt(scannedIndex) == '/' && scpt.wCharAt(scannedIndex+1) == '/')
 		{
-			wchar_t * lineEnd = wcspbrk(s->lpwStrAt(scannedIndex), L"\r\n");
-			(*index) = lineEnd - s->lpwStrAt(0);
+			wchar_t * lineEnd = wcspbrk(scpt.lpwStrAt(scannedIndex), L"\r\n");
+			(*index) = lineEnd - scpt.lpwStrAt(0);
 			return true;
 		}
-		else if (s->wCharAt(scannedIndex) == '/' && s->wCharAt(scannedIndex+1) == '*')
+		else if (scpt.wCharAt(scannedIndex) == '/' && scpt.wCharAt(scannedIndex+1) == '*')
 		{
 			scannedIndex++;
-			wchar_t * commentEnd = wcsstr(s->lpwStrAt(scannedIndex), L"*/");
+			wchar_t * commentEnd = wcsstr(scpt.lpwStrAt(scannedIndex), L"*/");
 			if (commentEnd)
 			{
-				(*index) = (commentEnd+2) - s->lpwStrAt(0);
+				(*index) = (commentEnd+2) - scpt.lpwStrAt(0);
 				return true;
 			}
 		}
@@ -421,26 +439,26 @@ private:
 		return false;
 	}
 
-	int parse_string (script * s, int scannedIndex)
+	int parse_string (int scannedIndex)
 	{
 		wchar_t * sEnd;
 
-		wchar_t wcQuote =  s->wCharAt(scannedIndex);
+		wchar_t wcQuote =  scpt.wCharAt(scannedIndex);
 
 		scannedIndex++;
 
-		sEnd = s->lpwStrAt(scannedIndex);
+		sEnd = scpt.lpwStrAt(scannedIndex);
 		do {
 			sEnd++;
 			sEnd = wcschr(sEnd, wcQuote);
-		} while (sEnd && *(sEnd-1) == '\\');
+		} while (sEnd && *(sEnd-1) == '\\' && *(sEnd-2) != '\\');
 
 		if (!sEnd)
 			return -1;
 
-		int wlen = sEnd - s->lpwStrAt(scannedIndex);
+		int wlen = sEnd - scpt.lpwStrAt(scannedIndex);
 		wchar_t * wNew = new wchar_t[wlen+1];
-		wcsncpy(wNew, s->lpwStrAt(scannedIndex), wlen);
+		wcsncpy(wNew, scpt.lpwStrAt(scannedIndex), wlen);
 		wNew[wlen] = NULL;
 
 		static boost::wregex e(L"\\\\(.)");

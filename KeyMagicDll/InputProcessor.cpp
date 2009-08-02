@@ -2,10 +2,32 @@
 
 Kmklf klf;
 static int DontEatBackspace = 0;
-static bool Delete = true;
+static bool do_delete = true;
+static int keys_length = 0;
 
-static boost::wregex slash(L"[\\(\\)\\[\\]\\{\\}\\|]");
+static boost::wregex slash(L"[()\\[\\]{}|.\\\\]");
 static std::wstring r(L"\\\\$0");
+
+typedef std::vector<structRule> RULES;
+
+struct ModKeysStatus
+{
+	bool CTRL;
+	bool ALT;
+	bool SHIFT;
+};
+
+static ModKeysStatus old_status;
+
+struct InputRuleInfo
+{
+	std::wstring expression;
+	int context_length;
+	int keys_length;
+	boost::wregex regex;
+	RULES::iterator it;
+	bool do_delete;
+};
 
 bool AppendVariableValue(std::vector<wchar_t*> vTstr, int index, std::wstring * s)
 {
@@ -51,15 +73,15 @@ struct structCClass
 
 typedef std::vector<structCClass> charClasses;
 
-int getindextoreplace(int sub_index, boost::wcmatch * matches, charClasses * cc)
+int getindextoreplace(int sub_index, boost::wcmatch matches, charClasses * cc)
 {
 	charClasses::iterator it;
 	for ( it=cc->begin() ; it < cc->end(); it++ )
-		if ((*it).idx == sub_index)
+		if (it->idx == sub_index)
 		{
 			static boost::wregex e(L"\\\\(.)");
 			std::wstring ws = boost::regex_replace(std::wstring((*it).start, 1 + (*it).end - (*it).start ), e, std::wstring(L"$1"));
-			const wchar_t * w = wcschr(ws.c_str(), *((*matches)[sub_index].first));
+			const wchar_t * w = wcschr( ws.c_str(), *matches[sub_index].first );
 			if (w > ws.c_str() + ws.length())
 				return -1;
 			return w - ws.c_str();
@@ -67,13 +89,17 @@ int getindextoreplace(int sub_index, boost::wcmatch * matches, charClasses * cc)
 	return -1;
 }
 
-std::wstring * makeRegex(WORD * raw_str, int len, LPBYTE KeyStatus, 
+std::wstring * makeRegex(WORD * raw_str, int len, WORD wVk, LPBYTE KeyStatus, 
 						 bool genCapture = true, 
 						 boost::wcmatch * matches = NULL,
 						 charClasses * cc = NULL)
 {
-	std::wstring * s = new std::wstring;
+	bool matched;
+	std::wstring * s = new std::wstring(L"");
 	std::vector<wchar_t*> vTstr = klf.getStrings();
+
+	ModKeysStatus m_status;
+	memset(&m_status, 0, sizeof(m_status));
 
 	while (len > 0)
 	{
@@ -129,7 +155,9 @@ std::wstring * makeRegex(WORD * raw_str, int len, LPBYTE KeyStatus,
 					return false;
 				if (mod > matches->size())
 					return false;
-				int index = getindextoreplace(mod, matches, cc);
+				int index = getindextoreplace(mod, *matches, cc);
+				if (lastLength + index >= s->length())
+					return false;
 				wchar_t wc = s->at(lastLength + index);
 				s->erase(lastLength);
 				s->append(1, wc);
@@ -142,7 +170,7 @@ std::wstring * makeRegex(WORD * raw_str, int len, LPBYTE KeyStatus,
 				s->append(L"(");
 			if (structPREdef * structPd = getPreDef((emPreDef)*raw_str++))
 			{
-				s->append(structPd->value);
+				s->append(boost::regex_replace(std::wstring((wchar_t*)structPd->value), slash, r));
 				len --;
 			}
 			if (genCapture)
@@ -157,48 +185,90 @@ std::wstring * makeRegex(WORD * raw_str, int len, LPBYTE KeyStatus,
 			s->append(buffer);
 			break;
 		case opAND:
+			matched = false;
 
-			//if ((lastB = findLastOpenBracket(s)) != -1)
-			//{
-				//last_raw = raw_str - 4;
+			if (*raw_str++ != opPREDEFINED)
+			{
+				//error
+				break;
+			}
+			len--;
+			structPREdef * preDef = getPreDef((emPreDef)*raw_str);
+			switch (preDef->value[0])
+			{
+			case VK_MENU:
+				m_status.ALT = true;
+				break;
+			case VK_CONTROL:
+				m_status.CTRL = true;
+				break;
+			case VK_SHIFT:
+				m_status.SHIFT = true;
+				break;
+			}
+			if (preDef->value[0] == wVk)
+			{
+				matched = true;
+			}
+			if (!(KeyStatus[(BYTE)preDef->value[0]] & 0x80))
+			{
+				delete s;
+				return NULL;
+			}
+
+			keys_length++;
+			raw_str++;
+			len--;
+
+			while(len)
+			{
 				if (*raw_str++ != opPREDEFINED)
 				{
 					//error
 					break;
 				}
 				len--;
-				structPREdef * preDef = getPreDef((emPreDef)*raw_str);
+				preDef = getPreDef((emPreDef)*raw_str++);
+				switch (preDef->value[0])
+				{
+				case VK_MENU:
+					m_status.ALT = true;
+					break;
+				case VK_CONTROL:
+					m_status.CTRL = true;
+					break;
+				case VK_SHIFT:
+					m_status.SHIFT = true;
+					break;
+				}
+				if (preDef->value[0] == wVk)
+				{
+					matched = true;
+				}
 				if (!(KeyStatus[(BYTE)preDef->value[0]] & 0x80))
 				{
 					delete s;
 					return NULL;
 				}
-
-				raw_str++;
 				len--;
+				keys_length++;
+			}
+			
+			if (
+				!matched || 
+				m_status.CTRL ^ old_status.CTRL || 
+				m_status.ALT ^ old_status.ALT || 
+				m_status.SHIFT ^ old_status.SHIFT
+				)
+			{
+				delete s;
+				return NULL;
+			}
 
-				while(len)
-				{
-					if (*raw_str++ != opPREDEFINED)
-					{
-						//error
-						break;
-					}
-					len--;
-					preDef = getPreDef((emPreDef)*raw_str++);
-					if (!(KeyStatus[(BYTE)preDef->value[0]] & 0x80))
-					{
-						delete s;
-						return NULL;
-					}
-					len--;
-				}
-				//s->erase(lastB);
-				InternalEditor.Delete();
-				Delete = false;
-				return s;
-			//}
-			//break;
+			InternalEditor.Delete();
+			do_delete = false;
+			return s;
+			break;
 		}
 	}
 	return s;
@@ -229,7 +299,7 @@ void backspace(int count)
 	if (!GetFocus() || count < 1)
 		return ;
 
-	DontEatBackspace = count;
+	DontEatBackspace += count;
 	
 	/*while(count--)
 	{
@@ -289,7 +359,7 @@ int estimate_len (const wchar_t * pattern)
 			break;
 		
 		case '\\':
-			pattern += 2;
+			pattern ++;
 			if (!opened_square_bracket)
 				length++;
 			break;
@@ -362,188 +432,242 @@ void extractCharClasses(const wchar_t * e, charClasses * cc)
 			break;
 		
 		case '\\':
-			e += 2;
+			e ++;
 			break;
 		}
 	}
 }
 
-// Release Control - Alt - Shift Keys
-void ReleaseCAS()
+void SendKey(WORD wVk, DWORD dwFlags)
 {
 	INPUT ip;
 
 	ip.type = INPUT_KEYBOARD;
 	ip.ki.wScan = 0;
 	ip.ki.dwExtraInfo = 0;
-	ip.ki.dwFlags = KEYEVENTF_KEYUP;
+	ip.ki.dwFlags = dwFlags;
 	ip.ki.time = 0;
+	ip.ki.wVk = wVk;
 
-	ip.ki.wVk = VK_CONTROL;
 	SendInput(1, &ip, sizeof(INPUT));
-
-	ip.ki.wVk = VK_MENU;
-	SendInput(1, &ip, sizeof(INPUT));
-
-	ip.ki.wVk = VK_SHIFT;
-	SendInput(1, &ip, sizeof(INPUT));
-
 }
 
-bool MatchRules(wchar_t wcInput, LPBYTE KeyStatus)
+bool get_output_and_send(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStatus)
 {
+	boost::wcmatch matches;
+	charClasses cc;
+
+	wchar_t * src = InternalEditor.GetTextBackward(ir_info->context_length);
+	if (!src)
+		return false;
+	extractCharClasses(ir_info->expression.c_str(), &cc);
+
+	boost::regex_match(src, matches, ir_info->regex);
+
+	int len = wcslen((wchar_t*)ir_info->it->strOutRule);
+	std::wstring * s_out = makeRegex(ir_info->it->strOutRule, len, wVk, KeyStatus, false, &matches, &cc);
+
+	if (!s_out)
+		return false;
+
+	SendKey(VK_CONTROL, KEYEVENTF_KEYUP);
+	SendKey(VK_MENU, KEYEVENTF_KEYUP);
+	SendKey(VK_SHIFT, KEYEVENTF_KEYUP);
+
+	if (!s_out->length())
+	{
+		if (ir_info->do_delete)
+		{
+			// Delete recent added temporary input
+			InternalEditor.Delete();
+		}
+
+		backspace(wcslen(src));
+
+		if (old_status.CTRL)
+			SendKey(VK_CONTROL, 0);
+		if (old_status.CTRL)
+			SendKey(VK_MENU, 0);
+		if (old_status.SHIFT)
+			SendKey(VK_SHIFT, 0);
+
+		delete s_out;
+
+		return true;
+	}
+
+	std::wstring replaced_str;
+
+	replaced_str = boost::regex_replace(std::wstring(src), ir_info->regex, *s_out);
+
+	if (!replaced_str.size())
+	{
+		//rise error
+		//continue;
+		return false;
+	}
+
+	if (ir_info->do_delete)
+	{
+		// Delete recent added temporary input
+		InternalEditor.Delete();
+	}
+
+	int src_len = wcslen(src);
+
+	s_out->assign(replaced_str);
+
+	if (src_len)
+	{
+		int match_len = get_match_len(s_out->c_str(), src);
+
+		if (match_len < 0)
+		{
+			backspace(0 - match_len);
+			match_len = get_match_len(s_out->c_str(), src);
+			backspace(s_out->length() - match_len);
+		}
+		else if (src_len > match_len)
+		{
+			backspace(src_len - match_len);
+		}
+		s_out->erase(0, match_len);
+	}
+
+	SendStrokes(s_out);
+
+	MatchRules(0, 0, KeyStatus);
+
+	if (old_status.CTRL)
+		SendKey(VK_CONTROL, 0);
+	if (old_status.ALT)
+		SendKey(VK_MENU, 0);
+	if (old_status.SHIFT)
+		SendKey(VK_SHIFT, 0);
+
+	delete s_out;
+
+	return true;
+}
+
+bool MatchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStatus)
+{
+	InputRuleInfo ir_info;
+	bool have_match = false;
+
+	ir_info.keys_length = 0;
 #ifdef _DEBUG
 	Debug(L"Before:");
 #endif
 	// Add temporarily
 	InternalEditor.AddInput(wcInput);
-	std::vector<structRule> Rules = klf.getRules();
+	RULES Rules = klf.getRules();
 
-	for (std::vector<structRule>::iterator it = Rules.begin(); it != Rules.end(); it++)
+	for (RULES::iterator it = Rules.begin(); it != Rules.end(); it++)
 	{
-		Delete = true;
+		do_delete = true;
 
-		size_t len = wcslen((wchar_t*)(*it).strInRule);
-		std::wstring * s_in = makeRegex((*it).strInRule, len, KeyStatus);
+		size_t len = wcslen((wchar_t*)it->strInRule);
+		keys_length = 0xDEAD0000;
+		std::wstring * s_in = makeRegex(it->strInRule, len, wVk, KeyStatus, true);
 
 		if (!s_in)
 			continue;
 
-		wchar_t * src = InternalEditor.GetTextBackward(estimate_len(s_in->c_str()));		
-		if (s_in->size() && src)
+		int context_length = estimate_len(s_in->c_str());
+
+		wchar_t * src = InternalEditor.GetTextBackward(context_length);
+		if (src)
 		{
 			boost::wregex e(s_in->c_str());
 			boost::wcmatch matches;
 			if (boost::regex_match(src, matches, e))
 			{
-				charClasses cc;
-				extractCharClasses(s_in->c_str(), &cc);
-
-				len = wcslen((wchar_t*)(*it).strOutRule);
-				std::wstring * s_out = makeRegex((*it).strOutRule, len, KeyStatus, false, &matches, &cc);
-
-				ReleaseCAS();
-
-				if (!s_out->length())
+				have_match = true;
+				if (
+					(ir_info.keys_length < keys_length) 
+					|| 
+					(ir_info.expression.length() + ir_info.keys_length < s_in->length() + keys_length)
+					)
 				{
-					//Delete recent added temporary input
-					InternalEditor.Delete();
-
-					backspace(wcslen(src));
-
-					delete s_in;
-					delete s_out;
-
-#ifdef _DEBUG
-					Debug(L"After\n");
-#endif
-					return true;
+					ir_info.expression = *s_in;
+					ir_info.context_length = context_length;
+					ir_info.keys_length = keys_length;
+					ir_info.regex = e;
+					ir_info.it = it;
+					ir_info.do_delete = do_delete;
 				}
-
-				std::wstring replaced_str;
-
-				replaced_str = boost::regex_replace(std::wstring(src), e, *s_out);
-
-				if (!replaced_str.size())
-				{
-					//rise error
-					continue;
-				}
-
-				if (Delete)
-				{
-					// Delete recent added temporary input
-					InternalEditor.Delete();
-				}
-
-				int src_len = wcslen(src);
-
-				s_out->assign(replaced_str);
-
-				if (src_len)
-				{
-					int match_len = get_match_len(s_out->c_str(), src);
-
-					if (match_len < 0)
-					{
-						backspace(0 - match_len);
-						match_len = get_match_len(s_out->c_str(), src);
-					}
-					else if (src_len > match_len)
-					{
-						backspace(src_len - match_len);
-					}
-					s_out->erase(0, match_len);
-				}
-
-				SendStrokes(s_out);
-
-				delete s_in;
-				delete s_out;
-#ifdef _DEBUG
-				Debug(L"After\n");
-#endif
-				return true;
-			}
-			else if (Delete == false)
-			{
-				InternalEditor.AddInput(wcInput);
 			}
 		}
+		if (do_delete == false)
+				InternalEditor.AddInput(wcInput);
 		delete s_in;
 	}
-	//Delete recent added temporary input
-	InternalEditor.Delete();
 
-	if (wcInput == VK_BACK)
+	if (have_match == true)
+	{
+		if (ir_info.do_delete == false)
+			InternalEditor.Delete();
+		return get_output_and_send(&ir_info, wVk, KeyStatus);
+	}
+
+	if (wcInput)
+	{
+		//Delete recent added temporary input
 		InternalEditor.Delete();
-	else
-		InternalEditor.AddInput(wcInput);
-
-#ifdef _DEBUG
-	Debug(L"After\n");
-#endif
+	}
 
 	return false;
 }
 
-//Param  -	wcInput (wchar_t) : Input to process : NOT NULL
+//Param  -	wVk (WORD) : Input to process : NOT NULL
 //return -	true : Input was eatten.
 //			false : Input was not processed.
-bool ProcessInput(wchar_t wcInput, LPARAM lParam)
+bool ProcessInput(WORD wVk, LPARAM lParam)
 {
-	bool isCTRL, isALT;
-
-	if (wcInput == VK_BACK && DontEatBackspace)
+	if (wVk == VK_BACK && DontEatBackspace > 0)
 	{
 		DontEatBackspace -= lParam & 0xFF;
+		if (DontEatBackspace < 0)
+		{
+			DontEatBackspace=0;
+			backspace (0 - DontEatBackspace);
+		}
 		return false;
 	}
 
-	if (wcInput == VK_CONTROL || wcInput == VK_MENU)
+	if (wVk == VK_CONTROL || wVk == VK_MENU)
 		return false;
 
 	BYTE KeyStatus[256];
 	GetKeyboardState(KeyStatus);
 
-	isCTRL = KeyStatus[VK_CONTROL] & 0x80;
-	isALT = KeyStatus[VK_MENU] & 0x80;
-
-	if ((isCTRL == true && isALT == false) || (isCTRL == false && isALT == true))
-	{
-		Debug(L"(isCTRL == true && isALT == false) || (isCTRL == false && isALT == true)\n");
-		InternalEditor.Restart();
-		return false;
-	}
+	old_status.CTRL = KeyStatus[VK_CONTROL] & 0x80;
+	old_status.ALT = KeyStatus[VK_MENU] & 0x80;
+	old_status.SHIFT = KeyStatus[VK_SHIFT] & 0x80;
 
 	Debug(L"CTRL = %x ALT = %x\n", KeyStatus[VK_CONTROL], KeyStatus[VK_MENU]);
 
-	if (TranslateToAscii((UINT*)&wcInput))
+	wchar_t wcInput = wVk;
+	if (TranslateToAscii((WORD*)&wcInput))
 	{
-		if (MatchRules(wcInput, KeyStatus ))
+		if (MatchRules(wcInput, wVk, KeyStatus ))
 		{
 			return true;
 		}
+		else if (wVk == VK_BACK)
+		{
+			InternalEditor.Delete(lParam & 0xFF);
+		}
+		else
+			InternalEditor.AddInput(wcInput);
+	}
+
+	if (old_status.CTRL ^ old_status.ALT)
+	{
+		Debug(L"(isCTRL ^ isALT)\n");
+		InternalEditor.Restart();
+		return false;
 	}
 	return false;
 }

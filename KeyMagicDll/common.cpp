@@ -112,7 +112,7 @@ LPCSTR GetKeyBoard(UINT Index, char * szKBPath){
 	return szKBPath;
 }
 
-bool TranslateToAscii (UINT *uVKey){
+bool TranslateToAscii (WORD *uVKey){
 //	Logger("TranslateToAscii Entry");
 
 	//bool shiftDown;// = GetKeyState(VK_SHIFT) & 0x8000;
