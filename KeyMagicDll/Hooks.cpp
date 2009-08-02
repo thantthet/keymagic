@@ -40,8 +40,12 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 				isActive = false;
 				PostMessage(hwndKWindows, KM_GETFOCUS, 0, 0);
 			}
-			else{
-				PostMessage(hwndKWindows, KM_GETFOCUS, index, 0);
+			else
+			{
+				isActive = true;
+				ActiveIndex = index;
+				LoadKeymapFile(ActiveIndex);
+				PostMessage(hwndKWindows, KM_GETFOCUS, ActiveIndex, 0);
 			}
 			return 1;
 		}

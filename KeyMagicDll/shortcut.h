@@ -31,8 +31,8 @@ int ShortCutCheck (UINT uvKey){
 	vector<KM_ShortCut>::iterator it;
 	for (it=vtSC.begin(); it < vtSC.end(); it++ )
 	{
-		if (uvKey == ((KM_ShortCut)*it).ukey && MOD_KEY == ((KM_ShortCut)*it).modkey){
-			return TRUE;
+		if (uvKey ==  it->ukey && MOD_KEY == it->modkey){
+			return it - vtSC.begin();
 		}
 	}
 //	Logger("ShortCutCheck : return -1");

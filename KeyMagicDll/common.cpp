@@ -36,28 +36,18 @@ void GetShortCuts(){
 
 	GetPrivateProfileString(szKBP, NULL, NULL, szKBNames, 500, szINI);
 
-	//vtSC = (KM_ShortCut*) LocalAlloc(LPTR, sizeof(KM_ShortCut)*50);
-
-	//NumOfShortCut=0;
 	for (int i=0,Length = lstrlen(&szKBNames[i]);
 		Length > 0;
 		i+=Length+1, Length = lstrlen(&szKBNames[i])){
 			WORD Hotkey = GetPrivateProfileInt(szSC, &szKBNames[i], 0, szINI);
-			if (Hotkey){
-			//	vtSC[j].ukey = (char) Hotkey;
-			//	vtSC[j].modkey = Hotkey >> 8;
-				KM_ShortCut * SC = new KM_ShortCut;
-				SC->ukey = (char) Hotkey;
-				SC->modkey = Hotkey >> 8;
 
-				vtSC.push_back(*SC);
-			}
-			//NumOfShortCut++;
+			KM_ShortCut * SC = new KM_ShortCut;
+			SC->ukey = (char) Hotkey;
+			SC->modkey = Hotkey >> 8;
+
+			vtSC.push_back(*SC);
 	}
 
-	//LocalReAlloc(vtSC, sizeof(KM_ShortCut)*NumOfShortCut, LPTR);
-
-//	Logger("GetShortCuts Return : NumOfShortCut = %X ", NumOfShortCut);
 }
 
 

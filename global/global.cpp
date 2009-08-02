@@ -76,9 +76,9 @@ void pre_define()
 	push_pre_define_value(pdVK_NUMPAD2,	L"VK_NUMPAD2",	L"\x0062");
 	push_pre_define_value(pdVK_NUMPAD3,	L"VK_NUMPAD3",	L"\x0063");
 	push_pre_define_value(pdVK_NUMPAD4,	L"VK_NUMPAD4",	L"\x0064");
-	push_pre_define_value(pdVK_NUMPAD5,	L"VK_NUMPAD6",	L"\x0065");
-	push_pre_define_value(pdVK_NUMPAD6,	L"VK_NUMPAD7",	L"\x0066");
-	push_pre_define_value(pdVK_NUMPAD7,	L"VK_NUMPAD8",	L"\x0067");
+	push_pre_define_value(pdVK_NUMPAD5,	L"VK_NUMPAD5",	L"\x0065");
+	push_pre_define_value(pdVK_NUMPAD6,	L"VK_NUMPAD6",	L"\x0066");
+	push_pre_define_value(pdVK_NUMPAD7,	L"VK_NUMPAD7",	L"\x0067");
 	push_pre_define_value(pdVK_NUMPAD8,	L"VK_NUMPAD8",	L"\x0068");
 	push_pre_define_value(pdVK_NUMPAD9,	L"VK_NUMPAD9",	L"\x0069");
 
