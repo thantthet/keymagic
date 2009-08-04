@@ -12,6 +12,7 @@ struct ModKeysStatus
 	bool CTRL;
 	bool ALT;
 	bool SHIFT;
+	bool CAPS;
 };
 
 static ModKeysStatus old_status;
@@ -137,7 +138,7 @@ bool get_output_and_send(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStates)
 
 	SendKey(VK_CONTROL, KEYEVENTF_KEYUP);
 	SendKey(VK_MENU, KEYEVENTF_KEYUP);
-	SendKey(VK_SHIFT, KEYEVENTF_KEYUP);
+	//SendKey(VK_SHIFT, KEYEVENTF_KEYUP);
 
 	if (!str_out.length())
 	{
@@ -151,8 +152,8 @@ bool get_output_and_send(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStates)
 			SendKey(VK_CONTROL, 0);
 		if (old_status.CTRL)
 			SendKey(VK_MENU, 0);
-		if (old_status.SHIFT)
-			SendKey(VK_SHIFT, 0);
+		//if (old_status.SHIFT)
+		//	SendKey(VK_SHIFT, 0);
 
 		return true;
 	}
@@ -201,8 +202,8 @@ bool get_output_and_send(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStates)
 		SendKey(VK_CONTROL, 0);
 	if (old_status.ALT)
 		SendKey(VK_MENU, 0);
-	if (old_status.SHIFT)
-		SendKey(VK_SHIFT, 0);
+	//if (old_status.SHIFT)
+	//	SendKey(VK_SHIFT, 0);
 
 	return true;
 }
@@ -258,10 +259,27 @@ bool MatchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStates, bool user_input)
 					break;
 				}
 			}
-			else { vk_matched = false; break; };
+			else
+			{
+				if (*vk_it == VK_SHIFT)
+				{
+					if (KeyStates[VK_CAPITAL] & 0x81)
+						mks.SHIFT = true;
+					else 
+					{
+						vk_matched = false;
+						break;
+					}
+				}
+				else
+				{
+					vk_matched = false;
+					break;
+				}
+			}
 		}
 
-		if (it->vk->size() && ( (vk_matched == false) || (old_status.CTRL ^ mks.CTRL) || (old_status.ALT ^ mks.ALT) || (old_status.SHIFT ^ mks.SHIFT) ) )
+		if (it->vk->size() && ( (vk_matched == false) || (old_status.CTRL ^ mks.CTRL) || (old_status.ALT ^ mks.ALT) || ( (old_status.SHIFT ^ old_status.CAPS) ^ mks.SHIFT) ) )
 			continue;
 		else if (it->vk->size())
 		{
@@ -285,18 +303,20 @@ bool MatchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStates, bool user_input)
 				{
 					ir_info.matched = true;
 					ir_info.it = it;
-					ir_info.deleted = user_input ? deleted : false;
+					ir_info.deleted = user_input ? deleted : true;
 				}
 
-				if (
-					(ir_info.it->vk->size() < it->vk->size()) // compare < VK_* & .. > counts
-					|| 
-					(ir_info.it->estimated_length + ir_info.it->vk->size() < it->estimated_length + it->vk->size()) // compare pattern counts
-					)
+				if (ir_info.it->vk->size() < it->vk->size()) // compare < VK_* & .. > counts)
 				{
 					//store
 					ir_info.it = it;
-					ir_info.deleted = user_input ? deleted : false;
+					ir_info.deleted = user_input ? deleted : true;
+				}
+				else if (ir_info.it->estimated_length + ir_info.it->vk->size() < it->estimated_length + it->vk->size()) // compare pattern counts
+				{
+					//store
+					ir_info.it = it;
+					ir_info.deleted = user_input ? deleted : true;
 				}
 				//continue matching
 			}
@@ -352,6 +372,7 @@ bool ProcessInput(WORD wVk, LPARAM lParam)
 	old_status.CTRL = KeyStates[VK_CONTROL] & 0x80;
 	old_status.ALT = KeyStates[VK_MENU] & 0x80;
 	old_status.SHIFT = KeyStates[VK_SHIFT] & 0x80;
+	old_status.CAPS = KeyStates[VK_CAPITAL] & 0x81;
 
 	Debug(L"CTRL = %x ALT = %x\n", KeyStates[VK_CONTROL], KeyStates[VK_MENU]);
 
