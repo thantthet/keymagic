@@ -1,3 +1,5 @@
+//	http://www.codeproject.com/KB/GDI-plus/cgdiplusbitmap.aspx
+
 #pragma once
 
 class CGdiPlusBitmap

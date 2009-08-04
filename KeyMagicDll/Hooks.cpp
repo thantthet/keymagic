@@ -11,17 +11,16 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 		return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 	}
 
-#ifdef _DEBUG
-	Debug(L"HookKeyProc\nlParam = 0x%.8x wParam = 0x%.8x\n", lParam, wParam);
-#endif
-
 	//Key Up
 	if (nCode == HC_ACTION && lParam & 0x80000000)
 	{
+#ifdef _DEBUG
+		Debug(L"HookKeyProc::Key Up\nlParam = 0x%.8x wParam = 0x%.8x\n", lParam, wParam);
+#endif
 		return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 	}
 	//Menu Mode is active
-	if (nCode == HC_ACTION && lParam & 0x10000000)
+	if (nCode == HC_ACTION && (lParam & 0x10000000))
 	{
 		Debug(L"Menu Mode ACTIVE\n");
 		return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
@@ -29,6 +28,9 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 	//Key Down
 	else if (nCode == HC_ACTION && lParam)
 	{
+#ifdef _DEBUG
+		Debug(L"HookKeyProc::Key Down\nlParam = 0x%.8x wParam = 0x%.8x\n", lParam, wParam);
+#endif
 		if (!GetFocus())
 			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 

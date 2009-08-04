@@ -64,14 +64,18 @@ class classInternalEditor {
 			Debug(L"InternalEditor::AppendText\n");
 			dump();
 #endif
+			if (!*TextToAppend)
+				return false;
 
-			if (TextLength >= MAX_STORELEN)
+			if (TextLength + length >= MAX_STORELEN)
 			{
 				TextLength = 0;
 				RtlZeroMemory(Text, MAX_STORELEN);
 			}
-			wcsncat(Text, TextToAppend, length);
-			CaretLocation = TextLength = wcslen(Text);
+			//wcsncat(Text, TextToAppend, length);
+			wcsncpy(&Text[CaretLocation], TextToAppend, length);
+			CaretLocation += length;
+			TextLength = CaretLocation;
 			return true;
 		}
 
@@ -81,15 +85,9 @@ class classInternalEditor {
 #ifdef _DEBUG
 			Debug(L"InternalEditor::AddInput\n");
 #endif
-
-//			if ((isCTRL == true && isALT == false) || (isCTRL == false && isALT == true))
-//			{
-//#ifdef _DEBUG
-//			Debug(L"(isCTRL == true && isALT == false) || (isCTRL == false && isALT == true)\n");
-//#endif
-//				return false;
-//			}
-			return AppendText((wchar_t*)&Char, 1);
+			if (Char)
+				return AppendText((wchar_t*)&Char, 1);
+			return false;
 		}
 
 		bool Delete(int count = 1)

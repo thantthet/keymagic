@@ -220,10 +220,6 @@
 				RelativePath=".\KeyMagicDll.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\regex.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -252,10 +248,6 @@
 			</File>
 			<File
 				RelativePath=".\KeyMagicDll.h"
-				>
-			</File>
-			<File
-				RelativePath=".\regex.h"
 				>
 			</File>
 			<File

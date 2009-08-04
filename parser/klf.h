@@ -213,14 +213,14 @@ public:
 		return true;
 	}
 
-	std::vector<structRule> getRules()
+	std::vector<structRule> * getRules()
 	{
-		return rxRules;
+		return &rxRules;
 	}
 
-	std::vector<wchar_t*> getStrings()
+	std::vector<wchar_t*> * getStrings()
 	{
-		return strStrings;
+		return &strStrings;
 	}
 
 
