@@ -228,8 +228,19 @@ void DumpToken(wchar_t * d,structToken kToken)
 		);
 }
 
-void Exit(int _Code)
+void Exit(int _Code, LPCWSTR fmt, ...)
 {
+    WCHAR pBuffer[1024];
+
+    va_list args = NULL;
+    va_start(args, fmt);
+
+    wvsprintfW(pBuffer, fmt, args);
+
+    va_end(args);
+
+	wprintf(pBuffer);
+
 	Debug(L"Application is ending\n");
 	system("pause");
 	exit(_Code);

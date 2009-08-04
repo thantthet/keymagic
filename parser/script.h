@@ -31,6 +31,11 @@ public:
 		stLinePos.~vector();
 	}
 
+	void operator =(script * src)
+	{
+		copy(src);
+	}
+
 	void copy(script * src)
 	{
 		size_t input_length = wcschr(src->s, EOS) - src->s;
@@ -39,6 +44,7 @@ public:
 		s[input_length] = EOS;
 		s[input_length+1] = NULL;
 		stLinePos = src->stLinePos;
+		spt_length = src->spt_length;
 	}
 
 	void loadSource(const wchar_t * script)
@@ -106,8 +112,6 @@ private:
 		stLinePos.push_back(i);
 
 		spt_length = i;
-
-		Debug(L"%d", spt_length);
 	}
 };
 

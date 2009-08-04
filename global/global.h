@@ -158,7 +158,7 @@ extern void pre_define();
 extern wchar_t * Type2Str(emType Type);
 extern void Debug(LPCWSTR pMessage, ...);
 extern void DumpToken(wchar_t * d,structToken kToken);
-extern void Exit(int _Code);
+extern void Exit(int _Code, LPCWSTR fmt, ...);
 extern void PrintLastError();
 extern structPREdef * getPreDef(emPreDef preDef);
 extern structPREdef * getPreDef(wchar_t * wcSrc, int length,  bool isName);

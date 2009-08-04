@@ -21,13 +21,13 @@ public:
 	lexscanner::lexscanner(script * s_input)
 	{
 		init_vars();
-		scpt.copy(s_input);
+		scpt = s_input;
 		scan();
 	}
 
 	void lexscanner::setScript(script * s_input)
 	{
-		scpt.copy(s_input);
+		scpt = s_input;
 		scan();
 	}
 
@@ -174,8 +174,7 @@ private:
 				}
 				else
 				{
-					Debug(L"ERROR: Parse error => Line: %d Pos: %d\n", scpt.getLineNum(scannedIndex), scpt.getPosLine(scannedIndex));
-					Exit(0);
+					Exit(0, L"ERROR: Parse error => Line: %d Pos: %d\n", scpt.getLineNum(scannedIndex+3), scpt.getPosLine(scannedIndex+3));
 				}
 				break;
 			case '$':
@@ -245,8 +244,7 @@ private:
 				}
 				else
 				{
-					Debug(L"ERROR: Unexpected '%s' => Line: %d Pos: %d\n", wPlus, scpt.getLineNum(scannedIndex), scpt.getPosLine(scannedIndex));
-					Exit(0);
+					Exit(0, L"ERROR: Unexpected '%s' => Line: %d Pos: %d\n", wPlus, scpt.getLineNum(scannedIndex), scpt.getPosLine(scannedIndex));
 				}
 				break;
 			case '&':
@@ -309,15 +307,14 @@ private:
 				wchar_t * end = WholeWord(scpt.lpwStrAt(scannedIndex));
 				int wwlength = end - scpt.lpwStrAt(scannedIndex);
 				wchar_t * wholeWord = new wchar_t [wwlength];
+				wholeWord[wwlength] = 0;
 
 				wcsncpy(wholeWord, scpt.lpwStrAt(scannedIndex), wwlength);
 
 				if (isPreDefined(&scannedIndex, wwlength))
 					break;
 				
-				
-				Debug(L"ERROR: Parse error '%s' => Line: %d Pos: %d\n", wholeWord, scpt.getLineNum(scannedIndex), scpt.getPosLine(scannedIndex));
-				Exit(0);
+				Exit(0, L"ERROR: Parse error '%s' => Line: %d Pos: %d\n", wholeWord, scpt.getLineNum(scannedIndex), scpt.getPosLine(scannedIndex));
 				break;
 			}
 		}
@@ -421,7 +418,12 @@ private:
 		if (scpt.wCharAt(scannedIndex) == '/' && scpt.wCharAt(scannedIndex+1) == '/')
 		{
 			wchar_t * lineEnd = wcspbrk(scpt.lpwStrAt(scannedIndex), L"\r\n");
-			(*index) = lineEnd - scpt.lpwStrAt(0);
+			if (lineEnd)
+				(*index) = lineEnd - scpt.lpwStrAt(0);
+			else
+			{
+				(*index) = scpt.length();
+			}
 			return true;
 		}
 		else if (scpt.wCharAt(scannedIndex) == '/' && scpt.wCharAt(scannedIndex+1) == '*')
@@ -434,8 +436,7 @@ private:
 				return true;
 			}
 		}
-		Debug(L"/ cannot be parsed");
-		Exit(0);
+		Exit(0, L"/ cannot be parsed");
 		return false;
 	}
 

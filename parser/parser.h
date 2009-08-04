@@ -42,6 +42,11 @@ public:
 
 	bool begin_parse();
 
+	wstring getLastError()
+	{
+		return LastError;
+	}
+
 private:
 	struct ltwcstr
 	{
@@ -57,6 +62,7 @@ private:
 	//vector<wchar_t*> vars;
 	vector<structToken> tokens;
 	Kmklf kmklf;
+	wstring LastError;
 
 	LRESULT checkToken ( int * objIndex, emType Type );
 	wchar_t * identifier( int * objIndex );

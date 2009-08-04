@@ -4,22 +4,44 @@ using namespace std;
 
 //#define DEBUG 1
 
+std::wstring format_arg_list(LPCWSTR fmt, va_list args)
+{
+    if (!fmt) return L"";
+    int   result = -1, length = 256;
+    wchar_t *buffer = 0;
+    while (result == -1)
+    {
+        if (buffer) delete [] buffer;
+        buffer = new wchar_t [length + 1];
+        memset(buffer, 0, length + 1);
+        result = _vsnwprintf(buffer, length, fmt, args);
+        length *= 2;
+    }
+    std::wstring s(buffer);
+    delete [] buffer;
+    return s;
+}
+
+std::wstring format(LPCWSTR fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    std::wstring s = format_arg_list(fmt, args);
+    va_end(args);
+    return s;
+}
+
 LRESULT parser::checkToken (int * objIndex, emType Type)
 {
 	if ( tokens.size() - 1 < (*objIndex))
 	{
-		wchar_t str[50];
-		swprintf(str, L"No more token => nObjIndex = %d\n", *objIndex);
-		Debug(str);
+		Debug(L"No more token => nObjIndex = %d\n", *objIndex);
 		return false;
 	}
 
-	wchar_t str[50];
-	swprintf(str, L"\nObjIndex = %d, TypeWanted = %s\n", *objIndex, Type2Str(Type));
-	Debug(str);
+	Debug(L"\nObjIndex = %d, TypeWanted = %s\n", *objIndex, Type2Str(Type));
 	int pos = tokens.at(*objIndex).iStartIndex;
-	wsprintf(str, L"Parsing at line %d, pos %d\n", Script.getLineNum(pos), Script.getPosLine(pos));
-	Debug(str);
+	Debug(L"Parsing at line %d, pos %d\n", Script.getLineNum(pos), Script.getPosLine(pos));
 
 	if (tokens.at(*objIndex).Type != Type)
 	{
@@ -52,10 +74,8 @@ bool parser::complexExpression(int * objIndex, wstring * varValue)
 
 	else if (!(retVal = identifier(objIndex)))
 	{
-		wchar_t str[50];
 		int pos = tokens.at(*objIndex).iStartIndex;
-		swprintf(str, L"ERROR : Syntax error : %s : Line=%d Pos=%d\n", tokens.at(*objIndex).Value, Script.getLineNum(pos), Script.getPosLine(pos));
-		Debug(str);
+		LastError = format(L"ERROR : Syntax %s at Line=%d Pos=%d\n", tokens.at(*objIndex).Value, Script.getLineNum(pos), Script.getPosLine(pos));
 		return false;
 	}
 
@@ -142,11 +162,8 @@ wchar_t * parser::identifier(int * objIndex)
 
 	if (!varvalue)
 	{
-		wchar_t str[50];
 		int pos = tokens.at((*objIndex)-1).iStartIndex;
-		wsprintf(str, L"ERROR: '%s' : undeclared identifier : Line=%d Pos=%d\n", varName, Script.getLineNum(pos), Script.getPosLine(pos));
-		Debug(str);
-		Exit(0);
+		Exit(0, L"ERROR: Unknown identifier '%s' at Line=%d Pos=%d\n", varName, Script.getLineNum(pos), Script.getPosLine(pos));
 		return false;
 	}
 
@@ -163,7 +180,17 @@ wchar_t * parser::identifier(int * objIndex)
 		{
 			int index=0;
 			swscanf(&moder[1], L"%d", &index);
-			strValue->push_back(index);
+			if (index) strValue->push_back(index);
+			else
+			{
+				int pos = tokens.at((*objIndex)-1).iStartIndex;
+				Exit(0, L"ERROR: Syntax '%s' at Line=%d Pos=%d\n", moder, Script.getLineNum(pos), Script.getPosLine(pos));
+			}
+		}
+		else
+		{
+			int pos = tokens.at((*objIndex)-1).iStartIndex;
+			Exit(0, L"ERROR: Syntax '%s' at Line=%d Pos=%d\n", moder, Script.getLineNum(pos), Script.getPosLine(pos));
 		}
 	}
 
@@ -273,18 +300,24 @@ bool parser::rule(int * objIndex)
 {
 	wstring outStr;
 	wstring inStr;
+	int OriginalIndex = *objIndex;
 
 	if (!condition(objIndex, &inStr))
 		return false;
 
 	if (!checkToken(objIndex, T_PRINT))
 	{
-		Debug(L"error: Not a rule\n");
+		int pos = tokens.at(*objIndex).iStartIndex;
+		LastError = format(L"ERROR: Syntax '%s' at Line=%d Pos=%d\n", tokens.at(*objIndex).Value, Script.getLineNum(pos), Script.getPosLine(pos));
+		*objIndex = OriginalIndex;
 		return false;
 	}
 
 	if (!condition(objIndex, &outStr))
+	{
+		*objIndex = OriginalIndex;
 		return false;
+	}
 
 	kmklf.add_rule(inStr.c_str(),outStr.c_str());
 
@@ -321,5 +354,7 @@ bool parser::expression(int * objIndex)
 bool parser::begin_parse()
 {
 	int objIndex = 0;
-	return expression(&objIndex);
+	if (expression(&objIndex) && objIndex == tokens.size())
+		return true;
+	return false;
 }

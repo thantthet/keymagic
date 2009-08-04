@@ -6,6 +6,8 @@
 
 #include "parser.h"
 
+#include "UniConversion.h"
+
 wchar_t * source = 
 L"$alphabet_ansi = 'uc*CipqZ]n#X!%Ewx\\'\"eyzAbr,&v0o[Vt'\n"
 L"$alphabet_uni = u1000 + u1001 + u1002 + u1003 + u1004 + u1005 + u1006 + u1007 + /*u1008 +*/ u1009 + u100A + u100B + u100C + u100D + u100E + u100F + u1010 + u1011 + u1012 + u1013 + u1014 + u1015 + u1016 + u1017 + u1018 + u1019 + u101A + u101B + u101C + u101D + u101E + u101F + u1020 + u1021\n"
@@ -42,37 +44,88 @@ L"'@' => u103f + u1011\n";
 //L"$thant + $thet + $khin + \"Z\" => $1 + $2 + $3 + $zaw\r\n"
 //L"$thant + $thet + $khin + $zaw + VK_BACK => ''";
 
+unsigned char UTF16_LE[2] = { 0xFF, 0xFE };
+unsigned char UTF16_BE[2] = { 0xFE, 0xFF };
+unsigned char UTF8[3] = { 0xEF, 0xBB, 0xBF };
+
 int _tmain(int argc, _TCHAR* argv[])
 {
+	int length;
+	int uni_length;
+
+	char * buffer;
+	wchar_t * uni_buffer;
+
 	if (argc < 3)
 	{
 		std::wcerr << L"Usage: " << argv[0] << L" <script file path> <output file path>";
 		return false;
 	}
-	std::wstring buf;
-	std::wstring line;
-	std::wifstream in (argv[1]);
 
-	if (in==0)
+ifstream is;
+is.open (argv[1], ios::binary );
+
+// get length of file:
+is.seekg (0, ios::end);
+length = is.tellg();
+is.seekg (0, ios::beg);
+
+// allocate memory:
+buffer = new char [length];
+
+// read data as a block:
+is.read (buffer,length);
+is.close();
+
+	if ( memcmp(buffer, UTF16_LE, sizeof(UTF16_LE))==0 )
 	{
-		std::cerr << "File cannot be opened!";
-		return 0;
-	}
-	
-	while(std::getline(in, line))
-	{
-		buf += line;
-		buf += L"\r\n";
+		uni_length = (length-sizeof(UTF16_LE)) / 2;
+		uni_buffer = new wchar_t[uni_length+1];
+		memcpy(uni_buffer, &buffer[sizeof(UTF16_LE)], length-sizeof(UTF16_LE));
 	}
 
-	parser p(buf.c_str());
-	if (p.begin_parse())
-		p.generate(argv[2]);
+	else if ( memcmp(buffer, UTF16_BE, sizeof(UTF16_BE))==0 )
+	{
+		uni_length = (length-sizeof(UTF16_LE)) / 2;
+		uni_buffer = new wchar_t[uni_length+1];
+		memcpy(uni_buffer, &buffer[sizeof(UTF16_BE)], length-sizeof(UTF16_LE));
+
+		for (int i=0; i < uni_length; i++) { 
+			uni_buffer[i] = ((uni_buffer[i] & 0xFF00) >> 8) | ((uni_buffer[i] & 0x00FF) << 8) ;
+		}
+	}
+
+	else if ( memcmp(buffer, UTF8, sizeof(UTF8))==0 )
+	{
+		uni_length = UTF8Length((wchar_t*)&buffer[sizeof(UTF8)], length-sizeof(UTF8));
+		uni_buffer = new wchar_t[uni_length+1];
+		UCS2FromUTF8(&buffer[sizeof(UTF8)], length-sizeof(UTF8), uni_buffer, uni_length); 
+	}
+
 	else
-		std::cout << "Parsing failed!";
+	{
+		uni_length = UTF8Length((wchar_t*)buffer, length);
+		uni_buffer = new wchar_t[uni_length+1];
+		UCS2FromUTF8(buffer, length, uni_buffer, uni_length); 
+	}
+
+	uni_buffer[uni_length] = 0;
+
+	parser p(uni_buffer);
+	if (p.begin_parse())
+	{
+		p.generate(argv[2]);
+	}
+	else
+	{
+		std::wcout << p.getLastError().c_str() << std::endl;
+	}
 	//Kmklf kmklf;
 	//kmklf.fromFile("C:\\test.bin");
 	//kmklf.toFile("C:\\test2.bin");
 	system("pause");
+
+	delete[] buffer;
+	delete[] uni_buffer;
 	return 0;
 }
