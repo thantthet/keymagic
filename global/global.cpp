@@ -21,13 +21,18 @@ void pre_define()
 	push_pre_define_value(pdVK_BACK,	L"VK_BACK",		L"\x0008");
 	push_pre_define_value(pdVK_TAB,		L"VK_TAB",		L"\x0009");
 	push_pre_define_value(pdVK_RETURN,	L"VK_RETURN",	L"\x000D");
+	push_pre_define_value(pdVK_RETURN,	L"VK_ENTER",	L"\x000D");
 	push_pre_define_value(pdVK_SHIFT,	L"VK_SHIFT",	L"\x0010");
 	push_pre_define_value(pdVK_CONTROL,	L"VK_CONTROL",	L"\x0011");
+	push_pre_define_value(pdVK_CONTROL,	L"VK_CTRL",		L"\x0011");
+	push_pre_define_value(pdVK_MENU,	L"VK_MENU",		L"\x0012");
 	push_pre_define_value(pdVK_MENU,	L"VK_ALT",		L"\x0012");
 	push_pre_define_value(pdVK_PAUSE,	L"VK_PAUSE",	L"\x0013");
 	push_pre_define_value(pdVK_CAPITAL,	L"VK_CAPITAL",	L"\x0014");
+	push_pre_define_value(pdVK_CAPITAL,	L"VK_CAPSLOCK",	L"\x0014");
 	push_pre_define_value(pdVK_KANJI,	L"VK_KANJI",	L"\x0019");
 	push_pre_define_value(pdVK_ESCAPE,	L"VK_ESCAPE",	L"\x001B");
+	push_pre_define_value(pdVK_ESCAPE,	L"VK_ESC",		L"\x001B");
 	push_pre_define_value(pdVK_SPACE,	L"VK_SPACE",	L"\x0020");
 	push_pre_define_value(pdVK_PRIOR,	L"VK_PRIOR",	L"\x0021");
 	push_pre_define_value(pdVK_NEXT,	L"VK_NEXT",		L"\x0022");
@@ -102,24 +107,52 @@ void pre_define()
 	push_pre_define_value(pdVK_F11,		L"VK_F11",		L"\x007A");
 	push_pre_define_value(pdVK_F12,		L"VK_F12",		L"\x007B");
 
+	push_pre_define_value(pdVK_LSHIFT,	L"VK_LSHIFT",	L"\x00A0");
+	push_pre_define_value(pdVK_RSHIFT,	L"VK_RSHIFT",	L"\x00A1");
+
+	push_pre_define_value(pdVK_LCONTROL,L"VK_LCONTROL",	L"\x00A2");
+	push_pre_define_value(pdVK_LCONTROL,L"VK_LCTRL",	L"\x00A2");
+	push_pre_define_value(pdVK_RCONTROL,L"VK_RCONTROL",	L"\x00A3");
+	push_pre_define_value(pdVK_RCONTROL,L"VK_RCTRL",	L"\x00A3");
+
+	push_pre_define_value(pdVK_LMENU,	L"VK_LMENU",	L"\x00A4");
+	push_pre_define_value(pdVK_LMENU,	L"VK_LALT",		L"\x00A4");
+	push_pre_define_value(pdVK_RMENU,	L"VK_RMENU",	L"\x00A5");
+	push_pre_define_value(pdVK_RMENU,	L"VK_RALT",		L"\x00A5");
+	push_pre_define_value(pdVK_RMENU,	L"VK_ALT_GR",		L"\x00A5");
+
 	push_pre_define_value(pdVK_OEM_1,		L"VK_OEM_1",		L"\x00BA");
+	push_pre_define_value(pdVK_OEM_1,		L"VK_COLON",		L"\x00BA");
+
 	push_pre_define_value(pdVK_OEM_PLUS,	L"VK_OEM_PLUS",		L"\x00BB");
 	push_pre_define_value(pdVK_OEM_COMMA,	L"VK_OEM_COMMA",	L"\x00BC");
 	push_pre_define_value(pdVK_OEM_MINUS,	L"VK_OEM_MINUS",	L"\x00BD");
 	push_pre_define_value(pdVK_OEM_PERIOD,	L"VK_OEM_PERIOD",	L"\x00BE");
+
 	push_pre_define_value(pdVK_OEM_2,		L"VK_OEM_2",		L"\x00BF");
+	push_pre_define_value(pdVK_OEM_2,		L"VK_QUESTION",		L"\x00BF");
+
 	push_pre_define_value(pdVK_OEM_3,		L"VK_OEM_3",		L"\x00C0");
+	push_pre_define_value(pdVK_OEM_3,		L"VK_TILDE",		L"\x00C0");
 
-	push_pre_define_value(pdVK_OEM_4,	L"VK_OEM_4",		L"\x00DB");
-	push_pre_define_value(pdVK_OEM_5,	L"VK_OEM_5",		L"\x00DC");
-	push_pre_define_value(pdVK_OEM_6,	L"VK_OEM_6",		L"\x00DD");
-	push_pre_define_value(pdVK_OEM_7,	L"VK_OEM_7",		L"\x00DE");
-	push_pre_define_value(pdVK_OEM_8,	L"VK_OEM_8",		L"\x00DF");
+	push_pre_define_value(pdVK_OEM_4,	L"VK_OEM_4",	L"\x00DB");
+	push_pre_define_value(pdVK_OEM_4,	L"VK_LBRACKET",	L"\x00DB");
 
-	push_pre_define_value(pdVK_OEM_AX,	L"VK_OEM_AX",		L"\x00E1");
-	push_pre_define_value(pdVK_OEM_102,	L"VK_OEM_102",		L"\x00E2");
-	push_pre_define_value(pdVK_ICO_HELP,L"VK_ICO_HELP",		L"\x00E3");
-	push_pre_define_value(pdVK_ICO_00,	L"VK_ICO_00",		L"\x00E4");
+	push_pre_define_value(pdVK_OEM_5,	L"VK_OEM_5",	L"\x00DC");
+	push_pre_define_value(pdVK_OEM_5,	L"VK_BACKSLASH",	L"\x00DC");
+
+	push_pre_define_value(pdVK_OEM_6,	L"VK_OEM_6",	L"\x00DD");
+	push_pre_define_value(pdVK_OEM_6,	L"VK_RBRACKET",	L"\x00DD");
+
+	push_pre_define_value(pdVK_OEM_7,	L"VK_OEM_7",	L"\x00DE");
+	push_pre_define_value(pdVK_OEM_7,	L"VK_QUOTE",	L"\x00DE");
+
+	push_pre_define_value(pdVK_OEM_8,	L"VK_OEM_8",	L"\x00DF");
+
+	push_pre_define_value(pdVK_OEM_AX,	L"VK_OEM_AX",	L"\x00E1");
+	push_pre_define_value(pdVK_OEM_102,	L"VK_OEM_102",	L"\x00E2");
+	push_pre_define_value(pdVK_ICO_HELP,L"VK_ICO_HELP",	L"\x00E3");
+	push_pre_define_value(pdVK_ICO_00,	L"VK_ICO_00",	L"\x00E4");
 }
 
 structPREdef * getPreDef(emPreDef preDef)

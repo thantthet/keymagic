@@ -116,6 +116,14 @@ enum emPreDef {
 	pdVK_F11,
 	pdVK_F12,
 
+	pdVK_LSHIFT,
+	pdVK_RSHIFT,
+
+	pdVK_LCONTROL,
+	pdVK_RCONTROL,
+	pdVK_LMENU,
+	pdVK_RMENU,
+
 	pdVK_OEM_1,
 	pdVK_OEM_PLUS,
 	pdVK_OEM_COMMA,
