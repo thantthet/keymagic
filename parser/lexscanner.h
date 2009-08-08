@@ -188,6 +188,7 @@ private:
 						return false;
 					scannedIndex++;
 					int wlen = sEnd - scpt.lpwStrAt(scannedIndex);
+
 					wchar_t * wNew = new wchar_t[wlen+1];
 					wcsncpy(wNew, scpt.lpwStrAt(scannedIndex), wlen);
 					wNew[wlen] = NULL;

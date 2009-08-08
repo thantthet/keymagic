@@ -32,7 +32,6 @@ public:
 
 	parser::~parser()
 	{
-		kmklf.~Kmklf();
 	}
 
 	void generate(wchar_t * szPath)

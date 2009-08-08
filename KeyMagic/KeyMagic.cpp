@@ -318,11 +318,12 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_INITDIALOG:
-		char* buildTime[50];
-		lstrcpyA((LPSTR)buildTime,__DATE__);
-		lstrcatA((LPSTR)buildTime," - ");
-		lstrcatA((LPSTR)buildTime,__TIME__);
-		SendDlgItemMessageA(hDlg, IDC_COMPLIE, WM_SETTEXT, 0, (LPARAM)buildTime);
+		char Tempbuf[100];
+
+		lstrcpyA(Tempbuf,__DATE__);
+		lstrcatA(Tempbuf," - ");
+		lstrcatA(Tempbuf,__TIME__);
+		SendDlgItemMessageA(hDlg, IDC_COMPLIE, WM_SETTEXT, 0, (LPARAM)Tempbuf);
 		SendDlgItemMessage(hDlg, IDC_ATEXT, WM_SETTEXT, 0, (LPARAM)
 			"\nCopyright (C) 2008  KeyMagic Project\n"
 			"http://keymagic.googlecode.com\n\n"
@@ -331,6 +332,9 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 			"See the GNU General Public License for more details.\n\n"
 			"You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA"
 			);
+
+		LoadString(hInst, IDS_EN_TITLE, Tempbuf, MAX_LOADSTRING);
+		SendDlgItemMessageA(hDlg, IDC_TITLE, WM_SETTEXT, 0, (LPARAM)Tempbuf);
 
 		return (INT_PTR)TRUE;
 

@@ -286,7 +286,7 @@ bool MatchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStates, bool user_input)
 			InternalEditor.Delete();
 			deleted = true;
 		}
-		else if (old_status.CTRL || old_status.ALT)
+		else if (user_input && (old_status.CTRL || old_status.ALT))
 		{
 			continue;
 		}

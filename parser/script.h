@@ -28,7 +28,6 @@ public:
 		if (s)
 			delete [] s;
 		s = NULL;
-		stLinePos.~vector();
 	}
 
 	void operator =(script * src)

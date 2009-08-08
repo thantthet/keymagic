@@ -3,6 +3,9 @@
 #ifndef KLF_H_
 #define KLF_H_
 
+#define KMKL_VERSION 1
+#define KMKL_SUBVERSION 3
+
 #include <stdio.h>
 #include <fstream>
 #include <vector>
@@ -36,19 +39,6 @@ public:
 
 	Kmklf::~Kmklf()
 	{
-		if ( rxRules.size ( ) )
-		{
-			std::vector<structRule>::iterator it;
-
-			for ( it=rxRules.begin( ) ; it < rxRules.end( ); it++ )
-			{
-				delete [ ] ( (*it).strInRule );
-				delete [ ] ( (*it).strOutRule );
-			}
-
-			rxRules.~vector ( );
-		}
-
 		if (pFile)
 			fclose(pFile);
 	}
@@ -178,9 +168,16 @@ public:
 		if (!create_file(szPath))
 			return false;
 
-		fh.cMagicCode[0] = 'K';fh.cMagicCode[1] = 'M';fh.cMagicCode[2] = 'K';fh.cMagicCode[3] = 'L';
-		fh.bMajorVersion = 1;
-		fh.bMinorVersion = 3;
+		//magic bytes of
+		//KeyMagic Keyboard Layout
+		//KMKL
+		fh.cMagicCode[0] = 'K';
+		fh.cMagicCode[1] = 'M';
+		fh.cMagicCode[2] = 'K';
+		fh.cMagicCode[3] = 'L';
+
+		fh.bMajorVersion = KMKL_VERSION;
+		fh.bMinorVersion = KMKL_SUBVERSION;
 		fh.sNumOfString = strStrings.size();
 		fh.sNumOfRules = rxRules.size();
 

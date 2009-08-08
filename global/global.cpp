@@ -1,4 +1,3 @@
-
 #include "global.h"
 
 std::vector<structPREdef> vTpreDef;
@@ -16,6 +15,7 @@ void push_pre_define_value( emPreDef preDef, const wchar_t * name, const wchar_t
 
 void pre_define()
 {
+
 	push_pre_define_value(pdNULL,		L"NULL",		L"");
 
 	push_pre_define_value(pdVK_BACK,	L"VK_BACK",		L"\x0008");
@@ -133,13 +133,13 @@ void pre_define()
 	push_pre_define_value(pdVK_OEM_2,		L"VK_QUESTION",		L"\x00BF");
 
 	push_pre_define_value(pdVK_OEM_3,		L"VK_OEM_3",		L"\x00C0");
-	push_pre_define_value(pdVK_OEM_3,		L"VK_TILDE",		L"\x00C0");
+	push_pre_define_value(pdVK_OEM_3,		L"VK_CFLEX",		L"\x00C0");
 
 	push_pre_define_value(pdVK_OEM_4,	L"VK_OEM_4",	L"\x00DB");
 	push_pre_define_value(pdVK_OEM_4,	L"VK_LBRACKET",	L"\x00DB");
 
 	push_pre_define_value(pdVK_OEM_5,	L"VK_OEM_5",	L"\x00DC");
-	push_pre_define_value(pdVK_OEM_5,	L"VK_BACKSLASH",	L"\x00DC");
+	push_pre_define_value(pdVK_OEM_5,	L"VK_BACKSLASH",L"\x00DC");
 
 	push_pre_define_value(pdVK_OEM_6,	L"VK_OEM_6",	L"\x00DD");
 	push_pre_define_value(pdVK_OEM_6,	L"VK_RBRACKET",	L"\x00DD");
@@ -227,10 +227,10 @@ wchar_t * Type2Str(emType Type)
 		return L"PREDEFINED";
 		break;
 	case T_COMBINE_START:
-		return L"T_COMBINE_START";
+		return L"COMBINE_START";
 		break;
 	case T_COMBINE_END:
-		return L"T_COMBINE_END";
+		return L"COMBINE_END";
 		break;
 	}
 	return L"UNKNOWN";
@@ -238,6 +238,7 @@ wchar_t * Type2Str(emType Type)
 
 void Debug(LPCWSTR fmt, ...)
 {
+#ifdef _DEBUG
     WCHAR pBuffer[1024];
 
     va_list args = NULL;
@@ -248,6 +249,7 @@ void Debug(LPCWSTR fmt, ...)
     va_end(args);
 
 	OutputDebugStringW(pBuffer);
+#endif
 }
 
 

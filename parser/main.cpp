@@ -62,20 +62,20 @@ int _tmain(int argc, _TCHAR* argv[])
 		return false;
 	}
 
-ifstream is;
-is.open (argv[1], ios::binary );
+	ifstream is;
+	is.open (argv[1], ios::binary );
 
-// get length of file:
-is.seekg (0, ios::end);
-length = is.tellg();
-is.seekg (0, ios::beg);
+	// get length of file:
+	is.seekg (0, ios::end);
+	length = is.tellg();
+	is.seekg (0, ios::beg);
 
-// allocate memory:
-buffer = new char [length];
+	// allocate memory:
+	buffer = new char [length];
 
-// read data as a block:
-is.read (buffer,length);
-is.close();
+	// read data as a block:
+	is.read (buffer,length);
+	is.close();
 
 	if ( memcmp(buffer, UTF16_LE, sizeof(UTF16_LE))==0 )
 	{

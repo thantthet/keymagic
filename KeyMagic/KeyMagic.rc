@@ -58,11 +58,11 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "About Keymagic"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    ICON            IDI_KEYMAGIC,IDC_STATIC,16,18,21,20
-    LTEXT           "Keymagic 1.2",IDC_STATIC,43,18,61,8,SS_NOPREFIX
+    ICON            IDI_KEYMAGIC,IDC_STATIC,16,18,20,20
+    LTEXT           "[PROGRAM TITLE]",IDC_TITLE,43,18,229,8,SS_NOPREFIX
     DEFPUSHBUTTON   "OK",IDOK,229,181,50,14,WS_GROUP
     LTEXT           "Complie Info",IDC_COMPLIE,7,187,94,8,WS_DISABLED
-    LTEXT           "ABOUT TEXT HERE",IDC_ATEXT,43,33,226,137
+    LTEXT           "[ABOUT TEXT]",IDC_ATEXT,43,33,226,137
 END
 
 IDD_MAINBOX DIALOGEX 0, 0, 317, 220
@@ -153,8 +153,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,2,0,2
- PRODUCTVERSION 1,2,0,2
+ FILEVERSION 1,3,0,0
+ PRODUCTVERSION 1,3,0,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -170,12 +170,12 @@ BEGIN
         BLOCK "000004b0"
         BEGIN
             VALUE "FileDescription", "KeyMagic Program Manager"
-            VALUE "FileVersion", "1.2.0.2"
+            VALUE "FileVersion", "1.3.0.0"
             VALUE "InternalName", "KeyMagic"
-            VALUE "LegalCopyright", "Copyright (C) 2008"
+            VALUE "LegalCopyright", "Copyright (C) 2008-2009"
             VALUE "OriginalFilename", "KeyMagic.exe"
             VALUE "ProductName", "KeyMagic Input Customizer"
-            VALUE "ProductVersion", "1.2.0.2"
+            VALUE "ProductVersion", "1.3.0.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -199,7 +199,7 @@ IDB_BK                  BITMAP                  "Res\\bk.bmp"
 
 STRINGTABLE 
 BEGIN
-    IDS_EN_TITLE            "KeyMagic 1.2"
+    IDS_EN_TITLE            "KeyMagic 1.3 (nightly)"
 END
 
 #endif    // English (U.S.) resources

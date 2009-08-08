@@ -125,7 +125,7 @@
 				AdditionalIncludeDirectories="&quot;C:\Program Files\boost\boost_1_39\&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
