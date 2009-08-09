@@ -10,7 +10,10 @@
 #include <Commdlg.h>
 
 #define MAX_STORELEN 200
-//#define RESTART_IE 1 // Restart internal editor? (TRUE for release build)
+
+#ifndef _DEBUG
+#define RESTART_IE 1 // Restart internal editor? (TRUE for release build)
+#endif
 
 class classInternalEditor {
 

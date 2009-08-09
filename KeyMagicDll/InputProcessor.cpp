@@ -32,22 +32,32 @@ void SendStrokes (std::wstring * s)//Send Keys Strokes
 {
 	HWND hwnd = GetFocus();
 
-	INPUT ip;
-	ip.type = INPUT_KEYBOARD;
-	ip.ki.dwExtraInfo = 0;
-	ip.ki.dwFlags = KEYEVENTF_UNICODE;
-	ip.ki.wVk = 0;
-	ip.ki.time = 0;
+	int cInputs = s->length() * 2;
 
-	for(int i=0; i < s->length(); i++){
-		ip.ki.wScan = s->at(i);
-		ip.ki.dwFlags = KEYEVENTF_UNICODE;
-		SendInput(1, &ip, sizeof(INPUT));
+	INPUT * ip = new INPUT[cInputs];
 
-		ip.ki.dwFlags = KEYEVENTF_KEYUP | KEYEVENTF_UNICODE;
-		SendInput(1, &ip, sizeof(INPUT));
+	for(int i=0, ii=0; i < s->length(); i++, ii++){
+		ip[ii].type = INPUT_KEYBOARD;
+		ip[ii].ki.dwExtraInfo = 0;
+		ip[ii].ki.dwFlags = KEYEVENTF_UNICODE;
+		ip[ii].ki.time = 0;
+		ip[ii].ki.wScan = s->at(i);
+		ip[ii].ki.wVk = 0;
+		//SendInput(1, &ip, sizeof(INPUT));
+
+		ii++;
+
+		ip[ii].type = INPUT_KEYBOARD;
+		ip[ii].ki.dwExtraInfo = 0;
+		ip[ii].ki.dwFlags = KEYEVENTF_KEYUP | KEYEVENTF_UNICODE;
+		ip[ii].ki.time = 0;
+		ip[ii].ki.wScan = s->at(i);
+		ip[ii].ki.wVk = 0;
+		//SendInput(1, &ip, sizeof(INPUT));
 	}
 
+	int cSent = SendInput(cInputs, ip, sizeof(INPUT));
+	Debug(L"cInputs=%d, cSent=%d\n",cInputs, cSent);
 	InternalEditor.AppendText(s->c_str(), s->length());
 
 }

@@ -119,21 +119,21 @@ void pre_define()
 	push_pre_define_value(pdVK_LMENU,	L"VK_LALT",		L"\x00A4");
 	push_pre_define_value(pdVK_RMENU,	L"VK_RMENU",	L"\x00A5");
 	push_pre_define_value(pdVK_RMENU,	L"VK_RALT",		L"\x00A5");
-	push_pre_define_value(pdVK_RMENU,	L"VK_ALT_GR",		L"\x00A5");
+	push_pre_define_value(pdVK_RMENU,	L"VK_ALT_GR",	L"\x00A5");
 
-	push_pre_define_value(pdVK_OEM_1,		L"VK_OEM_1",		L"\x00BA");
-	push_pre_define_value(pdVK_OEM_1,		L"VK_COLON",		L"\x00BA");
+	push_pre_define_value(pdVK_OEM_1,	L"VK_OEM_1",	L"\x00BA");
+	push_pre_define_value(pdVK_OEM_1,	L"VK_COLON",	L"\x00BA");
 
 	push_pre_define_value(pdVK_OEM_PLUS,	L"VK_OEM_PLUS",		L"\x00BB");
 	push_pre_define_value(pdVK_OEM_COMMA,	L"VK_OEM_COMMA",	L"\x00BC");
 	push_pre_define_value(pdVK_OEM_MINUS,	L"VK_OEM_MINUS",	L"\x00BD");
 	push_pre_define_value(pdVK_OEM_PERIOD,	L"VK_OEM_PERIOD",	L"\x00BE");
 
-	push_pre_define_value(pdVK_OEM_2,		L"VK_OEM_2",		L"\x00BF");
-	push_pre_define_value(pdVK_OEM_2,		L"VK_QUESTION",		L"\x00BF");
+	push_pre_define_value(pdVK_OEM_2,	L"VK_OEM_2",	L"\x00BF");
+	push_pre_define_value(pdVK_OEM_2,	L"VK_QUESTION",	L"\x00BF");
 
-	push_pre_define_value(pdVK_OEM_3,		L"VK_OEM_3",		L"\x00C0");
-	push_pre_define_value(pdVK_OEM_3,		L"VK_CFLEX",		L"\x00C0");
+	push_pre_define_value(pdVK_OEM_3,	L"VK_OEM_3",	L"\x00C0");
+	push_pre_define_value(pdVK_OEM_3,	L"VK_CFLEX",	L"\x00C0");
 
 	push_pre_define_value(pdVK_OEM_4,	L"VK_OEM_4",	L"\x00DB");
 	push_pre_define_value(pdVK_OEM_4,	L"VK_LBRACKET",	L"\x00DB");
@@ -148,9 +148,13 @@ void pre_define()
 	push_pre_define_value(pdVK_OEM_7,	L"VK_QUOTE",	L"\x00DE");
 
 	push_pre_define_value(pdVK_OEM_8,	L"VK_OEM_8",	L"\x00DF");
+	push_pre_define_value(pdVK_OEM_8,	L"VK_EXCM",		L"\x00DF");
 
 	push_pre_define_value(pdVK_OEM_AX,	L"VK_OEM_AX",	L"\x00E1");
+
 	push_pre_define_value(pdVK_OEM_102,	L"VK_OEM_102",	L"\x00E2");
+	push_pre_define_value(pdVK_OEM_102,	L"VK_LESSTHEN",	L"\x00E2");
+
 	push_pre_define_value(pdVK_ICO_HELP,L"VK_ICO_HELP",	L"\x00E3");
 	push_pre_define_value(pdVK_ICO_00,	L"VK_ICO_00",	L"\x00E4");
 }

@@ -13,13 +13,13 @@
 #include "../global/global.h"
 #include "keymap.h"
 
-#define opSTRING	0x1111
-#define opVARIABLE	0x2222
-#define opREFERENCE	0x3333
-#define opPREDEFINED	0x4444
-#define opMODIFIER	0x5555
-#define opANYOF		0x6666
-#define opAND		0x7777
+#define opSTRING		0x00F0
+#define opVARIABLE		0x00F1
+#define opREFERENCE		0x00F2
+#define opPREDEFINED	0x00F3
+#define opMODIFIER		0x00F4
+#define opANYOF			0x00F5
+#define opAND			0x00F6
 
 struct structRule{
 

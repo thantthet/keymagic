@@ -404,13 +404,14 @@ bool TranslateToAscii (WORD *uVKey){
 	GetKeyboardState(KeyStates);
 	KeyStates[VK_CONTROL]=KeyStates[VK_MENU]=KeyStates[VK_LMENU]=KeyStates[VK_RMENU]=0;
 
- 	WORD TransedChar = NULL;
+ 	WCHAR TransedChar = NULL;
 	UINT ScanCode = MapVirtualKey(*uVKey, MAPVK_VK_TO_VSC);
 
 	if (!ScanCode)
 		return false;
 
-	int Return = ToAscii(*uVKey, ScanCode, KeyStates, &TransedChar, 0);
+	//int Return = ToAscii(*uVKey, ScanCode, KeyStates, (LPWORD)&TransedChar, 0);
+	int Return = ToUnicode(*uVKey, ScanCode, KeyStates, &TransedChar, 1, 0);
 
 	if (!Return)
 		return false;
