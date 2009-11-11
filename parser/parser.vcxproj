@@ -57,12 +57,14 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>"C:\Program Files\boost\boost_1_39"</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>"C:\Program Files\boost\boost_1_39\lib"</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -76,6 +78,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>"C:\Program Files\boost\boost_1_39"</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -83,15 +86,26 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>"C:\Program Files\boost\boost_1_39\lib"</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ConvertUTF.h" />
+    <ClInclude Include="keymap.h" />
+    <ClInclude Include="klf.h" />
+    <ClInclude Include="lexscanner.h" />
+    <ClInclude Include="parser.h" />
+    <ClInclude Include="script.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="UniConversion.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ConvertUTF.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="parser.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="UniConversion.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />

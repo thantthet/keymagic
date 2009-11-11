@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "../global/global.h"
 #include <boost/regex.hpp>
+#include "../global/global.h"
 #include "script.h"
 
 class lexscanner

@@ -72,13 +72,13 @@ class classInternalEditor {
 
 			if (TextLength + length >= MAX_STORELEN)
 			{
-				TextLength = 0;
-				RtlZeroMemory(Text, MAX_STORELEN);
+				CaretLocation = 0;
 			}
 			//wcsncat(Text, TextToAppend, length);
 			wcsncpy(&Text[CaretLocation], TextToAppend, length);
 			CaretLocation += length;
 			TextLength = CaretLocation;
+			Text[TextLength] = 0;
 			return true;
 		}
 

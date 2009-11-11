@@ -33,7 +33,7 @@ std::wstring format(LPCWSTR fmt, ...)
 
 LRESULT parser::checkToken (int * objIndex, emType Type)
 {
-	if ( tokens.size() - 1 < (*objIndex))
+	if ( tokens.size() - 1 < *objIndex)
 	{
 		Debug(L"No more token => nObjIndex = %d\n", *objIndex);
 		return false;
@@ -65,7 +65,7 @@ bool parser::validVarName(wchar_t * VarName)
 
 bool parser::complexExpression(int * objIndex, wstring * varValue)
 {
-	
+
 	wchar_t * retVal=0;
 
 	if (retVal = (wchar_t*)checkToken(objIndex, T_STRING)) { }
@@ -81,7 +81,7 @@ bool parser::complexExpression(int * objIndex, wstring * varValue)
 
 	if (retVal)
 		varValue->append(retVal);
-	
+
 	int OriginalIndex = *objIndex;
 
 	if (checkToken(objIndex, T_ADDOP))
@@ -338,7 +338,7 @@ bool parser::newline(int * objIndex)
 }
 
 bool parser::expression(int * objIndex)
-{	
+{
 	if (newline(objIndex))
 		return true;
 
@@ -353,8 +353,29 @@ bool parser::expression(int * objIndex)
 
 bool parser::begin_parse()
 {
+	//static boost::wregex reName(L"\\s+");
+	static boost::wregex reName(L"//\\s*@Name\\s*=\\s*([^\\n\\r]+)");
+	static boost::wregex reFont(L"//\\s*@Font\\s*=\\s*(.+)\\s*");
+	static boost::wregex reDesc(L"//\\s*@Description\\s*=\\s*(.+)\\s*");
+	static boost::wregex reCaps(L"//\\s*@TrackCapsLock\\s*=\\s*(.+)\\s*");
+	static boost::wregex reBksp(L"//\\s*@AutoBackspace\\s*=\\s*(.+)\\s*");
+	static boost::wregex reUndefKeys(L"//\\s*@EatUndefinedKeys\\s*=\\s*(.+)\\s*");
+	//static boost::wregex reDeadKeys(L"//\\s*@Deadkeys\\s*=\\s*(.+)\\s*");
+
+	boost::wcmatch matches;
+	
+	if (boost::regex_match(Script.lpwStrAt(0), matches, reName))
+	{
+		for (int i = 1; i < matches.size(); i++)
+		{
+			string match(matches[i].first, matches[i].second);
+            cout << "\tmatches[" << i << "] = " << match << endl;
+		}
+	}
+	
 	int objIndex = 0;
 	if (expression(&objIndex) && objIndex == tokens.size())
 		return true;
+
 	return false;
 }

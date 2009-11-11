@@ -41,6 +41,7 @@ public:
 
 	bool begin_parse();
 
+public:
 	wstring getLastError()
 	{
 		return LastError;

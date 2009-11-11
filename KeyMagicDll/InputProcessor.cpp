@@ -7,7 +7,7 @@ static int DontEatBackspace = 0;
 // < VK_* & VK_* & ... > length
 static int keys_length = 0;
 
-struct ModKeysStatus
+struct ModKeysState
 {
 	bool CTRL;
 	bool ALT;
@@ -15,7 +15,7 @@ struct ModKeysStatus
 	bool CAPS;
 };
 
-static ModKeysStatus old_status;
+static ModKeysState old_state;
 
 struct InputRuleInfo
 {
@@ -158,11 +158,11 @@ bool get_output_and_send(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStates)
 
 		backspace(wcslen(src));
 
-		if (old_status.CTRL)
+		if (old_state.CTRL)
 			SendKey(VK_CONTROL, 0);
-		if (old_status.CTRL)
+		if (old_state.CTRL)
 			SendKey(VK_MENU, 0);
-		//if (old_status.SHIFT)
+		//if (old_state.SHIFT)
 		//	SendKey(VK_SHIFT, 0);
 
 		return true;
@@ -208,11 +208,11 @@ bool get_output_and_send(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStates)
 	// Do match again
 	MatchRules(0, 0, KeyStates, false);
 
-	if (old_status.CTRL)
+	if (old_state.CTRL)
 		SendKey(VK_CONTROL, 0);
-	if (old_status.ALT)
+	if (old_state.ALT)
 		SendKey(VK_MENU, 0);
-	//if (old_status.SHIFT)
+	//if (old_state.SHIFT)
 	//	SendKey(VK_SHIFT, 0);
 
 	return true;
@@ -246,8 +246,8 @@ bool MatchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStates, bool user_input)
 //			continue;
 //
 //		int context_length = estimate_len(s_in->c_str());
-		ModKeysStatus mks;
-		memset(&mks, 0, sizeof(ModKeysStatus));
+		ModKeysState mks;
+		memset(&mks, 0, sizeof(ModKeysState));
 		for (VIRTUALKEYS::iterator vk_it = it->vk->begin(); vk_it != it->vk->end(); vk_it++)
 		{
 			if (KeyStates[*vk_it] & 0x80)
@@ -289,14 +289,14 @@ bool MatchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStates, bool user_input)
 			}
 		}
 
-		if (it->vk->size() && ( (vk_matched == false) || (old_status.CTRL ^ mks.CTRL) || (old_status.ALT ^ mks.ALT) || ( (old_status.SHIFT ^ old_status.CAPS) ^ mks.SHIFT) ) )
+		if (it->vk->size() && ( (vk_matched == false) || (old_state.CTRL ^ mks.CTRL) || (old_state.ALT ^ mks.ALT) || ( (old_state.SHIFT ^ old_state.CAPS) ^ mks.SHIFT) ) )
 			continue;
 		else if (it->vk->size())
 		{
 			InternalEditor.Delete();
 			deleted = true;
 		}
-		else if (user_input && (old_status.CTRL || old_status.ALT))
+		else if (user_input && (old_state.CTRL || old_state.ALT))
 		{
 			continue;
 		}
@@ -359,11 +359,11 @@ bool MatchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStates, bool user_input)
 bool ProcessInput(WORD wVk, LPARAM lParam)
 {
 	WORD scancode = (WORD)(lParam >> 16);
-	// If VK_BACK and there is any DontEatBackspace, reduce the DontEatBackspace count from lParam
+	// If VK_BACK and there is any DontEatBackspace, subtract the DontEatBackspace count from lParam
 	if (wVk == VK_BACK && DontEatBackspace > 0 && ((BYTE)scancode == 0xff))
 	{
 		DontEatBackspace -= lParam & 0xFF;
-		if (DontEatBackspace < 0) // lParam is greater then DontEatBackspace
+		if (DontEatBackspace < 0) // lParam is larger then DontEatBackspace
 		{ // Eat only previous DontEatBackspace count
 			InternalEditor.Delete (0 - DontEatBackspace); // And delete additional backspace (Hack for internal editor)
 			DontEatBackspace=0;
@@ -379,29 +379,33 @@ bool ProcessInput(WORD wVk, LPARAM lParam)
 	GetKeyboardState(KeyStates); // Get States
 
 	// Store mod keys to use it later
-	old_status.CTRL = KeyStates[VK_CONTROL] & 0x80;
-	old_status.ALT = KeyStates[VK_MENU] & 0x80;
-	old_status.SHIFT = KeyStates[VK_SHIFT] & 0x80;
-	old_status.CAPS = KeyStates[VK_CAPITAL] & 0x81;
+	old_state.CTRL = KeyStates[VK_CONTROL] & 0x80;
+	old_state.ALT = KeyStates[VK_MENU] & 0x80;
+	old_state.SHIFT = KeyStates[VK_SHIFT] & 0x80;
+	old_state.CAPS = KeyStates[VK_CAPITAL] & 0x81;
 
 	Debug(L"CTRL = %x ALT = %x\n", KeyStates[VK_CONTROL], KeyStates[VK_MENU]);
 
 	wchar_t wcInput = wVk;
 	if (TranslateToAscii((WORD*)&wcInput)) // Get Ascii Value
 	{ // If there is any ascii value
-		if (MatchRules(wcInput, wVk, KeyStates, true )) // Match for the input
-		{// Found matched
+		if (MatchRules(wcInput, wVk, KeyStates, true )) {// Match for the input
+			// Found matched
 			return true; // Eaten
 		}
-		else if (wVk == VK_BACK)
-		{// If VK_BACK
+		else if (wVk == VK_BACK){
+			// If VK_BACK
 			InternalEditor.Delete(lParam & 0xFF); // Delete from internal editor
 		}
-		else
+		else if (wVk > 0x20 && wVk < 0x7F){
+			return true;
+		}
+		else {
 			InternalEditor.AddInput(wcInput); // Not matched? Just store the input
+		}
 	}
-	//If only one of these two key are pressed
-	if (old_status.CTRL ^ old_status.ALT)
+	//If only one of these two keys are pressed
+	if (old_state.CTRL ^ old_state.ALT)
 	{
 		Debug(L"(isCTRL ^ isALT)\n");
 		InternalEditor.Restart();// restart the internal editor's buffer

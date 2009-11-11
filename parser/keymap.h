@@ -1,10 +1,20 @@
+struct layout_options
+{
+	bool trackCaps;
+	bool autoBksp;
+	bool eatUndef;
+};
+
 struct FileHeader
 {
 	char cMagicCode[4];
 	byte bMajorVersion;
 	byte bMinorVersion;
-	short sNumOfString;
-	short sNumOfRules;
+	short shNumOfString;
+	short shNumOfRules;
+	layout_options lo;
+	short shNumOfDKeys;
+	BYTE deadKeys[1];
 };
 
 struct String

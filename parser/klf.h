@@ -123,7 +123,7 @@ public:
 		strStrings.clear();
 		rxRules.clear();
 
-		for (int i = 0; i < fh.sNumOfString; i++)
+		for (int i = 0; i < fh.shNumOfString; i++)
 		{
 			short sLength;
 			fread(&sLength, sizeof(short), 1, hFile);
@@ -135,7 +135,7 @@ public:
 			strStrings.push_back(local_buf);
 		}
 
-		for (int i = 0; i < fh.sNumOfRules; i++)
+		for (int i = 0; i < fh.shNumOfRules; i++)
 		{
 			structRule Rule;
 			short sLength;
@@ -178,8 +178,8 @@ public:
 
 		fh.bMajorVersion = KMKL_VERSION;
 		fh.bMinorVersion = KMKL_SUBVERSION;
-		fh.sNumOfString = strStrings.size();
-		fh.sNumOfRules = rxRules.size();
+		fh.shNumOfString = strStrings.size();
+		fh.shNumOfRules = rxRules.size();
 
 		file_put(&fh, sizeof(FileHeader));
 		
@@ -220,7 +220,7 @@ public:
 		return &strStrings;
 	}
 
-
+	layout_options lo;
 
 private:
 

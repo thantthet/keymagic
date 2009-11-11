@@ -47,6 +47,7 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 				isActive = true;
 				ActiveIndex = index;
 				LoadKeymapFile(ActiveIndex);
+				InternalEditor.Restart();
 				PostMessage(hwndKWindows, KM_GETFOCUS, ActiveIndex, 0);
 			}
 			return 1;
@@ -126,6 +127,7 @@ LRESULT CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 			{
 				ActiveIndex = cwp->wParam;
 				LoadKeymapFile(ActiveIndex);
+				InternalEditor.Restart();
 			}
 		}
 		else
