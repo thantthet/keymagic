@@ -57,8 +57,8 @@ extern bool TranslateToAscii (WORD *uVKey);
 extern Kmklf klf;
 
 // add slash within character class
-static boost::wregex slash(L"[()\\[\\]{}|.\\\\]");
-static std::wstring r(L"\\\\$0");
+static boost::wregex slash(L"[()\\[\\]{}|.\\-\\\\]");
+static std::wstring slash_r(L"\\\\$0");
 
 extern int findLastOpenBracket(std::wstring * s);
 extern bool AppendVariableValue(int index, std::wstring * s);

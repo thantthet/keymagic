@@ -41,7 +41,7 @@ public:
 		s = new wchar_t[input_length+2];
 		wcsncpy(s, src->s, input_length);
 		s[input_length] = EOS;
-		s[input_length+1] = NULL;
+		s[input_length+1] = 0;
 		stLinePos = src->stLinePos;
 		spt_length = src->spt_length;
 	}
@@ -52,7 +52,7 @@ public:
 		s = new wchar_t[input_length+2];
 		wcscpy(s, script);
 		s[input_length] = EOS;
-		s[input_length+1] = NULL;
+		s[input_length+1] = 0;
 		parse_lines();
 	}
 
@@ -71,7 +71,7 @@ public:
 	wchar_t wCharAt(int index)
 	{
 		if (index > spt_length)
-			return NULL;
+			return 0;
 		return s[index];
 	}
 

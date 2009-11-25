@@ -43,8 +43,17 @@ LRESULT parser::checkToken (int * objIndex, emType Type)
 	int pos = tokens.at(*objIndex).iStartIndex;
 	Debug(L"Parsing at line %d, pos %d\n", Script.getLineNum(pos), Script.getPosLine(pos));
 
-	if (tokens.at(*objIndex).Type != Type)
-	{
+	if (tokens.at(*objIndex).Type == T_BSLASH){
+		(*objIndex)++;
+		if (tokens.at(*objIndex).Type != T_NEWLINE){
+			pos = tokens.at(*objIndex).iStartIndex;
+			LastError = format(L"ERROR : Syntax %s at Line=%d Pos=%d\n", tokens.at(*objIndex).Value, Script.getLineNum(pos), Script.getPosLine(pos));
+			return false;
+		}
+		else { (*objIndex)++; }
+	}
+
+	if (tokens.at(*objIndex).Type != Type){
 		DumpToken(L"NOT MATCHED: ", tokens.at(*objIndex));
 		return false;
 	}
@@ -84,9 +93,14 @@ bool parser::complexExpression(int * objIndex, wstring * varValue)
 
 	int OriginalIndex = *objIndex;
 
-	if (checkToken(objIndex, T_ADDOP))
+	if (checkToken(objIndex, T_ADDOP)){
 		if (!complexExpression(objIndex, varValue))
 			*objIndex = OriginalIndex;
+	}
+	else {
+		int pos = tokens.at(*objIndex).iStartIndex;
+		LastError = format(L"ERROR: Syntax '%s' at Line=%d Pos=%d\n", tokens.at(*objIndex).Value, Script.getLineNum(pos), Script.getPosLine(pos));
+	}
 	return true;
 }
 
@@ -268,8 +282,12 @@ bool parser::context(int * objIndex, wstring * outStr)
 		outStr->push_back(opAND);
 
 		if (combination(objIndex, outStr))
-			if (checkToken(objIndex, T_COMBINE_END))
+			if (checkToken(objIndex, T_COMBINE_END)){
 				return true;
+			} else {
+				int pos = tokens.at(*objIndex).iStartIndex;
+				LastError = format(L"ERROR: Syntax '%s' at Line=%d Pos=%d\n", tokens.at(*objIndex).Value, Script.getLineNum(pos), Script.getPosLine(pos));
+			}
 		*objIndex = OriginalIndex;
 	}
 
@@ -361,17 +379,6 @@ bool parser::begin_parse()
 	static boost::wregex reBksp(L"//\\s*@AutoBackspace\\s*=\\s*(.+)\\s*");
 	static boost::wregex reUndefKeys(L"//\\s*@EatUndefinedKeys\\s*=\\s*(.+)\\s*");
 	//static boost::wregex reDeadKeys(L"//\\s*@Deadkeys\\s*=\\s*(.+)\\s*");
-
-	boost::wcmatch matches;
-	
-	if (boost::regex_match(Script.lpwStrAt(0), matches, reName))
-	{
-		for (int i = 1; i < matches.size(); i++)
-		{
-			string match(matches[i].first, matches[i].second);
-            cout << "\tmatches[" << i << "] = " << match << endl;
-		}
-	}
 	
 	int objIndex = 0;
 	if (expression(&objIndex) && objIndex == tokens.size())

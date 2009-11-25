@@ -205,8 +205,10 @@ bool get_output_and_send(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStates)
 
 	SendStrokes(&str_out);
 
-	// Do match again
-	MatchRules(0, 0, KeyStates, false);
+	if (str_out.at(0) < 0x20 && str_out.at(0) > 0x7F){
+		// Do match again
+		MatchRules(0, 0, KeyStates, false);
+	}
 
 	if (old_state.CTRL)
 		SendKey(VK_CONTROL, 0);
@@ -397,7 +399,7 @@ bool ProcessInput(WORD wVk, LPARAM lParam)
 			// If VK_BACK
 			InternalEditor.Delete(lParam & 0xFF); // Delete from internal editor
 		}
-		else if (wVk > 0x20 && wVk < 0x7F){
+		else if ((old_state.CTRL ^ old_state.ALT)==false && wVk > 0x20 && wVk < 0x7F){
 			return true;
 		}
 		else {

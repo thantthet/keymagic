@@ -1,7 +1,15 @@
+#ifndef UNICODE
+#define UNICODE
+#endif
+#ifndef _UNICODE
+#define _UNICODE
+#endif
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRT_NON_CONFORMING_SWPRINTFS
 
 #include <windows.h>
+#include <wchar.h> 
+#include <shlwapi.h>
 #include "stdafx.h"
 
 #include "parser.h"
@@ -64,8 +72,29 @@ int _tmain(int argc, _TCHAR* argv[])
 		return false;
 	}
 
+	wchar_t sz_curdir[MAX_PATH];
+	wchar_t sz_filein[MAX_PATH];
+	wchar_t sz_fileout[MAX_PATH];
+
+	GetCurrentDirectory(MAX_PATH,sz_curdir);
+	wcscpy(sz_filein, argv[1]);
+	wcscpy(sz_fileout, argv[2]);
+
+	if (sz_filein[1] != ':'){
+		wcscpy(sz_filein, sz_curdir);
+		PathAppend(sz_filein, argv[1]);
+	}
+	if (sz_fileout[1] != ':'){
+		wcscpy(sz_fileout, sz_curdir);
+		PathAppend(sz_fileout, argv[2]);
+	}
+
 	ifstream is;
-	is.open (argv[1], ios::binary );
+	is.open (sz_filein, ios::binary );
+	if (!is.is_open()){
+		cout << "Error opening file...";
+		return 0;
+	}
 
 	// get length of file:
 	is.seekg (0, ios::end);
@@ -116,7 +145,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	parser p(uni_buffer);
 	if (p.begin_parse())
 	{
-		p.generate(argv[2]);
+		p.generate(sz_fileout);
 	}
 	else
 	{

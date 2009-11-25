@@ -61,6 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="shlwapi.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;C:\Program Files\boost\boost_1_39\lib&quot;"
 				UACExecutionLevel="2"
@@ -119,7 +120,8 @@
 				EnableIntrinsicFunctions="false"
 				AdditionalIncludeDirectories="&quot;C:\Program Files\boost\boost_1_39&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
-				RuntimeLibrary="2"
+				BasicRuntimeChecks="0"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -136,6 +138,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="shlwapi.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;C:\Program Files\boost\boost_1_39\lib&quot;"
 				UACExecutionLevel="2"

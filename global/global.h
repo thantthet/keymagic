@@ -26,7 +26,8 @@ enum emType {
 	T_PRINT,
 	T_PREDEFINED,
 	T_COMBINE_START,
-	T_COMBINE_END
+	T_COMBINE_END,
+	T_BSLASH,
 };
 
 enum emPreDef {

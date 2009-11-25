@@ -269,15 +269,20 @@ next:
 
 	case WM_TRAY:
 
-		if (lParam==WM_LBUTTONDOWN) {
+		if (lParam==WM_LBUTTONDBLCLK){
+			if (IsWindowVisible(hWnd))
+				break;
+			if (!bAdmin)
+				MessageBox(hWnd, "Attention: To save changes, please run Keymagic as an administration. "
+				"If not, any changes you have made will be unsaved.", "Keymagic", MB_OK | MB_ICONEXCLAMATION);
+			ShowWindow(hWnd, SW_SHOW);
+		}
 
+		else if (lParam==WM_LBUTTONDOWN) {
 			GetCursorPos(&pt);
-
 			SetForegroundWindow(hWnd);
-
 			TrackPopupMenu(hKeyMenu, TPM_RIGHTBUTTON | TPM_LEFTBUTTON,
 				pt.x, pt.y, 0, hWnd, NULL);
-	
 		}
 
 		else if (lParam==WM_RBUTTONDOWN) {
@@ -291,19 +296,16 @@ next:
 			AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_EXIT, "E&xit");
 			CreateMyMenu(hWnd, hMenu);
 
-			if (!isPortable)
-			{
+			if (!isPortable){
 				StartupFlag = GetPrivateProfileInt("Settings", "Startup", 0, szINIFile);
 				StartupFlag ? CheckMenuItem(hMenu, 102, MF_CHECKED) : CheckMenuItem(hMenu, 102, MF_UNCHECKED);
 			}
-			else
-			{
+			else{
 				WritePrivateProfileString("Settings", "Startup", "0", szINIFile);
 				SetStartup(false);
 			}
 
 			GetCursorPos(&pt);
-
 			SetForegroundWindow(hWnd);
 
 			RightMenuCmd CMD_RETURN = (RightMenuCmd)TrackPopupMenu(hMenu, TPM_RIGHTBUTTON | TPM_LEFTBUTTON | TPM_RETURNCMD,
@@ -348,9 +350,7 @@ next:
 					break;
 			}
 			DestroyMyMenu(hMenu);
-
 			DestroyMenu(hMenu);
-
 			PostMessage(hWnd, WM_NULL, 0, 0);
 		}
 		break;
@@ -1214,14 +1214,12 @@ VOID SetStartup(BOOL isEnable){
 		if (RegOpenKeyEx(hkHLM, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", NULL, KEY_ALL_ACCESS, &hkRun) != ERROR_SUCCESS)
 			return;
 
-		if (!isEnable)
-		{
+		if (!isEnable){
 			RegDeleteValue(hkRun, "Keymagic");
 			WritePrivateProfileString("Settings", "Startup", "0", szINIFile);
 		}
 
-		else
-		{
+		else{
 			char FileName[MAX_PATH];
 			GetModuleFileName(hInst, FileName, MAX_PATH);
 			lstrcat(FileName, " -s");
@@ -1244,13 +1242,13 @@ VOID SetStartup(BOOL isEnable){
 		lstrcpy(TaskScheduler, szCurDir);
 		lstrcat(TaskScheduler, "\\SetElevatedStartupTask.exe");
 
-		if (!isEnable)
-		{
-			if (Run(TaskScheduler, szCurDir, "-d"))
+		if (!isEnable){
+			if (Run(TaskScheduler, szCurDir, "-d")){
 				WritePrivateProfileString("Settings", "Startup", "0", szINIFile);
+			}
 		}
 
-		else{
+		else {
 			char FileName[MAX_PATH];
 			GetModuleFileName(hInst, FileName, MAX_PATH);
 

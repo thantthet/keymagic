@@ -127,6 +127,17 @@ private:
 
 			switch (scpt.wCharAt(scannedIndex))
 			{
+			case '\\':
+				kToken.iLength = 1;
+				kToken.iStartIndex = scannedIndex;
+				kToken.Type = T_BSLASH;
+				kToken.Value = L"\\";
+
+				tokens.push_back(kToken);
+				scannedIndex++;
+
+				DumpToken(L"New Object Assigned:", kToken);
+				break;
 			case '\r':
 			case '\n':
 				kToken.iLength = 1;
@@ -147,7 +158,7 @@ private:
 				{
 					wchar_t* wModer = new wchar_t[2];
 					wModer[0]=scpt.wCharAt(scannedIndex+1);
-					wModer[1]=NULL;
+					wModer[1]=0;
 
 					kToken.iLength = 3;
 					kToken.iStartIndex = scannedIndex;
@@ -162,7 +173,7 @@ private:
 					wchar_t* wModer = new wchar_t[3];
 					wModer[0]=scpt.wCharAt(scannedIndex+1);
 					wModer[1]=scpt.wCharAt(scannedIndex+2);
-					wModer[2]=NULL;
+					wModer[2]=0;
 
 					kToken.iLength = 4;
 					kToken.iStartIndex = scannedIndex;
@@ -191,7 +202,7 @@ private:
 
 					wchar_t * wNew = new wchar_t[wlen+1];
 					wcsncpy(wNew, scpt.lpwStrAt(scannedIndex), wlen);
-					wNew[wlen] = NULL;
+					wNew[wlen] = 0;
 
 					kToken.iLength = wlen;
 					kToken.iStartIndex = scannedIndex;
@@ -307,6 +318,8 @@ private:
 			default:
 				wchar_t * end = WholeWord(scpt.lpwStrAt(scannedIndex));
 				int wwlength = end - scpt.lpwStrAt(scannedIndex);
+				if (!wwlength)
+					break;
 				wchar_t * wholeWord = new wchar_t [wwlength];
 				wholeWord[wwlength] = 0;
 
@@ -395,7 +408,7 @@ private:
 		int wlen = sEnd - scpt.lpwStrAt(scannedIndex);
 		wchar_t * wNew = new wchar_t[wlen+1];
 		wcsncpy(wNew, scpt.lpwStrAt(scannedIndex), wlen);
-		wNew[wlen] = NULL;
+		wNew[wlen] = 0;
 
 		swscanf(wNew, L"%x", wNew);
 
@@ -461,7 +474,7 @@ private:
 		int wlen = sEnd - scpt.lpwStrAt(scannedIndex);
 		wchar_t * wNew = new wchar_t[wlen+1];
 		wcsncpy(wNew, scpt.lpwStrAt(scannedIndex), wlen);
-		wNew[wlen] = NULL;
+		wNew[wlen] = 0;
 
 		static boost::wregex e(L"\\\\(.)");
 		wcscpy(wNew, boost::regex_replace(std::wstring(wNew), e, std::wstring(L"$1")).c_str());

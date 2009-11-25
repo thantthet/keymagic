@@ -141,7 +141,9 @@ bool AppendVariableValue(int index, std::wstring * s)
 
 	wchar_t * str = vTstr->at(--index);
 	int len = wcslen(str);
-	for (int i = 0; i < len; i++)
+	if (!len)
+		return false;
+	/*for (int i = 0; i < len; i++)
 	{
 		if (str[i] < vTstr->size())
 		{
@@ -149,12 +151,13 @@ bool AppendVariableValue(int index, std::wstring * s)
 				return false;
 		}
 		else
-		{
-			s->append(boost::regex_replace(std::wstring((wchar_t*)str), slash, r));
+		{*/
+			s->append(boost::regex_replace(std::wstring((wchar_t*)str), slash, slash_r));
 			return true;
-		}
-	}
-	return false;
+		//}
+	//}
+	//
+	//return false;
 }
 
 int findLastOpenBracket(std::wstring * s)
@@ -164,7 +167,7 @@ int findLastOpenBracket(std::wstring * s)
 		if (s->at(rit) == '(')
 		{
 			if (rit && s->at(rit-1) == '\\')
-				break;
+				continue;
 
 			return rit;
 		}
@@ -214,7 +217,7 @@ bool makeRegex(std::wstring * output_str,
 			if (genCapture)
 				output_str->append(L"(");
 
-			output_str->append(boost::regex_replace(std::wstring((wchar_t*)raw_str, size), slash, r));
+			output_str->append(boost::regex_replace(std::wstring((wchar_t*)raw_str, size), slash, slash_r));
 			if (genCapture)
 				output_str->append(L")");
 
@@ -253,7 +256,10 @@ bool makeRegex(std::wstring * output_str,
 				int index = getindextoreplace(mod, *matches, cc);
 				if (lastLength + index >= output_str->length())
 					return false;
-				wchar_t wc = output_str->at(lastLength + index);
+				static boost::wregex e(L"\\\\(.)");
+				std::wstring ws = boost::regex_replace(output_str->substr(lastLength, std::string::npos), e, std::wstring(L"$1"));
+				wchar_t wc = ws.at(index);
+				ws.clear();
 				output_str->erase(lastLength);
 				output_str->append(1, wc);
 				break;
@@ -265,7 +271,7 @@ bool makeRegex(std::wstring * output_str,
 				output_str->append(L"(");
 			if (structPREdef * structPd = getPreDef((emPreDef)*raw_str++))
 			{
-				output_str->append(boost::regex_replace(std::wstring((wchar_t*)structPd->value), slash, r));
+				output_str->append(boost::regex_replace(std::wstring((wchar_t*)structPd->value), slash, slash_r));
 				len --;
 			}
 			if (genCapture)
