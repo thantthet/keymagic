@@ -2,12 +2,14 @@
 #include "shortcut.h"
 #include "InputProcessor.h"
 
+//HKL hkl;
+//char KLID[KL_NAMELENGTH];
+
 LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
 	int index;
 
-	if (nCode < 0)
-	{
+	if (nCode < 0){
 		return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 	}
 
@@ -20,8 +22,7 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 		return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 	}
 	//Menu Mode is active
-	if (nCode == HC_ACTION && (lParam & 0x10000000))
-	{
+	if (nCode == HC_ACTION && (lParam & 0x10000000)){
 		Debug(L"Menu Mode ACTIVE\n");
 		return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 	}
@@ -37,18 +38,21 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 		index = ShortCutCheck(wParam);
 
 		if (index >= 0){
-			if ( (ActiveIndex == index && isActive) || index == 0)
-			{
+			if ( (ActiveIndex == index && isActive) || index == 0) {
 				isActive = false;
 				PostMessage(hwndKWindows, KM_GETFOCUS, 0, 0);
+				//UnloadKeyboardLayout(hkl);
+				//if (KLID[0])
+				//	LoadKeyboardLayout(KLID, KLF_ACTIVATE | KLF_SETFORPROCESS );
 			}
-			else
-			{
+			else {
 				isActive = true;
 				ActiveIndex = index;
 				LoadKeymapFile(ActiveIndex);
 				InternalEditor.Restart();
 				PostMessage(hwndKWindows, KM_GETFOCUS, ActiveIndex, 0);
+				//GetKeyboardLayoutName(KLID);
+				//hkl = LoadKeyboardLayout("00000409", KLF_ACTIVATE | KLF_SETFORPROCESS);
 			}
 			return 1;
 		}
@@ -116,10 +120,8 @@ LRESULT CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 	case KM_SETKBID:
 		isActive = cwp->lParam;
 
-		if (isActive)
-		{
-			if (cwp->wParam == ActiveIndex)
-			{
+		if (isActive) {
+			if (cwp->wParam == ActiveIndex) {
 				isActive = false;
 				ActiveIndex = -1;
 			}

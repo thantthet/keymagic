@@ -40,8 +40,9 @@ void CreateMyMenu(HWND hOwner, HMENU hMenu){
 
 		//pMyItem = (MYITEM *) LocalAlloc(LPTR,
 		//	sizeof(MYITEM) + CCH_MAXITEMTEXT);
-		pMyItem = (MYITEM *) HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
-			sizeof(MYITEM) + CCH_MAXITEMTEXT);
+		//pMyItem = (MYITEM *) HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
+		//	sizeof(MYITEM) + CCH_MAXITEMTEXT);
+		pMyItem = (MYITEM *) malloc(sizeof (MYITEM) + CCH_MAXITEMTEXT);
 
 		// Save the item text in the item structure.
 
@@ -56,8 +57,9 @@ void CreateMyMenu(HWND hOwner, HMENU hMenu){
 
 		//pMyItem = (MYITEM *) LocalReAlloc(pMyItem,
 		//	sizeof(MYITEM) + mii.cch, LPTR); 
-		pMyItem = (MYITEM *) HeapReAlloc(GetProcessHeap(), HEAP_REALLOC_IN_PLACE_ONLY,
-			pMyItem, sizeof(MYITEM) + mii.cch);
+		//pMyItem = (MYITEM *) HeapReAlloc(GetProcessHeap(), HEAP_REALLOC_IN_PLACE_ONLY,
+		//	pMyItem, sizeof(MYITEM) + mii.cch);
+		realloc(pMyItem, sizeof(MYITEM) + mii.cch);
 
 		// Change the item to an owner-drawn item, and save 
 		// the address of the item structure as item data. 
@@ -85,7 +87,8 @@ void DestroyMyMenu(HMENU hMenu){
 		pMyItem = (MYITEM *) mii.dwItemData;
 		if (pMyItem)
 			//LocalFree(pMyItem);
-			HeapFree(GetProcessHeap(), 0, pMyItem);
+			//HeapFree(GetProcessHeap(), 0, pMyItem);
+			free(pMyItem);
 	}
 
 }

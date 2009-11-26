@@ -1,7 +1,9 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
-#define _TRACK_WND_RPOC_
+#ifndef _DEBUG
+	#define _TRACK_WND_RPOC_
+#endif
 
 #include <windows.h>
 #include <vector>
@@ -53,7 +55,7 @@ extern void GetShortCuts();
 extern void Logger(char* fmt, ...);
 extern LPCSTR GetKeyBoard(UINT Index, char * szKBPath);
 extern bool LoadKeymapFile(int index);
-extern bool TranslateToAscii (WORD *uVKey);
+extern UINT TranslateToUnicode (WORD *uVKey, LPBYTE GlobalKeyStates);
 extern Kmklf klf;
 
 // add slash within character class
@@ -69,5 +71,7 @@ extern bool makeRegex(std::wstring*,
 					  bool = true,
 					  boost::wcmatch* = NULL,
 					  CHARCLASSES* = NULL);
+
+extern HKL hkl;
 
 #endif

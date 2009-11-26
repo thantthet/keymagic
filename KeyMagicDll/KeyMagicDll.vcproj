@@ -219,6 +219,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\kbdext.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\KeyMagicDll.cpp"
 				>
 			</File>
@@ -246,6 +250,10 @@
 			</File>
 			<File
 				RelativePath=".\InternalEditor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\kbdext.h"
 				>
 			</File>
 			<File

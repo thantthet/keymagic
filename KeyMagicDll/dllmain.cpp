@@ -17,6 +17,10 @@
 
 #include "common.h"
 
+#include "kbdext.h"
+
+HINSTANCE kbdLibrary;
+
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
                        LPVOID lpReserved
@@ -25,9 +29,12 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
+		hkl = LoadKeyboardLayout("00000409", 0);
+		kbdLibrary = loadKeyboardLayout();
 		GetShortCuts();
 		break;
 	case DLL_PROCESS_DETACH:
+		unloadKeyboardLayout(kbdLibrary);
 		//LocalFree(vtSC);
 		vtSC.clear();
 		//CloseMapping();

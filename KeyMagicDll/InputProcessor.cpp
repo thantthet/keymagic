@@ -205,7 +205,7 @@ bool get_output_and_send(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStates)
 
 	SendStrokes(&str_out);
 
-	if (str_out.at(0) < 0x20 && str_out.at(0) > 0x7F){
+	if (str_out.length() > 0 && (str_out.at(0) < 0x20 || str_out.at(0) > 0x7F)){
 		// Do match again
 		MatchRules(0, 0, KeyStates, false);
 	}
@@ -377,21 +377,21 @@ bool ProcessInput(WORD wVk, LPARAM lParam)
 	if (wVk == VK_CONTROL || wVk == VK_MENU)
 		return false;
 
-	BYTE KeyStates[256];
-	GetKeyboardState(KeyStates); // Get States
+	BYTE GlobalKeyStates[256];
+	GetKeyboardState(GlobalKeyStates); // Get States
 
 	// Store mod keys to use it later
-	old_state.CTRL = KeyStates[VK_CONTROL] & 0x80;
-	old_state.ALT = KeyStates[VK_MENU] & 0x80;
-	old_state.SHIFT = KeyStates[VK_SHIFT] & 0x80;
-	old_state.CAPS = KeyStates[VK_CAPITAL] & 0x81;
+	old_state.CTRL = GlobalKeyStates[VK_CONTROL] & 0x80;
+	old_state.ALT = GlobalKeyStates[VK_MENU] & 0x80;
+	old_state.SHIFT = GlobalKeyStates[VK_SHIFT] & 0x80;
+	old_state.CAPS = GlobalKeyStates[VK_CAPITAL] & 0x81;
 
-	Debug(L"CTRL = %x ALT = %x\n", KeyStates[VK_CONTROL], KeyStates[VK_MENU]);
+	Debug(L"CTRL = %x ALT = %x\n", GlobalKeyStates[VK_CONTROL], GlobalKeyStates[VK_MENU]);
 
 	wchar_t wcInput = wVk;
-	if (TranslateToAscii((WORD*)&wcInput)) // Get Ascii Value
+	if (wVk = TranslateToUnicode((WORD*)&wcInput, GlobalKeyStates)) // Get Ascii Value
 	{ // If there is any ascii value
-		if (MatchRules(wcInput, wVk, KeyStates, true )) {// Match for the input
+		if (MatchRules(wcInput, wVk, GlobalKeyStates, true )) {// Match for the input
 			// Found matched
 			return true; // Eaten
 		}
@@ -399,11 +399,12 @@ bool ProcessInput(WORD wVk, LPARAM lParam)
 			// If VK_BACK
 			InternalEditor.Delete(lParam & 0xFF); // Delete from internal editor
 		}
-		else if ((old_state.CTRL ^ old_state.ALT)==false && wVk > 0x20 && wVk < 0x7F){
+		else if ((old_state.CTRL ^ old_state.ALT)==false && wcInput > 0x20 && wcInput < 0x7F){
 			return true;
 		}
 		else {
 			InternalEditor.AddInput(wcInput); // Not matched? Just store the input
+			return false;
 		}
 	}
 	//If only one of these two keys are pressed

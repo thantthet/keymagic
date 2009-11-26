@@ -1,4 +1,5 @@
 #include "common.h"
+#include "kbdext.h"
 
 #pragma data_seg(".keymagic")
 HHOOK hKeyHook = NULL;
@@ -15,6 +16,7 @@ SHORTCUTS vtSC;
 EXPENDEDRULES vtERs;
 classInternalEditor InternalEditor;
 Kmklf klf;
+HKL hkl;
 
 void extractCharClasses(const wchar_t * e, CHARCLASSES * cc)
 {
@@ -403,7 +405,7 @@ LPCSTR GetKeyBoard(UINT Index, char * szKBPath){
 	return szKBPath;
 }
 
-bool TranslateToAscii (WORD *uVKey){
+UINT TranslateToUnicode (WORD *uVKey, LPBYTE GlobalKeyStates){
 
 	BYTE KeyStates[256];
 
@@ -414,10 +416,21 @@ bool TranslateToAscii (WORD *uVKey){
 	UINT ScanCode = MapVirtualKey(*uVKey, MAPVK_VK_TO_VSC);
 
 	if (!ScanCode)
-		return false;
+		return false;	
+
+	UINT USvk = ScancodeToVirtualkey(ScanCode);
+	if (USvk != *uVKey){
+		GlobalKeyStates[USvk] = KeyStates[USvk] = KeyStates[*uVKey];
+		GlobalKeyStates[*uVKey] = KeyStates[*uVKey] = 0x00;
+		*uVKey = USvk;
+	}
 
 	//int Return = ToAscii(*uVKey, ScanCode, KeyStates, (LPWORD)&TransedChar, 0);
-	int Return = ToUnicode(*uVKey, ScanCode, KeyStates, &TransedChar, 1, 0);
+	int Return = ToUnicodeEx(*uVKey, ScanCode, KeyStates, &TransedChar, 1, 0, hkl);
+	//loadKeyboardLayout();
+	//WCHAR deadchar = 0;
+	//int Return = convertVirtualKeyToWChar(*uVKey, (PWCHAR)&TransedChar, (PWCHAR)&deadchar);
+
 
 	if (!Return)
 		return false;
@@ -427,5 +440,5 @@ bool TranslateToAscii (WORD *uVKey){
 	else
 		return false;
 
-	return true;
+	return USvk;
 }
