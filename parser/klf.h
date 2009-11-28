@@ -20,6 +20,8 @@
 #define opMODIFIER		0x00F4
 #define opANYOF			0x00F5
 #define opAND			0x00F6
+#define opNANYOF		0x00F7
+#define opANY			0x00F8
 
 struct structRule{
 

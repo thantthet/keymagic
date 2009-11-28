@@ -81,8 +81,11 @@ bool parser::complexExpression(int * objIndex, wstring * varValue)
 
 	else if (retVal = (wchar_t*)checkToken(objIndex, T_UNICODE)){}
 
-	else if (!(retVal = identifier(objIndex)))
-	{
+	else if (retVal = identifier(objIndex)){
+		varValue->push_back(opVARIABLE);
+	}
+
+	else {
 		int pos = tokens.at(*objIndex).iStartIndex;
 		LastError = format(L"ERROR : Syntax %s at Line=%d Pos=%d\n", tokens.at(*objIndex).Value, Script.getLineNum(pos), Script.getPosLine(pos));
 		return false;
@@ -190,7 +193,9 @@ wchar_t * parser::identifier(int * objIndex)
 		strValue->push_back(opMODIFIER);
 		if (wcscmp(moder, L"*")==0)
 			strValue->push_back(opANYOF);
-		else if (wcsncmp(moder, L"$", 1)==0)
+		else if (wcscmp(moder, L"^")==0)
+			strValue->push_back(opNANYOF);
+		else if (moder[0]=='$')
 		{
 			int index=0;
 			swscanf(&moder[1], L"%d", &index);
@@ -274,6 +279,11 @@ bool parser::context(int * objIndex, wstring * outStr)
 		outStr->push_back(opPREDEFINED);
 		structPREdef * preDef = getPreDef(s, wcslen(s), true);
 		outStr->push_back(preDef->preDef);
+		return true;
+	}
+	else if (wchar_t * s = (wchar_t*)checkToken(objIndex, T_ANY))
+	{
+		outStr->push_back(opANY);
 		return true;
 	}
 	else if (checkToken(objIndex, T_COMBINE_START))

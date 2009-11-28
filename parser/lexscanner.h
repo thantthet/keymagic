@@ -270,6 +270,17 @@ private:
 
 				scannedIndex++;
 				break;
+			case '*':
+				kToken.iLength = 1;
+				kToken.iStartIndex = scannedIndex;
+				kToken.Type = T_ANY;
+				kToken.Value = wStar;
+				tokens.push_back(kToken);
+
+				DumpToken(L"New Object Assigned:", kToken);
+
+				scannedIndex++;
+				break;
 			case '=':
 				if (scpt.wCharAt(scannedIndex+1) == '>')
 				{
@@ -319,7 +330,7 @@ private:
 				wchar_t * end = WholeWord(scpt.lpwStrAt(scannedIndex));
 				int wwlength = end - scpt.lpwStrAt(scannedIndex);
 				if (!wwlength)
-					break;
+					Exit(0, L"ERROR: Parse error => Line: %d Pos: %d\n", scpt.getLineNum(scannedIndex), scpt.getPosLine(scannedIndex));
 				wchar_t * wholeWord = new wchar_t [wwlength];
 				wholeWord[wwlength] = 0;
 

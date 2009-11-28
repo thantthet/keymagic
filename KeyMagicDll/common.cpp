@@ -140,26 +140,26 @@ bool MakeLeftRules()
 bool AppendVariableValue(int index, std::wstring * s)
 {
 	std::vector<wchar_t*> * vTstr = klf.getStrings();
+	
+	if (--index > vTstr->size())
+		return false;
 
-	wchar_t * str = vTstr->at(--index);
+	wchar_t * str = vTstr->at(index);
 	int len = wcslen(str);
 	if (!len)
 		return false;
-	/*for (int i = 0; i < len; i++)
-	{
-		if (str[i] < vTstr->size())
-		{
-			if (!AppendVariableValue(index, s))
+	for (int i = 0; i < len; i++){
+		if (str[i] == opVARIABLE){
+			i++;
+			if (!AppendVariableValue(str[i], s))
 				return false;
 		}
-		else
-		{*/
-			s->append(boost::regex_replace(std::wstring((wchar_t*)str), slash, slash_r));
-			return true;
-		//}
-	//}
-	//
-	//return false;
+		else{
+			s->push_back(str[i]);
+		}
+	}
+	
+	return true;
 }
 
 int findLastOpenBracket(std::wstring * s)
@@ -209,6 +209,7 @@ bool makeRegex(std::wstring * output_str,
 		size_t size;
 		int lastB;
 		static int lastLength;
+		std::wstring wstemp;
 
 		len--;
 		switch (*raw_str++)
@@ -219,7 +220,9 @@ bool makeRegex(std::wstring * output_str,
 			if (genCapture)
 				output_str->append(L"(");
 
-			output_str->append(boost::regex_replace(std::wstring((wchar_t*)raw_str, size), slash, slash_r));
+			wstemp = std::wstring((wchar_t*)raw_str, size);
+			output_str->append(boost::regex_replace(wstemp, slash, slash_r));
+			wstemp.clear();
 			if (genCapture)
 				output_str->append(L")");
 
@@ -232,7 +235,10 @@ bool makeRegex(std::wstring * output_str,
 
 			if (genCapture)
 				output_str->append(L"(");
-			AppendVariableValue(index, output_str);
+			wstemp = std::wstring();
+			AppendVariableValue(index, &wstemp);
+			output_str->append(boost::regex_replace(wstemp, slash, slash_r));
+			wstemp.clear();
 			if (genCapture)
 				output_str->append(L")");
 
@@ -243,9 +249,15 @@ bool makeRegex(std::wstring * output_str,
 			switch (mod)
 			{
 			case opANYOF:
-				if ((lastB = findLastOpenBracket(output_str)) != -1)
-				{
+				if ((lastB = findLastOpenBracket(output_str)) != -1){
 					output_str->insert(lastB+1, 1, L'[');
+					output_str->insert(output_str->length()-1, 1, L']');
+					break;
+				}
+				break;
+			case opNANYOF:
+				if ((lastB = findLastOpenBracket(output_str)) != -1){
+					output_str->insert(lastB+1, L"[^");
 					output_str->insert(output_str->length()-1, 1, L']');
 					break;
 				}
@@ -286,6 +298,9 @@ bool makeRegex(std::wstring * output_str,
 			swprintf(buffer,L"%d",index);
 			output_str->append(L"$");
 			output_str->append(buffer);
+			break;
+		case opANY:
+			output_str->append(L"(.)");
 			break;
 		case opAND:
 			if (*raw_str++ != opPREDEFINED) { return false; };
@@ -408,6 +423,7 @@ LPCSTR GetKeyBoard(UINT Index, char * szKBPath){
 UINT TranslateToUnicode (WORD *uVKey, LPBYTE GlobalKeyStates){
 
 	BYTE KeyStates[256];
+	UINT USvk = 0;
 
 	GetKeyboardState(KeyStates);
 	KeyStates[VK_CONTROL]=KeyStates[VK_MENU]=KeyStates[VK_LMENU]=KeyStates[VK_RMENU]=0;
@@ -416,14 +432,16 @@ UINT TranslateToUnicode (WORD *uVKey, LPBYTE GlobalKeyStates){
 	UINT ScanCode = MapVirtualKey(*uVKey, MAPVK_VK_TO_VSC);
 
 	if (!ScanCode)
-		return false;	
+		return false;
 
-	UINT USvk = ScancodeToVirtualkey(ScanCode);
-	if (USvk != *uVKey){
-		GlobalKeyStates[USvk] = KeyStates[USvk] = KeyStates[*uVKey];
-		GlobalKeyStates[*uVKey] = KeyStates[*uVKey] = 0x00;
-		*uVKey = USvk;
-	}
+	if (GetKeyboardLayout(0) != (HKL)0x04090409){
+		USvk = ScancodeToVirtualkey(ScanCode);
+		if (USvk != *uVKey){
+			GlobalKeyStates[USvk] = KeyStates[USvk] = KeyStates[*uVKey];
+			GlobalKeyStates[*uVKey] = KeyStates[*uVKey] = 0x00;
+			*uVKey = USvk;
+		}
+	}else { USvk = *uVKey ; }
 
 	//int Return = ToAscii(*uVKey, ScanCode, KeyStates, (LPWORD)&TransedChar, 0);
 	int Return = ToUnicodeEx(*uVKey, ScanCode, KeyStates, &TransedChar, 1, 0, hkl);

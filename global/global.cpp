@@ -17,6 +17,7 @@ void pre_define()
 {
 
 	push_pre_define_value(pdNULL,		L"NULL",		L"");
+	push_pre_define_value(pdNULL,		L"null",		L"");
 
 	push_pre_define_value(pdVK_BACK,	L"VK_BACK",		L"\x0008");
 	push_pre_define_value(pdVK_TAB,		L"VK_TAB",		L"\x0009");

@@ -59,7 +59,7 @@ extern UINT TranslateToUnicode (WORD *uVKey, LPBYTE GlobalKeyStates);
 extern Kmklf klf;
 
 // add slash within character class
-static boost::wregex slash(L"[()\\[\\]{}|.\\-\\\\]");
+static boost::wregex slash(L"[?()\\[\\]{}|.\\-\\\\]");
 static std::wstring slash_r(L"\\\\$0");
 
 extern int findLastOpenBracket(std::wstring * s);
