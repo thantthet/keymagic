@@ -66,8 +66,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	char * buffer;
 	wchar_t * uni_buffer;
 
-	if (argc < 3)
-	{
+	if (argc < 3){
 		std::wcerr << L"Usage: " << argv[0] << L" <script file path> <output file path>";
 		return false;
 	}
@@ -108,15 +107,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	is.read (buffer,length);
 	is.close();
 
-	if ( memcmp(buffer, UTF16_LE, sizeof(UTF16_LE))==0 )
-	{
+	if ( memcmp(buffer, UTF16_LE, sizeof(UTF16_LE))==0 ){
 		uni_length = (length-sizeof(UTF16_LE)) / sizeof(short);
 		uni_buffer = new wchar_t[uni_length+1];
 		memcpy(uni_buffer, &buffer[sizeof(UTF16_LE)], length-sizeof(UTF16_LE));
 	}
 
-	else if ( memcmp(buffer, UTF16_BE, sizeof(UTF16_BE))==0 )
-	{
+	else if ( memcmp(buffer, UTF16_BE, sizeof(UTF16_BE))==0 ){
 		uni_length = (length-sizeof(UTF16_LE)) / sizeof(short);
 		uni_buffer = new wchar_t[uni_length+1];
 		memcpy(uni_buffer, &buffer[sizeof(UTF16_BE)], length-sizeof(UTF16_LE));
@@ -126,15 +123,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 	}
 
-	else if ( memcmp(buffer, UTF8, sizeof(UTF8))==0 )
-	{
+	else if ( memcmp(buffer, UTF8, sizeof(UTF8))==0 ){
 		uni_length = UTF8Length((wchar_t*)&buffer[sizeof(UTF8)], length-sizeof(UTF8));
 		uni_buffer = new wchar_t[uni_length+1];
 		UCS2FromUTF8(&buffer[sizeof(UTF8)], length-sizeof(UTF8), uni_buffer, uni_length); 
 	}
 
-	else
-	{
+	else{
 		uni_length = UTF8Length((wchar_t*)buffer, length);
 		uni_buffer = new wchar_t[uni_length+1];
 		UCS2FromUTF8(buffer, length, uni_buffer, uni_length); 
@@ -143,12 +138,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	//uni_buffer[uni_length] = 0;
 
 	parser p(uni_buffer);
-	if (p.begin_parse())
-	{
+	if (p.begin_parse()){
 		p.generate(sz_fileout);
 	}
-	else
-	{
+	else{
 		std::wcout << p.getLastError().c_str() << std::endl;
 	}
 	//Kmklf kmklf;

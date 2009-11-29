@@ -38,7 +38,7 @@ void SendStrokes (std::wstring * s)//Send Keys Strokes
 
 	for(int i=0, ii=0; i < s->length(); i++, ii++){
 		ip[ii].type = INPUT_KEYBOARD;
-		ip[ii].ki.dwExtraInfo = 0;
+		ip[ii].ki.dwExtraInfo = 0xDEADC0DE;
 		ip[ii].ki.dwFlags = KEYEVENTF_UNICODE;
 		ip[ii].ki.time = 0;
 		ip[ii].ki.wScan = s->at(i);
@@ -143,7 +143,15 @@ bool get_output_and_send(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStates)
 	int len = wcslen((wchar_t*)ir_info->it->rule_it->strOutRule);
 	std::wstring str_out ;
 	VIRTUALKEYS vks;
-	if (!makeRegex(&str_out, &vks, ir_info->it->rule_it->strOutRule, len, false, &matches, &ir_info->it->cc))
+	SWITCHES sws;
+
+	/*for (SWITCHES::iterator sws_it = ir_info->it->switches->begin();
+		sws_it != ir_info->it->switches->end();
+		sws_it++) {
+			InternalEditor.invertSwitch(*sws_it);
+	}*/
+
+	if (!makeRegex(&str_out, &vks, &sws, ir_info->it->rule_it->strOutRule, len, false, &matches, &ir_info->it->cc))
 		return false;
 
 	SendKey(VK_CONTROL, KEYEVENTF_KEYUP);
@@ -240,30 +248,29 @@ bool MatchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStates, bool user_input)
 		bool deleted = false;
 		vk_matched = false;
 
-//		size_t len = wcslen((wchar_t*)it->strInRule);
-//		keys_length = 0xDEAD0000;// just a prefix value ;D
-//		std::wstring * s_in = makeRegex(it->strInRule, len, wVk, KeyStates, true);
-//
-//		if (!s_in)
-//			continue;
-//
-//		int context_length = estimate_len(s_in->c_str());
 		ModKeysState mks;
 		memset(&mks, 0, sizeof(ModKeysState));
-		for (VIRTUALKEYS::iterator vk_it = it->vk->begin(); vk_it != it->vk->end(); vk_it++)
-		{
-			if (KeyStates[*vk_it] & 0x80)
-			{
-				switch (*vk_it)
-				{
+		for (SWITCHES::iterator sws_it = it->switches->begin();
+			sws_it != it->switches->end();
+			sws_it++) {
+				if (InternalEditor.isSwitchOn(*sws_it)==false)
+					goto end_of_loop;
+					
+		}
+		for (VIRTUALKEYS::iterator vk_it = it->vk->begin(); vk_it != it->vk->end(); vk_it++){
+			if (KeyStates[*vk_it] & 0x80){
+				switch (*vk_it){
 				case VK_CONTROL:
 					mks.CTRL = true;
+					vk_matched = true;
 					break;
 				case VK_MENU:
 					mks.ALT = true;
+					vk_matched = true;
 					break;
 				case VK_SHIFT:
 					mks.SHIFT = true;
+					vk_matched = true;
 					break;
 				default:
 					if (*vk_it == wVk)
@@ -271,82 +278,73 @@ bool MatchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStates, bool user_input)
 					break;
 				}
 			}
-			else
-			{
-				if (*vk_it == VK_SHIFT)
-				{
+			else{
+				if (*vk_it == VK_SHIFT){
 					if (KeyStates[VK_CAPITAL] & 0x81)
 						mks.SHIFT = true;
-					else 
-					{
-						vk_matched = false;
-						break;
-					}
+					else {vk_matched=false;break;}
 				}
-				else
-				{
-					vk_matched = false;
-					break;
-				}
+				else {vk_matched=false;break;}
 			}
 		}
 
-		if (it->vk->size() && ( (vk_matched == false) || (old_state.CTRL ^ mks.CTRL) || (old_state.ALT ^ mks.ALT) || ( (old_state.SHIFT ^ old_state.CAPS) ^ mks.SHIFT) ) )
-			continue;
-		else if (it->vk->size())
-		{
+		if (klf.layout.trackCaps ?
+			(it->vk->size() && ( (vk_matched==false) || (old_state.CTRL ^ mks.CTRL) || (old_state.ALT ^ mks.ALT) || ( old_state.SHIFT ^ old_state.CAPS)^ mks.SHIFT ) ):
+			(it->vk->size() && ( (vk_matched==false) || (old_state.CTRL ^ mks.CTRL) || (old_state.ALT ^ mks.ALT) || ( old_state.SHIFT ^ mks.SHIFT) ) )
+				)
+				continue;
+		else if (it->vk->size() && wcInput){
 			InternalEditor.Delete();
 			deleted = true;
 		}
-		else if (user_input && (old_state.CTRL || old_state.ALT))
-		{
-			continue;
-		}
+		else if (user_input && (old_state.CTRL || old_state.ALT)){continue;}
 
 		wchar_t * src = InternalEditor.GetTextBackward(it->estimated_length);
-		if (src) // Is there enough length to do a match?
-		{
-//			boost::wregex e(s_in->c_str());
+		if (src) {// Is there enough length to do a match?
+
+			if (wcslen(src) && !wcInput && user_input){continue;}
+
 			boost::wcmatch matches;
-			if (boost::regex_match(src, matches, *it->regex))
-			{
+			if (boost::regex_match(src, matches, *it->regex)){
 				have_match = true; // Got a match
-				if (ir_info.matched == false)
-				{
+				if (ir_info.matched == false){
 					ir_info.matched = true;
 					ir_info.it = it;
-					ir_info.deleted = user_input ? deleted : true;
+					ir_info.deleted = (wcInput && user_input) ? deleted : true;
 				}
-
-				if (ir_info.it->vk->size() < it->vk->size()) // compare < VK_* & .. > counts)
-				{
+				if (ir_info.it->vk->size() < it->vk->size()) {// compare < VK_* & .. > counts)
 					//store
 					ir_info.it = it;
-					ir_info.deleted = user_input ? deleted : true;
+					ir_info.deleted = (wcInput && user_input) ? deleted : true;
 				}
-				else if (ir_info.it->estimated_length + ir_info.it->vk->size() < it->estimated_length + it->vk->size()) // compare pattern counts
-				{
+				else if (ir_info.it->estimated_length + ir_info.it->vk->size() < it->estimated_length + it->vk->size()) {// compare pattern counts
 					//store
 					ir_info.it = it;
-					ir_info.deleted = user_input ? deleted : true;
+					ir_info.deleted = (wcInput && user_input) ? deleted : true;
+				}
+				if (ir_info.it->switches->size() < it->switches->size()){
+					ir_info.it = it;
+					ir_info.deleted = (wcInput && user_input) ? deleted : true;
 				}
 				//continue matching
 			}
 		}
-		if (deleted == true)
+		if (deleted == true && wcInput)
 			InternalEditor.AddInput(wcInput);
+end_of_loop:;
 //		delete s_in;
 	}
 //
-	if (have_match == true)
-	{
-		if (ir_info.deleted == true && user_input == true)
+	if ((old_state.CTRL ^ old_state.ALT)==false && wcInput > 0x20 && wcInput < 0x7F)
+		InternalEditor.setAllSwitchOff();
+
+	if (have_match == true){
+		if (ir_info.deleted == true && user_input == true && wcInput)
 			InternalEditor.Delete();
 		return get_output_and_send(&ir_info, wVk, KeyStates);
 	}
 //
-	if (wcInput)
-	{
+	if (wcInput){
 		//Delete recent added temporary input
 		InternalEditor.Delete();
 	}
@@ -361,6 +359,7 @@ bool MatchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStates, bool user_input)
 bool ProcessInput(WORD wVk, LPARAM lParam)
 {
 	WORD scancode = (WORD)(lParam >> 16);
+	DWORD dwExtraInfo = GetMessageExtraInfo();
 	// If VK_BACK and there is any DontEatBackspace, subtract the DontEatBackspace count from lParam
 	if (wVk == VK_BACK && DontEatBackspace > 0 && ((BYTE)scancode == 0xff))
 	{
@@ -388,10 +387,10 @@ bool ProcessInput(WORD wVk, LPARAM lParam)
 
 	Debug(L"CTRL = %x ALT = %x\n", GlobalKeyStates[VK_CONTROL], GlobalKeyStates[VK_MENU]);
 
-	wchar_t wcInput = wVk;
-	if (wVk = TranslateToUnicode((WORD*)&wcInput, GlobalKeyStates)) // Get Ascii Value
+	wchar_t wcInput = wVk;UINT usVk;
+	if (usVk = TranslateToUnicode((WORD*)&wcInput, GlobalKeyStates)) // Get Ascii Value
 	{ // If there is any ascii value
-		if (MatchRules(wcInput, wVk, GlobalKeyStates, true )) {// Match for the input
+		if (MatchRules(wcInput, usVk, GlobalKeyStates, true )) {// Match for the input
 			// Found matched
 			return true; // Eaten
 		}
@@ -405,6 +404,11 @@ bool ProcessInput(WORD wVk, LPARAM lParam)
 		else {
 			InternalEditor.AddInput(wcInput); // Not matched? Just store the input
 			return false;
+		}
+	} else {
+		if (MatchRules(NULL, wVk, GlobalKeyStates, true )) {// Match for the input
+			// Found matched
+			return true; // Eaten
 		}
 	}
 	//If only one of these two keys are pressed

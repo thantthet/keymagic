@@ -81,6 +81,8 @@ bool parser::complexExpression(int * objIndex, wstring * varValue)
 
 	else if (retVal = (wchar_t*)checkToken(objIndex, T_UNICODE)){}
 
+	else if (retVal = (wchar_t*)checkToken(objIndex, T_PREDEFINED)){}
+
 	else if (retVal = identifier(objIndex)){
 		varValue->push_back(opVARIABLE);
 	}
@@ -99,10 +101,6 @@ bool parser::complexExpression(int * objIndex, wstring * varValue)
 	if (checkToken(objIndex, T_ADDOP)){
 		if (!complexExpression(objIndex, varValue))
 			*objIndex = OriginalIndex;
-	}
-	else {
-		int pos = tokens.at(*objIndex).iStartIndex;
-		LastError = format(L"ERROR: Syntax '%s' at Line=%d Pos=%d\n", tokens.at(*objIndex).Value, Script.getLineNum(pos), Script.getPosLine(pos));
 	}
 	return true;
 }
@@ -145,7 +143,7 @@ bool parser::vardeclaration(int * objIndex)
 	return true;
 }
 
-void parser::setVar(wchar_t * varName, wchar_t * varValue)
+void parser::setVar(wchar_t * varName, const wchar_t * varValue)
 {
 	int iLength = wcslen(varValue);
 	wchar_t * wsValue = new wchar_t [iLength+1];
@@ -216,7 +214,7 @@ wchar_t * parser::identifier(int * objIndex)
 	return (wchar_t*)strValue->c_str();
 }
 
-int parser::getVar(wchar_t * value)
+int parser::getVar(const wchar_t * value)
 {
 #ifdef DEBUG
 	wchar_t wc_integer[2];
@@ -286,11 +284,8 @@ bool parser::context(int * objIndex, wstring * outStr)
 		outStr->push_back(opANY);
 		return true;
 	}
-	else if (checkToken(objIndex, T_COMBINE_START))
-	{
-
+	else if (checkToken(objIndex, T_COMBINE_START)){
 		outStr->push_back(opAND);
-
 		if (combination(objIndex, outStr))
 			if (checkToken(objIndex, T_COMBINE_END)){
 				return true;
@@ -299,6 +294,33 @@ bool parser::context(int * objIndex, wstring * outStr)
 				LastError = format(L"ERROR: Syntax '%s' at Line=%d Pos=%d\n", tokens.at(*objIndex).Value, Script.getLineNum(pos), Script.getPosLine(pos));
 			}
 		*objIndex = OriginalIndex;
+	}
+	else if (checkToken(objIndex, T_SWITCH_START)){
+		if (wchar_t * s = (wchar_t*)checkToken(objIndex, T_STRING)) {
+			static int last_var_id;
+			int var_id;
+			std::wstring * unique_name = new std::wstring(L"\xbeef");
+			unique_name->append(s);
+			if (!( var_id = getVar(unique_name->c_str()) )){
+				wchar_t * buffer = new wchar_t[5];
+				last_var_id++;
+				swprintf(buffer, L"%d", last_var_id);
+				setVar(buffer, unique_name->c_str() );
+				var_id = last_var_id;
+			}
+			outStr->push_back(opSWITCH);
+			outStr->push_back(getVar(unique_name->c_str()));
+			unique_name->clear();
+			if (!checkToken(objIndex, T_SWITCH_END)){
+				int pos = tokens.at(*objIndex).iStartIndex;
+				LastError = format(L"ERROR: Syntax '%s' at Line=%d Pos=%d\n", tokens.at(*objIndex).Value, Script.getLineNum(pos), Script.getPosLine(pos));
+			}
+			return true;
+		}
+		else {
+			int pos = tokens.at(*objIndex).iStartIndex;
+			LastError = format(L"ERROR: Syntax '%s' at Line=%d Pos=%d\n", tokens.at(*objIndex).Value, Script.getLineNum(pos), Script.getPosLine(pos));
+		}
 	}
 
 	return false;
@@ -335,8 +357,8 @@ bool parser::rule(int * objIndex)
 
 	if (!checkToken(objIndex, T_PRINT))
 	{
-		int pos = tokens.at(*objIndex).iStartIndex;
-		LastError = format(L"ERROR: Syntax '%s' at Line=%d Pos=%d\n", tokens.at(*objIndex).Value, Script.getLineNum(pos), Script.getPosLine(pos));
+		//int pos = tokens.at(*objIndex).iStartIndex;
+		//LastError = format(L"ERROR: Syntax '%s' at Line=%d Pos=%d\n", tokens.at(*objIndex).Value, Script.getLineNum(pos), Script.getPosLine(pos));
 		*objIndex = OriginalIndex;
 		return false;
 	}
@@ -381,14 +403,20 @@ bool parser::expression(int * objIndex)
 
 bool parser::begin_parse()
 {
-	//static boost::wregex reName(L"\\s+");
-	static boost::wregex reName(L"//\\s*@Name\\s*=\\s*([^\\n\\r]+)");
-	static boost::wregex reFont(L"//\\s*@Font\\s*=\\s*(.+)\\s*");
-	static boost::wregex reDesc(L"//\\s*@Description\\s*=\\s*(.+)\\s*");
-	static boost::wregex reCaps(L"//\\s*@TrackCapsLock\\s*=\\s*(.+)\\s*");
-	static boost::wregex reBksp(L"//\\s*@AutoBackspace\\s*=\\s*(.+)\\s*");
-	static boost::wregex reUndefKeys(L"//\\s*@EatUndefinedKeys\\s*=\\s*(.+)\\s*");
-	//static boost::wregex reDeadKeys(L"//\\s*@Deadkeys\\s*=\\s*(.+)\\s*");
+	static boost::wregex reName(L"//\\s*&name\\s*=\\s*([^\\n\\r]+).*", boost::regex::egrep);
+	static boost::wregex reFont(L"//\\s*&font\\s*=\\s*(.+).*", boost::regex::egrep);
+	static boost::wregex reDesc(L"//\\s*&description\\s*=\\s*(.+).*", boost::regex::egrep);
+	static boost::wregex reCaps(L"//\\s*&track_capslocks\\s*=\\s*(true|false).*", boost::regex::egrep);
+	static boost::wregex reBksp(L"//\\s*&backspace_as_undo\\s*=\\s*(true|false).*", boost::regex::egrep);
+	static boost::wregex reUnused(L"//\\s*&eat_all_unused_keys\\s*=\\s*(true|false).*", boost::regex::egrep);
+
+	boost::wcmatch matches;
+	if (boost::regex_match(Script.lpwStrAt(0), matches, reCaps))
+		if (wcsncmp((matches[1].first),L"false",5)==0)
+			kmklf.layout.trackCaps = false;
+	if (boost::regex_match(Script.lpwStrAt(0), matches, reUnused))
+		if (wcsncmp((matches[1].first),L"false",5)==0)
+			kmklf.layout.eat = false;
 	
 	int objIndex = 0;
 	if (expression(&objIndex) && objIndex == tokens.size())

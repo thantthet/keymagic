@@ -174,6 +174,33 @@ class classInternalEditor {
 				return;
 			}
 		}
+
+		bool SwitchOn(int id){
+			switch_map[id] = true;
+			return true;
+		}
+
+		bool SwitchOff(int id){
+			if (switch_map[id] != false){
+				switch_map[id] = false;
+				return false;
+			}
+			switch_map[id] = false;
+			return true;
+		}
+
+		bool isSwitchOn(int id){
+			return switch_map[id];
+		}
+
+		bool invertSwitch(int id){
+			switch_map[id] = !switch_map[id];
+			return !switch_map[id];
+		}
+
+		void setAllSwitchOff(){
+			switch_map.clear();
+		}
 		
 		void dump()
 		{
@@ -185,6 +212,7 @@ class classInternalEditor {
 	private:
 		UINT CaretLocation;
 		UINT TextLength;
+		std::map<int,bool> switch_map;
 		wchar_t Text[MAX_STORELEN];
 		bool isControlDown;
 		bool isCTRL, isALT, isSHIFT;

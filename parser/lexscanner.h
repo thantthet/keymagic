@@ -215,6 +215,32 @@ private:
 					DumpToken(L"New Object Assigned:", kToken);
 				}
 				break;
+			case '(':
+				noAdd = true;
+
+				kToken.iLength = 1;
+				kToken.iStartIndex = scannedIndex;
+				kToken.Type = T_SWITCH_START;
+				kToken.Value = L"(";
+				tokens.push_back(kToken);
+
+				DumpToken(L"New Object Assigned:", kToken);
+				scannedIndex++;
+
+				break;
+			case ')':
+				noAdd = false;
+
+				kToken.iLength = 1;
+				kToken.iStartIndex = scannedIndex;
+				kToken.Type = T_SWITCH_END;
+				kToken.Value = L")";
+				tokens.push_back(kToken);
+
+				DumpToken(L"New Object Assigned:", kToken);
+				scannedIndex++;
+
+				break;
 			case '<':
 				noAdd = true;
 
@@ -410,8 +436,7 @@ private:
 
 		for (wchar_t * w = sEnd-1; w > scpt.lpwStrAt(scannedIndex); w--)
 		{
-			if (!isxdigit(*w))
-			{
+			if (!isxdigit(*w)){
 				return false;
 			}
 		}
@@ -487,14 +512,48 @@ private:
 		wcsncpy(wNew, scpt.lpwStrAt(scannedIndex), wlen);
 		wNew[wlen] = 0;
 
-		static boost::wregex e(L"\\\\(.)");
-		wcscpy(wNew, boost::regex_replace(std::wstring(wNew), e, std::wstring(L"$1")).c_str());
+		//static boost::wregex e(L"\\\\(.)");
+		//wcscpy(wNew, boost::regex_replace(std::wstring(wNew), e, std::wstring(L"$1")).c_str());
+		std::wstring unescaped_str = std::wstring();
+		for (int i=0; i < wlen; i++){
+			if (wNew[i] == '\\'){
+				i++;
+				int j=0;
+				switch (wNew[i]){
+					case 'x':
+					case 'u':
+					case 'X':
+					case 'U':
+						i++;
+						while (ishexa(wNew[i])) i++,j++;
+						if (j) {
+							WORD uni[2] = {0};
+							swscanf(&wNew[i-j], L"%x", uni);
+							unescaped_str.push_back(uni[0]);
+							i--;
+						}
+						else {
+							Exit(0, L"ERROR: Parse error => Line: %d Pos: %d\n", scpt.getLineNum(scannedIndex+i), scpt.getPosLine(scannedIndex+i));
+						}
+						break;
+					default:
+						unescaped_str.push_back(wNew[i]);
+				}
+			}
+			else {
+				unescaped_str.push_back(wNew[i]);
+			}
+		}
+
+		wcscpy(wNew, unescaped_str.c_str());
 
 		structToken kToken;
-		kToken.iLength = wcslen(wNew);
+		kToken.iLength = unescaped_str.size();
 		kToken.iStartIndex = scannedIndex;
 		kToken.Type = T_STRING;
 		kToken.Value = wNew;
+
+		unescaped_str.clear();
 
 		tokens.push_back(kToken);
 

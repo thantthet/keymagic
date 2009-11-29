@@ -116,12 +116,14 @@ bool MakeLeftRules()
 	{
 		std::wstring * str_in = new std::wstring;
 		VIRTUALKEYS * vks = new VIRTUALKEYS;
-		if (makeRegex(str_in, vks, it->strInRule, wcslen((wchar_t*)it->strInRule)))
+		SWITCHES * sws = new SWITCHES;
+		if (makeRegex(str_in, vks, sws, it->strInRule, wcslen((wchar_t*)it->strInRule)))
 		{
 			structExpendedRule er;
 
 			er.match_pattern = str_in;
 			er.vk = vks;
+			er.switches = sws;
 
 			er.estimated_length = estimate_length(str_in->c_str());
 			extractCharClasses(str_in->c_str(), &er.cc);
@@ -195,6 +197,7 @@ int getindextoreplace(int sub_index, boost::wcmatch matches, CHARCLASSES * cc)
 
 bool makeRegex(std::wstring * output_str,
 			   VIRTUALKEYS * ouput_vks,
+			   SWITCHES * output_sws,
 			   WORD * raw_str,
 			   int len,
 			   bool genCapture,
@@ -214,8 +217,14 @@ bool makeRegex(std::wstring * output_str,
 		len--;
 		switch (*raw_str++)
 		{
+		case opSWITCH:
+			if (matches){
+				InternalEditor.invertSwitch(*raw_str++), len--;
+			}
+			else {output_sws->push_back(*raw_str++), len--;}
+			break;
 		case opSTRING:
-			size = *raw_str++; len--;
+			size = *raw_str++, len--;
 
 			if (genCapture)
 				output_str->append(L"(");
@@ -283,8 +292,7 @@ bool makeRegex(std::wstring * output_str,
 		case opPREDEFINED:
 			if (genCapture)
 				output_str->append(L"(");
-			if (structPREdef * structPd = getPreDef((emPreDef)*raw_str++))
-			{
+			if (structPREdef * structPd = getPreDef((emPreDef)*raw_str++)){
 				output_str->append(boost::regex_replace(std::wstring((wchar_t*)structPd->value), slash, slash_r));
 				len --;
 			}
@@ -300,7 +308,11 @@ bool makeRegex(std::wstring * output_str,
 			output_str->append(buffer);
 			break;
 		case opANY:
-			output_str->append(L"(.)");
+			if (genCapture)
+				output_str->append(L"(");
+			output_str->append(L"[\\x{21}-\\x{7d}\\x{ff}-\\x{ffff}]");
+			if (genCapture)
+				output_str->append(L")");
 			break;
 		case opAND:
 			if (*raw_str++ != opPREDEFINED) { return false; };
@@ -309,8 +321,7 @@ bool makeRegex(std::wstring * output_str,
 			structPREdef * preDef = getPreDef((emPreDef)*raw_str);
 			ouput_vks->push_back((BYTE)preDef->value[0]);
 
-			raw_str++;
-			len--;
+			raw_str++, len--;
 
 			while(len--)
 			{
@@ -427,6 +438,8 @@ UINT TranslateToUnicode (WORD *uVKey, LPBYTE GlobalKeyStates){
 
 	GetKeyboardState(KeyStates);
 	KeyStates[VK_CONTROL]=KeyStates[VK_MENU]=KeyStates[VK_LMENU]=KeyStates[VK_RMENU]=0;
+	if (!klf.layout.trackCaps)
+		KeyStates[VK_CAPITAL] = 0;
 
  	WCHAR TransedChar = NULL;
 	UINT ScanCode = MapVirtualKey(*uVKey, MAPVK_VK_TO_VSC);

@@ -21,6 +21,7 @@ extern char szDir[1000];
 
 typedef std::vector<BYTE> VIRTUALKEYS;
 typedef std::vector<structRule> RULES;
+typedef std::vector<int> SWITCHES;
 
 struct KM_ShortCut{
 	BYTE ukey;
@@ -28,8 +29,7 @@ struct KM_ShortCut{
 };
 typedef std::vector<KM_ShortCut> SHORTCUTS;
 
-struct structCClass
-{
+struct structCClass{
 	int idx;
 	const wchar_t * start;
 	const wchar_t * end;
@@ -40,6 +40,7 @@ struct structExpendedRule
 {
 	std::wstring*	match_pattern;
 	VIRTUALKEYS*	vk;
+	SWITCHES*		switches;
 	int				estimated_length;
 	CHARCLASSES		cc;
 	boost::wregex*	regex;
@@ -59,13 +60,14 @@ extern UINT TranslateToUnicode (WORD *uVKey, LPBYTE GlobalKeyStates);
 extern Kmklf klf;
 
 // add slash within character class
-static boost::wregex slash(L"[?()\\[\\]{}|.\\-\\\\]");
+static boost::wregex slash(L"[][?(){}*+?.\\-\\\\|]");
 static std::wstring slash_r(L"\\\\$0");
 
 extern int findLastOpenBracket(std::wstring * s);
 extern bool AppendVariableValue(int index, std::wstring * s);
 extern bool makeRegex(std::wstring*,
 					  VIRTUALKEYS*,
+					  SWITCHES*,
 					  WORD*,
 					  int,
 					  bool = true,

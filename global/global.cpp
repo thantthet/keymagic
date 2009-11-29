@@ -237,6 +237,18 @@ wchar_t * Type2Str(emType Type)
 	case T_COMBINE_END:
 		return L"COMBINE_END";
 		break;
+	case T_BSLASH:
+		return L"T_BSLASH";
+		break;
+	case T_ANY:
+		return L"T_ANY";
+		break;
+	case T_SWITCH_START:
+		return L"T_IVAR_START";
+		break;
+	case T_SWITCH_END:
+		return L"T_IVAR_END";
+		break;	
 	}
 	return L"UNKNOWN";
 }

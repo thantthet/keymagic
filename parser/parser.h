@@ -66,7 +66,7 @@ private:
 
 	LRESULT checkToken ( int * objIndex, emType Type );
 	wchar_t * identifier( int * objIndex );
-	void setVar(wchar_t * name, wchar_t * value);
+	void setVar(wchar_t * name, const wchar_t * value);
 	bool newline( int * objIndex );
 	bool vk_status(int * objIndex, wstring * outStr );
 	bool combination(int * objIndex, wstring * outStr);
@@ -78,7 +78,7 @@ private:
 	bool pattern( int * objIndex, wstring * outStr );
 	bool rule( int * objIndex );
 	bool validVarName(wchar_t * name );
-	int getVar(wchar_t * value);
+	int getVar(const wchar_t * value);
 	//int find (wchar_t * value);
 };
 

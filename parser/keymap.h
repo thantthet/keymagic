@@ -2,7 +2,7 @@ struct layout_options
 {
 	bool trackCaps;
 	bool autoBksp;
-	bool eatUndef;
+	bool eat;
 };
 
 struct FileHeader
@@ -12,9 +12,7 @@ struct FileHeader
 	byte bMinorVersion;
 	short shNumOfString;
 	short shNumOfRules;
-	layout_options lo;
-	short shNumOfDKeys;
-	BYTE deadKeys[1];
+	layout_options layout;
 };
 
 struct String

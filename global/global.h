@@ -29,6 +29,8 @@ enum emType {
 	T_COMBINE_END,
 	T_BSLASH,
 	T_ANY,
+	T_SWITCH_START,
+	T_SWITCH_END,
 };
 
 enum emPreDef {

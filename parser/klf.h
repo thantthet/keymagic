@@ -22,6 +22,7 @@
 #define opAND			0x00F6
 #define opNANYOF		0x00F7
 #define opANY			0x00F8
+#define opSWITCH		0x00F9
 
 struct structRule{
 
@@ -43,6 +44,9 @@ public:
 	{
 		if (pFile)
 			fclose(pFile);
+		layout.autoBksp = false;
+		layout.eat = true;
+		layout.trackCaps = true;
 	}
 
 	void add_rule(const wchar_t * in, const wchar_t * out)
@@ -83,7 +87,7 @@ public:
 		return true;
 	}
 
-	int is_exist(wchar_t * str)
+	int is_exist(const wchar_t * str)
 	{
 		return find(str);
 	}
@@ -183,6 +187,8 @@ public:
 		fh.shNumOfString = strStrings.size();
 		fh.shNumOfRules = rxRules.size();
 
+		fh.layout = layout;
+
 		file_put(&fh, sizeof(FileHeader));
 		
 		for (std::vector<wchar_t *>::iterator it = strStrings.begin();
@@ -222,7 +228,7 @@ public:
 		return &strStrings;
 	}
 
-	layout_options lo;
+	layout_options layout;
 
 private:
 
@@ -254,10 +260,9 @@ private:
 		return true;
 	}
 
-	int find (wchar_t * str)
+	int find (const wchar_t * str)
 	{
-		for ( int i =0 ; i < strStrings.size(); i++ )
-		{
+		for ( int i =0 ; i < strStrings.size(); i++ ){
 			if (!wcscmp(str, strStrings[i]))
 				return i;
 		}
