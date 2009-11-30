@@ -113,8 +113,7 @@ public:
 		FILE * hFile;
 
 		hFile = _wfopen(szPath, L"rb");
-		if (!hFile)
-		{
+		if (!hFile){
 			PrintLastError();
 			return false;
 		}
@@ -125,6 +124,8 @@ public:
 			fh.cMagicCode[1] != 'M' || 
 			fh.cMagicCode[2] != 'K' || 
 			fh.cMagicCode[3] != 'L') { return false; }
+
+		layout = fh.layout;
 
 		strStrings.clear();
 		rxRules.clear();

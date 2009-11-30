@@ -403,12 +403,12 @@ bool parser::expression(int * objIndex)
 
 bool parser::begin_parse()
 {
-	static boost::wregex reName(L"//\\s*&name\\s*=\\s*([^\\n\\r]+).*", boost::regex::egrep);
-	static boost::wregex reFont(L"//\\s*&font\\s*=\\s*(.+).*", boost::regex::egrep);
-	static boost::wregex reDesc(L"//\\s*&description\\s*=\\s*(.+).*", boost::regex::egrep);
-	static boost::wregex reCaps(L"//\\s*&track_capslocks\\s*=\\s*(true|false).*", boost::regex::egrep);
-	static boost::wregex reBksp(L"//\\s*&backspace_as_undo\\s*=\\s*(true|false).*", boost::regex::egrep);
-	static boost::wregex reUnused(L"//\\s*&eat_all_unused_keys\\s*=\\s*(true|false).*", boost::regex::egrep);
+	static boost::wregex reName(L"(?://|/\\*)\\s*&name\\s*=\\s*([^\\n\\r]+).*", boost::wregex::icase | boost::wregex::mod_s);
+	static boost::wregex reFont(L"(?://|/\\*)\\s*&font\\s*=\\s*(.+).*", boost::regex::icase | boost::regex::mod_s);
+	static boost::wregex reDesc(L"(?://|/\\*)\\s*&description\\s*=\\s*(.+).*", boost::regex::icase | boost::regex::mod_s);
+	static boost::wregex reCaps(L"(?://|/\\*)\\s*&track_capslocks\\s*=\\s*(true|false).*", boost::regex::icase | boost::regex::mod_s);
+	static boost::wregex reBksp(L"(?://|/\\*)\\s*&backspace_as_undo\\s*=\\s*(true|false).*", boost::regex::icase | boost::regex::mod_s);
+	static boost::wregex reUnused(L"(?://|/\\*)\\s*&eat_all_unused_keys\\s*=\\s*(true|false).*", boost::regex::icase | boost::regex::mod_s);
 
 	boost::wcmatch matches;
 	if (boost::regex_match(Script.lpwStrAt(0), matches, reCaps))

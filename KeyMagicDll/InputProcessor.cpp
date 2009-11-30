@@ -177,8 +177,10 @@ bool get_output_and_send(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStates)
 	}
 
 	std::wstring replaced_str;
+	std::wstring * temp = new std::wstring(src);
 
-	replaced_str = boost::regex_replace(std::wstring(src), *ir_info->it->regex, str_out);
+	replaced_str = boost::regex_replace(*temp, *ir_info->it->regex, str_out);
+	temp->clear();
 
 	if (!replaced_str.size())
 	{
@@ -398,7 +400,8 @@ bool ProcessInput(WORD wVk, LPARAM lParam)
 			// If VK_BACK
 			InternalEditor.Delete(lParam & 0xFF); // Delete from internal editor
 		}
-		else if ((old_state.CTRL ^ old_state.ALT)==false && wcInput > 0x20 && wcInput < 0x7F){
+		else if (klf.layout.eat == true && //eat unused key
+			(old_state.CTRL ^ old_state.ALT)==false && wcInput > 0x20 && wcInput < 0x7F){
 			return true;
 		}
 		else {
