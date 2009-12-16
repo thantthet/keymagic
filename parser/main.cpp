@@ -58,11 +58,6 @@ unsigned char UTF16_LE[2] = { 0xFF, 0xFE };
 unsigned char UTF16_BE[2] = { 0xFE, 0xFF };
 unsigned char UTF8[3] = { 0xEF, 0xBB, 0xBF };
 
-class MyException : public std::runtime_error {
-public:
-MyException() : std::runtime_error("MyException") { }
-};
-
 int _tmain(int argc, _TCHAR* argv[])
 {
 	int length;
