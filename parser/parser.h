@@ -30,9 +30,9 @@ public:
 		tokens = vtTokens;
 	}
 
-	parser::~parser()
+	/*parser::~parser()
 	{
-	}
+	}*/
 
 	void generate(wchar_t * szPath)
 	{

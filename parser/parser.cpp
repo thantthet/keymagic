@@ -11,14 +11,14 @@ std::wstring format_arg_list(LPCWSTR fmt, va_list args)
     wchar_t *buffer = 0;
     while (result == -1)
     {
-        if (buffer) delete [] buffer;
+        //if (buffer) delete [] buffer;
         buffer = new wchar_t [length + 1];
         memset(buffer, 0, length + 1);
         result = _vsnwprintf(buffer, length, fmt, args);
         length *= 2;
     }
     std::wstring s(buffer);
-    delete [] buffer;
+    //delete [] buffer;
     return s;
 }
 
@@ -136,7 +136,7 @@ bool parser::vardeclaration(int * objIndex)
 
 	setVar(varName, (wchar_t*)varValue->c_str());
 
-	delete varValue;
+	//delete varValue;
 
 	newline(objIndex);
 
@@ -409,6 +409,7 @@ bool parser::begin_parse()
 	static boost::wregex reCaps(L"(?://|/\\*)\\s*&track_capslocks\\s*=\\s*(true|false).*", boost::regex::icase | boost::regex::mod_s);
 	static boost::wregex reBksp(L"(?://|/\\*)\\s*&backspace_as_undo\\s*=\\s*(true|false).*", boost::regex::icase | boost::regex::mod_s);
 	static boost::wregex reUnused(L"(?://|/\\*)\\s*&eat_all_unused_keys\\s*=\\s*(true|false).*", boost::regex::icase | boost::regex::mod_s);
+	static boost::wregex reUSLayout(L"(?://|/\\*)\\s*&US_layout_based\\s*=\\s*(true|false).*", boost::regex::icase | boost::regex::mod_s);
 
 	boost::wcmatch matches;
 	if (boost::regex_match(Script.lpwStrAt(0), matches, reCaps))
@@ -417,6 +418,9 @@ bool parser::begin_parse()
 	if (boost::regex_match(Script.lpwStrAt(0), matches, reUnused))
 		if (wcsncmp((matches[1].first),L"false",5)==0)
 			kmklf.layout.eat = false;
+	if (boost::regex_match(Script.lpwStrAt(0), matches, reUSLayout))
+		if (wcsncmp((matches[1].first),L"false",5)==0)
+			kmklf.layout.posBased = false;
 	
 	int objIndex = 0;
 	if (expression(&objIndex) && objIndex == tokens.size())

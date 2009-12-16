@@ -311,9 +311,7 @@ void	Logger (char* fmt, ...);
 //	return Single_Input.Output[found_index];
 //}
 
-void KEYMAGICDLL_API HookInit(HWND hWnd, HMODULE hMod, LPCSTR ParentPath, LPHookHandles Hooks)
-{
-
+void KEYMAGICDLL_API HookInit(HWND hWnd, HMODULE hMod, LPCSTR ParentPath, LPHookHandles Hooks){
 	hwndKWindows = hWnd;
 	//hKeyHook = hKbHook;
 	hKeyHook = Hooks->hKeyHook = SetWindowsHookEx(WH_KEYBOARD, &HookKeyProc, hMod, NULL);

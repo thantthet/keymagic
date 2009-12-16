@@ -182,8 +182,7 @@ bool get_output_and_send(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStates)
 	replaced_str = boost::regex_replace(*temp, *ir_info->it->regex, str_out);
 	temp->clear();
 
-	if (!replaced_str.size())
-	{
+	if (!replaced_str.size()){
 		//rise error
 		//continue;
 		return false;
@@ -196,18 +195,15 @@ bool get_output_and_send(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStates)
 
 	str_out.assign(replaced_str);
 
-	if (src_len)
-	{
+	if (src_len){
 		int match_len = get_match_len(str_out.c_str(), src);
 
-		if (match_len < 0)
-		{
+		if (match_len < 0){
 			backspace(0 - match_len);
 			match_len = get_match_len(str_out.c_str(), src);
 			backspace(str_out.length() - match_len);
 		}
-		else if (src_len > match_len)
-		{
+		else if (src_len > match_len){
 			backspace(src_len - match_len);
 		}
 		str_out.erase(0, match_len);
@@ -216,6 +212,12 @@ bool get_output_and_send(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStates)
 	SendStrokes(&str_out);
 
 	if (str_out.length() > 0 && (str_out.at(0) < 0x20 || str_out.at(0) > 0x7F)){
+		// KeyUp match VKs
+		for (VIRTUALKEYS::iterator vk_it = ir_info->it->vk->begin();
+			vk_it != ir_info->it->vk->end();
+			vk_it++){
+				KeyStates[*vk_it] = 0;
+		}
 		// Do match again
 		MatchRules(0, 0, KeyStates, false);
 	}
@@ -262,14 +264,20 @@ bool MatchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStates, bool user_input)
 		for (VIRTUALKEYS::iterator vk_it = it->vk->begin(); vk_it != it->vk->end(); vk_it++){
 			if (KeyStates[*vk_it] & 0x80){
 				switch (*vk_it){
+				case VK_LCONTROL:
+				case VK_RCONTROL:
 				case VK_CONTROL:
 					mks.CTRL = true;
 					vk_matched = true;
 					break;
+				case VK_LMENU:
+				case VK_RMENU:
 				case VK_MENU:
 					mks.ALT = true;
 					vk_matched = true;
 					break;
+				case VK_RSHIFT:
+				case VK_LSHIFT:
 				case VK_SHIFT:
 					mks.SHIFT = true;
 					vk_matched = true;
@@ -282,7 +290,7 @@ bool MatchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStates, bool user_input)
 			}
 			else{
 				if (*vk_it == VK_SHIFT){
-					if (KeyStates[VK_CAPITAL] & 0x81)
+					if ( (KeyStates[VK_CAPITAL] & 0x81) && klf.layout.trackCaps)
 						mks.SHIFT = true;
 					else {vk_matched=false;break;}
 				}
@@ -400,23 +408,24 @@ bool ProcessInput(WORD wVk, LPARAM lParam)
 			// If VK_BACK
 			InternalEditor.Delete(lParam & 0xFF); // Delete from internal editor
 		}
-		else if (klf.layout.eat == true && //eat unused key
-			(old_state.CTRL ^ old_state.ALT)==false && wcInput > 0x20 && wcInput < 0x7F){
+		else if (klf.layout.eat==true && //eat unused key
+			old_state.CTRL==false && old_state.ALT==false &&
+			wcInput > 0x20 && wcInput < 0x7F){
 			return true;
 		}
-		else {
+		else if (old_state.CTRL==false && old_state.ALT==false){
 			InternalEditor.AddInput(wcInput); // Not matched? Just store the input
 			return false;
 		}
 	} else {
+		if (wVk != 0xe7) {// unicode input
 		if (MatchRules(NULL, wVk, GlobalKeyStates, true )) {// Match for the input
 			// Found matched
 			return true; // Eaten
-		}
+		}}
 	}
 	//If only one of these two keys are pressed
-	if (old_state.CTRL ^ old_state.ALT)
-	{
+	if (old_state.CTRL ^ old_state.ALT){
 		Debug(L"(isCTRL ^ isALT)\n");
 		InternalEditor.Restart();// restart the internal editor's buffer
 		return false;

@@ -58,6 +58,11 @@ unsigned char UTF16_LE[2] = { 0xFF, 0xFE };
 unsigned char UTF16_BE[2] = { 0xFE, 0xFF };
 unsigned char UTF8[3] = { 0xEF, 0xBB, 0xBF };
 
+class MyException : public std::runtime_error {
+public:
+MyException() : std::runtime_error("MyException") { }
+};
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	int length;
@@ -79,11 +84,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	wcscpy(sz_filein, argv[1]);
 	wcscpy(sz_fileout, argv[2]);
 
-	if (sz_filein[1] != ':'){
+	if (PathIsRelative(sz_filein)){
 		wcscpy(sz_filein, sz_curdir);
 		PathAppend(sz_filein, argv[1]);
 	}
-	if (sz_fileout[1] != ':'){
+	if (PathIsRelative(sz_fileout)){
 		wcscpy(sz_fileout, sz_curdir);
 		PathAppend(sz_fileout, argv[2]);
 	}
@@ -136,7 +141,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 	//uni_buffer[uni_length] = 0;
-
 	parser p(uni_buffer);
 	if (p.begin_parse()){
 		p.generate(sz_fileout);
@@ -149,7 +153,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//kmklf.toFile("C:\\test2.bin");
 	system("pause");
 
-	delete[] buffer;
-	delete[] uni_buffer;
+//	delete[] buffer;
+//	delete[] uni_buffer;
 	return 0;
 }

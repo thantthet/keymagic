@@ -349,26 +349,27 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	return (INT_PTR)FALSE;
 }
 
-VOID SetHook (HWND hwnd)
-{
+VOID SetHook (HWND hwnd){
 
-	HMODULE hMod = LoadLibrary("KeyMagicDll.dll");
+	HMODULE hMod = GetModuleHandle("KeyMagicDll.dll");
 	if (hMod == NULL)   {
 			MessageBox(hwnd, "Log", "Error: cannot start dll, KeyMagicDll.dll not found.", 0);
 			return ;
 	}
 
-	//hKH = SetWindowsHookEx(WH_KEYBOARD, &HookKeyProc, hMod, NULL);
-	//hWPH = SetWindowsHookEx(WH_CALLWNDPROC, &HookWndProc, hMod, NULL);
-	//hGM = SetWindowsHookEx(WH_GETMESSAGE, &HookGetMsgProc, hMod, NULL);
+	/*Hooks->hKeyHook = SetWindowsHookEx(WH_KEYBOARD, &HookKeyProc, hMod, NULL);
+	Hooks->hWndProcHook = SetWindowsHookEx(WH_CALLWNDPROC, &HookWndProc, hMod, NULL);
+	Hooks->hGetMsgHook = SetWindowsHookEx(WH_GETMESSAGE, &HookGetMsgProc, hMod, NULL);*/
 	HookInit(hwnd, hMod, szCurDir, &Hooks);
 }
 
-VOID UnHook ()
-{
-	bool ret = UnhookWindowsHookEx(Hooks.hGetMsgHook);
+VOID UnHook (){
+	/*bool ret = UnhookWindowsHookEx(Hooks.hGetMsgHook);
+	Debug(L"UnhookWindowsHookEx(GetMsgHook)=>%x\n", ret);
 	ret = UnhookWindowsHookEx(Hooks.hKeyHook);
+	Debug(L"UnhookWindowsHookEx(hKeyHook)=>%x\n", ret);
 	ret = UnhookWindowsHookEx(Hooks.hWndProcHook);
+	Debug(L"UnhookWindowsHookEx(hWndProcHook)=>%x\n", ret);*/
 }
 
 BOOL WorkOnCommand(LPTSTR lpCmdLine){

@@ -3,6 +3,7 @@ struct layout_options
 	bool trackCaps;
 	bool autoBksp;
 	bool eat;
+	bool posBased;
 };
 
 struct FileHeader

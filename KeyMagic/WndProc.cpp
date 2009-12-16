@@ -21,6 +21,7 @@
 #include "CGdiPlusBitmap.h"
 #include <sys/stat.h>
 #include <errno.h>
+#include "DllUnload.h"
 #include "../global/global.h"
 
 using namespace std;
@@ -324,6 +325,7 @@ next:
 					DeleteDlgData(hWnd);
 					EndDialog(hWnd, 0);
 					PostQuitMessage(0);
+					//ScannerAndInject();
 					break;
 				case RMCMD_MANAGE:
 					if (IsWindowVisible(hWnd))
@@ -396,18 +398,17 @@ next:
 
 void OnCreate(HWND hWnd, LPCREATESTRUCT lpcs)
 {
-	OSVERSIONINFO osvi;
-	BOOL bIsWindowsVistaLater;
+	//OSVERSIONINFO osvi;
+	//BOOL bIsWindowsVistaLater;
 	HMENU hMenu;
 	KeyFileData *Data;
 	char szKBPath[MAX_PATH];
 
-	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
-    osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	//ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
+    //osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 
-    GetVersionEx(&osvi);
-
-    bIsWindowsVistaLater = osvi.dwMajorVersion >= 6;
+    //GetVersionEx(&osvi);
+    //bIsWindowsVistaLater = osvi.dwMajorVersion >= 6;
 
 	LoadIcon(hInst, (LPCSTR)IDI_KEYMAGIC);
 
@@ -528,7 +529,7 @@ next:
 
 	SendMessage(hRemove, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	hDone = CreateWindowEx (0,"Button", bIsWindowsVistaLater ? "(SI) OK" : "OK",
+	hDone = CreateWindowEx (0,"Button", bAdmin ? "OK" : "(SI) OK",
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, (HMENU)IDC_DONE,
 		lpcs -> hInstance, NULL);
@@ -542,7 +543,7 @@ next:
 
 	SendMessage(hCancel, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	hApply = CreateWindowEx (0, "Button", bIsWindowsVistaLater ? "(SI) Apply" : "Apply",
+	hApply = CreateWindowEx (0, "Button", bAdmin ? "Apply" : "(SI) Apply",
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, (HMENU)IDC_APPLY,
 		lpcs -> hInstance, NULL);

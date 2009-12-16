@@ -35,18 +35,17 @@ class Kmklf
 {
 public:
 
-	Kmklf()
-	{
+	Kmklf(){
 		pFile = NULL;
-	}
-
-	Kmklf::~Kmklf()
-	{
-		if (pFile)
-			fclose(pFile);
 		layout.autoBksp = false;
 		layout.eat = true;
 		layout.trackCaps = true;
+		layout.posBased = true;
+	}
+
+	Kmklf::~Kmklf(){
+		if (pFile)
+			fclose(pFile);
 	}
 
 	void add_rule(const wchar_t * in, const wchar_t * out)
@@ -102,7 +101,7 @@ public:
 
 		bool ret = fromFile(lpWideCharStr);
 
-		delete[] lpWideCharStr;
+		//delete[] lpWideCharStr;
 
 		return ret;
 	}

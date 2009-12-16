@@ -18,25 +18,21 @@ public:
 
 	script::script (){};
 
-	script::script (wchar_t * Script)
-	{
+	script::script (wchar_t * Script){
 		loadSource(Script);
 	}
 
-	script::~script ()
-	{
+	/*script::~script (){
 		if (s)
 			delete [] s;
 		s = NULL;
-	}
+	}*/
 
-	void operator =(script * src)
-	{
+	void operator =(script * src){
 		copy(src);
 	}
 
-	void copy(script * src)
-	{
+	void copy(script * src){
 		size_t input_length = wcschr(src->s, EOS) - src->s;
 		s = new wchar_t[input_length+2];
 		wcsncpy(s, src->s, input_length);
@@ -46,8 +42,7 @@ public:
 		spt_length = src->spt_length;
 	}
 
-	void loadSource(const wchar_t * script)
-	{
+	void loadSource(const wchar_t * script){
 		size_t input_length = wcslen(script);
 		s = new wchar_t[input_length+2];
 		wcscpy(s, script);
@@ -56,34 +51,29 @@ public:
 		parse_lines();
 	}
 
-	int getLineNum(int pos)
-	{
+	int getLineNum(int pos){
 		int i ;
 		for (i = 0; i < stLinePos.size() && stLinePos[i] <= pos; i++){}
 		return i;
 	}
 
-	int getPosLine(int pos)
-	{
+	int getPosLine(int pos){
 		return pos - stLinePos[getLineNum(pos)-1];
 	}
 
-	wchar_t wCharAt(int index)
-	{
+	wchar_t wCharAt(int index){
 		if (index > spt_length)
 			return 0;
 		return s[index];
 	}
 
-	wchar_t * lpwStrAt(int index)
-	{
+	wchar_t * lpwStrAt(int index){
 		if (index > spt_length)
 			return NULL;
 		return &s[index];
 	}
 
-	size_t length()
-	{
+	size_t length(){
 		return spt_length;
 	}
 
@@ -92,16 +82,13 @@ private:
 	vector<int> stLinePos;
 	size_t spt_length;
 
-	void parse_lines()
-	{
+	void parse_lines(){
 		int i = 0;
 
 		stLinePos.push_back(i);
 
-		while (s[i] != EOS)
-		{
-			if (s[i] == '\n')
-			{
+		while (s[i] != EOS){
+			if (s[i] == '\n'){
 				i++;
 				stLinePos.push_back(i);
 			}

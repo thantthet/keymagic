@@ -32,7 +32,12 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 #ifdef _DEBUG
 		Debug(L"HookKeyProc::Key Down\nlParam = 0x%.8x wParam = 0x%.8x\n", lParam, wParam);
 #endif
+		//If there is no focus
 		if (!GetFocus())
+			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
+
+		// If ActiveWindow is Keymagic Application
+		if(GetActiveWindow() == hwndKWindows)
 			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 
 		index = ShortCutCheck(wParam);

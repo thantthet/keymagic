@@ -447,7 +447,7 @@ UINT TranslateToUnicode (WORD *uVKey, LPBYTE GlobalKeyStates){
 	if (!ScanCode)
 		return false;
 
-	if (GetKeyboardLayout(0) != (HKL)0x04090409){
+	if (klf.layout.posBased==true && GetKeyboardLayout(0) != (HKL)0x04090409){
 		USvk = ScancodeToVirtualkey(ScanCode);
 		if (USvk != *uVKey){
 			GlobalKeyStates[USvk] = KeyStates[USvk] = KeyStates[*uVKey];

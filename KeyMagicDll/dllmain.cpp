@@ -34,6 +34,12 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 		GetShortCuts();
 		break;
 	case DLL_PROCESS_DETACH:
+		bool ret = UnhookWindowsHookEx(hGetMsgHook);
+		Debug(L"UnhookWindowsHookEx(GetMsgHook)=>%x\n", ret);
+		ret = UnhookWindowsHookEx(hKeyHook);
+		Debug(L"UnhookWindowsHookEx(hKeyHook)=>%x\n", ret);
+		ret = UnhookWindowsHookEx(hWndProcHook);
+		Debug(L"UnhookWindowsHookEx(hWndProcHook)=>%x\n", ret);
 		unloadKeyboardLayout(kbdLibrary);
 		//LocalFree(vtSC);
 		vtSC.clear();
