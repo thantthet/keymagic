@@ -39,7 +39,7 @@
 //bool	OpenForMapping(LPCSTR FileName);
 //void	SendStrokes (wchar_t* Strokes, int len);
 LPCSTR	GetKeyBoard (UINT Index);
-void	Logger (char* fmt, ...);
+void	Logger (TCHAR* fmt, ...);
 //bool	Do_Operation(const wchar_t user_input);
 //wchar_t	Match_One2One(const wchar_t user_input);
 //bool	Customize(const wchar_t *Input_Unicode, int length);
@@ -48,7 +48,7 @@ void	Logger (char* fmt, ...);
 //bool	BackCustomize();
 //int inner_back=0;
 
-//char Debug[1000];
+//TCHAR Debug[1000];
 //int DebugLoc=0;
 
 //struct Keymagic_Internal_Editor{
@@ -311,8 +311,9 @@ void	Logger (char* fmt, ...);
 //	return Single_Input.Output[found_index];
 //}
 
-void KEYMAGICDLL_API HookInit(HWND hWnd, HMODULE hMod, LPCSTR ParentPath, LPHookHandles Hooks){
-	hwndKWindows = hWnd;
+void KEYMAGICDLL_API HookInit(HWND hKWnd, hwndExc * hWnds, HMODULE hMod, LPCTSTR ParentPath, LPHookHandles Hooks){
+	hwndKWindows = hKWnd;
+	hwndExceptions = *hWnds;
 	//hKeyHook = hKbHook;
 	hKeyHook = Hooks->hKeyHook = SetWindowsHookEx(WH_KEYBOARD, &HookKeyProc, hMod, NULL);
 	//hWndProcHook = hWPHook;
@@ -320,6 +321,7 @@ void KEYMAGICDLL_API HookInit(HWND hWnd, HMODULE hMod, LPCSTR ParentPath, LPHook
 	//hGetMsgHook = hGMHook;
 	hGetMsgHook = Hooks->hGetMsgHook = SetWindowsHookEx(WH_GETMESSAGE, &HookGetMsgProc, hMod, NULL);
 	lstrcpy(szDir, ParentPath);
+	GetShortCuts();
 }
 
 //bool LoadAndMap(int Index)
@@ -327,7 +329,7 @@ void KEYMAGICDLL_API HookInit(HWND hWnd, HMODULE hMod, LPCSTR ParentPath, LPHook
 //	if (Index == 0)
 //		return false;
 //
-//	char Msg[300];
+//	TCHAR Msg[300];
 //
 //	if (!OpenForMapping(GetKeyBoard(Index))){
 //		wsprintf((LPSTR)Msg, "Cannot open \"%s\"!", GetKeyBoard(Index));

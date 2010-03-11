@@ -33,8 +33,7 @@ std::wstring format(LPCWSTR fmt, ...)
 
 LRESULT parser::checkToken (int * objIndex, emType Type)
 {
-	if ( tokens.size() - 1 < *objIndex)
-	{
+	if ( tokens.size() - 1 < *objIndex){
 		Debug(L"No more token => nObjIndex = %d\n", *objIndex);
 		return false;
 	}
@@ -403,13 +402,13 @@ bool parser::expression(int * objIndex)
 
 bool parser::begin_parse()
 {
-	static boost::wregex reName(L"(?://|/\\*)\\s*&name\\s*=\\s*([^\\n\\r]+).*", boost::wregex::icase | boost::wregex::mod_s);
-	static boost::wregex reFont(L"(?://|/\\*)\\s*&font\\s*=\\s*(.+).*", boost::regex::icase | boost::regex::mod_s);
-	static boost::wregex reDesc(L"(?://|/\\*)\\s*&description\\s*=\\s*(.+).*", boost::regex::icase | boost::regex::mod_s);
-	static boost::wregex reCaps(L"(?://|/\\*)\\s*&track_capslocks\\s*=\\s*(true|false).*", boost::regex::icase | boost::regex::mod_s);
-	static boost::wregex reBksp(L"(?://|/\\*)\\s*&backspace_as_undo\\s*=\\s*(true|false).*", boost::regex::icase | boost::regex::mod_s);
-	static boost::wregex reUnused(L"(?://|/\\*)\\s*&eat_all_unused_keys\\s*=\\s*(true|false).*", boost::regex::icase | boost::regex::mod_s);
-	static boost::wregex reUSLayout(L"(?://|/\\*)\\s*&US_layout_based\\s*=\\s*(true|false).*", boost::regex::icase | boost::regex::mod_s);
+	static boost::wregex reName(L"(?://|/\\*).*@name\\s*=\\s*([^\\n\\r]+).*", boost::wregex::icase | boost::wregex::mod_s);
+	static boost::wregex reFont(L"(?://|/\\*).*@font\\s*=\\s*(.+).*", boost::regex::icase | boost::regex::mod_s);
+	static boost::wregex reDesc(L"(?://|/\\*).*@description\\s*=\\s*(.+).*", boost::regex::icase | boost::regex::mod_s);
+	static boost::wregex reCaps(L"(?://|/\\*).*@track_capslocks\\s*=\\s*(true|false).*", boost::regex::icase | boost::regex::mod_s);
+	static boost::wregex reBksp(L"(?://|/\\*).*@backspace_as_undo\\s*=\\s*(true|false).*", boost::regex::icase | boost::regex::mod_s);
+	static boost::wregex reUnused(L"(?://|/\\*).*@eat_all_unused_keys\\s*=\\s*(true|false).*", boost::regex::icase | boost::regex::mod_s);
+	static boost::wregex reUSLayout(L"(?://|/\\*).*@US_layout_based\\s*=\\s*(true|false).*", boost::regex::icase | boost::regex::mod_s);
 
 	boost::wcmatch matches;
 	if (boost::regex_match(Script.lpwStrAt(0), matches, reCaps))
@@ -423,6 +422,7 @@ bool parser::begin_parse()
 			kmklf.layout.posBased = false;
 	
 	int objIndex = 0;
+	
 	if (expression(&objIndex) && objIndex == tokens.size())
 		return true;
 

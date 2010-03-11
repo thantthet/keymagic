@@ -34,6 +34,7 @@ class classInternalEditor {
 #endif
 			RtlZeroMemory(Text, MAX_STORELEN);
 			CaretLocation = TextLength = 0;
+			setAllSwitchOff();
 #endif
 		}
 

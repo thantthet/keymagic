@@ -19,7 +19,7 @@
 
 HINSTANCE loadKeyboardLayout();
 int unloadKeyboardLayout(HINSTANCE kbdLibrary);
-int getKeyboardLayoutFile(char* layoutFile, DWORD bufferSize);
+int getKeyboardLayoutFile(TCHAR* layoutFile, DWORD bufferSize);
 UINT ScancodeToVirtualkey(UINT Scancode);
 //int convertVirtualKeyToWChar(int virtualKey, PWCHAR out, PWCHAR buffer);
 

@@ -104,7 +104,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	buffer = new char [length];
 
 	// read data as a block:
-	is.read (buffer,length);
+	is.read (buffer, length);
 	is.close();
 
 	if ( memcmp(buffer, UTF16_LE, sizeof(UTF16_LE))==0 ){

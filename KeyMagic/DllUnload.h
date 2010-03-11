@@ -19,4 +19,4 @@
 
 void ScannerAndInject ( );
 void GetModules( DWORD );
-void UnloadDLL ( char *ModulePath, HANDLE hProcess );
+void UnloadDLL ( TCHAR *ModulePath, HANDLE hProcess );

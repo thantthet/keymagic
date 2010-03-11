@@ -15,17 +15,18 @@
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include "StrTypeFunc.h"
 #include "MyMenu.h"
 #include "MyButton.h"
 #include "WndProc.h"
 #include "DllUnload.h"
 #include "../KeyMagicDll/KeyMagicDll.h"
 
-TCHAR szKBP[]="KeyBoardPaths";
-TCHAR szMS[]="MenuDisplays";
-TCHAR szSC[]="ShortCuts";
-TCHAR szNeedRestart[] = "Application needs to restart to work correctly";
-TCHAR szKeymagic[] = "Keymagic";
+TCHAR szKBP[]=TEXT("KeyBoardPaths");
+TCHAR szMS[]=TEXT("MenuDisplays");
+TCHAR szSC[]=TEXT("ShortCuts");
+TCHAR szNeedRestart[] = TEXT("Application needs to restart to work correctly");
+TCHAR szKeymagic[] = TEXT("Keymagic");
 
 // Global Variables:
 HINSTANCE hInst;								// current instance
@@ -36,17 +37,19 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow);
 ATOM MyRegisterClass(HINSTANCE hInstance);
 
 HMENU hKeyMenu;
-char szINIFile[MAX_PATH];
-char szCurDir[MAX_PATH];
+TCHAR szINIFile[MAX_PATH];
+TCHAR wcCurDir[MAX_PATH];
 BOOL bAdmin;
 
-char szMainClassName[] = "Keymagic";
+TCHAR szMainClassName[] = TEXT("Keymagic");
+TCHAR szError[] = TEXT("ERROR");
+TCHAR szKBLoad_ERR[] = TEXT("Failed to load keyboard layout.");
 HWND hwndMain;
 HACCEL hAccel;
 
 ULONG_PTR m_gdiplusToken;
 
-int APIENTRY WinMain(HINSTANCE hInstance,
+int APIENTRY _tWinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      LPTSTR    lpCmdLine,
                      int       nCmdShow)
@@ -56,16 +59,16 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	hInst = hInstance;
 
-	GetModuleFileName(hInst, szCurDir, MAX_PATH);
+	GetModuleFileName(hInst, wcCurDir, MAX_PATH);
 
 	int i;
-	for (i=lstrlen(szCurDir); szCurDir[i] != '\\'; i--){}
+	for (i=lstrlen(wcCurDir); wcCurDir[i] != '\\'; i--){}
 
-	szCurDir[i] = NULL;
+	wcCurDir[i] = NULL;
 
-	lstrcpy(szINIFile,szCurDir);
+	lstrcpy(szINIFile,wcCurDir);
 
-	PathAppend(szINIFile, "KeyMagic.ini");
+	PathAppend(szINIFile, TEXT("KeyMagic.ini"));
 
 	bAdmin = IsAdmin();
 
@@ -81,31 +84,33 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
     bIsWindowsVistaLater = osvi.dwMajorVersion >= 6;
 
-	if (bAdmin && bIsWindowsVistaLater)
-	{
+	HANDLE hFont = LoadFontFromRes(MAKEINTRESOURCE(IDR_PARABAIK));
+
+	if (bAdmin && bIsWindowsVistaLater){
 		typedef BOOL (__stdcall *ChangeWMFilter) (__in UINT message,__in DWORD dwFlag);
 		ChangeWMFilter lpChangeWMFilter;
 		HMODULE hUser;
 
-		lstrcat(szTitle, " (Administrator)");
+		lstrcat(szTitle, TEXT(" (Administrator)"));
 
-		hUser = GetModuleHandle("USER32");
+		hUser = GetModuleHandle(TEXT("USER32"));
 		
 		lpChangeWMFilter = (ChangeWMFilter)GetProcAddress(hUser, "ChangeWindowMessageFilter");
 		if (lpChangeWMFilter){
 			lpChangeWMFilter(KM_KILLFOCUS, MSGFLT_ADD);
 			lpChangeWMFilter(KM_GETFOCUS, MSGFLT_ADD);
+			lpChangeWMFilter(KM_ERR_KBLOAD, MSGFLT_ADD);
 		}
 	}
 
-	if (OpenMutexW(SYNCHRONIZE, NULL, L"\u1000\u102E\u1038\u1019\u1000\u1039\u1002\u103A\u1005\u1039")){
+	if (OpenMutex(SYNCHRONIZE, NULL, TEXT("\u1000\u102E\u1038\u1019\u1000\u1039\u1002\u103A\u1005\u1039"))){
 		HWND hPreHandle = FindWindow(NULL, szTitle);
 		ShowWindow(hPreHandle, SW_SHOW);
 		SetForegroundWindow(hPreHandle);
 		return 0;
 	}
 
-	HANDLE MtxHANDLE = CreateMutexW(NULL, TRUE, L"\u1000\u102E\u1038\u1019\u1000\u1039\u1002\u103A\u1005\u1039");
+	HANDLE MtxHANDLE = CreateMutexW(NULL, TRUE, TEXT("\u1000\u102E\u1038\u1019\u1000\u1039\u1002\u103A\u1005\u1039"));
 
 	MSG messages;
     WNDCLASSEX wincl;
@@ -146,7 +151,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	ShowWindow (hwndMain, SW_HIDE);
 
-    hAccel = LoadAccelerators(hInst, "ACCLC"); 
+    hAccel = LoadAccelerators(hInst, TEXT("ACCLC")); 
 
     while (GetMessage (&messages, NULL, 0, 0))
     {
@@ -325,16 +330,17 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		lstrcatA(Tempbuf,__TIME__);
 		SendDlgItemMessageA(hDlg, IDC_COMPLIE, WM_SETTEXT, 0, (LPARAM)Tempbuf);
 		SendDlgItemMessage(hDlg, IDC_ATEXT, WM_SETTEXT, 0, (LPARAM)
-			"\nCopyright (C) 2008  KeyMagic Project\n"
-			"http://keymagic.googlecode.com\n\n"
-			"This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation.\n\n"
-			"This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
-			"See the GNU General Public License for more details.\n\n"
-			"You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA"
+			TEXT("\nCopyright (C) 2008  KeyMagic Project\n")
+			TEXT("http://keymagic.googlecode.com\n\n")
+			TEXT("This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation.\n\n")
+			TEXT("This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.")
+			TEXT("See the GNU General Public License for more details.\n\n")
+			TEXT("You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA")
 			);
 
-		LoadString(hInst, IDS_EN_TITLE, Tempbuf, MAX_LOADSTRING);
-		SendDlgItemMessageA(hDlg, IDC_TITLE, WM_SETTEXT, 0, (LPARAM)Tempbuf);
+		TCHAR strTitle[256];
+		LoadString(hInst, IDS_EN_TITLE, strTitle, MAX_LOADSTRING);
+		SendDlgItemMessage(hDlg, IDC_TITLE, WM_SETTEXT, 0, (LPARAM)strTitle);
 
 		return (INT_PTR)TRUE;
 
@@ -351,25 +357,27 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 VOID SetHook (HWND hwnd){
 
-	HMODULE hMod = GetModuleHandle("KeyMagicDll.dll");
+	HMODULE hMod = GetModuleHandle(TEXT("KeyMagicDll.dll"));
 	if (hMod == NULL)   {
-			MessageBox(hwnd, "Log", "Error: cannot start dll, KeyMagicDll.dll not found.", 0);
+			MessageBox(hwnd, TEXT("Log"), TEXT("Error: cannot start dll, KeyMagicDll.dll not found."), 0);
 			return ;
 	}
 
 	/*Hooks->hKeyHook = SetWindowsHookEx(WH_KEYBOARD, &HookKeyProc, hMod, NULL);
 	Hooks->hWndProcHook = SetWindowsHookEx(WH_CALLWNDPROC, &HookWndProc, hMod, NULL);
 	Hooks->hGetMsgHook = SetWindowsHookEx(WH_GETMESSAGE, &HookGetMsgProc, hMod, NULL);*/
-	HookInit(hwnd, hMod, szCurDir, &Hooks);
+	hwndExc hWnds;
+	hWnds.push_back(GetDlgItem(hwnd, IDC_SHORTCUT));
+	HookInit(hwnd, &hWnds, hMod, wcCurDir, &Hooks);
 }
 
 VOID UnHook (){
 	/*bool ret = UnhookWindowsHookEx(Hooks.hGetMsgHook);
-	Debug(L"UnhookWindowsHookEx(GetMsgHook)=>%x\n", ret);
+	Debug(TEXT("UnhookWindowsHookEx(GetMsgHook)=>%x\n"), ret);
 	ret = UnhookWindowsHookEx(Hooks.hKeyHook);
-	Debug(L"UnhookWindowsHookEx(hKeyHook)=>%x\n", ret);
+	Debug(TEXT("UnhookWindowsHookEx(hKeyHook)=>%x\n"), ret);
 	ret = UnhookWindowsHookEx(Hooks.hWndProcHook);
-	Debug(L"UnhookWindowsHookEx(hWndProcHook)=>%x\n", ret);*/
+	Debug(TEXT("UnhookWindowsHookEx(hWndProcHook)=>%x\n"), ret);*/
 }
 
 BOOL WorkOnCommand(LPTSTR lpCmdLine){
@@ -381,7 +389,7 @@ BOOL WorkOnCommand(LPTSTR lpCmdLine){
 		switch (lpCmdLine[1]){
 		case 'i':
 			if (AddKeyBoard(&lpCmdLine[3]))
-				MessageBox(GetDesktopWindow(), "The keyboard has been successfully added.", "KeyMagic", MB_ICONINFORMATION | MB_OK);
+				MessageBox(GetDesktopWindow(), TEXT("The keyboard has been successfully added."), TEXT("KeyMagic"), MB_ICONINFORMATION | MB_OK);
 			return true;
 		case 'u':
 			HWND hPreHandle = FindWindow(NULL, szTitle);
@@ -398,34 +406,34 @@ BOOL WorkOnCommand(LPTSTR lpCmdLine){
 	return false;
 }
 
-BOOL AddKeyBoard(char* lpKBPath){
+BOOL AddKeyBoard(TCHAR* lpKBPath){
 
 	if (bAdmin)
 		MessageBox (GetDesktopWindow(),
-			"Sorry! The Keyboard cannot be added.\n"
-			"Please turn off UAC or run Keymagic as an Administrator.",
-			"Keymagic", MB_OK | MB_ICONEXCLAMATION);
+			TEXT("Sorry! The Keyboard cannot be added.\n")
+			TEXT("Please turn off UAC or run Keymagic as an Administrator."),
+			TEXT("Keymagic"), MB_OK | MB_ICONEXCLAMATION);
 
-	char lpPath[MAX_PATH];
-	char lpName[MAX_PATH];
-	char szKBPath[MAX_PATH];
-	char szKBP[] = "KeyBoardPaths";
-	char szMD[] = "MenuDisplays";
-	char szSC[] = "ShortCuts";
+	TCHAR lpPath[MAX_PATH];
+	TCHAR lpName[MAX_PATH];
+	TCHAR szKBPath[MAX_PATH];
+	TCHAR szKBP[] = TEXT("KeyBoardPaths");
+	TCHAR szMD[] = TEXT("MenuDisplays");
+	TCHAR szSC[] = TEXT("ShortCuts");
 	
 	GetFileTitle(lpKBPath, lpName, MAX_PATH);
 
 	if (lpName [lstrlen(lpName)-4] != '.')
-		lstrcat(lpName, ".km2");
+		lstrcat(lpName, TEXT(".km2"));
 
-	wsprintf(lpPath, "KeyBoards\\%s", lpName);
+	wsprintf(lpPath, TEXT("KeyBoards\\%s"), lpName);
 
 	lpName [lstrlen(lpName)-4] = NULL;
 
 	//if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath))
 	//	return false;
 
-	lstrcpy(szKBPath, szCurDir);
+	lstrcpy(szKBPath, wcCurDir);
 
 	for (int i=lstrlen(szKBPath); szKBPath[i] != '\\'; i--){
 		szKBPath[i] = NULL;
@@ -434,24 +442,33 @@ BOOL AddKeyBoard(char* lpKBPath){
 			break;
 		}
 	}
-	//PathAppend(szKBPath, "KeyMagic");
+	//PathAppend(szKBPath, TEXT("KeyMagic"));
 	PathAppend(szKBPath, lpPath);
 
 	if (!CopyFile(lpKBPath, szKBPath, false)){
-		MessageBox(GetDesktopWindow(), "File copying fail!", szKeymagic, MB_ICONERROR);
+		MessageBox(GetDesktopWindow(), TEXT("File copying fail!"), szKeymagic, MB_ICONERROR);
 		return false;
 	}
 
-	if (!WritePrivateProfileString(szKBP, lpName, lpPath, szINIFile)){
+	if (!WritePrivateProfileString(szKBP, lpName, lpPath, szINIFile))
 		return false;
-	}
 
-	if (!WritePrivateProfileString(szMD, lpName, lpName, szINIFile)){
+	if (!WritePrivateProfileString(szMD, lpName, lpName, szINIFile))
 		return false;
-	}
-	if (!WritePrivateProfileString(szSC, lpName, "0", szINIFile)){
+	
+	if (!WritePrivateProfileString(szSC, lpName, TEXT("0"), szINIFile))
 		return false;
-	}
 
 	return true;
+}
+
+HANDLE LoadFontFromRes(LPCWSTR ResName){
+	LOGFONT lf;
+	lstrcpy(lf.lfFaceName, TEXT("Parabaik"));
+	HRSRC hRES = FindResource(0,ResName,RT_RCDATA);
+	if (!hRES)
+		return 0;
+	LPVOID lRES = LockResource(LoadResource(0,hRES));
+	DWORD installed = 0;
+	return AddFontMemResourceEx(lRES, SizeofResource(0,hRES), 0, &installed);
 }

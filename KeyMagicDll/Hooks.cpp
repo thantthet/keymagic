@@ -36,11 +36,15 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 		if (!GetFocus())
 			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 
-		// If ActiveWindow is Keymagic Application
-		if(GetActiveWindow() == hwndKWindows)
-			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
-
 		index = ShortCutCheck(wParam);
+
+		// If ActiveWindow is not Keymagic Application
+		for (hwndExc::iterator it = hwndExceptions.begin(); it != hwndExceptions.end(); it++){
+			if (GetFocus() == (HWND)*it){
+				index = -1;
+				break;
+			}
+		}
 
 		if (index >= 0){
 			if ( (ActiveIndex == index && isActive) || index == 0) {
@@ -51,11 +55,14 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 				//	LoadKeyboardLayout(KLID, KLF_ACTIVATE | KLF_SETFORPROCESS );
 			}
 			else {
-				isActive = true;
-				ActiveIndex = index;
-				LoadKeymapFile(ActiveIndex);
+				if (LoadKeymapFile(index)){
+					isActive = true;
+					ActiveIndex = index;
+					PostMessage(hwndKWindows, KM_GETFOCUS, ActiveIndex, 0);
+				} else {
+					PostMessage(hwndKWindows, KM_ERR_KBLOAD, index, 0);
+				}
 				InternalEditor.Restart();
-				PostMessage(hwndKWindows, KM_GETFOCUS, ActiveIndex, 0);
 				//GetKeyboardLayoutName(KLID);
 				//hkl = LoadKeyboardLayout("00000409", KLF_ACTIVATE | KLF_SETFORPROCESS);
 			}
@@ -75,7 +82,8 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 LRESULT CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
 
-	char Name[50];
+	TCHAR Name[50];
+	bool bSuccess = false;
 
 	if (nCode < 0)
 		return CallNextHookEx(hWndProcHook, nCode, wParam, lParam);
@@ -90,11 +98,11 @@ LRESULT CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 			if (cwp->hwnd == hwndKWindows)
 				break;
 
-			GetClassName(cwp->hwnd, (LPSTR)Name, 50);
+			GetClassName(cwp->hwnd, (LPTSTR)Name, 50);
 
-			if (!lstrcmp(Name,"Shell_TrayWnd"))
+			if (!lstrcmp(Name, TEXT("Shell_TrayWnd")))
 				break;
-			if (!lstrcmp(Name, "TrayNotifyWnd"))
+			if (!lstrcmp(Name, TEXT("TrayNotifyWnd")))
 				break;
 
 			PostMessage(hwndKWindows, KM_KILLFOCUS, 0,(LPARAM) cwp->hwnd);
@@ -108,11 +116,11 @@ LRESULT CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 			if (cwp->hwnd == hwndKWindows)
 				break;
 
-			GetClassName(cwp->hwnd, (LPSTR)Name, 50);
+			GetClassName(cwp->hwnd, (LPTSTR)Name, 50);
 			
-			if (!lstrcmp(Name,"Shell_TrayWnd"))
+			if (!lstrcmp(Name, TEXT("Shell_TrayWnd")))
 				break;
-			if (!lstrcmp(Name, "TrayNotifyWnd"))
+			if (!lstrcmp(Name, TEXT("TrayNotifyWnd")))
 				break;
 
 			if (isActive)
@@ -130,15 +138,25 @@ LRESULT CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 				isActive = false;
 				ActiveIndex = -1;
 			}
-			else
-			{
-				ActiveIndex = cwp->wParam;
-				LoadKeymapFile(ActiveIndex);
+			else{
+				bSuccess = LoadKeymapFile(cwp->wParam);
+				if (bSuccess){
+					ActiveIndex = cwp->wParam;
+					isActive = true;
+				} else {
+					if (ActiveIndex == -1)
+						isActive = false;
+					PostMessage(hwndKWindows, KM_ERR_KBLOAD, 0, 0);
+					PostMessage(hwndKWindows, KM_GETFOCUS, 0, (LPARAM) cwp->hwnd);
+				}
 				InternalEditor.Restart();
 			}
 		}
-		else
+		else {
+			isActive = false;
 			ActiveIndex = -1;
+			bSuccess = true;
+		}
 
 		break;
 

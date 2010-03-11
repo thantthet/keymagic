@@ -1,10 +1,10 @@
-#pragma once
-
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRT_NON_CONFORMING_SWPRINTFS
 
 #ifndef _GLOBAL_H_
 #define _GLOBAL_H_
+
+#pragma once
 
 #include <windows.h>
 #include <iostream>
@@ -175,5 +175,6 @@ extern void PrintLastError();
 extern structPREdef * getPreDef(emPreDef preDef);
 extern structPREdef * getPreDef(wchar_t * wcSrc, int length,  bool isName);
 
+typedef std::vector<HWND> hwndExc;
 
 #endif

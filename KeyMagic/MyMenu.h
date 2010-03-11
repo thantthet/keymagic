@@ -14,9 +14,22 @@
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <windows.h>
+#include <gdiplus.h>
 
-void CreateMyMenu(HWND hOwner,HMENU hMenu);
+#define CCH_MAXITEMTEXT 256
+
+// Structure associated with menu items 
+ 
+typedef struct tagMYITEM 
+{ 
+	Gdiplus::Bitmap Icon;
+    int   cchItemText;
+    TCHAR szItemText[1];
+} MYITEM, NEAR *PMYITEM, FAR *LPMYITEM;
+
+void CreateMyMenu(HMENU hMenu);
 void DestroyMyMenu(HMENU hMenu);
 void DrawMyMenu(LPDRAWITEMSTRUCT lpdis);
 void OnMenuMeasure(HWND hwnd, LPMEASUREITEMSTRUCT lpmis);
 INT_PTR CALLBACK MyMenuProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+bool GradientFillRoundRect(HDC hDC, RECT rcItem, int w, int h, DWORD rgb1, DWORD rgb2, DWORD rgb3, ULONG ulMode);

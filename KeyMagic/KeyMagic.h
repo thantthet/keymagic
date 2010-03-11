@@ -27,8 +27,10 @@
 #include <shellapi.h>
 #include <Commdlg.h>
 #include <gdiplus.h>
-
+#include <tchar.h>
 #include <vector>
+
+#include "../global/global.h"
 
 using namespace std;
 
@@ -42,42 +44,35 @@ using namespace std;
 #define KM_SETKBID KM_MESSAGE+1
 #define KM_KILLFOCUS KM_MESSAGE+2
 #define KM_GETFOCUS KM_MESSAGE+3
-#define KM_RESCAN KM_MESSAGE+3
-#define CCH_MAXITEMTEXT 256
+#define KM_RESCAN KM_MESSAGE+4
+#define KM_ERR_KBLOAD KM_MESSAGE+5
 #define MAX_LOADSTRING 100
 
-extern char szINIFile[MAX_PATH];
-extern char szCurDir[MAX_PATH];
+extern TCHAR szINIFile[MAX_PATH];
+extern TCHAR wcCurDir[MAX_PATH];
 
 extern void	GetKeyBoards();
 extern void	SetHook (HWND hwnd);
 
 struct KeyFileData{
 	bool isNew;
-	char Name[30];
-	char Display[30];
-	char Path[MAX_PATH];
+	TCHAR Name[30];
+	TCHAR Display[30];
+	TCHAR Path[MAX_PATH];
 	WORD wHotkey;
 };
 
 struct strDelete{
-	char Path[MAX_PATH];
+	TCHAR Path[MAX_PATH];
 };
-
-// Structure associated with menu items 
- 
-typedef struct tagMYITEM 
-{ 
-    int   cchItemText;
-    char  szItemText[1];
-} MYITEM, NEAR *PMYITEM, FAR *LPMYITEM;
 
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 void				SetHook (HWND hwnd);
 void				UnHook ();
-BOOL				AddKeyBoard(char* lpKBPath);
+BOOL				AddKeyBoard(TCHAR* lpKBPath);
 BOOL				WorkOnCommand(LPTSTR lpCmdLine);
 BOOL				IsAdmin();
+HANDLE				LoadFontFromRes(LPCWSTR ResName);
 
 extern BOOL bAdmin;
 
@@ -86,6 +81,8 @@ extern TCHAR szMS[];
 extern TCHAR szSC[];
 extern TCHAR szNeedRestart[];
 extern TCHAR szKeymagic[];
+TCHAR szError[];
+TCHAR szKBLoad_ERR[];
 
 extern HINSTANCE hInst;								// current instance
 extern TCHAR szTitle[MAX_LOADSTRING];					// The title bar text

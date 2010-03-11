@@ -56,7 +56,7 @@ typedef struct tagHookHandles
 //	short size_MatchPattern;
 //};
 
-void KEYMAGICDLL_API HookInit(HWND hWnd, HMODULE hMod, LPCSTR ParentPath, LPHookHandles Hooks);
+void KEYMAGICDLL_API HookInit(HWND hKWnd, hwndExc * hWnds, HMODULE hMod, LPCTSTR ParentPath, LPHookHandles Hooks);
 
 //bool	LoadAndMap(int Index);
 //void	CloseMapping();

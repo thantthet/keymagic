@@ -25,11 +25,22 @@ public:
 		scan();
 	}
 
+	lexscanner::lexscanner(const wchar_t * source){
+		setSource(source);
+	}
+
 	void lexscanner::setScript(script * s_input)
 	{
 		scpt = s_input;
 		scan();
 	}
+
+	void lexscanner::setSource(const wchar_t * source)
+	{
+		scpt.loadSource(source);
+		scan();
+	}
+
 
 	vector<structToken> getTokens()
 	{
@@ -72,10 +83,10 @@ private:
 
 			scannedIndex++;
 
-			if (scpt.wCharAt(scannedIndex) == '\r' || scpt.wCharAt(scannedIndex) == '\n')
-				scannedIndex++;
+			//if (scpt.wCharAt(scannedIndex) == '\r' || scpt.wCharAt(scannedIndex) == '\n')
+			//	scannedIndex++;
 
-			isNewLine(&scannedIndex);
+			//isNewLine(&scannedIndex);
 			*Index = scannedIndex;
 			return true;
 		}
@@ -89,8 +100,7 @@ private:
 
 		structPREdef * preDef;
 		
-		if (preDef = getPreDef(scpt.lpwStrAt(scannedIndex), length, true))
-		{
+		if (preDef = getPreDef(scpt.lpwStrAt(scannedIndex), length, true)){
 			kToken.iLength = 4;
 			kToken.iStartIndex = scannedIndex;
 			kToken.Type = T_PREDEFINED;
@@ -98,6 +108,7 @@ private:
 			tokens.push_back(kToken);
 			scannedIndex+=length;
 			*Index = scannedIndex;
+			DumpToken(L"New Object Assigned:", kToken);
 			return true;
 		}
 
@@ -106,27 +117,38 @@ private:
 
 	bool scan ()
 	{
-		int scannedIndex = 0, lineNum=1;
-
+		int scannedIndex = 0;//, lineNum=1;
 		bool noAdd = false;
 
-		while (scpt.wCharAt(scannedIndex) != EOS || !scpt.wCharAt(scannedIndex))
+		while (scpt.wCharAt(scannedIndex) != EOS)
 		{
 			structToken kToken;
-			vector<structToken>::iterator it;
-			vector<structToken>::reverse_iterator rit;
+			//vector<structToken>::iterator it;
+			//vector<structToken>::reverse_iterator rit;
 			int retlen;
 
-			if (isNewLine(&scannedIndex))
-			{
-				noAdd = false;
-				continue;
-			}
+			//if (isNewLine(&scannedIndex)){
+			//	noAdd = false;
+			//	continue;
+			//}
 
-			while (scpt.wCharAt(scannedIndex) == ' ' || scpt.wCharAt(scannedIndex) == '\t') {scannedIndex++; }
+			while (scpt.wCharAt(scannedIndex) == ' ' || 
+				scpt.wCharAt(scannedIndex) == '\t' || 
+				scpt.wCharAt(scannedIndex) == '\r') {scannedIndex++; }
 
 			switch (scpt.wCharAt(scannedIndex))
 			{
+			case '\n':
+				kToken.iLength = 1;
+				kToken.iStartIndex = scannedIndex;
+				kToken.Type = T_NEWLINE;
+				kToken.Value = L"\n";
+				tokens.push_back(kToken);
+				scannedIndex++;
+
+				DumpToken(L"New Object Assigned:", kToken);
+				noAdd=false;
+				break;
 			case '\\':
 				kToken.iLength = 1;
 				kToken.iStartIndex = scannedIndex;
@@ -138,7 +160,7 @@ private:
 
 				DumpToken(L"New Object Assigned:", kToken);
 				break;
-			case '\r':
+			/*case '\r':
 			case '\n':
 				kToken.iLength = 1;
 				kToken.iStartIndex = scannedIndex;
@@ -152,10 +174,9 @@ private:
 
 				if (scpt.wCharAt(scannedIndex) == '\r' || scpt.wCharAt(scannedIndex) == '\n')
 					scannedIndex++;
-				break;
+				break;*/
 			case '[':
-				if (scpt.wCharAt(scannedIndex+2) == ']')
-				{
+				if (scpt.wCharAt(scannedIndex+2) == ']'){
 					wchar_t* wModer = new wchar_t[2];
 					wModer[0]=scpt.wCharAt(scannedIndex+1);
 					wModer[1]=0;
@@ -168,8 +189,7 @@ private:
 
 					scannedIndex += 3;
 				}
-				else if (scpt.wCharAt(scannedIndex+3) == ']')
-				{
+				else if (scpt.wCharAt(scannedIndex+3) == ']'){
 					wchar_t* wModer = new wchar_t[3];
 					wModer[0]=scpt.wCharAt(scannedIndex+1);
 					wModer[1]=scpt.wCharAt(scannedIndex+2);
@@ -183,8 +203,7 @@ private:
 
 					scannedIndex += 4;
 				}
-				else
-				{
+				else{
 					Exit(0, L"ERROR: Parse error => Line: %d Pos: %d\n", scpt.getLineNum(scannedIndex+3), scpt.getPosLine(scannedIndex+3));
 				}
 				break;
@@ -192,8 +211,7 @@ private:
 				retlen = reference(scannedIndex);
 				if (retlen > 0)
 					scannedIndex += retlen;
-				else
-				{
+				else{
 					wchar_t * sEnd = WholeWord(scpt.lpwStrAt(scannedIndex+1));
 					if (sEnd == scpt.lpwStrAt(scannedIndex))
 						return false;
@@ -268,9 +286,7 @@ private:
 
 				break;
 			case '+':
-				Debug(L"+");
-				if (!noAdd)
-				{
+				if (!noAdd){
 					kToken.iLength = 1;
 					kToken.iStartIndex = scannedIndex;
 					kToken.Type = T_ADDOP;
@@ -280,8 +296,7 @@ private:
 					DumpToken(L"New Object Assigned:", kToken);
 					scannedIndex++;
 				}
-				else
-				{
+				else{
 					Exit(0, L"ERROR: Unexpected '%s' => Line: %d Pos: %d\n", wPlus, scpt.getLineNum(scannedIndex), scpt.getPosLine(scannedIndex));
 				}
 				break;
@@ -308,8 +323,7 @@ private:
 				scannedIndex++;
 				break;
 			case '=':
-				if (scpt.wCharAt(scannedIndex+1) == '>')
-				{
+				if (scpt.wCharAt(scannedIndex+1) == '>'){
 					kToken.iLength = 2;
 					kToken.iStartIndex = scannedIndex;
 					kToken.Type = T_PRINT;
@@ -318,8 +332,7 @@ private:
 
 					scannedIndex++;
 				}
-				else
-				{
+				else{
 					kToken.iLength = 1;
 					kToken.iStartIndex = scannedIndex;
 					kToken.Type = T_ASSIGN;
@@ -369,7 +382,6 @@ private:
 				break;
 			}
 		}
-
 		return true;
 	}
 

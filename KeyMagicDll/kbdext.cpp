@@ -11,6 +11,7 @@
 #include "kbdext.h"
 
 #include <stdio.h>
+#include <strsafe.h>
 
 typedef PKBDTABLES(CALLBACK* KbdLayerDescriptor)(VOID);
 
@@ -34,9 +35,9 @@ HINSTANCE loadKeyboardLayout()
 	HINSTANCE kbdLibrary;
 	KbdLayerDescriptor pKbdLayerDescriptor = NULL;
 
-	char layoutFile[MAX_PATH];
-	char systemDirectory[MAX_PATH];
-	char kbdLayoutFilePath[MAX_PATH];
+	TCHAR layoutFile[MAX_PATH];
+	TCHAR systemDirectory[MAX_PATH];
+	TCHAR kbdLayoutFilePath[MAX_PATH];
 
 	int i = 0;
 
@@ -45,7 +46,7 @@ HINSTANCE loadKeyboardLayout()
 		
 	GetSystemDirectory(systemDirectory, MAX_PATH);
 
-	sprintf_s(kbdLayoutFilePath, MAX_PATH, "%s\\%s", systemDirectory, layoutFile);
+	StringCchPrintf(kbdLayoutFilePath, MAX_PATH, TEXT("%s\\%s"), systemDirectory, layoutFile);
 
 	kbdLibrary = LoadLibrary(kbdLayoutFilePath);
 
@@ -158,7 +159,7 @@ UINT ScancodeToVirtualkey(UINT Scancode){
 	return charCount;
 }*/
 
-int getKeyboardLayoutFile(char* layoutFile, DWORD bufferSize)
+int getKeyboardLayoutFile(TCHAR* layoutFile, DWORD bufferSize)
 {
 	HKEY hKey;
 	DWORD varType = REG_SZ;
@@ -172,12 +173,12 @@ int getKeyboardLayoutFile(char* layoutFile, DWORD bufferSize)
 	//sprintf_s(kbdKeyPath, 51 + KL_NAMELENGTH,
 	//	"SYSTEM\\CurrentControlSet\\Control\\Keyboard Layouts\\%s", kbdName);
 
-	char kbdKeyPath[] = "SYSTEM\\CurrentControlSet\\Control\\Keyboard Layouts\\00000409";
+	TCHAR kbdKeyPath[] = TEXT("SYSTEM\\CurrentControlSet\\Control\\Keyboard Layouts\\00000409");
 
 	if(RegOpenKeyEx(HKEY_LOCAL_MACHINE, (LPCTSTR)kbdKeyPath, 0, KEY_QUERY_VALUE, &hKey) != ERROR_SUCCESS)
         	return -1;
 
-	if(RegQueryValueEx(hKey, "Layout File", NULL, &varType, (LPBYTE)layoutFile, &bufferSize) != ERROR_SUCCESS)
+	if(RegQueryValueEx(hKey, TEXT("Layout File"), NULL, &varType, (LPBYTE)layoutFile, &bufferSize) != ERROR_SUCCESS)
 		return -1;
 
 	RegCloseKey(hKey);

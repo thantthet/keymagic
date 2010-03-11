@@ -6,7 +6,8 @@ HHOOK hKeyHook = NULL;
 HHOOK hWndProcHook = NULL;
 HHOOK hGetMsgHook = NULL;
 HWND hwndKWindows = NULL;
-char szDir[1000] = {0};
+hwndExc hwndExceptions;
+TCHAR szDir[1000] = {0};
 #pragma data_seg()
 
 //Make sure that section can READ WRITE and SHARE
@@ -24,10 +25,8 @@ void extractCharClasses(const wchar_t * e, CHARCLASSES * cc)
 	int index = 0;
 	structCClass scc;
 
-	while (*e)
-	{
-		switch (*e++)
-		{
+	while (*e) {
+		switch (*e++) {
 		case '[':
 			if (!opened_square_bracket)
 			{
@@ -70,10 +69,8 @@ int estimate_length (const wchar_t * pattern)
 	int length = 0;
 	bool opened_square_bracket = false;
 
-	while (*pattern)
-	{
-		switch (*pattern++)
-		{
+	while (*pattern) {
+		switch (*pattern++) {
 		case '[':
 			if (!opened_square_bracket)
 			{
@@ -112,13 +109,11 @@ bool MakeLeftRules()
 
 	vtERs.clear();
 
-	for (RULES::iterator it = Rules->begin(); it != Rules->end(); it++)
-	{
+	for (RULES::iterator it = Rules->begin(); it != Rules->end(); it++){
 		std::wstring * str_in = new std::wstring;
 		VIRTUALKEYS * vks = new VIRTUALKEYS;
 		SWITCHES * sws = new SWITCHES;
-		if (makeRegex(str_in, vks, sws, it->strInRule, wcslen((wchar_t*)it->strInRule)))
-		{
+		if (makeRegex(str_in, vks, sws, it->strInRule, wcslen((wchar_t*)it->strInRule))){
 			structExpendedRule er;
 
 			er.match_pattern = str_in;
@@ -166,10 +161,8 @@ bool AppendVariableValue(int index, std::wstring * s)
 
 int findLastOpenBracket(std::wstring * s)
 {
-	for ( int rit = s->length() - 1; rit >= 0; rit-- )
-	{
-		if (s->at(rit) == '(')
-		{
+	for ( int rit = s->length() - 1; rit >= 0; rit-- ) {
+		if (s->at(rit) == '(') {
 			if (rit && s->at(rit-1) == '\\')
 				continue;
 
@@ -183,8 +176,7 @@ int getindextoreplace(int sub_index, boost::wcmatch matches, CHARCLASSES * cc)
 {
 	CHARCLASSES::iterator it;
 	for ( it=cc->begin() ; it < cc->end(); it++ )
-		if (it->idx == sub_index)
-		{
+		if (it->idx == sub_index) {
 			static boost::wregex e(L"\\\\(.)");
 			std::wstring ws = boost::regex_replace(std::wstring((*it).start, 1 + (*it).end - (*it).start ), e, std::wstring(L"$1"));
 			const wchar_t * w = wcschr( ws.c_str(), *matches[sub_index].first );
@@ -205,8 +197,7 @@ bool makeRegex(std::wstring * output_str,
 			   CHARCLASSES* cc)
 {
 
-	while (len > 0)
-	{
+	while (len > 0) {
 		short index, mod;
 		wchar_t dec[20];
 		size_t size;
@@ -215,8 +206,7 @@ bool makeRegex(std::wstring * output_str,
 		std::wstring wstemp;
 
 		len--;
-		switch (*raw_str++)
-		{
+		switch (*raw_str++) {
 		case opSWITCH:
 			if (matches){
 				InternalEditor.invertSwitch(*raw_str++), len--;
@@ -255,8 +245,7 @@ bool makeRegex(std::wstring * output_str,
 		case opMODIFIER:
 			mod = (short)*raw_str++; len--;
 
-			switch (mod)
-			{
+			switch (mod) {
 			case opANYOF:
 				if ((lastB = findLastOpenBracket(output_str)) != -1){
 					output_str->insert(lastB+1, 1, L'[');
@@ -323,8 +312,7 @@ bool makeRegex(std::wstring * output_str,
 
 			raw_str++, len--;
 
-			while(len--)
-			{
+			while(len--){
 				if (*raw_str++ != opPREDEFINED) { return false; };
 
 				preDef = getPreDef((emPreDef)*raw_str++);
@@ -340,7 +328,7 @@ bool makeRegex(std::wstring * output_str,
 
 bool LoadKeymapFile(int index)
 {
-	char szKBPath[MAX_PATH];
+	TCHAR szKBPath[MAX_PATH];
 
 	if (!GetKeyBoard(index, szKBPath))
 		return false;
@@ -356,13 +344,13 @@ bool LoadKeymapFile(int index)
 
 void GetShortCuts(){
 
-	char szINI[MAX_PATH]={0};
-	char szKBNames[MAX_PATH]={0};
-	char szKBP[] ="KeyBoardPaths";
-	char szSC[] ="ShortCuts";
+	TCHAR szINI[MAX_PATH]={0};
+	TCHAR szKBNames[MAX_PATH]={0};
+	TCHAR szKBP[] = TEXT("KeyBoardPaths");
+	TCHAR szSC[] = TEXT("ShortCuts");
 
-	lstrcpy(szINI,szDir);
-	lstrcat(szINI,"\\KeyMagic.ini");
+	lstrcpy(szINI, szDir);
+	lstrcat(szINI, TEXT("\\KeyMagic.ini"));
 
 	GetPrivateProfileString(szKBP, NULL, NULL, szKBNames, 500, szINI);
 
@@ -381,7 +369,7 @@ void GetShortCuts(){
 }
 
 
-void Logger(char* fmt, ...)
+void Logger(TCHAR* fmt, ...)
 {
 #ifdef DEBUG
 	char Memory[1024];
@@ -401,26 +389,25 @@ void Logger(char* fmt, ...)
 #endif
 }
 
-LPCSTR GetKeyBoard(UINT Index, char * szKBPath){
-	char szINI[MAX_PATH];
-	char szKBNames[500];
-	char szKBFile[MAX_PATH];
-	char szAllUser[MAX_PATH];
-	char szKBP[] = "KeyBoardPaths";
+LPCTSTR GetKeyBoard(UINT Index, TCHAR * szKBPath){
+	TCHAR szINI[MAX_PATH];
+	TCHAR szKBNames[500];
+	TCHAR szKBFile[MAX_PATH];
+	TCHAR szAllUser[MAX_PATH];
+	TCHAR szKBP[] = TEXT("KeyBoardPaths");
 
 	lstrcpy(szINI,szDir);
-	PathAppend(szINI, "KeyMagic.ini");
+	PathAppend(szINI, TEXT("KeyMagic.ini"));
 
-	GetPrivateProfileString(szKBP, NULL, NULL, (LPSTR)szKBNames, 500, szINI);
+	GetPrivateProfileString(szKBP, NULL, NULL, (LPTSTR)szKBNames, 500, szINI);
 
 	for (int i=0,Length = lstrlen(&szKBNames[i]),j=0; 
 		j <= Index;
 		i+=Length+1, j++, Length = lstrlen(&szKBNames[i])){
-			GetPrivateProfileString(szKBP, (LPCSTR)&szKBNames[i], NULL, (LPSTR)szKBFile, MAX_PATH, szINI);
+			GetPrivateProfileString(szKBP, (LPCTSTR)&szKBNames[i], NULL, (LPTSTR)szKBFile, MAX_PATH, szINI);
 	}
 
-	if (szKBFile[1] == ':')
-	{
+	if (szKBFile[1] == ':'){
 		lstrcpy(szKBPath, szKBFile);
 		return szKBPath;
 	}
@@ -449,27 +436,20 @@ UINT TranslateToUnicode (WORD *uVKey, LPBYTE GlobalKeyStates){
 
 	if (klf.layout.posBased==true && GetKeyboardLayout(0) != (HKL)0x04090409){
 		USvk = ScancodeToVirtualkey(ScanCode);
-		if (USvk != *uVKey){
+		if (USvk != *uVKey && USvk <= 255){
 			GlobalKeyStates[USvk] = KeyStates[USvk] = KeyStates[*uVKey];
 			GlobalKeyStates[*uVKey] = KeyStates[*uVKey] = 0x00;
 			*uVKey = USvk;
 		}
 	}else { USvk = *uVKey ; }
 
-	//int Return = ToAscii(*uVKey, ScanCode, KeyStates, (LPWORD)&TransedChar, 0);
 	int Return = ToUnicodeEx(*uVKey, ScanCode, KeyStates, &TransedChar, 1, 0, hkl);
-	//loadKeyboardLayout();
-	//WCHAR deadchar = 0;
-	//int Return = convertVirtualKeyToWChar(*uVKey, (PWCHAR)&TransedChar, (PWCHAR)&deadchar);
 
-
-	if (!Return)
-		return false;
+	if (!Return) return false;
 
 	if (TransedChar > 33 || TransedChar < 126)
 		*uVKey = TransedChar;
-	else
-		return false;
+	else {return false;}
 
 	return USvk;
 }

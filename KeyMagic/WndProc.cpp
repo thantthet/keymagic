@@ -23,11 +23,12 @@
 #include <errno.h>
 #include "DllUnload.h"
 #include "../global/global.h"
+#include "StrTypeFunc.h"
 
 using namespace std;
 
 //strDelete *szFileToDelete;
-vector<char*> szFileToDelete;
+vector<TCHAR*> szFileToDelete;
 //int cbFileToDelete = 0;
 int kbindex=-1;
 static HWND LastHWND;
@@ -43,7 +44,7 @@ HWND	hList, hPath,
 		hAdd, hRemove,
 		hDone, hCancel,
 		hApply, hPathChk,
-		hLogo, hBK,
+		//hLogo, hBK,
 		hgbKeyboard, hgbOption,
 		hgbHotkey, hgbDisplay,
 		hgbLocation;
@@ -67,12 +68,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case KM_GETFOCUS:
-		Debug(L"lParam(HWND)=0x%.8x, wParam=%d\n",lParam, wParam);
+		Debug(TEXT("lParam(HWND)=0x%.8x, wParam=%d\n"),lParam, wParam);
+		if (wParam == -1) wParam = 0;
 		CheckMenuRadioItem(hKeyMenu, IDKM_NORMAL,
 			KeyBoardNum + IDKM_ID , 
 			wParam + IDKM_NORMAL, 
 			MF_BYCOMMAND);
 		SendMessage((HWND)lParam, KM_RESCAN, 0, 0);
+		break;
+
+	case KM_ERR_KBLOAD:
+			ShowBallonTip(hWnd, szError, szKBLoad_ERR, NIIF_ERROR);
 		break;
 
 	case WM_CREATE:
@@ -97,7 +103,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_SHOWWINDOW:
-		ShowNotifyIcon(hWnd, "KeyMagic", MAKEINTRESOURCE(IDI_KEYMAGIC));
+		ShowNotifyIcon(hWnd, TEXT("KeyMagic"), MAKEINTRESOURCE(IDI_KEYMAGIC));
 		break;
 
 	case WM_COMMAND:
@@ -110,9 +116,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if (!bAdmin)
 			{
 				MessageBox (hWnd,
-					"Sorry! You do not have permission to change.\n"
-					"Please turn off UAC or run Keymagic as an Administrator.",
-					"Keymagic", MB_OK | MB_ICONEXCLAMATION);
+					TEXT("Sorry! You do not have permission to change.\n")
+					TEXT("Please turn off UAC or run Keymagic as an Administrator."),
+					TEXT("Keymagic"), MB_OK | MB_ICONEXCLAMATION);
 				break;
 			}
 
@@ -142,9 +148,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if (!bAdmin)
 			{
 				MessageBox (hWnd,
-					"Sorry! You do not have permission to change.\n"
-					"If you are on Windows Vista, turn off UAC or run Keymagic as an Administrator.",
-					"Keymagic", MB_OK | MB_ICONEXCLAMATION);
+					TEXT("Sorry! You do not have permission to change.\n")
+					TEXT("If you are on Windows Vista, turn off UAC or run Keymagic as an Administrator."),
+					TEXT("Keymagic"), MB_OK | MB_ICONEXCLAMATION);
 				break;
 			}
 
@@ -220,7 +226,7 @@ next:
 			break;
 
 		case IDC_ADD:
-			char szFileName[MAX_PATH];
+			TCHAR szFileName[MAX_PATH];
 			if (!OpenDialog(hWnd, szFileName, MAX_PATH))
 				break;
 
@@ -237,7 +243,7 @@ next:
 
 		case IDKM_NORMAL:
 
-			Debug(L"LastHWND=0x%.8x, wmId=%d, Active=%d\n", LastHWND, -1, false);
+			Debug(TEXT("LastHWND=0x%.8x, wmId=%d, Active=%d\n"), LastHWND, -1, false);
 			SendMessage(LastHWND, KM_SETKBID, -1, false);
 			CheckMenuRadioItem(hKeyMenu, IDKM_NORMAL,
 				KeyBoardNum + IDKM_ID, 
@@ -250,7 +256,7 @@ next:
 			if (wmId >= IDKM_ID && wmId <= IDKM_ID + KeyBoardNum)
 			{
 
-				Debug(L"LastHWND=0x%.8x, wmId=%d, Active=%d\n",LastHWND, wmId, true);
+				Debug(TEXT("LastHWND=0x%.8x, wmId=%d, Active=%d\n"),LastHWND, wmId, true);
 				SendMessage(LastHWND, KM_SETKBID, wmId - IDKM_NORMAL, true);
 
 				if (MF_CHECKED & GetMenuState(hKeyMenu, wmId, MF_BYCOMMAND))
@@ -274,8 +280,8 @@ next:
 			if (IsWindowVisible(hWnd))
 				break;
 			if (!bAdmin)
-				MessageBox(hWnd, "Attention: To save changes, please run Keymagic as an administration. "
-				"If not, any changes you have made will be unsaved.", "Keymagic", MB_OK | MB_ICONEXCLAMATION);
+				MessageBox(hWnd, TEXT("Attention: To save changes, please run Keymagic as an administration. ")
+				TEXT("If not, any changes you have made will be unsaved."), TEXT("Keymagic"), MB_OK | MB_ICONEXCLAMATION);
 			ShowWindow(hWnd, SW_SHOW);
 		}
 
@@ -288,21 +294,21 @@ next:
 
 		else if (lParam==WM_RBUTTONDOWN) {
 			hMenu = CreatePopupMenu();
-			int isPortable = GetPrivateProfileInt("Settings", "Portable", 0, szINIFile);
+			int isPortable = GetPrivateProfileInt(TEXT("Settings"), TEXT("Portable"), 0, szINIFile);
 
-			AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_MANAGE, "Manage &Keyboards");
+			AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_MANAGE, TEXT("Manage &Keyboards"));
 			if (!isPortable)
-				AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_STARTUP, "&Run at Startup");
-			AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_ABOUT, "&About");
-			AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_EXIT, "E&xit");
-			CreateMyMenu(hWnd, hMenu);
+				AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_STARTUP, TEXT("&Run at Startup"));
+			AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_ABOUT, TEXT("&About"));
+			AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_EXIT, TEXT("E&xit"));
+			CreateMyMenu(hMenu);
 
 			if (!isPortable){
-				StartupFlag = GetPrivateProfileInt("Settings", "Startup", 0, szINIFile);
+				StartupFlag = GetPrivateProfileInt(TEXT("Settings"), TEXT("Startup"), 0, szINIFile);
 				StartupFlag ? CheckMenuItem(hMenu, 102, MF_CHECKED) : CheckMenuItem(hMenu, 102, MF_UNCHECKED);
 			}
 			else{
-				WritePrivateProfileString("Settings", "Startup", "0", szINIFile);
+				WritePrivateProfileString(TEXT("Settings"), TEXT("Startup"), TEXT("0"), szINIFile);
 				SetStartup(false);
 			}
 
@@ -315,12 +321,7 @@ next:
 			switch (CMD_RETURN){
 				case RMCMD_EXIT:
 					UnHook();
-					NOTIFYICONDATA nid;
-					ZeroMemory(&nid, sizeof(nid));
-					nid.cbSize = sizeof(NOTIFYICONDATA);
-					nid.hWnd = hWnd;
- 					nid.uID = TRAY_ID;
-					Shell_NotifyIcon(NIM_DELETE, &nid);
+					DeleteNotifyIcon(hWnd);
 					DestroyMyMenu(hKeyMenu);
 					DeleteDlgData(hWnd);
 					EndDialog(hWnd, 0);
@@ -331,8 +332,8 @@ next:
 					if (IsWindowVisible(hWnd))
 						break;
 					if (!bAdmin)
-						MessageBox(hWnd, "Attention: To save changes, please run Keymagic as an administration. "
-						"If not, any changes you have made will be unsaved.", "Keymagic", MB_OK | MB_ICONEXCLAMATION);
+						MessageBox(hWnd, TEXT("Attention: To save changes, please run Keymagic as an administration. ")
+						TEXT("If not, any changes you have made will be unsaved."), TEXT("Keymagic"), MB_OK | MB_ICONEXCLAMATION);
 					ShowWindow(hWnd, SW_SHOW);
 					break;
 				case RMCMD_STARTUP:
@@ -343,9 +344,9 @@ next:
 					}
 					else
 					MessageBox (hWnd,
-						"Sorry! You do not have permission to change.\n"
-						"Please turn off UAC or run Keymagic as an Administrator.",
-						"Keymagic", MB_OK | MB_ICONEXCLAMATION);
+						TEXT("Sorry! You do not have permission to change.\n")
+						TEXT("Please turn off UAC or run Keymagic as an Administrator."),
+						TEXT("Keymagic"), MB_OK | MB_ICONEXCLAMATION);
 					break;
 				case RMCMD_ABOUT:
 					DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
@@ -357,8 +358,10 @@ next:
 		}
 		break;
 
+	case WM_CTLCOLOREDIT:
+		return (INT_PTR)GetSysColorBrush(COLOR_WINDOW);
 	case WM_CTLCOLORSTATIC:
-		//SetBkColor((HDC)wParam, RGB(236, 244, 255));
+	//	SetBkColor((HDC)wParam, RGB(236, 244, 255));
 		return (INT_PTR)CreateSolidBrush(RGB(236, 244, 255));
 
 	case WM_MEASUREITEM:
@@ -385,8 +388,7 @@ next:
 	case WM_CLOSE:
 		restart(hWnd);
 		ShowWindow(hWnd, SW_HIDE);
-		if (hThread)
-		{
+		if (hThread){
 			PostThreadMessage(ThreadID, WM_QUIT, 0, 0);
 			TerminateThread(hThread, 0);
 			hThread=0;
@@ -402,7 +404,7 @@ void OnCreate(HWND hWnd, LPCREATESTRUCT lpcs)
 	//BOOL bIsWindowsVistaLater;
 	HMENU hMenu;
 	KeyFileData *Data;
-	char szKBPath[MAX_PATH];
+	TCHAR szKBPath[MAX_PATH];
 
 	//ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
     //osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
@@ -410,7 +412,7 @@ void OnCreate(HWND hWnd, LPCREATESTRUCT lpcs)
     //GetVersionEx(&osvi);
     //bIsWindowsVistaLater = osvi.dwMajorVersion >= 6;
 
-	LoadIcon(hInst, (LPCSTR)IDI_KEYMAGIC);
+	LoadIcon(hInst, (LPCTSTR)IDI_KEYMAGIC);
 
 	if (!GetModuleFileName(GetModuleHandle(NULL), szKBPath, MAX_PATH))
 		goto next;
@@ -424,25 +426,23 @@ void OnCreate(HWND hWnd, LPCREATESTRUCT lpcs)
 	}
 
 	CreateDirectory(szKBPath, NULL);
-	PathAppend(szKBPath, "Keyboards");
+	PathAppend(szKBPath, TEXT("Keyboards"));
 	CreateDirectory(szKBPath, NULL);
 next:
 	GetKeyBoards();
 
 	if (hKeyMenu){
-		ShowNotifyIcon(hWnd, "KeyMagic", MAKEINTRESOURCE(IDI_KEYMAGIC));
+		ShowNotifyIcon(hWnd, TEXT("KeyMagic"), MAKEINTRESOURCE(IDI_KEYMAGIC));
 		UpdateWindow(hWnd);
 	}
-
-	SetHook(hWnd);
 
 	SendMessage(hWnd,WM_SETICON, 1,(LPARAM)LoadIcon(hInst, MAKEINTRESOURCE(IDI_KEYMAGIC)));
 
 	hMenu = GetSystemMenu(hWnd, FALSE);
 
 	AppendMenu(hMenu, MF_SEPARATOR, 0, 0);
-	AppendMenu(hMenu, MF_BYCOMMAND, IDM_ABOUT, "&About");
-	CreateMyMenu(hWnd, hKeyMenu);
+	AppendMenu(hMenu, MF_BYCOMMAND, IDM_ABOUT, TEXT("&About"));
+	CreateMyMenu(hKeyMenu);
 
 	LOGFONT lf;
 	memset(&lf, 0, sizeof(lf));
@@ -452,48 +452,48 @@ next:
 	lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
 	lf.lfQuality = PROOF_QUALITY;
 	lf.lfPitchAndFamily = FF_DONTCARE;
-	lstrcpy(lf.lfFaceName, "Microsoft Sans Serif");
+	lstrcpy(lf.lfFaceName, TEXT("Parabaik"));
 
 	HFONT hf = CreateFontIndirect(&lf);
 
-	hgbKeyboard = CreateWindowEx(0, "Button", "Installed Keyboard",
+	hgbKeyboard = CreateWindowEx(0, TEXT("Button"), TEXT("Installed Keyboard"),
 		WS_VISIBLE | WS_CHILD | BS_GROUPBOX,
 		0,0,0,0, hWnd, (HMENU) 1, lpcs->hInstance, NULL);
 
 	SendMessage(hgbKeyboard, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	hgbOption = CreateWindowEx(0, "Button", "Options",
+	hgbOption = CreateWindowEx(0, TEXT("Button"), TEXT("Options"),
 		WS_VISIBLE | WS_CHILD | BS_GROUPBOX,
 		0,0,0,0, hWnd, (HMENU) 1, lpcs->hInstance, NULL);
 
 	SendMessage(hgbOption, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	hgbHotkey = CreateWindowEx(0, "Button", "Hotkey",
+	hgbHotkey = CreateWindowEx(0, TEXT("Button"), TEXT("Hotkey"),
 		WS_VISIBLE | WS_CHILD | BS_GROUPBOX,
 		0,0,0,0, hWnd, (HMENU) 1, lpcs->hInstance, NULL);
 
 	SendMessage(hgbHotkey, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	hgbDisplay = CreateWindowEx(0, "Button", "Menu Text",
+	hgbDisplay = CreateWindowEx(0, TEXT("Button"), TEXT("Menu Text"),
 		WS_VISIBLE | WS_CHILD | BS_GROUPBOX,
 		0,0,0,0, hWnd, (HMENU) 1, lpcs->hInstance, NULL);
 
 	SendMessage(hgbDisplay, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	hgbLocation = CreateWindowEx(0, "Button", "Keyboard Path",
+	hgbLocation = CreateWindowEx(0, TEXT("Button"), TEXT("Keyboard Path"),
 		WS_VISIBLE | WS_CHILD | BS_GROUPBOX,
 		0,0,0,0, hWnd, (HMENU) 1, lpcs->hInstance, NULL);
 
 	SendMessage(hgbLocation, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	hList = CreateWindowEx (0, "ListBox", NULL,
+	hList = CreateWindowEx (0, TEXT("ListBox"), NULL,
 		WS_VSCROLL | WS_BORDER | WS_CHILD | WS_VISIBLE | LBS_NOINTEGRALHEIGHT | LBS_NOTIFY ,
 		0, 0, 0, 0, hWnd, (HMENU)IDC_KEYBOARDS,
 		lpcs -> hInstance, NULL);
 
 	SendMessage(hList, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	hPath = CreateWindowEx (WS_EX_CLIENTEDGE, "Edit", NULL,
+	hPath = CreateWindowEx (WS_EX_CLIENTEDGE, TEXT("Edit"), NULL,
 		WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL | ES_AUTOVSCROLL,
 		0, 0, 0, 0, hWnd, (HMENU)IDC_PATH,
 		lpcs -> hInstance, NULL);
@@ -501,7 +501,7 @@ next:
 	SendMessage(hPath, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 	EnableWindow(hPath, false);
 
-	hDisplay = CreateWindowEx (WS_EX_CLIENTEDGE, "Edit", NULL,
+	hDisplay = CreateWindowEx (WS_EX_CLIENTEDGE, TEXT("Edit"), NULL,
 		WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL | ES_AUTOVSCROLL,
 		0, 0, 0, 0, hWnd, (HMENU)IDC_DISPLAY,
 		lpcs -> hInstance, NULL);
@@ -515,49 +515,49 @@ next:
 
 	SendMessage(hShortcut, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	hAdd = CreateWindowEx (0, "Button", "Add",
+	hAdd = CreateWindowEx (0, TEXT("Button"), TEXT("Add"),
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, (HMENU)IDC_ADD,
 		lpcs -> hInstance, NULL);
 
 	SendMessage(hAdd, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	hRemove = CreateWindowEx (0, "Button", "Remove",
+	hRemove = CreateWindowEx (0, TEXT("Button"), TEXT("Remove"),
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, (HMENU)IDC_REMOVE,
 		lpcs -> hInstance, NULL);
 
 	SendMessage(hRemove, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	hDone = CreateWindowEx (0,"Button", bAdmin ? "OK" : "(SI) OK",
+	hDone = CreateWindowEx (0,TEXT("Button"), bAdmin ? TEXT("OK") : TEXT("(SI) OK"),
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, (HMENU)IDC_DONE,
 		lpcs -> hInstance, NULL);
 
 	SendMessage(hDone, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	hCancel = CreateWindowEx (0, "Button", "Cancel",
+	hCancel = CreateWindowEx (0, TEXT("Button"), TEXT("Cancel"),
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, (HMENU)IDC_CANCEL,
 		lpcs -> hInstance, NULL);
 
 	SendMessage(hCancel, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	hApply = CreateWindowEx (0, "Button", bAdmin ? "Apply" : "(SI) Apply",
+	hApply = CreateWindowEx (0, TEXT("Button"), bAdmin ? TEXT("Apply") : TEXT("(SI) Apply"),
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 		0, 0, 0, 0, hWnd, (HMENU)IDC_APPLY,
 		lpcs -> hInstance, NULL);
 
 	SendMessage(hApply, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	hPathChk = CreateWindowEx (0, "Button", "Use from this path",
+	hPathChk = CreateWindowEx (0, TEXT("Button"), TEXT("Use from this path"),
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_CHECKBOX | BS_AUTOCHECKBOX,
 		0, 0, 0, 0, hWnd, (HMENU)IDC_DIR,
 		lpcs -> hInstance, NULL);
 
 	SendMessage(hPathChk, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	//hBK = CreateWindowEx (0, "Static", NULL,
+	//hBK = CreateWindowEx (0, TEXT("Static"), NULL,
 	//	WS_CHILD | WS_VISIBLE | SS_BITMAP | SS_REALSIZEIMAGE,
 	//	0, 0, 0, 0, hWnd, (HMENU)0,
 	//	lpcs -> hInstance, NULL);
@@ -567,11 +567,13 @@ next:
 	//	MAKEINTRESOURCE(IDB_BK), IMAGE_BITMAP, 0, 0, LR_DEFAULTSIZE));
 
 	Logo = new CGdiPlusBitmapResource;
-	Logo->Load(IDB_LOGO, "PNG", lpcs -> hInstance);
+	Logo->Load(IDB_LOGO, TEXT("PNG"), lpcs -> hInstance);
 
-	Bmpbk = new Gdiplus::Bitmap(lpcs -> hInstance, MAKEINTRESOURCEW(IDB_BK));
+	Bmpbk = new Gdiplus::Bitmap(lpcs -> hInstance, MAKEINTRESOURCE(IDB_BK));
 
 	UpdateDlgData(hWnd);
+
+	SetHook(hWnd);
 }
 
 DWORD WINAPI TWM (LPVOID lpParameter)
@@ -579,10 +581,10 @@ DWORD WINAPI TWM (LPVOID lpParameter)
 	PAINTSTRUCT ps;
 	MSG message;
 
-	TCHAR szTWM[] = "type with me....";
+	TCHAR szTWM[] = TEXT("type with me....");
 	int lnTWM = lstrlen(szTWM);
 
-	Sleep(1000);
+	//Sleep(1000);
 
 	HDC local_hdc_window = GetDC((HWND)lpParameter);
 	HDC local_hdc_text = CreateCompatibleDC(GetDC(0));
@@ -596,7 +598,7 @@ DWORD WINAPI TWM (LPVOID lpParameter)
 	lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
 	lf.lfQuality = PROOF_QUALITY;
 	lf.lfPitchAndFamily = FF_DONTCARE;
-	lstrcpy(lf.lfFaceName, "Microsoft Sans Serif");
+	lstrcpy(lf.lfFaceName, TEXT("Microsoft Sans Serif"));
 
 	HFONT hf = CreateFontIndirect(&lf);
 	SelectObject(local_hdc_text, hf);
@@ -607,24 +609,21 @@ DWORD WINAPI TWM (LPVOID lpParameter)
 	SetBkMode(local_hdc_text, TRANSPARENT);
 	SetTextColor(local_hdc_text, RGB(255,255,255));
 
-	restart:
+	//restart:
 
 	SelectObject(local_hdc_text, CreateCompatibleBitmap(local_hdc_window, size.cx, size.cy));
 
-	SelectObject(local_hdc_window_copy,CreateCompatibleBitmap(local_hdc_window, size.cx, size.cy));
+	SelectObject(local_hdc_window_copy, CreateCompatibleBitmap(local_hdc_window, size.cx, size.cy));
 	BitBlt(local_hdc_window_copy, 0,0, size.cx, size.cy, local_hdc_window, 210, 33, SRCCOPY);
 
 	loop:
-	for (txPos; txPos < lnTWM; txPos++)
-	{
+	for (txPos; txPos < lnTWM; txPos++){
 		BitBlt(local_hdc_text, 0, 0, size.cx,size.cy,local_hdc_window_copy, 0, 0, SRCCOPY);
 		TextOut(local_hdc_text, 0, 0, szTWM, txPos);
 		BitBlt(local_hdc_window, 210, 33, size.cx, size.cy, local_hdc_text, 0,0, SRCCOPY);
 
-		if (szTWM[txPos] != ' ')
-			Sleep(400);
-		else
-			Sleep(100);
+		if (szTWM[txPos] != ' ') Sleep(400);
+		else Sleep(100);
 
 		if (PeekMessage(&message, (HWND)-1, WM_QUIT, WM_QUIT, PM_REMOVE))
 			goto Exit;
@@ -637,8 +636,8 @@ DWORD WINAPI TWM (LPVOID lpParameter)
 
 	BitBlt(local_hdc_window, 210, 33, size.cx, size.cy, local_hdc_window_copy, 0,0, SRCCOPY);
 
-	ReleaseDC((HWND)lpParameter, local_hdc_text);
-	DeleteDC(local_hdc_window);
+	ReleaseDC((HWND)lpParameter, local_hdc_window);
+	DeleteDC(local_hdc_text);
 	DeleteDC(local_hdc_window_copy);
 
 	ExitThread(true);
@@ -650,19 +649,25 @@ VOID onPaint(HWND hWnd)
 	PAINTSTRUCT ps;
 	Gdiplus::Graphics*	pGraphics;
 
-	hdc = BeginPaint(hWnd, &ps);
-	pGraphics = new Gdiplus::Graphics(hdc);
+	//hdc = BeginPaint(hWnd, &ps);
+	pGraphics = new Gdiplus::Graphics(GetDC(hWnd));
+	pGraphics->FillRectangle(&Gdiplus::SolidBrush(Gdiplus::Color(236, 244, 255)), 0, 0, WndWidth, Bmpbk->GetHeight());
+
 	pGraphics->DrawImage(Bmpbk, 0, 0, WndWidth, Bmpbk->GetHeight());
 	pGraphics->DrawImage(*Logo, 0, 0, Logo->m_pBitmap->GetWidth(), Logo->m_pBitmap->GetHeight());
-	if (hThread)
-	{
+
+	pGraphics->~Graphics();
+	delete pGraphics;
+	
+	if (hThread){
 		PostThreadMessage(ThreadID, WM_QUIT, 0, 0);
 		TerminateThread(hThread, 0);
 		hThread=0;
 	}
 	
 	hThread = CreateThread(NULL, NULL, TWM, hWnd, 0, &ThreadID);
-	EndPaint(hWnd, &ps);
+
+	//EndPaint(hWnd, &ps);
 
 }
 
@@ -702,10 +707,10 @@ VOID OnSize(WPARAM wParam, LPARAM lParam)
 
 	ListWidth /= 6;
 
-	MoveWindow(hBK,
-		0, 0, LOWORD(lParam), 67, TRUE);
+	//MoveWindow(hBK,
+	//	0, 0, LOWORD(lParam), 67, TRUE);
 
-	InvalidateRect(hLogo, 0, TRUE);
+	//InvalidateRect(hLogo, 0, TRUE);
 
 	MoveWindow(hgbKeyboard,
 		LeftBorder,
@@ -834,7 +839,7 @@ VOID OnSize(WPARAM wParam, LPARAM lParam)
 
 BOOL UpdateDlgData(HWND hWnd){
 	KeyFileData *Data;
-	char szKBPath[MAX_PATH], szKBNames[500], szCurDir[MAX_PATH], szMenuDisplay[MAX_PATH], szShortCut[10];
+	TCHAR szKBPath[MAX_PATH], szKBNames[500], wcCurDir[MAX_PATH], szMenuDisplay[MAX_PATH], szShortCut[10];
 
 	if (!GetModuleFileName(GetModuleHandle(NULL), szKBPath, MAX_PATH))
 		return false;
@@ -847,7 +852,7 @@ BOOL UpdateDlgData(HWND hWnd){
 		}
 	}
 
-	GetPrivateProfileString(szKBP, NULL, NULL, (LPSTR)szKBNames, 500, szINIFile);
+	GetPrivateProfileString(szKBP, NULL, NULL, (LPTSTR)szKBNames, 500, szINIFile);
 
 	for (int i=0, j=0,Length = lstrlen(&szKBNames[i]);
 		Length > 0; 
@@ -885,7 +890,7 @@ void DeleteDlgData(HWND hWnd){
 
 void SetKbData(HWND hWnd){
 
-	char shortcut[10], szNormal[] = "Normal";
+	TCHAR shortcut[10], szNormal[] = TEXT("Normal");
 	KeyFileData *Data;
 	int count = SendMessage(hList, LB_GETCOUNT, 0, 0);
 
@@ -900,13 +905,13 @@ void SetKbData(HWND hWnd){
 
 		WritePrivateProfileString(szMS, Data->Name, Data->Display, szINIFile);
 
-		wsprintf(shortcut, "%d", Data->wHotkey);
+		wsprintf(shortcut, TEXT("%d"), Data->wHotkey);
 
 		WritePrivateProfileString(szSC, Data->Name, shortcut, szINIFile);
 	}
 }
 
-BOOL OpenDialog(HWND hwnd, char* szFileName,DWORD nMaxFile)
+BOOL OpenDialog(HWND hwnd, TCHAR* szFileName,DWORD nMaxFile)
 {
 	OPENFILENAME ofn = {0};
 
@@ -915,10 +920,10 @@ BOOL OpenDialog(HWND hwnd, char* szFileName,DWORD nMaxFile)
 	ofn.lStructSize = sizeof(ofn);
 	ofn.hwndOwner = hwnd;
 	ofn.hInstance = hInst;
-	ofn.lpstrFilter = "Keymap File(*.km2)\0*.km2\0\0";
+	ofn.lpstrFilter = TEXT("Keymap File(*.km2)\0*.km2\0\0");
 	ofn.lpstrFile = szFileName;
 	ofn.nMaxFile = nMaxFile;
-	ofn.lpstrTitle = "Open File...";
+	ofn.lpstrTitle = TEXT("Open File...");
 	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | 
 		OFN_LONGNAMES | OFN_HIDEREADONLY;
 
@@ -940,22 +945,22 @@ VOID restart (HWND hWnd){
 	SendMessage(hList, LB_SETSEL, 0, 0);
 
 	GetKeyBoards();
-	CreateMyMenu(hWnd, hKeyMenu);
+	CreateMyMenu(hKeyMenu);
 }
 
-BOOL AddKeyBoardToList(HWND hWnd,char* lpKBPath){
-	char lpPath[MAX_PATH];
-	char lpName[MAX_PATH];
-	char szKBPath[MAX_PATH];
+BOOL AddKeyBoardToList(HWND hWnd,TCHAR* lpKBPath){
+	TCHAR lpPath[MAX_PATH];
+	TCHAR lpName[MAX_PATH];
+	TCHAR szKBPath[MAX_PATH];
 
 	KeyFileData *Data;
 	
 	GetFileTitle(lpKBPath, lpName, MAX_PATH);
 
 	if (lpName [lstrlen(lpName)-4] != '.')
-		lstrcat(lpName, ".km2");
+		lstrcat(lpName, TEXT(".km2"));
 
-	wsprintf(lpPath, "KeyBoards\\%s", lpName);
+	wsprintf(lpPath, TEXT("KeyBoards\\%s"), lpName);
 
 	lpName [lstrlen(lpName)-4] = NULL;
 
@@ -975,13 +980,13 @@ BOOL AddKeyBoardToList(HWND hWnd,char* lpKBPath){
 		}
 	}
 
-	//PathAppend(szKBPath, "KeyMagic");
+	//PathAppend(szKBPath, TEXT("KeyMagic"));
 	PathAppend(szKBPath, lpPath);
 
 	if (lstrcmpi(lpKBPath, szKBPath))
 	{
 		if (!CopyFile(lpKBPath, szKBPath, false)){
-			if (IDNO == MessageBox(hWnd, "File copying fail! \n Do you want to use from current path?", szKeymagic, MB_ICONERROR | MB_YESNO))
+			if (IDNO == MessageBox(hWnd, TEXT("File copying fail! \n Do you want to use from current path?"), szKeymagic, MB_ICONERROR | MB_YESNO))
 				return false;
 			lstrcpy(lpPath, lpKBPath);
 		}
@@ -1017,10 +1022,10 @@ BOOL RemoveKeyBoard(){
 
 		//cbFileToDelete++;
 		//lstrcpy(szFileToDelete[cbFileToDelete].Path, Data->Path);
-		char * wcPath;
-		int wclen = strlen(Data->Path);
-		wcPath = new char[wclen];
-		strcpy(wcPath, Data->Path);
+		TCHAR * wcPath;
+		int wclen = lstrlen(Data->Path);
+		wcPath = new TCHAR[wclen];
+		lstrcpy(wcPath, Data->Path);
 		szFileToDelete.push_back(wcPath);
 	}
 
@@ -1033,7 +1038,7 @@ BOOL RemoveKeyBoard(){
 }
 
 BOOL DeleteKeyFile(){
-	char szKBPath[MAX_PATH],szToDelete[MAX_PATH];
+	TCHAR szKBPath[MAX_PATH],szToDelete[MAX_PATH];
 
 	//if (!cbFileToDelete)
 	//	return false;
@@ -1041,7 +1046,7 @@ BOOL DeleteKeyFile(){
 
 	if (SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, SHGFP_TYPE_CURRENT, szKBPath)){
 		//cbFileToDelete=0;
-		error("SHGetFolderPath");
+		error(TEXT("SHGetFolderPath"));
 		return false;
 	}
 
@@ -1055,7 +1060,7 @@ BOOL DeleteKeyFile(){
 			break;
 		}
 	}
-	//PathAppend(szKBPath, "KeyMagic");
+	//PathAppend(szKBPath, TEXT("KeyMagic"));
 
 	//for (int i=1; i <= cbFileToDelete; i++){
 	//	lstrcpy(szToDelete, szKBPath);
@@ -1063,12 +1068,12 @@ BOOL DeleteKeyFile(){
 	//	DeleteFile(szToDelete);
 	//}
 
-	vector<char*>::iterator it;
+	vector<TCHAR*>::iterator it;
 
 	for ( it=szFileToDelete.begin() ; it < szFileToDelete.end(); it++ )
 	{
 		lstrcpy(szToDelete, szKBPath);
-		PathAppend(szToDelete, (LPCSTR)*it);
+		PathAppend(szToDelete, (LPCTSTR)*it);
 		DeleteFile(szToDelete);
 	}
 
@@ -1080,7 +1085,7 @@ BOOL DeleteKeyFile(){
 	return true;
 }
 
-VOID GetHotKey(WORD wHotkey, LPSTR ShortCutDisplay){
+VOID GetHotKey(WORD wHotkey, LPTSTR ShortCutDisplay){
 
 	BYTE *vkey, modkey;
 
@@ -1091,51 +1096,54 @@ VOID GetHotKey(WORD wHotkey, LPSTR ShortCutDisplay){
 	ShortCutDisplay[0] = NULL;
 
 	if (modkey & HOTKEYF_SHIFT){
-		lstrcat(ShortCutDisplay, "Shift + ");
+		lstrcat(ShortCutDisplay, TEXT("Shift+"));
 	}
 
 	if (modkey & HOTKEYF_CONTROL){
-		lstrcat(ShortCutDisplay, "Ctrl + ");
+		lstrcat(ShortCutDisplay, TEXT("Ctrl+"));
 	}
 
 	if (modkey & HOTKEYF_ALT){
-		lstrcat(ShortCutDisplay, "Alt + ");
+		lstrcat(ShortCutDisplay, TEXT("Alt+"));
 	}
 
 	vkey[1] = 0;
 
-	if (vkey[0] >= VK_F1 && vkey[0] <= VK_F12)
-	{
-		char FunctionKey[3];
+	if (vkey[0] >= VK_F1 && vkey[0] <= VK_F12){
+		TCHAR FunctionKey[3];
 		int Function = vkey[0] - 0x6F;
-		wsprintf(FunctionKey, "F%x", Function);
+		wsprintf(FunctionKey, TEXT("F%x"), Function);
 		lstrcat(ShortCutDisplay, FunctionKey);
 		return;
 	}
 
 	WORD TransedChar = MapVirtualKey(vkey[0], MAPVK_VK_TO_CHAR);
-
-	lstrcat(ShortCutDisplay, (LPCSTR)&TransedChar);
+	wsprintf(ShortCutDisplay,TEXT("%s%c"), ShortCutDisplay, TransedChar);
 }
 
-VOID error(LPCSTR lpszFunction) 
+VOID error(LPCTSTR lpszFunction) 
 {
-	int *Buffer;
+	TCHAR* Buffer;
 	//Get Last Error Code and Translate to text
-	FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | 
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | 
 		FORMAT_MESSAGE_FROM_SYSTEM, NULL, 
-			GetLastError(),LANG_NEUTRAL, (LPSTR)&Buffer, 0, NULL);
+			GetLastError(),LANG_NEUTRAL, Buffer, 0, NULL);
 	
 	//Show the error message box
-	MessageBoxA(NULL, (LPCSTR)Buffer, lpszFunction, MB_OK | MB_ICONHAND | MB_APPLMODAL);
+	MessageBox(NULL, Buffer, lpszFunction, MB_OK | MB_ICONHAND | MB_APPLMODAL);
 }
 
 VOID GetKeyBoards(){
 
-	char szMenuDisplay[MAX_PATH];
-	char szKBNames[500];
-	char szShortCut[20];
+	TCHAR szMenuDisplay[MAX_PATH];
+	TCHAR szKBNames[500];
+	TCHAR szShortCut[20];
 	WORD wHotKey;
+	MENUITEMINFO mii = {0};
+
+	mii.cbSize = sizeof(MENUITEMINFO) ;
+	mii.fMask = MIIM_STRING;
+	mii.fState = MFS_DEFAULT;
 
 	if (hKeyMenu)
 		DestroyMenu(hKeyMenu);
@@ -1144,24 +1152,26 @@ VOID GetKeyBoards(){
 	if (!hKeyMenu)
 		return;
 
-	GetPrivateProfileString(szKBP, NULL, NULL, (LPSTR)szKBNames, 500, szINIFile);
+	GetPrivateProfileStringW(szKBP, NULL, NULL, (LPTSTR)szKBNames, 500, szINIFile);
 
-	GetPrivateProfileString(szMS, &szKBNames[0], NULL, (LPSTR)szMenuDisplay, MAX_PATH, szINIFile);
+	GetPrivateProfileStringW(szMS, &szKBNames[0], NULL, (LPTSTR)szMenuDisplay, MAX_PATH, szINIFile);
 	wHotKey = GetPrivateProfileInt(szSC, &szKBNames[0], 0, szINIFile);
-	lstrcat(szMenuDisplay, "\t");
+	lstrcat(szMenuDisplay, TEXT("\t"));
 
 	GetHotKey(wHotKey, szShortCut);
 	lstrcat(szMenuDisplay, szShortCut);
 
 	AppendMenu(hKeyMenu, NULL, IDKM_NORMAL, szMenuDisplay);
+	//mii.dwItemData = (ULONG_PTR)szMenuDisplay;
+	//InsertMenuItem(hKeyMenu, IDKM_NORMAL, FALSE, &mii);
 	KeyBoardNum=0;
 	for (int i=lstrlen(&szKBNames[0])+1,Length = lstrlen(&szKBNames[i]);
 		Length > 0; 
 		i+=Length+1, Length = lstrlen(&szKBNames[i])){
-			GetPrivateProfileString(szMS, &szKBNames[i], NULL, szMenuDisplay, MAX_PATH, szINIFile);
-			wHotKey = GetPrivateProfileInt(szSC, &szKBNames[i], 0, szINIFile);
+			GetPrivateProfileStringW(szMS, &szKBNames[i], NULL, szMenuDisplay, MAX_PATH, szINIFile);
+			wHotKey = GetPrivateProfileIntW(szSC, &szKBNames[i], 0, szINIFile);
 
-			lstrcat(szMenuDisplay, "\t");
+			lstrcat(szMenuDisplay, TEXT("\t"));
 			GetHotKey(wHotKey, szShortCut);
 			lstrcat(szMenuDisplay, szShortCut);
 
@@ -1176,11 +1186,11 @@ VOID GetKeyBoards(){
 
 };
 
-BOOL Run(LPSTR lpszFileName, LPSTR lpszDirectory, LPSTR lpParameters)
+BOOL Run(LPTSTR lpszFileName, LPTSTR lpszDirectory, LPTSTR lpParameters)
 {
-    SHELLEXECUTEINFOA TempInfo = {0};
+    SHELLEXECUTEINFO TempInfo = {0};
 
-    TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
+    TempInfo.cbSize = sizeof(SHELLEXECUTEINFO);
 	TempInfo.nShow = SW_HIDE;
     TempInfo.fMask = 0;
     TempInfo.hwnd = NULL;
@@ -1189,7 +1199,7 @@ BOOL Run(LPSTR lpszFileName, LPSTR lpszDirectory, LPSTR lpParameters)
     TempInfo.lpDirectory = lpszDirectory;
     TempInfo.nShow = SW_HIDE;
 
-    BOOL bRet = ::ShellExecuteExA(&TempInfo);
+    BOOL bRet = ::ShellExecuteEx(&TempInfo);
 
     return bRet;
 }
@@ -1212,55 +1222,55 @@ VOID SetStartup(BOOL isEnable){
 		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, NULL, NULL, KEY_ALL_ACCESS, &hkHLM) != ERROR_SUCCESS)
 			return;
 
-		if (RegOpenKeyEx(hkHLM, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", NULL, KEY_ALL_ACCESS, &hkRun) != ERROR_SUCCESS)
+		if (RegOpenKeyEx(hkHLM, TEXT("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"), NULL, KEY_ALL_ACCESS, &hkRun) != ERROR_SUCCESS)
 			return;
 
 		if (!isEnable){
-			RegDeleteValue(hkRun, "Keymagic");
-			WritePrivateProfileString("Settings", "Startup", "0", szINIFile);
+			RegDeleteValue(hkRun, TEXT("Keymagic"));
+			WritePrivateProfileString(TEXT("Settings"), TEXT("Startup"), TEXT("0"), szINIFile);
 		}
 
 		else{
-			char FileName[MAX_PATH];
+			TCHAR FileName[MAX_PATH];
 			GetModuleFileName(hInst, FileName, MAX_PATH);
-			lstrcat(FileName, " -s");
-			RegSetValueEx(hkRun, "Keymagic", NULL, REG_SZ, (BYTE*)FileName, lstrlen(FileName));
-			WritePrivateProfileString("Settings", "Startup", "1", szINIFile);
+			lstrcat(FileName, TEXT(" -s"));
+			RegSetValueEx(hkRun, TEXT("Keymagic"), NULL, REG_SZ, (BYTE*)FileName, lstrlen(FileName));
+			WritePrivateProfileString(TEXT("Settings"), TEXT("Startup"), TEXT("1"), szINIFile);
 		}
 		RegCloseKey(hkRun);
 		RegCloseKey(hkHLM);
 	}
 	else {
-		char TaskScheduler[MAX_PATH];
-		PROCESS_INFORMATION pi;
+		TCHAR TaskScheduler[MAX_PATH];
+		/*PROCESS_INFORMATION pi;
 		STARTUPINFO si;
 
 		ZeroMemory( &si, sizeof(si) );
 		si.cb = sizeof(si);
 		si.wShowWindow = SW_MINIMIZE;
-		ZeroMemory( &pi, sizeof(pi) );
+		ZeroMemory( &pi, sizeof(pi) );*/
 
-		lstrcpy(TaskScheduler, szCurDir);
-		lstrcat(TaskScheduler, "\\SetElevatedStartupTask.exe");
+		lstrcpy(TaskScheduler, wcCurDir);
+		lstrcat(TaskScheduler, TEXT("\\SetElevatedStartupTask.exe"));
 
 		if (!isEnable){
-			if (Run(TaskScheduler, szCurDir, "-d")){
-				WritePrivateProfileString("Settings", "Startup", "0", szINIFile);
+			if (Run(TaskScheduler, wcCurDir, TEXT("-d"))){
+				WritePrivateProfileString(TEXT("Settings"), TEXT("Startup"), TEXT("0"), szINIFile);
 			}
 		}
 
 		else {
-			char FileName[MAX_PATH];
+			TCHAR FileName[MAX_PATH];
 			GetModuleFileName(hInst, FileName, MAX_PATH);
 
-			if (Run(TaskScheduler, szCurDir, NULL))
-				WritePrivateProfileString("Settings", "Startup", "1", szINIFile);
+			if (Run(TaskScheduler, wcCurDir, NULL))
+				WritePrivateProfileString(TEXT("Settings"), TEXT("Startup"), TEXT("1"), szINIFile);
 		}
 	}
 }
 
-VOID ShowNotifyIcon(HWND hWnd, LPCSTR szTip, LPCSTR lpIconName){
-	NOTIFYICONDATA nid;
+VOID ShowNotifyIcon(HWND hWnd, LPCTSTR szTip, LPCTSTR lpIconName){
+	NOTIFYICONDATA nid = {0};
 	nid.cbSize = sizeof(NOTIFYICONDATA);
 	nid.hWnd = hWnd;
 	nid.uID = TRAY_ID;
@@ -1269,4 +1279,37 @@ VOID ShowNotifyIcon(HWND hWnd, LPCSTR szTip, LPCSTR lpIconName){
 	nid.hIcon = LoadIcon(hInst, MAKEINTRESOURCE(lpIconName));
 	lstrcpy(nid.szTip, szTip);
 	Shell_NotifyIcon(NIM_ADD, &nid);
+}
+
+VOID DeleteNotifyIcon(HWND hWnd){
+	NOTIFYICONDATA nid = {0};
+	nid.cbSize = sizeof(NOTIFYICONDATA);
+	nid.hWnd = hWnd;
+	nid.uID = TRAY_ID;
+	Shell_NotifyIcon(NIM_DELETE, &nid);
+}
+
+VOID ChangeNotifyIcon(HWND hWnd, HICON hIcon){
+	NOTIFYICONDATA nid = {0};
+	nid.cbSize = sizeof(NOTIFYICONDATA);
+	nid.hWnd = hWnd;
+	nid.uFlags = NIF_ICON;
+	nid.uID = TRAY_ID;
+	nid.hIcon = hIcon;
+	Shell_NotifyIcon(NIM_MODIFY, &nid);
+}
+
+VOID ShowBallonTip(HWND hWnd, LPCTSTR szInfoTitle, LPCTSTR szInfo, DWORD dwInfoFlags){
+	NOTIFYICONDATA nid = {0};
+	nid.cbSize = sizeof(NOTIFYICONDATA);
+	nid.hWnd = hWnd;
+	nid.uID = TRAY_ID;
+
+	nid.uFlags = NIF_INFO;
+	nid.uTimeout = 10;
+	nid.dwInfoFlags = dwInfoFlags;
+	wcscpy(nid.szInfo, szInfo);
+	wcscpy(nid.szInfoTitle, szInfoTitle);
+
+	Shell_NotifyIcon(NIM_MODIFY, &nid);
 }

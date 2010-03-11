@@ -17,7 +17,8 @@ public:
 	parser::parser(const wchar_t * in_s)
 	{
 		Script.loadSource(in_s);
-		Scanner.setScript(&Script);
+		//Scanner.setScript(&Script);
+		Scanner.setSource(in_s);
 		tokens = Scanner.getTokens();
 	}
 	parser::parser(script s)

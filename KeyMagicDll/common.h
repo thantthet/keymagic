@@ -17,7 +17,8 @@ extern HHOOK hKeyHook;
 extern HHOOK hWndProcHook;
 extern HHOOK hGetMsgHook;
 extern HWND hwndKWindows;
-extern char szDir[1000];
+extern hwndExc hwndExceptions;
+extern TCHAR szDir[1000];
 
 typedef std::vector<BYTE> VIRTUALKEYS;
 typedef std::vector<structRule> RULES;
@@ -53,8 +54,8 @@ extern SHORTCUTS vtSC;
 extern classInternalEditor InternalEditor;
 
 extern void GetShortCuts();
-extern void Logger(char* fmt, ...);
-extern LPCSTR GetKeyBoard(UINT Index, char * szKBPath);
+extern void Logger(TCHAR* fmt, ...);
+extern LPCTSTR GetKeyBoard(UINT Index, TCHAR * szKBPath);
 extern bool LoadKeymapFile(int index);
 extern UINT TranslateToUnicode (WORD *uVKey, LPBYTE GlobalKeyStates);
 extern Kmklf klf;

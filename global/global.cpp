@@ -262,10 +262,12 @@ void Debug(LPCWSTR fmt, ...)
     va_start(args, fmt);
 
     wvsprintfW(pBuffer, fmt, args);
+	wprintf(pBuffer);
 
     va_end(args);
 
 	OutputDebugStringW(pBuffer);
+	
 #endif
 }
 

@@ -18,6 +18,7 @@
 #include <string>
 #include "Keymagic.h"
 #include "MyButton.h"
+#include "StrTypeFunc.h"
 
 ButtonCr Up, Down;
 
@@ -41,16 +42,15 @@ void DrawMyButton(LPDRAWITEMSTRUCT lpdis)
 
 	RoundRect(lpdis->hDC, lpdis->rcItem.left, lpdis->rcItem.top, lpdis->rcItem.right, lpdis->rcItem.bottom, 5, 5);
 
-	char szText[30]={0};
+	TCHAR szText[30]={0};
 	GetWindowText(lpdis->hwndItem, szText, 30);
 
-	std::string strBtnText(szText);
-	int s = strBtnText.find("(SI)");
+	km_string strBtnText(szText);
+	int s = strBtnText.find(TEXT("(SI)"));
 
-	if (s != -1)
-	{
-		strBtnText.replace(s, 4, "   ");
-		strcpy(szText, strBtnText.c_str());
+	if (s != -1){
+		strBtnText.replace(s, 4, TEXT("   "));
+		lstrcpy(szText, strBtnText.c_str());
 		DrawIconEx(lpdis->hDC, 
 			lpdis->rcItem.left+10, 
 			lpdis->rcItem.top+2,
@@ -58,7 +58,7 @@ void DrawMyButton(LPDRAWITEMSTRUCT lpdis)
 			20, 20, NULL, NULL, DI_NORMAL | DI_COMPAT);
 	}
 
-	DrawText(lpdis->hDC,szText, strlen(szText),
+	DrawText(lpdis->hDC,szText, lstrlen(szText),
 		&lpdis->rcItem, DT_SINGLELINE|DT_VCENTER|DT_CENTER);
 
 	SetTextColor(lpdis->hDC, crOldColor);
