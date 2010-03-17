@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <fstream>
 #include <vector>
+#include <sstream>
 
 #include "../global/global.h"
 #include "keymap.h"
@@ -31,11 +32,11 @@ struct structRule{
 
 };
 
-class Kmklf
+class kmKLF
 {
 public:
 
-	Kmklf(){
+	kmKLF(){
 		pFile = NULL;
 		layout.autoBksp = false;
 		layout.eat = true;
@@ -43,50 +44,59 @@ public:
 		layout.posBased = true;
 	}
 
-	Kmklf::~Kmklf(){
+	kmKLF::~kmKLF(){
 		if (pFile)
 			fclose(pFile);
 	}
 
-	void add_rule(const wchar_t * in, const wchar_t * out)
+	void newDebugBreak(size_t idx)
 	{
-		wchar_t * in_rule_copy, * out_rule_copy;
-		size_t in_rule_length, out_rule_length;
-		structRule Rule;
-
-		in_rule_length = wcslen( in );
-		out_rule_length = wcslen( out );
-
-		in_rule_copy = new wchar_t [ in_rule_length+1 ];
-		out_rule_copy = new wchar_t [ out_rule_length+1 ];
-
-		wcscpy ( in_rule_copy, in );
-		wcscpy ( out_rule_copy, out );
-
-		Rule.strInRule = (WORD*)in_rule_copy;
-		Rule.strOutRule = (WORD*)out_rule_copy;
-		rxRules.push_back( Rule );
+		std::stringstream st;
+		st << idx << ",";
+		debugBreaks.append(st.str());
 	}
 
-	bool add_str(const wchar_t * str)
+	size_t newRule(const wchar_t * in, const wchar_t * out)
 	{
-		wchar_t * str_copy;
-		size_t  str_length;
+		wchar_t * inRuleCopy, * outRuleCopy;
+		size_t inRuleSize, outRuleSize;
+		structRule newRule;
 
-		str_length = wcslen(str);
+		inRuleSize = wcslen( in );
+		outRuleSize = wcslen( out );
 
-		str_copy = new wchar_t [ str_length+1 ];
+		inRuleCopy = new wchar_t [ inRuleSize+1 ];
+		outRuleCopy = new wchar_t [ outRuleSize+1 ];
 
-		wcscpy(str_copy, str);
+		wcscpy ( inRuleCopy, in );
+		wcscpy ( outRuleCopy, out );
 
-		if (find(str_copy) != -1)
+		newRule.strInRule = (WORD*)inRuleCopy;
+		newRule.strOutRule = (WORD*)outRuleCopy;
+		rxRules.push_back( newRule );
+
+		return rxRules.size();
+	}
+
+	bool newString(const wchar_t * str)
+	{
+		wchar_t * strCopy;
+		size_t  lenStr;
+
+		lenStr = wcslen(str);
+
+		strCopy = new wchar_t [ lenStr+1 ];
+
+		wcscpy(strCopy, str);
+
+		if (find(strCopy) != -1)
 			return false;
 
-		strStrings.push_back(str_copy);
+		strStrings.push_back(strCopy);
 		return true;
 	}
 
-	int is_exist(const wchar_t * str)
+	int searchInStrings(const wchar_t * str)
 	{
 		return find(str);
 	}
@@ -147,17 +157,17 @@ public:
 			short sLength;
 
 			fread(&sLength, sizeof(short), 1, hFile);
-			wchar_t * in_rule = new wchar_t[sLength+1];
-			in_rule[sLength]='\0';
-			fread(in_rule, sLength * sizeof(wchar_t), 1, hFile);
+			wchar_t * ruleBinaryIn = new wchar_t[sLength+1];
+			ruleBinaryIn[sLength]='\0';
+			fread(ruleBinaryIn, sLength * sizeof(wchar_t), 1, hFile);
 
 			fread(&sLength, sizeof(short), 1, hFile);
-			wchar_t * out_rule = new wchar_t[sLength+1];
-			out_rule[sLength]='\0';
-			fread(out_rule, sLength * sizeof(wchar_t), 1, hFile);
+			wchar_t * ruleBinaryOut = new wchar_t[sLength+1];
+			ruleBinaryOut[sLength]='\0';
+			fread(ruleBinaryOut, sLength * sizeof(wchar_t), 1, hFile);
 			
-			Rule.strInRule = (WORD*)in_rule;
-			Rule.strOutRule = (WORD*)out_rule;
+			Rule.strInRule = (WORD*)ruleBinaryIn;
+			Rule.strOutRule = (WORD*)ruleBinaryOut;
 
 			rxRules.push_back(Rule);
 		}
@@ -171,7 +181,7 @@ public:
 	{
 		FileHeader fh;
 
-		if (!create_file(szPath))
+		if (!createFile(szPath))
 			return false;
 
 		//magic bytes of
@@ -189,15 +199,15 @@ public:
 
 		fh.layout = layout;
 
-		file_put(&fh, sizeof(FileHeader));
+		filePut(&fh, sizeof(FileHeader));
 		
 		for (std::vector<wchar_t *>::iterator it = strStrings.begin();
 			it != strStrings.end();
 			it++)
 		{
 			size_t len = wcslen(*it);
-			file_put(&len, sizeof(short));
-			file_put(*it, len * sizeof(wchar_t));
+			filePut(&len, sizeof(short));
+			filePut(*it, len * sizeof(wchar_t));
 		}
 
 		for (std::vector<structRule>::iterator it = rxRules.begin();
@@ -205,12 +215,12 @@ public:
 			it++)
 		{
 			size_t inlen = wcslen ((wchar_t*)(*it).strInRule);
-			file_put(&inlen, sizeof(short));
-			file_put((*it).strInRule, inlen * sizeof(wchar_t));
+			filePut(&inlen, sizeof(short));
+			filePut((*it).strInRule, inlen * sizeof(wchar_t));
 
 			size_t outlen = wcslen ((wchar_t*)(*it).strOutRule);
-			file_put(&outlen, sizeof(short));
-			file_put((*it).strOutRule, outlen * sizeof(wchar_t));
+			filePut(&outlen, sizeof(short));
+			filePut((*it).strOutRule, outlen * sizeof(wchar_t));
 		}
 
 		fclose(pFile);
@@ -234,10 +244,11 @@ private:
 
 	std::vector<wchar_t * > strStrings;
 	std::vector<structRule> rxRules;
+	std::string debugBreaks;
 
 	FILE * pFile;
 
-	bool create_file(const wchar_t * szPath)
+	bool createFile(const wchar_t * szPath)
 	{
 
 		if (!pFile)
@@ -251,7 +262,7 @@ private:
 		return true;
 	}
 
-	bool file_put(void * buffer, size_t size)
+	bool filePut(void * buffer, size_t size)
 	{
 		if (pFile)
 			fwrite(buffer, 1, size, pFile);
@@ -269,7 +280,7 @@ private:
 		return -1;
 	}
 
-	int FileSize(const char* sFileName)
+	int fileSize(const char* sFileName)
 	{
 	  std::ifstream f;
 	  f.open(sFileName, std::ios_base::binary | std::ios_base::in);

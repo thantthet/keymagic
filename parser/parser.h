@@ -62,7 +62,7 @@ private:
 	map<wchar_t*, wchar_t*, ltwcstr> mpVariables;
 	//vector<wchar_t*> vars;
 	vector<structToken> tokens;
-	Kmklf kmklf;
+	kmKLF kmklf;
 	wstring LastError;
 
 	LRESULT checkToken ( int * objIndex, emType Type );

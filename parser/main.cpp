@@ -58,97 +58,97 @@ unsigned char UTF16_LE[2] = { 0xFF, 0xFE };
 unsigned char UTF16_BE[2] = { 0xFE, 0xFF };
 unsigned char UTF8[3] = { 0xEF, 0xBB, 0xBF };
 
-int _tmain(int argc, _TCHAR* argv[])
-{
-	int length;
-	int uni_length;
-
-	char * buffer;
-	wchar_t * uni_buffer;
-
-	if (argc < 3){
-		std::wcerr << L"Usage: " << argv[0] << L" <script file path> <output file path>";
-		return false;
-	}
-
-	wchar_t sz_curdir[MAX_PATH];
-	wchar_t sz_filein[MAX_PATH];
-	wchar_t sz_fileout[MAX_PATH];
-
-	GetCurrentDirectory(MAX_PATH,sz_curdir);
-	wcscpy(sz_filein, argv[1]);
-	wcscpy(sz_fileout, argv[2]);
-
-	if (PathIsRelative(sz_filein)){
-		wcscpy(sz_filein, sz_curdir);
-		PathAppend(sz_filein, argv[1]);
-	}
-	if (PathIsRelative(sz_fileout)){
-		wcscpy(sz_fileout, sz_curdir);
-		PathAppend(sz_fileout, argv[2]);
-	}
-
-	ifstream is;
-	is.open (sz_filein, ios::binary );
-	if (!is.is_open()){
-		cout << "Error opening file...";
-		return 0;
-	}
-
-	// get length of file:
-	is.seekg (0, ios::end);
-	length = is.tellg();
-	is.seekg (0, ios::beg);
-
-	// allocate memory:
-	buffer = new char [length];
-
-	// read data as a block:
-	is.read (buffer, length);
-	is.close();
-
-	if ( memcmp(buffer, UTF16_LE, sizeof(UTF16_LE))==0 ){
-		uni_length = (length-sizeof(UTF16_LE)) / sizeof(short);
-		uni_buffer = new wchar_t[uni_length+1];
-		memcpy(uni_buffer, &buffer[sizeof(UTF16_LE)], length-sizeof(UTF16_LE));
-	}
-
-	else if ( memcmp(buffer, UTF16_BE, sizeof(UTF16_BE))==0 ){
-		uni_length = (length-sizeof(UTF16_LE)) / sizeof(short);
-		uni_buffer = new wchar_t[uni_length+1];
-		memcpy(uni_buffer, &buffer[sizeof(UTF16_BE)], length-sizeof(UTF16_LE));
-
-		for (int i=0; i < uni_length; i++) { 
-			uni_buffer[i] = ((uni_buffer[i] & 0xFF00) >> 8) | ((uni_buffer[i] & 0x00FF) << 8) ;
-		}
-	}
-
-	else if ( memcmp(buffer, UTF8, sizeof(UTF8))==0 ){
-		uni_length = UTF8Length((wchar_t*)&buffer[sizeof(UTF8)], length-sizeof(UTF8));
-		uni_buffer = new wchar_t[uni_length+1];
-		UCS2FromUTF8(&buffer[sizeof(UTF8)], length-sizeof(UTF8), uni_buffer, uni_length); 
-	}
-
-	else{
-		uni_length = UTF8Length((wchar_t*)buffer, length);
-		uni_buffer = new wchar_t[uni_length+1];
-		UCS2FromUTF8(buffer, length, uni_buffer, uni_length); 
-	}
-
-	//uni_buffer[uni_length] = 0;
-	parser p(uni_buffer);
-	if (p.begin_parse()){
-		p.generate(sz_fileout);
-	}
-	else{
-		std::wcout << p.getLastError().c_str() << std::endl;
-	}
-	//Kmklf kmklf;
-	//kmklf.fromFile("C:\\test.bin");
-	//kmklf.toFile("C:\\test2.bin");
-	system("pause");
-
-//	delete[] buffer;
-//	delete[] uni_buffer;
-	return 0;
-}
+//int _tmain(int argc, _TCHAR* argv[])
+//{
+//	int length;
+//	int uni_length;
+//
+//	char * buffer;
+//	wchar_t * uni_buffer;
+//
+//	if (argc < 3){
+//		std::wcerr << L"Usage: " << argv[0] << L" <script file path> <output file path>";
+//		return false;
+//	}
+//
+//	wchar_t sz_curdir[MAX_PATH];
+//	wchar_t sz_filein[MAX_PATH];
+//	wchar_t sz_fileout[MAX_PATH];
+//
+//	GetCurrentDirectory(MAX_PATH,sz_curdir);
+//	wcscpy(sz_filein, argv[1]);
+//	wcscpy(sz_fileout, argv[2]);
+//
+//	if (PathIsRelative(sz_filein)){
+//		wcscpy(sz_filein, sz_curdir);
+//		PathAppend(sz_filein, argv[1]);
+//	}
+//	if (PathIsRelative(sz_fileout)){
+//		wcscpy(sz_fileout, sz_curdir);
+//		PathAppend(sz_fileout, argv[2]);
+//	}
+//
+//	ifstream is;
+//	is.open (sz_filein, ios::binary );
+//	if (!is.is_open()){
+//		cout << "Error opening file...";
+//		return 0;
+//	}
+//
+//	// get length of file:
+//	is.seekg (0, ios::end);
+//	length = is.tellg();
+//	is.seekg (0, ios::beg);
+//
+//	// allocate memory:
+//	buffer = new char [length];
+//
+//	// read data as a block:
+//	is.read (buffer, length);
+//	is.close();
+//
+//	if ( memcmp(buffer, UTF16_LE, sizeof(UTF16_LE))==0 ){
+//		uni_length = (length-sizeof(UTF16_LE)) / sizeof(short);
+//		uni_buffer = new wchar_t[uni_length+1];
+//		memcpy(uni_buffer, &buffer[sizeof(UTF16_LE)], length-sizeof(UTF16_LE));
+//	}
+//
+//	else if ( memcmp(buffer, UTF16_BE, sizeof(UTF16_BE))==0 ){
+//		uni_length = (length-sizeof(UTF16_LE)) / sizeof(short);
+//		uni_buffer = new wchar_t[uni_length+1];
+//		memcpy(uni_buffer, &buffer[sizeof(UTF16_BE)], length-sizeof(UTF16_LE));
+//
+//		for (int i=0; i < uni_length; i++) { 
+//			uni_buffer[i] = ((uni_buffer[i] & 0xFF00) >> 8) | ((uni_buffer[i] & 0x00FF) << 8) ;
+//		}
+//	}
+//
+//	else if ( memcmp(buffer, UTF8, sizeof(UTF8))==0 ){
+//		uni_length = UTF8Length((wchar_t*)&buffer[sizeof(UTF8)], length-sizeof(UTF8));
+//		uni_buffer = new wchar_t[uni_length+1];
+//		UCS2FromUTF8(&buffer[sizeof(UTF8)], length-sizeof(UTF8), uni_buffer, uni_length); 
+//	}
+//
+//	else{
+//		uni_length = UTF8Length((wchar_t*)buffer, length);
+//		uni_buffer = new wchar_t[uni_length+1];
+//		UCS2FromUTF8(buffer, length, uni_buffer, uni_length); 
+//	}
+//
+//	//uni_buffer[uni_length] = 0;
+//	parser p(uni_buffer);
+//	if (p.begin_parse()){
+//		p.generate(sz_fileout);
+//	}
+//	else{
+//		std::wcout << p.getLastError().c_str() << std::endl;
+//	}
+//	//kmKLF kmklf;
+//	//kmklf.fromFile("C:\\test.bin");
+//	//kmklf.toFile("C:\\test2.bin");
+//	system("pause");
+//
+////	delete[] buffer;
+////	delete[] uni_buffer;
+//	return 0;
+//}

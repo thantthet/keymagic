@@ -184,6 +184,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\demo.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\global\global.cpp"
 				>
 			</File>

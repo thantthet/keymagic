@@ -1,3 +1,4 @@
+#include <shlwapi.h>
 #include "parser.h"
 
 using namespace std;
@@ -148,7 +149,7 @@ void parser::setVar(wchar_t * varName, const wchar_t * varValue)
 	wchar_t * wsValue = new wchar_t [iLength+1];
 	wcscpy(wsValue, varValue);
 
-	kmklf.add_str(wsValue);
+	kmklf.newString(wsValue);
 	mpVariables[varName] = wsValue;
 }
 
@@ -217,10 +218,10 @@ int parser::getVar(const wchar_t * value)
 {
 #ifdef DEBUG
 	wchar_t wc_integer[2];
-	wsprintf(wc_integer, L"%d", kmklf.is_exist(value));
+	wsprintf(wc_integer, L"%d", kmklf.searchInStrings(value));
 	return (int) wc_integer[0];
 #endif
-	return kmklf.is_exist(value)+1;
+	return kmklf.searchInStrings(value)+1;
 }
 
 bool parser::combination(int * objIndex, wstring * outStr)
@@ -368,7 +369,15 @@ bool parser::rule(int * objIndex)
 		return false;
 	}
 
-	kmklf.add_rule(inStr.c_str(),outStr.c_str());
+	int pos = tokens.at(OriginalIndex).iStartIndex;
+	wchar_t * wcxStart = Script.lpwStrAt(pos);
+	int cchRange = StrStr(wcxStart, L"\n") - wcxStart;
+	wchar_t * prtDbgStr = StrStrNW(wcxStart, L"//@DebugBreak",cchRange);
+
+	int idxRule = kmklf.newRule(inStr.c_str(),outStr.c_str());
+
+	if (prtDbgStr)
+		kmklf.newDebugBreak(idxRule);
 
 	newline(objIndex);
 

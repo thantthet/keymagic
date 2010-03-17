@@ -480,12 +480,8 @@ private:
 		if (scpt.wCharAt(scannedIndex) == '/' && scpt.wCharAt(scannedIndex+1) == '/')
 		{
 			wchar_t * lineEnd = wcspbrk(scpt.lpwStrAt(scannedIndex), L"\r\n");
-			if (lineEnd)
-				(*index) = lineEnd - scpt.lpwStrAt(0);
-			else
-			{
-				(*index) = scpt.length();
-			}
+			if (lineEnd) (*index) = lineEnd - scpt.lpwStrAt(0);
+			else (*index) = scpt.length();
 			return true;
 		}
 		else if (scpt.wCharAt(scannedIndex) == '/' && scpt.wCharAt(scannedIndex+1) == '*')

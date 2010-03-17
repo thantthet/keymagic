@@ -58,7 +58,7 @@ extern void Logger(TCHAR* fmt, ...);
 extern LPCTSTR GetKeyBoard(UINT Index, TCHAR * szKBPath);
 extern bool LoadKeymapFile(int index);
 extern UINT TranslateToUnicode (WORD *uVKey, LPBYTE GlobalKeyStates);
-extern Kmklf klf;
+extern kmKLF klf;
 
 // add slash within character class
 static boost::wregex slash(L"[][?(){}*+?.\\-\\\\|]");

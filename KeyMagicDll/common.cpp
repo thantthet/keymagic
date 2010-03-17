@@ -16,7 +16,7 @@ TCHAR szDir[1000] = {0};
 SHORTCUTS vtSC;
 EXPENDEDRULES vtERs;
 classInternalEditor InternalEditor;
-Kmklf klf;
+kmKLF klf;
 HKL hkl;
 
 void extractCharClasses(const wchar_t * e, CHARCLASSES * cc)
