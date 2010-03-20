@@ -10,6 +10,7 @@
 #include <fstream>
 #include <vector>
 #include <sstream>
+#include <boost/algorithm/string.hpp>
 
 #include "../global/global.h"
 #include "keymap.h"
@@ -51,9 +52,42 @@ public:
 
 	void newDebugBreak(size_t idx)
 	{
-		std::stringstream st;
-		st << idx << ",";
-		debugBreaks.append(st.str());
+		debugBreaks.push_back(idx);
+	}
+
+	BOOL isDebugBreak(size_t idx)
+	{
+		std::list<int>::iterator it;
+		for ( it=debugBreaks.begin() ; it != debugBreaks.end(); it++ )
+			if (idx == *it)
+				return true;
+		return false;
+	}
+
+	const wchar_t* debugBreaksToString()
+	{
+		std::list<int>::iterator it;
+		std::wstringstream st ;
+
+		for ( it=debugBreaks.begin() ; it != debugBreaks.end(); it++ )
+			st << *it << L",";
+		st.get();
+		std::wstring * str = new std::wstring(st.str());
+		return str->c_str();
+	}
+
+	void debugBreaksFromString(const wchar_t * strIdx)
+	{
+		std::vector<std::wstring> idxs;
+		std::vector<std::wstring>::iterator it;
+
+		boost::split(idxs, strIdx, boost::is_any_of(TEXT(",")));
+
+		for ( it=idxs.begin() ; it != idxs.end(); it++ )
+			debugBreaks.push_back(_wtoi((*it).c_str()));
+
+		if (debugBreaks.back() == 0)
+			debugBreaks.pop_back();
 	}
 
 	size_t newRule(const wchar_t * in, const wchar_t * out)
@@ -84,9 +118,7 @@ public:
 		size_t  lenStr;
 
 		lenStr = wcslen(str);
-
 		strCopy = new wchar_t [ lenStr+1 ];
-
 		wcscpy(strCopy, str);
 
 		if (find(strCopy) != -1)
@@ -151,6 +183,8 @@ public:
 			strStrings.push_back(local_buf);
 		}
 
+		debugBreaksFromString(strStrings.back());
+
 		for (int i = 0; i < fh.shNumOfRules; i++)
 		{
 			structRule Rule;
@@ -181,6 +215,8 @@ public:
 	{
 		FileHeader fh;
 
+		strStrings.push_back(debugBreaksToString());
+
 		if (!createFile(szPath))
 			return false;
 
@@ -201,13 +237,13 @@ public:
 
 		filePut(&fh, sizeof(FileHeader));
 		
-		for (std::vector<wchar_t *>::iterator it = strStrings.begin();
+		for (std::vector<const wchar_t *>::iterator it = strStrings.begin();
 			it != strStrings.end();
 			it++)
 		{
 			size_t len = wcslen(*it);
 			filePut(&len, sizeof(short));
-			filePut(*it, len * sizeof(wchar_t));
+			filePut((void*)*it, len * sizeof(wchar_t));
 		}
 
 		for (std::vector<structRule>::iterator it = rxRules.begin();
@@ -233,7 +269,7 @@ public:
 		return &rxRules;
 	}
 
-	std::vector<wchar_t*> * getStrings()
+	std::vector<const wchar_t*> * getStrings()
 	{
 		return &strStrings;
 	}
@@ -242,9 +278,9 @@ public:
 
 private:
 
-	std::vector<wchar_t * > strStrings;
+	std::vector<const wchar_t * > strStrings;
 	std::vector<structRule> rxRules;
-	std::string debugBreaks;
+	std::list<int> debugBreaks;
 
 	FILE * pFile;
 

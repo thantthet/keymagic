@@ -371,8 +371,8 @@ bool parser::rule(int * objIndex)
 
 	int pos = tokens.at(OriginalIndex).iStartIndex;
 	wchar_t * wcxStart = Script.lpwStrAt(pos);
-	int cchRange = StrStr(wcxStart, L"\n") - wcxStart;
-	wchar_t * prtDbgStr = StrStrNW(wcxStart, L"//@DebugBreak",cchRange);
+	int cchRange = StrStr(wcxStart, TEXT("\n")) - wcxStart;
+	wchar_t * prtDbgStr = StrStrNW(wcxStart, TEXT("//@DebugBreak"), cchRange);
 
 	int idxRule = kmklf.newRule(inStr.c_str(),outStr.c_str());
 

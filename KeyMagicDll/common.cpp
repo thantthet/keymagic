@@ -136,12 +136,12 @@ bool MakeLeftRules()
 
 bool AppendVariableValue(int index, std::wstring * s)
 {
-	std::vector<wchar_t*> * vTstr = klf.getStrings();
+	std::vector<const wchar_t*> * vTstr = klf.getStrings();
 	
 	if (--index > vTstr->size())
 		return false;
 
-	wchar_t * str = vTstr->at(index);
+	const wchar_t * str = vTstr->at(index);
 	int len = wcslen(str);
 	if (!len)
 		return false;

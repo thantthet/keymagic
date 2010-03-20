@@ -7,6 +7,6 @@
 #include "common.h"
 
 bool ProcessInput(WORD wcInput, LPARAM lParam);
-bool MatchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStates, bool user_input);
+bool matchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStates, bool user_input);
 
 #endif

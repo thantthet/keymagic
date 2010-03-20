@@ -15,7 +15,7 @@ struct ModKeysState
 	bool CAPS;
 };
 
-static ModKeysState old_state;
+static ModKeysState mksOldState;
 
 struct InputRuleInfo
 {
@@ -28,7 +28,7 @@ struct InputRuleInfo
 	bool deleted;
 };
 
-void SendStrokes (std::wstring * s)//Send Keys Strokes
+void sendKeyStrokes (std::wstring * s)//Send Keys Strokes
 {
 	HWND hwnd = GetFocus();
 
@@ -62,7 +62,7 @@ void SendStrokes (std::wstring * s)//Send Keys Strokes
 
 }
 
-void backspace(int count)
+void sendBackspace(int count)
 {
 	if (!GetFocus() || count < 1)
 		return ;
@@ -96,7 +96,7 @@ void backspace(int count)
 	InternalEditor.Delete(count);
 }
 
-signed int get_match_len(const wchar_t * s1, const wchar_t * s2)
+signed int getMatchLength(const wchar_t * s1, const wchar_t * s2)
 {
 	int length = 0;
 
@@ -116,7 +116,7 @@ signed int get_match_len(const wchar_t * s1, const wchar_t * s2)
 	return length;
 }
 
-void SendKey(WORD wVk, DWORD dwFlags)
+void sendSingleKey(WORD wVk, DWORD dwFlags)
 {
 	INPUT ip;
 
@@ -130,7 +130,7 @@ void SendKey(WORD wVk, DWORD dwFlags)
 	SendInput(1, &ip, sizeof(INPUT));
 }
 
-bool get_output_and_send(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStates)
+bool getOutputAndSend(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStates)
 {
 	boost::wcmatch matches;
 
@@ -154,9 +154,9 @@ bool get_output_and_send(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStates)
 	if (!makeRegex(&str_out, &vks, &sws, ir_info->it->rule_it->strOutRule, len, false, &matches, &ir_info->it->cc))
 		return false;
 
-	SendKey(VK_CONTROL, KEYEVENTF_KEYUP);
-	SendKey(VK_MENU, KEYEVENTF_KEYUP);
-	//SendKey(VK_SHIFT, KEYEVENTF_KEYUP);
+	sendSingleKey(VK_CONTROL, KEYEVENTF_KEYUP);
+	sendSingleKey(VK_MENU, KEYEVENTF_KEYUP);
+	//sendSingleKey(VK_SHIFT, KEYEVENTF_KEYUP);
 
 	if (!str_out.length())
 	{
@@ -164,14 +164,14 @@ bool get_output_and_send(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStates)
 			// Delete recent added temporary input
 			InternalEditor.Delete();
 
-		backspace(wcslen(src));
+		sendBackspace(wcslen(src));
 
-		if (old_state.CTRL)
-			SendKey(VK_CONTROL, 0);
-		if (old_state.CTRL)
-			SendKey(VK_MENU, 0);
-		//if (old_state.SHIFT)
-		//	SendKey(VK_SHIFT, 0);
+		if (mksOldState.CTRL)
+			sendSingleKey(VK_CONTROL, 0);
+		if (mksOldState.CTRL)
+			sendSingleKey(VK_MENU, 0);
+		//if (mksOldState.SHIFT)
+		//	sendSingleKey(VK_SHIFT, 0);
 
 		return true;
 	}
@@ -196,20 +196,20 @@ bool get_output_and_send(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStates)
 	str_out.assign(replaced_str);
 
 	if (src_len){
-		int match_len = get_match_len(str_out.c_str(), src);
+		int match_len = getMatchLength(str_out.c_str(), src);
 
 		if (match_len < 0){
-			backspace(0 - match_len);
-			match_len = get_match_len(str_out.c_str(), src);
-			backspace(str_out.length() - match_len);
+			sendBackspace(0 - match_len);
+			match_len = getMatchLength(str_out.c_str(), src);
+			sendBackspace(str_out.length() - match_len);
 		}
 		else if (src_len > match_len){
-			backspace(src_len - match_len);
+			sendBackspace(src_len - match_len);
 		}
 		str_out.erase(0, match_len);
 	}
 
-	SendStrokes(&str_out);
+	sendKeyStrokes(&str_out);
 
 	if (str_out.length() > 0 && (str_out.at(0) < 0x20 || str_out.at(0) > 0x7F)){
 		// KeyUp match VKs
@@ -219,20 +219,20 @@ bool get_output_and_send(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStates)
 				KeyStates[*vk_it] = 0;
 		}
 		// Do match again
-		MatchRules(0, 0, KeyStates, false);
+		matchRules(0, 0, KeyStates, false);
 	}
 
-	if (old_state.CTRL)
-		SendKey(VK_CONTROL, 0);
-	if (old_state.ALT)
-		SendKey(VK_MENU, 0);
-	//if (old_state.SHIFT)
-	//	SendKey(VK_SHIFT, 0);
+	if (mksOldState.CTRL)
+		sendSingleKey(VK_CONTROL, 0);
+	if (mksOldState.ALT)
+		sendSingleKey(VK_MENU, 0);
+	//if (mksOldState.SHIFT)
+	//	sendSingleKey(VK_SHIFT, 0);
 
 	return true;
 }
 
-bool MatchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStates, bool user_input)
+bool matchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStates, bool user_input)
 {
 	InputRuleInfo ir_info;
 	bool have_match = false, vk_matched = true;
@@ -249,6 +249,8 @@ bool MatchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStates, bool user_input)
 //	for (RULES::iterator it = Rules.begin(); it != Rules.end(); it++)
 	for (EXPENDEDRULES::iterator it = vtERs.begin(); it != vtERs.end(); it++)
 	{
+		if ( klf.isDebugBreak(it - vtERs.begin()) & IsDebuggerPresent()){}
+			 //DebugBreak();
 		bool deleted = false;
 		vk_matched = false;
 
@@ -299,15 +301,15 @@ bool MatchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStates, bool user_input)
 		}
 
 		if (klf.layout.trackCaps ?
-			(it->vk->size() && ( (vk_matched==false) || (old_state.CTRL ^ mks.CTRL) || (old_state.ALT ^ mks.ALT) || ( old_state.SHIFT ^ old_state.CAPS)^ mks.SHIFT ) ):
-			(it->vk->size() && ( (vk_matched==false) || (old_state.CTRL ^ mks.CTRL) || (old_state.ALT ^ mks.ALT) || ( old_state.SHIFT ^ mks.SHIFT) ) )
+			(it->vk->size() && ( (vk_matched==false) || (mksOldState.CTRL ^ mks.CTRL) || (mksOldState.ALT ^ mks.ALT) || ( mksOldState.SHIFT ^ mksOldState.CAPS)^ mks.SHIFT ) ):
+			(it->vk->size() && ( (vk_matched==false) || (mksOldState.CTRL ^ mks.CTRL) || (mksOldState.ALT ^ mks.ALT) || ( mksOldState.SHIFT ^ mks.SHIFT) ) )
 				)
 				continue;
 		else if (it->vk->size() && wcInput){
 			InternalEditor.Delete();
 			deleted = true;
 		}
-		else if (user_input && (old_state.CTRL || old_state.ALT)){continue;}
+		else if (user_input && (mksOldState.CTRL || mksOldState.ALT)){continue;}
 
 		wchar_t * src = InternalEditor.GetTextBackward(it->estimated_length);
 		if (src) {// Is there enough length to do a match?
@@ -345,13 +347,13 @@ end_of_loop:;
 //		delete s_in;
 	}
 //
-	if ((old_state.CTRL ^ old_state.ALT)==false && wcInput > 0x20 && wcInput < 0x7F)
+	if ((mksOldState.CTRL ^ mksOldState.ALT)==false && wcInput > 0x20 && wcInput < 0x7F)
 		InternalEditor.setAllSwitchOff();
 
 	if (have_match == true){
 		if (ir_info.deleted == true && user_input == true && wcInput)
 			InternalEditor.Delete();
-		return get_output_and_send(&ir_info, wVk, KeyStates);
+		return getOutputAndSend(&ir_info, wVk, KeyStates);
 	}
 //
 	if (wcInput){
@@ -376,7 +378,7 @@ bool ProcessInput(WORD wVk, LPARAM lParam)
 		DontEatBackspace -= lParam & 0xFF;
 		if (DontEatBackspace < 0) // lParam is larger then DontEatBackspace
 		{ // Eat only previous DontEatBackspace count
-			InternalEditor.Delete (0 - DontEatBackspace); // And delete additional backspace (Hack for internal editor)
+			InternalEditor.Delete (0 - DontEatBackspace); // And delete additional sendBackspace (Hack for internal editor)
 			DontEatBackspace=0;
 		}
 		return false;
@@ -390,17 +392,17 @@ bool ProcessInput(WORD wVk, LPARAM lParam)
 	GetKeyboardState(GlobalKeyStates); // Get States
 
 	// Store mod keys to use it later
-	old_state.CTRL = GlobalKeyStates[VK_CONTROL] & 0x80;
-	old_state.ALT = GlobalKeyStates[VK_MENU] & 0x80;
-	old_state.SHIFT = GlobalKeyStates[VK_SHIFT] & 0x80;
-	old_state.CAPS = GlobalKeyStates[VK_CAPITAL] & 0x81;
+	mksOldState.CTRL = GlobalKeyStates[VK_CONTROL] & 0x80;
+	mksOldState.ALT = GlobalKeyStates[VK_MENU] & 0x80;
+	mksOldState.SHIFT = GlobalKeyStates[VK_SHIFT] & 0x80;
+	mksOldState.CAPS = GlobalKeyStates[VK_CAPITAL] & 0x81;
 
 	Debug(L"CTRL = %x ALT = %x\n", GlobalKeyStates[VK_CONTROL], GlobalKeyStates[VK_MENU]);
 
 	wchar_t wcInput = wVk;UINT usVk;
 	if (usVk = TranslateToUnicode((WORD*)&wcInput, GlobalKeyStates)) // Get Ascii Value
 	{ // If there is any ascii value
-		if (MatchRules(wcInput, usVk, GlobalKeyStates, true )) {// Match for the input
+		if (matchRules(wcInput, usVk, GlobalKeyStates, true )) {// Match for the input
 			// Found matched
 			return true; // Eaten
 		}
@@ -409,23 +411,23 @@ bool ProcessInput(WORD wVk, LPARAM lParam)
 			InternalEditor.Delete(lParam & 0xFF); // Delete from internal editor
 		}
 		else if (klf.layout.eat==true && //eat unused key
-			old_state.CTRL==false && old_state.ALT==false &&
+			mksOldState.CTRL==false && mksOldState.ALT==false &&
 			wcInput > 0x20 && wcInput < 0x7F){
 			return true;
 		}
-		else if (old_state.CTRL==false && old_state.ALT==false){
+		else if (mksOldState.CTRL==false && mksOldState.ALT==false){
 			InternalEditor.AddInput(wcInput); // Not matched? Just store the input
 			return false;
 		}
 	} else {
 		if (wVk != 0xe7) {// unicode input
-		if (MatchRules(NULL, wVk, GlobalKeyStates, true )) {// Match for the input
+		if (matchRules(NULL, wVk, GlobalKeyStates, true )) {// Match for the input
 			// Found matched
 			return true; // Eaten
 		}}
 	}
 	//If only one of these two keys are pressed
-	if (old_state.CTRL ^ old_state.ALT){
+	if (mksOldState.CTRL ^ mksOldState.ALT){
 		Debug(L"(isCTRL ^ isALT)\n");
 		InternalEditor.Restart();// restart the internal editor's buffer
 		return false;
