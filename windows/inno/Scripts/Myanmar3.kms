@@ -1,9 +1,10 @@
-// @Name = Myanmar3std
-// @FontFamily = Myanmar3
-// @Description = Unoffical Myanmar3 layout
-// @TrackCapsLock = true
-// @AutoBackspace = true
-// @EatUndefinedKeys = true
+// @Name = "Myanmar3std"
+// @FontFamily = "Myanmar3"
+// @Description = "Unoffical Myanmar3 layout"
+
+// @track_capslocks = "false"
+// @eat_all_unused_keys = "false"
+// @US_layout_based = "true"
 
 $baseK = 'qwert' + \
 		'yuiop' + \
@@ -13,7 +14,7 @@ $baseK = 'qwert' + \
 		"ZXCVBNM" + \
 		'!#@$%^' + \
 		'&*|' + \
-		'_\]' + \
+		'_\\]' + \
 		'`~' + \
 		'WERTYUI'
 
@@ -24,13 +25,13 @@ $baseU = u1006 + u1010 + u1014 + u1019 + u1021 + \
 		u103F + u100F + u1027 + u1017 + u1012 + u1013 + \
 		u1007 + u100C + u1003 + u1020 + u101A + u1009 + u1026 + \
 		u100D + u100B + u1052 + u1053 + u1054 + u1055 + \
-		u101B + u1002 + u1051 + \
-		u1035 + u104F + u1029 + \
+		u101B + U002A + u1051 + \
+		u005F + u104F + u1029 + \
 		u1050 + u100E + \
 		u101D + u1023 + u104E + u1024 + u104C + u1025 + u104D
 
-$addK = ',.]}<>'
-$addU = u104A + u104B + u1029 + u102A + u002C + u002E
+$addK = ',.]}<>:'
+$addU = u002C + u002E + u1029 + u102A + u104A + u104B + u1002
              
 $numK = '1234567890' 
 $numU = u1041 + u1042 + u1043 + u1044 + u1045 + \
@@ -116,7 +117,7 @@ u1037 + $ldiaK[*] => $ldiaU[$2] + $1
 u1036 + 'J'=> u1032 + u1036
 u1037 + $aaK[*] => $aaU[$2] + $1
 u1038 + $lDotK[*] => $lDotU[$2] + $1
-u103A + 'h' => u1037 + u103A
+//u103A + 'h' => u1037 + u103A
 
 $ldiaK[*] => $ldiaU[$1]
 $udia1K[*] => $udia1U[$1]  
