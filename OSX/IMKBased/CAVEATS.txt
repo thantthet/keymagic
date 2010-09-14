@@ -1,0 +1,9 @@
+Not supported (this is not a comprehensive list):
+
+* -[IMKInputController recognizedEvents:]
+* -[IMKInputController currentKeyboardLayout]
+
+You must implement -[IMKInputController handleEvent:client:] to handle 
+keyboard events.
+
+Also, there's no IMKCandidate.
