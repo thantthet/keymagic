@@ -1,14 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeyMagic", "KeyMagic\KeyMagic.vcproj", "{8E9E37BD-597F-4AFF-979E-73E634381881}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeyMagic", "windows\KeyMagic\KeyMagic.vcproj", "{8E9E37BD-597F-4AFF-979E-73E634381881}"
 	ProjectSection(ProjectDependencies) = postProject
 		{81F8275F-2C03-46D0-938D-FD91775E75BB} = {81F8275F-2C03-46D0-938D-FD91775E75BB}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeyMagicDll", "KeyMagicDll\KeyMagicDll.vcproj", "{81F8275F-2C03-46D0-938D-FD91775E75BB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeyMagicDll", "windows\KeyMagicDll\KeyMagicDll.vcproj", "{81F8275F-2C03-46D0-938D-FD91775E75BB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "parser", "parser\parser.vcproj", "{6E4BEF0C-2C1E-42B9-AC85-F96FEF1E3638}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "parser", "windows\parser\parser.vcproj", "{6E4BEF0C-2C1E-42B9-AC85-F96FEF1E3638}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "compiler", "compiler\compiler.vcproj", "{4CA9CD3D-2A10-4C4D-8487-12D57FBD7B76}"
 EndProject

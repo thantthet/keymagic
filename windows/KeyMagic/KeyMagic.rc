@@ -1,0 +1,242 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_KEYMAGIC            ICON                    "KeyMagic.ico"
+IDI_BSHIELD             ICON                    "Res\\shield.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+ACCLC ACCELERATORS
+BEGIN
+    "?",            IDM_ABOUT,              ASCII,  ALT
+    "/",            IDM_ABOUT,              ASCII,  ALT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 286, 218
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About Keymagic"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    ICON            IDI_KEYMAGIC,IDC_STATIC,7,15,21,20
+    LTEXT           "[PROGRAM TITLE]",IDC_TITLE,33,16,229,8,SS_NOPREFIX
+    DEFPUSHBUTTON   "OK",IDOK,229,197,50,14,WS_GROUP
+    LTEXT           "Complie Info",IDC_COMPLIE,7,203,94,8,WS_DISABLED
+    EDITTEXT        IDC_ATEXT,33,33,246,146,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL | WS_HSCROLL
+END
+
+IDD_MAINBOX DIALOGEX 0, 0, 317, 220
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Keymagic"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         130,IDC_STATIC,"Static",SS_BITMAP | SS_REALSIZEIMAGE,0,0,317,41
+    LISTBOX         IDC_KEYBOARDS,11,57,92,132,WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Added Keyboards",IDC_STATIC,6,45,103,168
+    GROUPBOX        "Hotkey",IDC_STATIC,119,60,184,31
+    GROUPBOX        "Menu Display Text",IDC_STATIC,119,101,184,33
+    GROUPBOX        "Location",IDC_STATIC,120,141,183,43
+    CONTROL         "&Cancel",IDC_CANCEL,"Button",BS_OWNERDRAW | WS_TABSTOP,189,193,49,14
+    CONTROL         "(SI)&OK",IDC_DONE,"Button",BS_OWNERDRAW | WS_TABSTOP,122,193,49,14
+    CONTROL         "(SI) &Apply",IDC_APPLY,"Button",BS_OWNERDRAW | WS_TABSTOP,255,193,49,14
+    EDITTEXT        IDC_DISPLAY,125,114,172,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PATH,125,165,172,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SHORTCUT,"msctls_hotkey32",WS_BORDER | WS_TABSTOP,126,72,171,14
+    GROUPBOX        "Options",IDC_STATIC,114,45,196,168
+    CONTROL         "Add New",IDC_ADD,"Button",BS_OWNERDRAW | WS_TABSTOP,12,193,44,15
+    CONTROL         "Remove",IDC_REMOVE,"Button",BS_OWNERDRAW | BS_CENTER | WS_TABSTOP,59,193,44,15
+    CONTROL         "Use from this path",IDC_DIR,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,125,152,166,10
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 279
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 211
+    END
+
+    IDD_MAINBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 6
+        RIGHTMARGIN, 310
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 213
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,3,1,0
+ PRODUCTVERSION 1,3,1,0
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "000004b0"
+        BEGIN
+            VALUE "CompanyName", "KeyMagic"
+            VALUE "FileDescription", "KeyMagic Program Manager"
+            VALUE "FileVersion", "1.3.1.0"
+            VALUE "InternalName", "KeyMagic"
+            VALUE "LegalCopyright", "Copyright (C) 2008-2010"
+            VALUE "OriginalFilename", "KeyMagic.exe"
+            VALUE "ProductName", "KeyMagic Input Customizer"
+            VALUE "ProductVersion", "1.3.1.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BK                  BITMAP                  "Res\\bk.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RCDATA
+//
+
+IDR_PARABAIK            RCDATA                  "Res\\Parabaik20080421.ttf"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_EN_TITLE            "KeyMagic 1.3"
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (Singapore) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENE)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_SINGAPORE
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// PNG
+//
+
+IDB_LOGO                PNG                     "Res\\key.png"
+#endif    // English (Singapore) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

@@ -1,0 +1,57 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="kEditor.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="LastFilePath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="RecentFiles" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DefaultFontName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Tahmoa</Value>
+    </Setting>
+    <Setting Name="DefaultFontSize" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="GlyphRangeFirst" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">32</Value>
+    </Setting>
+    <Setting Name="GlyphRangeLength" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">62</Value>
+    </Setting>
+    <Setting Name="forceDefaultEditor" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="StyleConfig" Type="System.String" Scope="User">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;Styles&gt;
+  &lt;Style index="1" fontName="Segoe UI" fontSize="8"
+  foreColor="FF2D2DFF" backColor="FFFFFFFF" bold="False"
+  italic="False" /&gt;
+  &lt;Style index="5" fontName="Verdana" fontSize="8"
+  foreColor="FF1E90FF" backColor="FFFFFFFF" bold="False"
+  italic="False" /&gt;
+  &lt;Style index="6" fontName="Verdana" fontSize="8"
+  foreColor="FFFF7F50" backColor="FFFFFFFF" bold="False"
+  italic="False" /&gt;
+  &lt;Style index="7" fontName="Arial" fontSize="8" foreColor="C4"
+  backColor="FFFFFFFF" bold="False" italic="False" /&gt;
+  &lt;Style index="8" fontName="Arial" fontSize="8" foreColor="C4"
+  backColor="FFFFFFFF" bold="False" italic="True" /&gt;
+  &lt;Style index="11" fontName="Verdana" fontSize="8"
+  foreColor="80C0" backColor="FFFFFFFF" bold="False"
+  italic="False" /&gt;
+  &lt;Style index="12" fontName="Verdana" fontSize="8"
+  foreColor="FF008000" backColor="FFFFFFFF" bold="False"
+  italic="True" /&gt;
+  &lt;Style index="13" fontName="Verdana" fontSize="8"
+  foreColor="FF008000" backColor="FFFFFFFF" bold="False"
+  italic="True" /&gt;
+  &lt;Style index="15" fontName="Verdana" fontSize="8"
+  foreColor="FF8000" backColor="FFFFFFFF" bold="False"
+  italic="False" /&gt;
+&lt;/Styles&gt;</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
