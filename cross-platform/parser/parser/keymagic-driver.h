@@ -189,6 +189,7 @@ public:
 	// Error handling.
 	void error (const yy::location& l, const std::string& m);
 	void error (const std::string& m);
+	void warn (const yy::location& l, const std::string& m);
 	
 	typedef struct Rule_ {
 		short* lhsRule;

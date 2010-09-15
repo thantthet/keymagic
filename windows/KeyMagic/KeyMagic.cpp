@@ -435,7 +435,7 @@ BOOL AddKeyBoard(TCHAR* lpKBPath){
 	if (lpName [lstrlen(lpName)-4] != '.')
 		lstrcat(lpName, TEXT(".km2"));
 
-	wsprintf(lpPath, TEXT("KeyBoards\\%s"), lpName);
+	wsprintf(lpPath, TEXT("\\KeyBoards\\%s"), lpName);
 
 	lpName [lstrlen(lpName)-4] = NULL;
 

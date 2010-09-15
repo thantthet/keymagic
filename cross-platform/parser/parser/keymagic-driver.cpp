@@ -395,9 +395,8 @@ keymagic_driver::ValidateRule(const std::list<int>& left, const std::list<int>& 
 				if (haveMod.find(*++it) == haveMod.end()) {
 					std::cerr << *l.begin.filename << ":" << l.begin.line << ":Warning: reference modifier number can only be ";
 					for (std::map<int, bool>::const_iterator it = haveMod.begin(); it != haveMod.end(); it++) {
-						std::cerr << it->first << ",";
+						std::cerr << it->first << " ";
 					}
-					std::cerr << "\b ";
 					std::cerr << std::endl;
 				}
 				break;
@@ -535,6 +534,11 @@ keymagic_driver::error (const std::string& m)
 	exit(1);
 }
 
+void 
+keymagic_driver::warn (const yy::location& l, const std::string& m)
+{
+	std::cerr << l << ": " << "Warning: " << m << std::endl;
+}
 
 bool
 keymagic_driver::StringToBool(std::string& booleanStr) 

@@ -186,10 +186,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 
 		case IDC_KEYBOARDS:
-			if (wmEvent == LBN_SELCHANGE){
+			if (wmEvent == LBN_SELCHANGE) {
 
 				CheckDlgButton(hWnd, IDC_DIR, false);
-				EnableWindow(hPath, false);
+				EnableWindow(hPath, true);
 				if (kbindex == -1)
 					goto next;
 				
@@ -211,10 +211,11 @@ next:
 				SendMessage(hDisplay, WM_SETTEXT, 0, (LPARAM)Data->Display);
 				SendMessage(hShortcut, HKM_SETHOTKEY, Data->wHotkey, 0);
 				SendMessage(hPath, WM_SETTEXT, 0, (LPARAM)Data->Path);
-				if (Data->Path[1] == ':'){
-					EnableWindow(hPath, true);
-					CheckDlgButton(hWnd, IDC_DIR, true);
-				}
+				//if (Data->Path[1] == ':'){
+				//	EnableWindow(hPath, true);
+				//	CheckDlgButton(hWnd, IDC_DIR, true);
+				//}
+				if (kbindex == 0)  EnableWindow(hPath, false);
 			}
 			break;
 
@@ -502,7 +503,7 @@ next:
 		lpcs -> hInstance, NULL);
 
 	SendMessage(hPath, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
-	EnableWindow(hPath, false);
+	//EnableWindow(hPath, false);
 
 	hDisplay = CreateWindowEx (WS_EX_CLIENTEDGE, TEXT("Edit"), NULL,
 		WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL | ES_AUTOVSCROLL,
@@ -553,12 +554,12 @@ next:
 
 	SendMessage(hApply, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
 
-	hPathChk = CreateWindowEx (0, TEXT("Button"), TEXT("Use from this path"),
+	/*hPathChk = CreateWindowEx (0, TEXT("Button"), TEXT("Use from this path"),
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_CHECKBOX | BS_AUTOCHECKBOX,
 		0, 0, 0, 0, hWnd, (HMENU)IDC_DIR,
 		lpcs -> hInstance, NULL);
 
-	SendMessage(hPathChk, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));
+	SendMessage(hPathChk, WM_SETFONT, (WPARAM)hf, MAKEWORD(0,1));*/
 
 	//hBK = CreateWindowEx (0, TEXT("Static"), NULL,
 	//	WS_CHILD | WS_VISIBLE | SS_BITMAP | SS_REALSIZEIMAGE,
@@ -733,14 +734,14 @@ VOID OnSize(WPARAM wParam, LPARAM lParam)
 		HalfWidth - ListWidth + LeftBorder + 10,
 		TopBorder + 15,
 		HalfWidth + ListWidth - 20,
-		50,
+		70,
 		TRUE);
 
 	MoveWindow(hgbDisplay,
 		HalfWidth - ListWidth + LeftBorder + 10,
-		Height / 2 + 22,
+		HalfHeight + 15,
 		HalfWidth + ListWidth - 20,
-		50,
+		70,
 		TRUE);
 
 	MoveWindow(hList,
@@ -752,14 +753,14 @@ VOID OnSize(WPARAM wParam, LPARAM lParam)
 
 	MoveWindow(hShortcut,
 		HalfWidth + LeftBorder - ListWidth + 20,
-		TopBorder + 32,
+		TopBorder + 40,
 		ListWidth + HalfWidth - RightBorder - 33,
 		EditHeight,
 		TRUE);
 
 	MoveWindow(hDisplay,
 		HalfWidth + LeftBorder - ListWidth + 20,
-		(TopBorder + HalfHeight) - (EditHeight + BottomBorder) - 3,
+		(TopBorder + HalfHeight) - (EditHeight + BottomBorder),
 		ListWidth + HalfWidth - RightBorder - 33,
 		EditHeight, TRUE);
 
@@ -772,17 +773,17 @@ VOID OnSize(WPARAM wParam, LPARAM lParam)
 
 	MoveWindow(hPath,
 		HalfWidth + LeftBorder - ListWidth + 20,
-		(TopBorder + Height) - (EditHeight + BottomBorder + BtnHeight) - 20,
+		(TopBorder + Height) - (EditHeight + BottomBorder + BtnHeight) - 35,
 		ListWidth + HalfWidth - RightBorder - 33,
 		EditHeight,
 		TRUE);
 
-	MoveWindow(hPathChk,
+	/*MoveWindow(hPathChk,
 		HalfWidth + LeftBorder - ListWidth + 20,
 		(TopBorder + Height) - (EditHeight + BottomBorder + BtnHeight) - 20 - BtnHeight,
 		ListWidth + HalfWidth - RightBorder - 33,
 		EditHeight,
-		TRUE);
+		TRUE);*/
 
 	int BtnSpace = 3;
 	int BtnWidth = HalfWidth / 3 - BtnSpace;
@@ -963,7 +964,7 @@ BOOL AddKeyBoardToList(HWND hWnd,TCHAR* lpKBPath){
 	if (lpName [lstrlen(lpName)-4] != '.')
 		lstrcat(lpName, TEXT(".km2"));
 
-	wsprintf(lpPath, TEXT("KeyBoards\\%s"), lpName);
+	wsprintf(lpPath, TEXT("\\KeyBoards\\%s"), lpName);
 
 	lpName [lstrlen(lpName)-4] = NULL;
 
@@ -1114,7 +1115,8 @@ VOID GetHotKey(WORD wHotkey, LPTSTR ShortCutDisplay){
 
 	if (vkey[0] >= VK_F1 && vkey[0] <= VK_F12){
 		TCHAR FunctionKey[3];
-		int Function = vkey[0] - 0x6F;
+		int Function = vkey[0] - VK_F1;
+		++Function;
 		wsprintf(FunctionKey, TEXT("F%x"), Function);
 		lstrcat(ShortCutDisplay, FunctionKey);
 		return;

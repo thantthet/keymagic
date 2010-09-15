@@ -191,7 +191,7 @@ namespace kEditor
             Text = "Untitled" + titleSuffix;
 
             hexadecimalToolStripMenuItem.Checked = glyphTable.HexNotation;
-            lineNumbersToolStripMenuItem.Checked = SciEditor.Margins[0].Width > 0;
+            lineNumbersToolStripMenuItem.Checked = Properties.Settings.Default.LineNumber;
 
             UpdateRecentFiles();
             openFile(Properties.Settings.Default.LastFilePath);
@@ -215,6 +215,7 @@ namespace kEditor
             Properties.Settings.Default.DefaultFontSize = selectedFont.Size;
             Properties.Settings.Default.GlyphRangeFirst = glyphTable.GlyphRange.First;
             Properties.Settings.Default.GlyphRangeLength = glyphTable.GlyphRange.Length;
+            Properties.Settings.Default.LineNumber = lineNumbersToolStripMenuItem.Checked;
             lex.SaveStyles();
             Properties.Settings.Default.Save();
         }
@@ -714,17 +715,20 @@ namespace kEditor
                 System.IO.StreamReader stdout = parserProcess.StandardOutput;
                 System.IO.StreamReader stderr = parserProcess.StandardError;
                 parserProcess.WaitForExit(5000);
+
+                string errText = stderr.ReadToEnd();
+                string outText = stdout.ReadToEnd();
+
                 if (parserProcess.ExitCode == 1)
                 {
-                    string reply = stderr.ReadToEnd();
-                    MessageBox.Show(this, reply, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(this, errText, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     ret = false;
                 }
                 else
                 {
-                    string reply = stdout.ReadToEnd();
-                    string[] splitted = reply.Split('\n');
-                    MessageBox.Show(this, splitted[splitted.Length - 2], "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    string[] splitted = outText.Split('\n');
+                    string lastLine = splitted[splitted.Length - 2];
+                    MessageBox.Show(this, lastLine + "~~\n" + errText, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 stdout.Close();
                 stderr.Close();
