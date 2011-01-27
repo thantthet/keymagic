@@ -57,9 +57,11 @@ namespace kEditor
             {
                 if (defaultEditor == false)
                 {
-                    makeDefaultEditor();
+                    if (makeDefaultEditor())
+                    {
+                        defaultEditorToolStripMenuItem.Checked = true;
+                    }
                 }
-                defaultEditorToolStripMenuItem.Checked = true;
                 forceAsDefaultEditorToolStripMenuItem.Checked = true;
             }
             else if (defaultEditor)
@@ -121,33 +123,50 @@ namespace kEditor
             return true;
         }
 
-        private void makeDefaultEditor()
+        private bool makeDefaultEditor()
         {
-            RegistryKey keyExt = Registry.ClassesRoot.CreateSubKey(".kms");
-            //if (keyExt.GetValue("").Equals("KEYMAGIC.KMS") == false)
-            //{
-            keyExt.SetValue("", "KEYMAGIC.KMS");
+            try
+            {
+                RegistryKey keyExt = Registry.ClassesRoot.CreateSubKey(".kms");
 
-            RegistryKey keyKMS = Registry.ClassesRoot.CreateSubKey("KEYMAGIC.KMS");
-            keyKMS.SetValue("", "KeyMagic keyboard layout script file");
+                keyExt.SetValue("", "KEYMAGIC.KMS");
 
-            RegistryKey openCommand = keyKMS.CreateSubKey("shell\\Open\\command");
-            //if (openCommand.GetValue("").Equals("") == false)
-            //{
-            string command = string.Format("\"{0}\" \"%1\"", Environment.GetCommandLineArgs()[0]);
-            openCommand.SetValue("", command, RegistryValueKind.ExpandString);
+                RegistryKey keyKMS = Registry.ClassesRoot.CreateSubKey("KEYMAGIC.KMS");
+                keyKMS.SetValue("", "KeyMagic keyboard layout script file");
 
-            string icon = string.Format("\"{0}\",0", Environment.GetCommandLineArgs()[0]);
-            RegistryKey defaultIcon = keyKMS.CreateSubKey("DefaultIcon");
-            defaultIcon.SetValue("", icon, RegistryValueKind.ExpandString);
-            //}
+                RegistryKey openCommand = keyKMS.CreateSubKey("shell\\Open\\command");
 
-            openCommand.Close();
-            keyKMS.Close();
+                string command = string.Format("\"{0}\" \"%1\"", Environment.GetCommandLineArgs()[0]);
+                openCommand.SetValue("", command, RegistryValueKind.ExpandString);
 
-            SHChangeNotify(0x08000000, 0, UIntPtr.Zero, UIntPtr.Zero);
-            //}
-            keyExt.Close();
+                string icon = string.Format("\"{0}\",0", Environment.GetCommandLineArgs()[0]);
+                RegistryKey defaultIcon = keyKMS.CreateSubKey("DefaultIcon");
+                defaultIcon.SetValue("", icon, RegistryValueKind.ExpandString);
+
+                openCommand.Close();
+                keyKMS.Close();
+
+                SHChangeNotify(0x08000000, 0, UIntPtr.Zero, UIntPtr.Zero);
+
+                keyExt.Close();
+            }
+            catch (UnauthorizedAccessException uax)
+            {
+                DialogResult dr = MessageBox.Show(this, string.Format("{0}\n{1}",uax.Message, "Do you want to re-run the KMS Editor as administrator?"), "Access denied", MessageBoxButtons.YesNo);
+                if (dr == System.Windows.Forms.DialogResult.Yes)
+                {
+                    ProcessStartInfo psi = new ProcessStartInfo(thisExe);
+                    psi.UseShellExecute = false;
+                    Process newProcess = Process.Start(psi);
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return false;
+            }
+            return true;
         }
 
         private void mainForm_Load(object sender, EventArgs e)
@@ -158,7 +177,7 @@ namespace kEditor
             S.ForeColor = Color.DimGray;
             S.Italic = true;
 
-            SciEditor.Encoding = Encoding.ASCII;
+            SciEditor.Encoding = Encoding.UTF8;
 
             lex = new Styler(SciEditor);
             frmColor = new ConfigStyles(SciEditor, lex.GetStyleNameIndex());
@@ -182,7 +201,8 @@ namespace kEditor
                 
                 "VK_OEM_1","VK_COLON","VK_OEM_2","VK_QUESTION","VK_OEM_3","VK_CFLEX","VK_OEM_4","VK_LBRACKET","VK_OEM_5","VK_BACKSLASH",
                 "VK_OEM_6","VK_RBRACKET","VK_OEM_7","VK_QUOTE","VK_OEM_8","VK_EXCM","VK_OEM_AX","VK_OEM_102","VK_LESSTHEN","VK_ICO_HELP","VK_ICO_00",
-                
+                "VK_OEM_MINUS","VK_OEM_PLUS",
+
                 "VK_RMENU","VK_RALT","VK_ALT_GR","VK_LMENU","VK_LALT",
                 "VK_RCONTROL","VK_RCTRL","VK_LCTRL","VK_LCONTROL"
             }
@@ -197,6 +217,8 @@ namespace kEditor
             openFile(Properties.Settings.Default.LastFilePath);
 
             glyphTable.GlyphRange = new CharacterRange(Properties.Settings.Default.GlyphRangeFirst, Properties.Settings.Default.GlyphRangeLength);
+            cboGRanges.Items.Add(glyphTable.GlyphRange.First.ToString("X4") + " - " + (glyphTable.GlyphRange.First + glyphTable.GlyphRange.Length).ToString("X4"));
+            cboGRanges.SelectedIndex = 0;
         }
 
         private void mainFrame_FormClosing(object sender, FormClosingEventArgs e)
@@ -204,7 +226,6 @@ namespace kEditor
             if (askToSaveModifiedDocument() == System.Windows.Forms.DialogResult.Cancel)
             {
                 e.Cancel = true;
-
             }
             if (recentFiles.Count > 0)
             {
@@ -429,17 +450,26 @@ namespace kEditor
 
             if (FilePath != null && FilePath != "")
             {
-                System.IO.StreamWriter sw = new System.IO.StreamWriter(FilePath, false, Encoding.ASCII);
-                sw.Write(SciEditor.Text);
-                sw.Flush();
-                sw.Close();
-                sw.Dispose();
+                try
+                {
+                    System.IO.StreamWriter sw = new System.IO.StreamWriter(FilePath, false, Encoding.UTF8);
+                    sw.Write(SciEditor.Text);
+                    sw.Flush();
+                    sw.Close();
+                    sw.Dispose();
 
-                SciEditor.Modified = false;
-                WorkingWithFile = true;
+                    SciEditor.Modified = false;
+                    WorkingWithFile = true;
 
-                Text = FileName;
-                setRecentFile();
+                    Text = FileName;
+                    setRecentFile();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    return false;
+                }
+
             }
             else
             {
@@ -454,9 +484,11 @@ namespace kEditor
             recentFiles.Remove(FilePath);
             recentFiles.Add(FilePath);
 
-            if (recentFiles.Count > 5)
+            int maxCount = 10;
+
+            if (recentFiles.Count > maxCount)
             {
-                recentFiles.RemoveRange(0, recentFiles.Count - 5);
+                recentFiles.RemoveRange(0, recentFiles.Count - maxCount);
             }
             UpdateRecentFiles();
         }
@@ -555,9 +587,14 @@ namespace kEditor
         private void setGlyphRangeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             glyphRangeForm glyphRange = new glyphRangeForm();
+            glyphRange.GlyphRange = glyphTable.GlyphRange;
             if (glyphRange.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                glyphTable.GlyphRange = glyphRange.characterRange;
+                glyphTable.GlyphRange = glyphRange.GlyphRange;
+                string r = glyphTable.GlyphRange.First.ToString("X4") + " - " + (glyphTable.GlyphRange.First + glyphTable.GlyphRange.Length).ToString("X4");
+                cboGRanges.Items.Remove(r);
+                cboGRanges.Items.Add(r);
+                cboGRanges.SelectedIndex = cboGRanges.Items.Count - 1;
             }
         }
 
@@ -643,8 +680,10 @@ namespace kEditor
             Properties.Settings.Default.forceDefaultEditor = forceAsDefaultEditorToolStripMenuItem.Checked;
             if (forceAsDefaultEditorToolStripMenuItem.Checked)
             {
-                makeDefaultEditor();
-                defaultEditorToolStripMenuItem.Checked = true;
+                if (makeDefaultEditor())
+                {
+                    defaultEditorToolStripMenuItem.Checked = true;
+                }
             }
         }
 
@@ -728,7 +767,7 @@ namespace kEditor
                 {
                     string[] splitted = outText.Split('\n');
                     string lastLine = splitted[splitted.Length - 2];
-                    MessageBox.Show(this, lastLine + "~~\n" + errText, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(this, lastLine + "~~\n" + errText, "Success", MessageBoxButtons.OK, errText != "" ? MessageBoxIcon.Warning : MessageBoxIcon.Information);
                 }
                 stdout.Close();
                 stderr.Close();
@@ -781,6 +820,13 @@ namespace kEditor
                     this.Text = FileName;
                 }
             }
+        }
+
+        private void cboGRanges_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string[] a = cboGRanges.Text.Split('-', ' ');
+            CharacterRange cr = new CharacterRange(Convert.ToInt32(a[0], 16), Convert.ToInt32(a[3], 16) - Convert.ToInt32(a[0], 16));
+            glyphTable.GlyphRange = cr;
         }
     }
 }

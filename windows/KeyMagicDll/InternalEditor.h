@@ -26,8 +26,15 @@ class classInternalEditor {
 
 		~classInternalEditor(){}
 
+		const wchar_t* GetAll()
+		{
+			return Text;
+		}
+
 		void Reset()
 		{
+			strUndo.clear();
+			LastContext[0] = 0;
 #ifdef RESTART_IE
 			Debug(L"InternalEditor::Restart\n");
 			RtlZeroMemory(Text, MAX_STORELEN);
@@ -153,20 +160,7 @@ class classInternalEditor {
 
 		}
 
-		void KeyUp(WPARAM wParam, LPARAM lParam)
-		{
-			Debug(L"Internal Editor::KeyUp - lParam = 0x%.8x %d wParam = 0x%.8x %d\n", lParam, lParam, wParam, wParam);
-			if (wParam == VK_CONTROL)
-			{
-				isCTRL = false;
-				return;
-			}
-			else if((wParam == VK_MENU))
-			{
-				isALT = false;
-				return;
-			}
-		}
+		void KeyUp(WPARAM wParam, LPARAM lParam);
 
 		bool SwitchOn(int id) {
 			switch_map[id] = true;
@@ -207,10 +201,17 @@ class classInternalEditor {
 			Debug(L"\n", Text);
 		}
 
+		void undoBegin();
+		void undoEnd();
+		void undoReset();
+		bool undo();
+
 	private:
 		UINT CaretLocation;
 		UINT TextLength;
 		std::map<int,bool> switch_map;
+		std::list<std::wstring> strUndo;
+		wchar_t LastContext[MAX_STORELEN];
 		wchar_t Text[MAX_STORELEN];
 		bool isControlDown;
 		bool isCTRL, isALT, isSHIFT;

@@ -114,6 +114,9 @@ namespace kEditor.Properties {
   <Style index=""1"" fontName=""Segoe UI"" fontSize=""8""
   foreColor=""FF2D2DFF"" backColor=""FFFFFFFF"" bold=""False""
   italic=""False"" />
+  <Style index=""4"" fontName=""Segoe UI"" fontSize=""8""
+  foreColor=""FF2D2DFF"" backColor=""FFFFFFFF"" bold=""False""
+  italic=""False"" />
   <Style index=""5"" fontName=""Verdana"" fontSize=""8""
   foreColor=""FF1E90FF"" backColor=""FFFFFFFF"" bold=""False""
   italic=""False"" />
@@ -143,6 +146,18 @@ namespace kEditor.Properties {
             }
             set {
                 this["StyleConfig"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool LineNumber {
+            get {
+                return ((bool)(this["LineNumber"]));
+            }
+            set {
+                this["LineNumber"] = value;
             }
         }
     }

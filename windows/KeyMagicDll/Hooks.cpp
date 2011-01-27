@@ -72,11 +72,20 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 		if (isActive == false)
 			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 
-		if (ProcessInput(wParam, lParam))
+		InternalEditor.undoBegin();
+		bool handled = ProcessInput(wParam, lParam);
+		InternalEditor.undoEnd();
+		if (handled) {
+			if (wParam == VK_BACK)
+			{
+				InternalEditor.undoReset();
+			}
 			return true;
+		} else if (klf.layout.autoBksp == true && wParam == VK_BACK && (HIWORD(lParam) & 0xff) != 0xff) {
+			return Undo();
+		}
 	}
 	return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
-
 }
 
 LRESULT CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lParam)

@@ -1,10 +1,10 @@
-// @Name = "Myanmar3std"
-// @FontFamily = "Myanmar3"
-// @Description = "Unoffical Myanmar3 layout"
+// @NAME = "Myanmar3std"
+// @FONTFAMILY = "Myanmar3"
+// @DESCRIPTION = "Unoffical Myanmar3 layout"
 
-// @track_capslocks = "false"
-// @eat_all_unused_keys = "false"
-// @US_layout_based = "true"
+// @TRACK_CAPSLOCK = "FALSE"
+// @EAT_ALL_UNUSED_KEYS = "FALSE"
+// @US_LAYOUT_BASED = "TRUE"
 
 $baseK = 'qwert' + \
 		'yuiop' + \

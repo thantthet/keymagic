@@ -23,7 +23,7 @@ extern TCHAR szDir[1000];
 typedef std::vector<BYTE> VIRTUALKEYS;
 typedef std::vector<int> SWITCHES;
 
-struct KM_ShortCut{
+struct KM_ShortCut {
 	BYTE ukey;
 	BYTE modkey;
 };

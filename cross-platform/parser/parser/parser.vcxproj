@@ -65,6 +65,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -74,27 +75,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="keymagic-driver.h">
+    <ClInclude Include="ConvertUTF.h" />
+    <ClInclude Include="keymagic-driver.hh">
       <FileType>Document</FileType>
     </ClInclude>
-    <ClInclude Include="keymagic-parser.tab.h">
+    <ClInclude Include="keymagic-parser.tab.hh">
       <FileType>Document</FileType>
     </ClInclude>
-    <ClInclude Include="location.h">
+    <ClInclude Include="location.hh">
       <FileType>Document</FileType>
     </ClInclude>
-    <ClInclude Include="position.h">
+    <ClInclude Include="position.hh">
       <FileType>Document</FileType>
     </ClInclude>
-    <ClInclude Include="stack.h">
+    <ClInclude Include="stack.hh">
       <FileType>Document</FileType>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="keymagic-driver.cpp" />
-    <ClCompile Include="keymagic-parser.tab.cpp" />
-    <ClCompile Include="lex.yy.cpp" />
-    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="ConvertUTF.cpp" />
+    <ClCompile Include="keymagic-driver.cc" />
+    <ClCompile Include="keymagic-parser.tab.cc" />
+    <ClCompile Include="lex.yy.cc" />
+    <ClCompile Include="Main.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

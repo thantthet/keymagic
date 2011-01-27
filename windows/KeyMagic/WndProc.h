@@ -21,6 +21,7 @@
 enum RightMenuCmd{
 	RMCMD_EXIT=100,
 	RMCMD_MANAGE,
+	RMCMD_OSK,
 	RMCMD_STARTUP,
 	RMCMD_ABOUT
 };
@@ -45,7 +46,7 @@ VOID				ShowNotifyIcon(HWND hWnd, LPCTSTR szTip, LPCTSTR lpIconName);
 VOID				DeleteNotifyIcon(HWND hWnd);
 VOID				ShowBallonTip(HWND hWnd, LPCTSTR szInfoTitle, LPCTSTR szInfo, DWORD dwInfoFlags);
 
-extern vector<TCHAR*> szFileToDelete;
+extern vector<std::wstring> szFileToDelete;
 //extern int cbFileToDelete;
 extern int kbindex;
 extern HWND hList;

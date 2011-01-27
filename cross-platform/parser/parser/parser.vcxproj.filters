@@ -15,33 +15,39 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="keymagic-driver.cpp">
+    <ClCompile Include="ConvertUTF.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="keymagic-parser.tab.cpp">
+    <ClCompile Include="lex.yy.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lex.yy.cpp">
+    <ClCompile Include="keymagic-driver.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="keymagic-parser.tab.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stack.h">
+    <ClInclude Include="ConvertUTF.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="position.h">
+    <ClInclude Include="keymagic-parser.tab.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="location.h">
+    <ClInclude Include="location.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="keymagic-parser.tab.h">
+    <ClInclude Include="position.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="keymagic-driver.h">
+    <ClInclude Include="keymagic-driver.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stack.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

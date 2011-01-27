@@ -56,14 +56,14 @@ extern void	SetHook (HWND hwnd);
 
 struct KeyFileData{
 	bool isNew;
-	TCHAR Name[30];
-	TCHAR Display[30];
-	TCHAR Path[MAX_PATH];
+	std::wstring Name;
+	std::wstring Display;
+	std::wstring Path;
 	WORD wHotkey;
 };
 
-struct strDelete{
-	TCHAR Path[MAX_PATH];
+struct strDelete {
+	std::wstring Path;
 };
 
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
@@ -88,5 +88,6 @@ extern HINSTANCE hInst;								// current instance
 extern TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 extern HMENU hKeyMenu;
 extern UINT KeyBoardNum;
+extern UINT wmsgTaskbarCreated;
 
 #endif

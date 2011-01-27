@@ -17,7 +17,7 @@
 #define IDI_BSHIELD                     131
 #define IDB_PNG1                        132
 #define IDB_LOGO                        132
-#define IDR_PARABAIK                    136
+#define IDR_PARABAIK                     138
 #define IDC_KEYBOARDS                   1004
 #define IDC_CANCEL                      1005
 #define IDC_DONE                        1006
@@ -33,7 +33,6 @@
 #define IDC_SYSLINK1                    1018
 #define IDC_ATEXT                       1019
 #define IDC_TITLE                       1020
-#define IDC_EDIT1                       1021
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -41,7 +40,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        137
+#define _APS_NEXT_RESOURCE_VALUE        139
 #define _APS_NEXT_COMMAND_VALUE         32773
 #define _APS_NEXT_CONTROL_VALUE         1022
 #define _APS_NEXT_SYMED_VALUE           110

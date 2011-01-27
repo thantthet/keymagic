@@ -235,7 +235,7 @@ namespace kEditor
             if (selectedAtCell != -1 && selectedAtCell < NumbersOfGlyph)
             {
                 if (e.Button == System.Windows.Forms.MouseButtons.Left)
-                    DoDragDrop(string.Format("U{0:X4}", (int)characters[selectedAtCell]), DragDropEffects.Copy);
+                    DoDragDrop(characters[selectedAtCell].ToString(), DragDropEffects.Copy);
             }
         }
 
@@ -389,6 +389,7 @@ namespace kEditor
             {
                 if (value != glyphRange)
                 {
+                    selectedAtCell = -1;
                     glyphRange = value;
                     GenerateCharacters();
                     GeneratePointAndRect();

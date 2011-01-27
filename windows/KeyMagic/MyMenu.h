@@ -17,14 +17,21 @@
 #include <gdiplus.h>
 
 #define CCH_MAXITEMTEXT 256
+#define MENU_FONT L"Parabaik"
+
+#ifndef MMENU_LEFT_PADDING
+#define MMENU_LEFT_PADDING 24
+#endif
 
 // Structure associated with menu items 
  
 typedef struct tagMYITEM 
 { 
 	Gdiplus::Bitmap Icon;
-    int   cchItemText;
-    TCHAR szItemText[1];
+    int cchItemText;
+	int textWidth;
+	int hotkeyWidth;
+	TCHAR szItemText[1];
 } MYITEM, NEAR *PMYITEM, FAR *LPMYITEM;
 
 void CreateMyMenu(HMENU hMenu);
@@ -33,3 +40,4 @@ void DrawMyMenu(LPDRAWITEMSTRUCT lpdis);
 void OnMenuMeasure(HWND hwnd, LPMEASUREITEMSTRUCT lpmis);
 INT_PTR CALLBACK MyMenuProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 bool GradientFillRoundRect(HDC hDC, RECT rcItem, int w, int h, DWORD rgb1, DWORD rgb2, DWORD rgb3, ULONG ulMode);
+int GetHotkeyX(HWND hwnd);

@@ -310,7 +310,7 @@ void PrintLastError() {
 		0, 
 		NULL);
 
-	std::cout << errBuf;
+	std::cerr << errBuf;
 
 	LocalFree(errBuf);
 }

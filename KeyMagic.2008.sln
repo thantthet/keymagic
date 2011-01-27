@@ -8,10 +8,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeyMagic", "windows\KeyMagi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeyMagicDll", "windows\KeyMagicDll\KeyMagicDll.vcproj", "{81F8275F-2C03-46D0-938D-FD91775E75BB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "parser", "windows\parser\parser.vcproj", "{6E4BEF0C-2C1E-42B9-AC85-F96FEF1E3638}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "compiler", "compiler\compiler.vcproj", "{4CA9CD3D-2A10-4C4D-8487-12D57FBD7B76}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -26,14 +22,6 @@ Global
 		{81F8275F-2C03-46D0-938D-FD91775E75BB}.Debug|Win32.Build.0 = Debug|Win32
 		{81F8275F-2C03-46D0-938D-FD91775E75BB}.Release|Win32.ActiveCfg = Release|Win32
 		{81F8275F-2C03-46D0-938D-FD91775E75BB}.Release|Win32.Build.0 = Release|Win32
-		{6E4BEF0C-2C1E-42B9-AC85-F96FEF1E3638}.Debug|Win32.ActiveCfg = Debug|Win32
-		{6E4BEF0C-2C1E-42B9-AC85-F96FEF1E3638}.Debug|Win32.Build.0 = Debug|Win32
-		{6E4BEF0C-2C1E-42B9-AC85-F96FEF1E3638}.Release|Win32.ActiveCfg = Release|Win32
-		{6E4BEF0C-2C1E-42B9-AC85-F96FEF1E3638}.Release|Win32.Build.0 = Release|Win32
-		{4CA9CD3D-2A10-4C4D-8487-12D57FBD7B76}.Debug|Win32.ActiveCfg = Debug|Win32
-		{4CA9CD3D-2A10-4C4D-8487-12D57FBD7B76}.Debug|Win32.Build.0 = Debug|Win32
-		{4CA9CD3D-2A10-4C4D-8487-12D57FBD7B76}.Release|Win32.ActiveCfg = Release|Win32
-		{4CA9CD3D-2A10-4C4D-8487-12D57FBD7B76}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

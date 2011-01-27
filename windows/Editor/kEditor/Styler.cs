@@ -60,21 +60,21 @@ namespace kEditor
 
         private void InitStyleIndex()
         {
-            styleIndex.Add("Variable", 1);
+            styleIndex.Add("variable", 1);
             //styleIndex.Add("Variable (declare)", 2);
             //styleIndex.Add("Operators", 3);
-            //styleIndex.Add("Virtual-key", 4);
-            styleIndex.Add("Hex Notation", 5);
-            styleIndex.Add("NULL/ANY Value", 6);
-            styleIndex.Add("Modifier", 7);
-            styleIndex.Add("Reference", 8);
+            styleIndex.Add("include keyword", 4);
+            styleIndex.Add("hex notation", 5);
+            styleIndex.Add("NULL/ANY value", 6);
+            styleIndex.Add("modifier", 7);
+            styleIndex.Add("reference", 8);
             //styleIndex.Add("Virtual-key Start End Operator", 9);
             //styleIndex.Add("Out Operator", 10);
-            styleIndex.Add("Switch", 11);
-            styleIndex.Add("Block Comment", 12);
-            styleIndex.Add("Line Comment", 13);
+            styleIndex.Add("switch", 11);
+            styleIndex.Add("block comment", 12);
+            styleIndex.Add("line comment", 13);
             //styleIndex.Add("Line Joiner", 14);
-            styleIndex.Add("String", 15);
+            styleIndex.Add("string", 15);
             //styleIndex.Add("In-string Hex Notation", 16);
         }
 
@@ -90,7 +90,6 @@ namespace kEditor
             XmlDocument xmlDoc = new XmlDocument();
 
             XmlElement stylesNode = xmlDoc.CreateElement("Styles");
-
             xmlDoc.AppendChild(stylesNode);
 
             foreach (int index in styleIndex.Values)

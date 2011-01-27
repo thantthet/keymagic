@@ -51,16 +51,23 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 286, 218
+IDD_ABOUTBOX DIALOGEX 0, 0, 283, 222
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "About Keymagic"
+CAPTION "About KeyMagic"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            IDI_KEYMAGIC,IDC_STATIC,7,15,21,20
-    LTEXT           "[PROGRAM TITLE]",IDC_TITLE,33,16,229,8,SS_NOPREFIX
-    DEFPUSHBUTTON   "OK",IDOK,229,197,50,14,WS_GROUP
-    LTEXT           "Complie Info",IDC_COMPLIE,7,203,94,8,WS_DISABLED
-    EDITTEXT        IDC_ATEXT,33,33,246,146,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL | WS_HSCROLL
+    LTEXT           "[PROGRAM TITLE]",IDC_TITLE,33,16,204,8,SS_NOPREFIX
+    DEFPUSHBUTTON   "OK",IDOK,226,201,50,14,WS_GROUP
+    LTEXT           "Complie Info",IDC_COMPLIE,7,207,94,8,WS_DISABLED
+    EDITTEXT        IDC_ATEXT,29,73,223,105,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER | WS_VSCROLL | WS_HSCROLL
+    CONTROL         "<a>http://keymagic.googlecode.com</a>",IDC_SYSLINK1,
+                    "SysLink",WS_TABSTOP,80,45,108,10
+    CONTROL         "Thant Thet Khin Zaw",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,79,32,69,8
+    LTEXT           "Author:",IDC_STATIC,34,32,26,8
+    LTEXT           "Home Page:",IDC_STATIC,34,45,40,8
+    GROUPBOX        "",IDC_STATIC,16,59,250,135
+    LTEXT           "GNU General Public License",IDC_STATIC,94,59,87,8
 END
 
 IDD_MAINBOX DIALOGEX 0, 0, 317, 220
@@ -83,7 +90,7 @@ BEGIN
     GROUPBOX        "Options",IDC_STATIC,114,45,196,168
     CONTROL         "Add New",IDC_ADD,"Button",BS_OWNERDRAW | WS_TABSTOP,12,193,44,15
     CONTROL         "Remove",IDC_REMOVE,"Button",BS_OWNERDRAW | BS_CENTER | WS_TABSTOP,59,193,44,15
-    CONTROL         "Use from this path",IDC_DIR,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,125,152,166,10
+    CONTROL         "Use from this path",IDC_DIR,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,125,152,166,10
 END
 
 
@@ -98,9 +105,9 @@ BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 279
+        RIGHTMARGIN, 276
         TOPMARGIN, 7
-        BOTTOMMARGIN, 211
+        BOTTOMMARGIN, 215
     END
 
     IDD_MAINBOX, DIALOG
@@ -151,8 +158,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,3,1,0
- PRODUCTVERSION 1,3,1,0
+ FILEVERSION 1,3,2,0
+ PRODUCTVERSION 1,3,2,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -169,12 +176,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "KeyMagic"
             VALUE "FileDescription", "KeyMagic Program Manager"
-            VALUE "FileVersion", "1.3.1.0"
+            VALUE "FileVersion", "1.3.3.0"
             VALUE "InternalName", "KeyMagic"
-            VALUE "LegalCopyright", "Copyright (C) 2008-2010"
+            VALUE "LegalCopyright", "Copyright (C) 2008-2011"
             VALUE "OriginalFilename", "KeyMagic.exe"
             VALUE "ProductName", "KeyMagic Input Customizer"
-            VALUE "ProductVersion", "1.3.1.0"
+            VALUE "ProductVersion", "1.3.3.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -196,7 +203,14 @@ IDB_BK                  BITMAP                  "Res\\bk.bmp"
 // RCDATA
 //
 
-IDR_PARABAIK            RCDATA                  "Res\\Parabaik20080421.ttf"
+IDR_PARABAIK            RCDATA                  "Res\\Parabaik_UTN11-3.ttf"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// PNG
+//
+
+IDB_LOGO                PNG                     "Res\\key.png"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -205,38 +219,8 @@ IDR_PARABAIK            RCDATA                  "Res\\Parabaik20080421.ttf"
 
 STRINGTABLE
 BEGIN
-    IDS_EN_TITLE            "KeyMagic 1.3"
+    IDS_EN_TITLE            "KeyMagic 1.3.3"
 END
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// English (Singapore) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENE)
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_SINGAPORE
-#pragma code_page(1252)
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// PNG
-//
-
-IDB_LOGO                PNG                     "Res\\key.png"
-#endif    // English (Singapore) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-
-#ifndef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 3 resource.
-//
-
-
-/////////////////////////////////////////////////////////////////////////////
-#endif    // not APSTUDIO_INVOKED
-

@@ -28,7 +28,7 @@ struct InputRuleInfo
 	bool deleted;
 };
 
-void sendKeyStrokes (std::wstring * s)//Send Keys Strokes
+void sendKeyStrokes (std::wstring * s, bool noInternalActions = false)//Send Keys Strokes
 {
 	HWND hwnd = GetFocus();
 
@@ -58,11 +58,13 @@ void sendKeyStrokes (std::wstring * s)//Send Keys Strokes
 
 	int cSent = SendInput(cInputs, ip, sizeof(INPUT));
 	Debug(L"cInputs=%d, cSent=%d\n",cInputs, cSent);
-	InternalEditor.AppendText(s->c_str(), s->length());
 
+	if (noInternalActions == false) {
+		InternalEditor.AppendText(s->c_str(), s->length());
+	}
 }
 
-void sendBackspace(int count)
+void sendBackspace(int count, bool noInternalActions = false)
 {
 	if (!GetFocus() || count < 1)
 		return ;
@@ -93,7 +95,10 @@ void sendBackspace(int count)
 		ip.ki.wVk = VK_BACK;
 		SendInput(1, &ip, sizeof(INPUT));
 	}
-	InternalEditor.Delete(count);
+
+	if (noInternalActions == false) {
+		InternalEditor.Delete(count);
+	}
 }
 
 signed int getMatchLength(const wchar_t * s1, const wchar_t * s2)
@@ -172,7 +177,6 @@ bool getOutputAndSend(InputRuleInfo * ir_info, WORD wVk, LPBYTE KeyStates)
 			sendSingleKey(VK_MENU, 0);
 		//if (mksOldState.SHIFT)
 		//	sendSingleKey(VK_SHIFT, 0);
-
 		return true;
 	}
 
@@ -315,7 +319,7 @@ bool matchRules(wchar_t wcInput, WORD wVk, LPBYTE KeyStates, bool user_input)
 			boost::wcmatch matches;
 			if (boost::regex_match(src, matches, *it->regex)){
 				have_match = true; // Got a match
-				if (ir_info.matched == false){
+				if (ir_info.matched == false) {
 					ir_info.matched = true;
 					ir_info.it = it;
 					ir_info.deleted = (wcInput && user_input) ? deleted : true;
@@ -369,6 +373,7 @@ end_of_loop:;
 bool ProcessInput(WORD wVk, LPARAM lParam)
 {
 	try {
+
 		WORD scancode = (WORD)(lParam >> 16);
 		DWORD dwExtraInfo = GetMessageExtraInfo();
 		// If VK_BACK and there is any DontEatBackspace, subtract the DontEatBackspace count from lParam
@@ -399,22 +404,25 @@ bool ProcessInput(WORD wVk, LPARAM lParam)
 		Debug(L"CTRL = %x ALT = %x\n", mksOldState.CTRL, mksOldState.ALT);
 
 		wchar_t wcInput = wVk;UINT usVk;
+
 		if (usVk = TranslateToUnicode((WORD*)&wcInput, GlobalKeyStates)) // Get Ascii Value
 		{ // If there is any ascii value
 			if (matchRules(wcInput, usVk, GlobalKeyStates, true )) {// Match for the input
 				// Found matched
 				return true; // Eaten
 			}
-			else if (wVk == VK_BACK){
+			else if (wVk == VK_BACK) {
 				// If VK_BACK
-				InternalEditor.Delete(lParam & 0xFF); // Delete from internal editor
+				return false;
+				//InternalEditor.Delete(lParam & 0xFF); // Delete from internal editor
 			}
 			else if (klf.layout.eat==true && //eat unused key
 				mksOldState.CTRL==false && mksOldState.ALT==false &&
-				wcInput > 0x20 && wcInput < 0x7F){
+				wcInput > 0x20 && wcInput < 0x7F) {
+					InternalEditor.undoEnd();
 					return true;
 			}
-			else if (mksOldState.CTRL==false && mksOldState.ALT==false){
+			else if (mksOldState.CTRL==false && mksOldState.ALT==false) {
 				InternalEditor.AddInput(wcInput); // Not matched? Just store the input
 				return false;
 			}
@@ -423,16 +431,59 @@ bool ProcessInput(WORD wVk, LPARAM lParam)
 				if (matchRules(NULL, wVk, GlobalKeyStates, true )) {// Match for the input
 					// Found matched
 					return true; // Eaten
-				}}
+				}
+			}
 		}
+
 		//If only one of these two keys are pressed
 		if (mksOldState.CTRL ^ mksOldState.ALT){
 			Debug(L"(isCTRL ^ isALT)\n");
 			InternalEditor.Reset();// restart the internal editor's buffer
 			return false;
 		}
+		
 	} catch (...) {
 		Debug(L"Caught exception!\n");
+	}
+	return false;
+}
+
+bool Undo()
+{
+	wchar_t * TextFrom = new wchar_t[InternalEditor.GetTextLength() + 1];
+	wcscpy(TextFrom, InternalEditor.GetAll());
+
+	if (InternalEditor.undo())
+	{
+		const wchar_t * TextTo = InternalEditor.GetAll();
+		int lenFrom = wcslen(TextFrom);
+		int lenTo = wcslen(TextTo);
+		if (lenFrom > lenTo)
+		{
+			sendBackspace(lenFrom - lenTo, true);
+			TextFrom[lenTo] = 0;
+			lenFrom = lenTo;
+		}
+		
+		int i = 0;
+		while (TextTo[i] == TextFrom[i])
+		{
+			i++;
+		}
+
+		if (i < lenFrom) 
+		{
+			sendBackspace(lenFrom - i, true);
+			TextFrom[i] = 0;
+			lenFrom = i;
+		}
+
+		if (i < lenTo)
+		{
+			sendKeyStrokes(&std::wstring(&TextTo[i]), true);
+		}
+
+		return true;
 	}
 	return false;
 }

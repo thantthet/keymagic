@@ -18,7 +18,7 @@
 #include "Keymagic.h"
 #include "MyMenu.h"
 
-void CreateMyMenu(HMENU hMenu){
+void CreateMyMenu(HMENU hMenu) {
 
 	MENUINFO mi;
 	MENUITEMINFO mii;
@@ -102,6 +102,10 @@ void DrawMyMenu(LPDRAWITEMSTRUCT lpdis){
 		if (!pMyItem)
 			return;
 
+		Debug(L"DMM->%d,%d\n",
+			lpdis->rcItem.right - lpdis->rcItem.left,
+			lpdis->rcItem.bottom - lpdis->rcItem.top);
+
 		LOGBRUSH lb;
 		RECT rc;
 		rc.bottom = lpdis->rcItem.bottom;
@@ -182,7 +186,7 @@ void DrawMyMenu(LPDRAWITEMSTRUCT lpdis){
 			DeleteDC(hdcSelector);
 		}
 
-		else if (lpdis->itemState & ODS_CHECKED){
+		else if (lpdis->itemState & ODS_CHECKED) {
 			SelectObject(lpdis->hDC,CreateSolidBrush(RGB(240,250,255)));
 			//SetTextColor(lpdis->hDC, RGB(0,128,192));
 			SelectObject(lpdis->hDC,CreatePen(PS_INSIDEFRAME, 1, RGB(160,158,239)));
@@ -195,13 +199,13 @@ void DrawMyMenu(LPDRAWITEMSTRUCT lpdis){
 		//SelectObject(lpdis->hDC,CreateBrushIndirect(&lb));
 		//RoundRect(lpdis->hDC, lpdis->rcItem.left, lpdis->rcItem.top, lpdis->rcItem.right, lpdis->rcItem.bottom, 3, 3);
 
-		TCHAR Temp[256];
+		TCHAR Temp[CCH_MAXITEMTEXT];
 		lstrcpy(Temp, pMyItem->szItemText);
 		wcstok(Temp, TEXT("\t"));
 		TCHAR* szShortCut = wcstok(NULL, TEXT("\t"));
 
 		lpdis->rcItem.top += 3;
-		lpdis->rcItem.left += 24;
+		lpdis->rcItem.left += MMENU_LEFT_PADDING;
 
 		HFONT hFont = (HFONT)SelectObject(lpdis->hDC,
 			CreateFont(-MulDiv(9, GetDeviceCaps(lpdis->hDC, LOGPIXELSY), 72),
@@ -213,13 +217,14 @@ void DrawMyMenu(LPDRAWITEMSTRUCT lpdis){
 			CLIP_DEFAULT_PRECIS,
 			PROOF_QUALITY,
 			DEFAULT_PITCH | FF_DONTCARE,
-			L"Parabaik")
+			MENU_FONT)
 		);
 
 		SetBkMode(lpdis->hDC, TRANSPARENT);
 		DrawText(lpdis->hDC, Temp, wcslen(Temp), &lpdis->rcItem, DT_VCENTER);
 
-		if (szShortCut){
+		if (szShortCut) {
+			lpdis->rcItem.left += GetHotkeyX(lpdis->hwndItem);
 			lpdis->rcItem.right -= 8;
 			DrawText(lpdis->hDC, szShortCut, wcslen(szShortCut), &lpdis->rcItem, DT_VCENTER | DT_RIGHT);
 		}
@@ -231,7 +236,28 @@ void DrawMyMenu(LPDRAWITEMSTRUCT lpdis){
 	}
 }
 
-void OnMenuMeasure(HWND hwnd,LPMEASUREITEMSTRUCT lpmis)
+int GetHotkeyX(HWND hwnd) {
+	HMENU hMenu = (HMENU)GetParent(hwnd);
+	int intMenu = GetMenuItemCount(hMenu);
+
+	MENUITEMINFO mii;
+    MYITEM *pMyItem;
+
+	int w = 0;
+
+	for (int i=0; intMenu > i; i++){
+		mii.cbSize = sizeof(MENUITEMINFO);
+		mii.fMask = MIIM_DATA; 
+		GetMenuItemInfo(hMenu, i, TRUE, &mii);
+		pMyItem = (MYITEM *) mii.dwItemData;
+		if (w < pMyItem->textWidth) {
+			w = pMyItem->textWidth;
+		}
+	}
+	return w;
+}
+
+void OnMenuMeasure(HWND hwnd, LPMEASUREITEMSTRUCT lpmis)
 {
 
 	if (lpmis->CtlType != ODT_MENU)
@@ -240,16 +266,44 @@ void OnMenuMeasure(HWND hwnd,LPMEASUREITEMSTRUCT lpmis)
 	if (!pMyItem)
 		return;
 	HDC hdc = GetDC(hwnd);
-    SIZE size; 	
- 
-    GetTextExtentPoint32(hdc, pMyItem->szItemText, 
-            pMyItem->cchItemText, &size); 
- 
-    lpmis->itemWidth = size.cx+20; 
-    lpmis->itemHeight = size.cy+5;
+    SIZE txSize, hkSize;
 
+	TCHAR Text[CCH_MAXITEMTEXT];
+	lstrcpy(Text, pMyItem->szItemText);
+	wcstok(Text, TEXT("\t"));
+	TCHAR* szShortCut = wcstok(NULL, TEXT("\t"));
+
+	HFONT hFont = (HFONT)SelectObject(hdc,
+		CreateFont(-MulDiv(9, GetDeviceCaps(hdc, LOGPIXELSY), 72),
+		0,0,0,
+		FW_NORMAL,
+		FALSE,FALSE,FALSE,
+		NULL,
+		OUT_DEFAULT_PRECIS,
+		CLIP_DEFAULT_PRECIS,
+		PROOF_QUALITY,
+		DEFAULT_PITCH | FF_DONTCARE,
+		MENU_FONT)
+	);
+ 
+    GetTextExtentPoint32(hdc, Text, wcslen(Text), &txSize);
+	if (szShortCut) {
+		GetTextExtentPoint32(hdc, szShortCut, wcslen(szShortCut), &hkSize);
+		hkSize.cx += 20; //tab width
+	} else {
+		hkSize.cx = 0;
+	}
+
+	pMyItem->textWidth = txSize.cx;
+	pMyItem->hotkeyWidth = hkSize.cx;
+
+    lpmis->itemWidth = txSize.cx + hkSize.cx + MMENU_LEFT_PADDING;
+    lpmis->itemHeight = txSize.cy + 5;
+
+	Debug(L"OMM->%d,%d\n", lpmis->itemWidth, lpmis->itemHeight);
+
+	SelectObject(hdc, hFont);
     ReleaseDC(hwnd, hdc);
-
 }
 
 bool GradientFillRoundRect(HDC hDC, RECT rcItem, int w, int h,

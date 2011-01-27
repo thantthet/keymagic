@@ -26,7 +26,7 @@ TCHAR szKBP[]=TEXT("KeyBoardPaths");
 TCHAR szMS[]=TEXT("MenuDisplays");
 TCHAR szSC[]=TEXT("ShortCuts");
 TCHAR szNeedRestart[] = TEXT("Application needs to restart to work correctly");
-TCHAR szKeymagic[] = TEXT("Keymagic");
+TCHAR szKeymagic[] = TEXT("KeyMagic");
 
 // Global Variables:
 HINSTANCE hInst;								// current instance
@@ -41,13 +41,14 @@ TCHAR szINIFile[MAX_PATH];
 TCHAR wcCurDir[MAX_PATH];
 BOOL bAdmin;
 
-TCHAR szMainClassName[] = TEXT("Keymagic");
+TCHAR szMainClassName[] = TEXT("KeyMagic");
 TCHAR szError[] = TEXT("ERROR");
 TCHAR szKBLoad_ERR[] = TEXT("Failed to load keyboard layout.");
 HWND hwndMain;
 HACCEL hAccel;
 
 ULONG_PTR m_gdiplusToken;
+UINT wmsgTaskbarCreated;
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
@@ -72,10 +73,10 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
 	bAdmin = IsAdmin();
 
+	LoadString(hInst, IDS_EN_TITLE, szTitle, MAX_LOADSTRING);
+
 	if (WorkOnCommand(lpCmdLine))
 		return 0;
-
-	LoadString(hInst, IDS_EN_TITLE, szTitle, MAX_LOADSTRING);
 
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
     osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
@@ -86,12 +87,13 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
 	HANDLE hFont = LoadFontFromRes(MAKEINTRESOURCE(IDR_PARABAIK));
 
+	//Register Windows Message For TaskbarCreated
+	wmsgTaskbarCreated = RegisterWindowMessageA("TaskbarCreated");
+
 	if (bAdmin && bIsWindowsVistaLater){
 		typedef BOOL (__stdcall *ChangeWMFilter) (__in UINT message,__in DWORD dwFlag);
 		ChangeWMFilter lpChangeWMFilter;
 		HMODULE hUser;
-
-		lstrcat(szTitle, TEXT(" (Administrator)"));
 
 		hUser = GetModuleHandle(TEXT("USER32"));
 		
@@ -100,6 +102,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 			lpChangeWMFilter(KM_KILLFOCUS, MSGFLT_ADD);
 			lpChangeWMFilter(KM_GETFOCUS, MSGFLT_ADD);
 			lpChangeWMFilter(KM_ERR_KBLOAD, MSGFLT_ADD);
+			lpChangeWMFilter(wmsgTaskbarCreated, MSGFLT_ADD);
 		}
 	}
 
@@ -163,6 +166,12 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 			}
 		}
 	}
+
+	DeleteNotifyIcon(hwndMain);
+	DestroyMyMenu(hKeyMenu);
+	DeleteDlgData(hwndMain);
+	EndDialog(hwndMain, 0);
+	UnHook();
 
 	Gdiplus::GdiplusShutdown(m_gdiplusToken);
 	ReleaseMutex(MtxHANDLE);
@@ -325,13 +334,11 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_INITDIALOG:
 		char Tempbuf[100];
 
-		lstrcpyA(Tempbuf,__DATE__);
-		lstrcatA(Tempbuf," - ");
-		lstrcatA(Tempbuf,__TIME__);
+		lstrcpyA(Tempbuf, __DATE__);
+		lstrcatA(Tempbuf, " - ");
+		lstrcatA(Tempbuf, __TIME__);
 		SendDlgItemMessageA(hDlg, IDC_COMPLIE, WM_SETTEXT, 0, (LPARAM)Tempbuf);
 		SendDlgItemMessage(hDlg, IDC_ATEXT, WM_SETTEXT, 0, (LPARAM)
-			TEXT("Copyright (C) 2008-2010  KeyMagic Project\r\n")
-			TEXT("http://keymagic.googlecode.com\r\n\r\n")
 
 			TEXT("This program is free software; you can redistribute it and/or modify\r\n")
 			TEXT("it under the terms of the GNU General Public License as published by\r\n")
@@ -380,7 +387,7 @@ VOID SetHook (HWND hwnd){
 	HookInit(hwnd, &hWnds, hMod, wcCurDir, &Hooks);
 }
 
-VOID UnHook (){
+VOID UnHook () {
 	bool ret = UnhookWindowsHookEx(Hooks.hGetMsgHook);
 	Debug(TEXT("UnhookWindowsHookEx(GetMsgHook)=>%x\n"), ret);
 	ret = UnhookWindowsHookEx(Hooks.hKeyHook);
@@ -394,20 +401,21 @@ BOOL WorkOnCommand(LPTSTR lpCmdLine){
 	if (!lstrlen(lpCmdLine)){
 		return false;
 	}
+
 	if (lpCmdLine[0] == '-'){
 		switch (lpCmdLine[1]){
 		case 'i':
 			if (AddKeyBoard(&lpCmdLine[3]))
-				MessageBox(GetDesktopWindow(), TEXT("The keyboard has been successfully added."), TEXT("KeyMagic"), MB_ICONINFORMATION | MB_OK);
+				MessageBox(GetDesktopWindow(), TEXT("The keyboard has been successfully added."), szKeymagic, MB_ICONINFORMATION | MB_OK);
 			return true;
 		case 'u':
-			HWND hPreHandle = FindWindow(NULL, szTitle);
-			if (hPreHandle)
-			{
-				SendMessage(hPreHandle, WM_CLOSE, 0, 0);
+			HWND hPreHandle = FindWindow(szMainClassName, NULL);
+			if (hPreHandle) {
+				PostMessage(hPreHandle, WM_QUIT, 0, 0);
+				//SendMessage(hPreHandle, WM_QUIT, 0, 0);
+				SetStartup(false);
 				Sleep(1000);
 			}
-			UnHook();
 			ScannerAndInject();
 			return true;
 		}
@@ -420,8 +428,8 @@ BOOL AddKeyBoard(TCHAR* lpKBPath){
 	if (bAdmin)
 		MessageBox (GetDesktopWindow(),
 			TEXT("Sorry! The Keyboard cannot be added.\n")
-			TEXT("Please turn off UAC or run Keymagic as an Administrator."),
-			TEXT("Keymagic"), MB_OK | MB_ICONEXCLAMATION);
+			TEXT("Please turn off UAC or run KeyMagic as an Administrator."),
+			szKeymagic, MB_OK | MB_ICONEXCLAMATION);
 
 	TCHAR lpPath[MAX_PATH];
 	TCHAR lpName[MAX_PATH];
@@ -451,7 +459,7 @@ BOOL AddKeyBoard(TCHAR* lpKBPath){
 			break;
 		}
 	}
-	//PathAppend(szKBPath, TEXT("KeyMagic"));
+	//PathAppend(szKBPath, szKeymagic);
 	PathAppend(szKBPath, lpPath);
 
 	if (!CopyFile(lpKBPath, szKBPath, false)){

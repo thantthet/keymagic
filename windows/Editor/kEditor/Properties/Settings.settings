@@ -29,6 +29,9 @@
   &lt;Style index="1" fontName="Segoe UI" fontSize="8"
   foreColor="FF2D2DFF" backColor="FFFFFFFF" bold="False"
   italic="False" /&gt;
+  &lt;Style index="4" fontName="Segoe UI" fontSize="8"
+  foreColor="FF2D2DFF" backColor="FFFFFFFF" bold="False"
+  italic="False" /&gt;
   &lt;Style index="5" fontName="Verdana" fontSize="8"
   foreColor="FF1E90FF" backColor="FFFFFFFF" bold="False"
   italic="False" /&gt;
@@ -52,6 +55,9 @@
   foreColor="FF8000" backColor="FFFFFFFF" bold="False"
   italic="False" /&gt;
 &lt;/Styles&gt;</Value>
+    </Setting>
+    <Setting Name="LineNumber" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

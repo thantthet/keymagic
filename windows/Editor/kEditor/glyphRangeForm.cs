@@ -10,7 +10,20 @@ namespace kEditor
 {
     public partial class glyphRangeForm : Form
     {
-        public CharacterRange characterRange = new CharacterRange();
+        private CharacterRange m_GlyphRange = new CharacterRange();
+        public CharacterRange GlyphRange
+        {
+            get
+            {
+                return m_GlyphRange;
+            }
+            set
+            {
+                m_GlyphRange = value;
+                txtFrom.Text = m_GlyphRange.First.ToString("X4");
+                txtLength.Text = m_GlyphRange.Length.ToString();
+            }
+        }
         public glyphRangeForm()
         {
             InitializeComponent();
@@ -38,8 +51,8 @@ namespace kEditor
             }
             else
             {
-                characterRange.First = first;
-                characterRange.Length = length;
+                m_GlyphRange.First = first;
+                m_GlyphRange.Length = length;
                 DialogResult = System.Windows.Forms.DialogResult.OK;
                 this.Close();
             }
@@ -55,7 +68,7 @@ namespace kEditor
         {
             int first;
             int.TryParse(txtFrom.Text, System.Globalization.NumberStyles.AllowHexSpecifier, null, out first);
-            characterRange.First = first;
+            m_GlyphRange.First = first;
 
             errorProvider.SetError(txtFrom, "");
 
@@ -64,9 +77,9 @@ namespace kEditor
 
         private void computeLast()
         {
-            if (characterRange.First != 0 && characterRange.Length != 0 && (characterRange.First + characterRange.Length) <= 0xffff)
+            if (m_GlyphRange.First != 0 && m_GlyphRange.Length != 0 && (m_GlyphRange.First + m_GlyphRange.Length) <= 0xffff)
             {
-                lblTo.Text = "- 0x" + (characterRange.First - 1 + characterRange.Length).ToString("X");
+                lblTo.Text = "- 0x" + (m_GlyphRange.First - 1 + m_GlyphRange.Length).ToString("X");
             }
         }
 
@@ -74,7 +87,7 @@ namespace kEditor
         {
             int length;
             int.TryParse(txtLength.Text, out length);
-            characterRange.Length = length;
+            m_GlyphRange.Length = length;
 
             errorProvider.SetError(txtLength, "");
 

@@ -76,12 +76,18 @@
             this.saveFileDlg = new System.Windows.Forms.SaveFileDialog();
             this.fontDlg = new System.Windows.Forms.FontDialog();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.cboGRanges = new System.Windows.Forms.ComboBox();
             this.SciEditor = new ScintillaNet.Scintilla();
             this.glyphTable = new kEditor.GlyphTable();
             this.mainMenu.SuspendLayout();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SciEditor)).BeginInit();
             this.SuspendLayout();
             // 
@@ -401,11 +407,38 @@
             // 
             // splitContainer.Panel1
             // 
-            this.splitContainer.Panel1.Controls.Add(this.glyphTable);
+            this.splitContainer.Panel1.Controls.Add(this.tableLayoutPanel1);
             // 
             // splitContainer.Panel2
             // 
             this.splitContainer.Panel2.Controls.Add(this.SciEditor);
+            // 
+            // tableLayoutPanel1
+            // 
+            resources.ApplyResources(this.tableLayoutPanel1, "tableLayoutPanel1");
+            this.tableLayoutPanel1.Controls.Add(this.glyphTable, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel1, 0, 0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Controls.Add(this.label1);
+            this.flowLayoutPanel1.Controls.Add(this.cboGRanges);
+            resources.ApplyResources(this.flowLayoutPanel1, "flowLayoutPanel1");
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            // 
+            // label1
+            // 
+            resources.ApplyResources(this.label1, "label1");
+            this.label1.Name = "label1";
+            // 
+            // cboGRanges
+            // 
+            this.cboGRanges.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboGRanges.FormattingEnabled = true;
+            resources.ApplyResources(this.cboGRanges, "cboGRanges");
+            this.cboGRanges.Name = "cboGRanges";
+            this.cboGRanges.SelectedIndexChanged += new System.EventHandler(this.cboGRanges_SelectedIndexChanged);
             // 
             // SciEditor
             // 
@@ -462,6 +495,9 @@
             this.splitContainer.Panel1.ResumeLayout(false);
             this.splitContainer.Panel2.ResumeLayout(false);
             this.splitContainer.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.flowLayoutPanel1.ResumeLayout(false);
+            this.flowLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SciEditor)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -519,6 +555,10 @@
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private ScintillaNet.Scintilla SciEditor;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox cboGRanges;
     }
 }
 
