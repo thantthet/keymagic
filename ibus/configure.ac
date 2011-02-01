@@ -30,7 +30,7 @@ m4_define(ibus_maybe_datestamp,
 m4_define([ibus_version],
     ibus_major_version.ibus_minor_version.ibus_micro_version[]ibus_maybe_datestamp)
 
-AC_INIT([package_name], [ibus_version], [http://code.google.com/p/ibus/issues/entry], [package_name])
+AC_INIT([package_name], [ibus_version], [http://code.google.com/p/keymagic/issues/entry], [package_name])
 AM_INIT_AUTOMAKE([1.10])
 AC_GNU_SOURCE
 
@@ -69,9 +69,9 @@ AM_GNU_GETTEXT_VERSION(0.16.1)
 AC_CONFIG_FILES(po/Makefile.in
 Makefile
 ibus-keymagic.spec
+icons/Makefile
 src/Makefile
 src/keymagic.xml.in
-icons/Makefile
 m4/Makefile
 )
 

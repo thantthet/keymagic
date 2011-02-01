@@ -19,11 +19,10 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 icons_DATA = \
-	ibus-enchant.svg \
+	ibus-keymagic.png \
 	$(NULL)
 
 iconsdir = $(pkgdatadir)/icons
 
-EXTRA_DIST = \
-	ibus-enchant.svg \
-	$(NULL)
+EXTRA_DIST = $(icons_DATA)
+

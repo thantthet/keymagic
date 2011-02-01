@@ -50,5 +50,7 @@ rpm: dist @PACKAGE_NAME@.spec
 			@PACKAGE_NAME@.spec
 clean-rpm:
 	$(RM) -r "`uname -i`"
+	$(RM) -r @PACKAGE_NAME@-@PACKAGE_VERSION@*.src.rpm
 
 clean-local: clean-rpm
+	$(RM) -r $(distdir)
