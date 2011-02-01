@@ -36,22 +36,22 @@ void KeyMagicEngine::updateHistory(KeyMagicString text) {
 	}
 }
 
-bool KeyMagicEngine::processKeyEvent(int keyval, int keycode, int modifier) {
+bool KeyMagicEngine::processInput(int keyval, int keycode, int modifier) {
 	bool success = false;
-
-	m_keyStates[keycode] = 1;
-
-	KeyMagicString oldText = m_textContext;
 
 	for (RuleList::iterator i = m_rules->begin(); i != m_rules->end(); i++) {
 		RuleInfo * rule = *i;
 		success = matchRule(rule, keyval, keycode, modifier);
 		if (success) {
 
-			std::cerr << "matched:SrcIndex=" << rule->getRuleIndex() <<  ";sortedIndex=" << i - m_rules->begin() << std::endl;
+			if (keycode) {
+				m_switch.clear();
+			}
+
+			std::cerr << std::dec << "matched:SrcIndex=" << rule->getRuleIndex() <<  ";sortedIndex=" << i - m_rules->begin() << std::endl;
 
 			// if anything is matched with string pattern, we need to append keyval to the context
-			if (!matchedVK) {
+			if (!m_matchedVK && keyval != 0) {
 				m_textContext += keyval;
 			}
 
@@ -60,14 +60,44 @@ bool KeyMagicEngine::processKeyEvent(int keyval, int keycode, int modifier) {
 			//un-press
 			m_keyStates[keycode] = 0;
 
+			return true;
+		}
+	}
+	return false;
+}
+
+bool KeyMagicEngine::processKeyEvent(int keyval, int keycode, int modifier) {
+	bool success = false;
+
+	m_keyStates[keycode] = 1;
+
+	KeyMagicString oldText = m_textContext;
+
+	success = processInput(keyval, keycode, modifier);
+
+	if (!success && keycode) {
+		m_switch.clear();
+	}
+
+	while (success) {
+		if (m_shouldMatchAgain) {
+			success = processInput(0, 0, 0);
+			if (!success) {
+				updateHistory(oldText);
+			} else if (keycode == 8 && m_contextHistory.size()) {
+				if (m_textContext == m_contextHistory.back()) { // if results are the same
+					m_contextHistory.pop_back(); // sync with smartbackspace
+				}
+			}
+		} else {
 			if (keycode == 8 && m_contextHistory.size()) {
-				if (m_textContext == m_contextHistory.back()) {
-					m_contextHistory.pop_back();
+				if (m_textContext == m_contextHistory.back()) { // if results are the same
+					m_contextHistory.pop_back(); // sync with smartbackspace
 				}
 			} else {
 				updateHistory(oldText);
 			}
-			return true;
+			break;
 		}
 	}
 
@@ -163,24 +193,25 @@ bool KeyMagicEngine::matchRule(RuleInfo * rule, int keyval, int keycode, int mod
 
 	std::vector<RuleInfo::Item*> * rules = rule->getLHS();
 
-	matchedVK = false;
+	m_matchedVK = false;
 	int kcode = matchKeyStates(keycode, modifier, rules);
 	if (kcode == -1) {
 		return false;
 	} else if (kcode == 0) {
-		appendedContext.push_back(keyval);
+		if (keyval != 0) appendedContext += keyval;
 	} else {
-		matchedVK = true;
+		m_matchedVK = true;
 	}
 
-	unsigned int length = rule->getMatchLength();
+	unsigned int lenToMatch = rule->getMatchLength();
+	unsigned int lenAppended = appendedContext.length();
 
-	if (length > appendedContext.length()) {
+	if (lenToMatch > lenAppended) {
 		return false;
 	}
 
 	//get from the end
-	KeyMagicString stringToMatch = appendedContext.substr(appendedContext.length() - length);
+	KeyMagicString stringToMatch = appendedContext.substr(lenAppended - lenToMatch);
 	KeyMagicString::iterator itToMatch = stringToMatch.begin();
 
 	m_backRef.clear();
@@ -340,6 +371,17 @@ bool KeyMagicEngine::processOutput(RuleInfo * rule) {
 	m_textContext = m_textContext.substr(0, m_textContext.length() - length);
 	m_textContext += outputResult;
 
+	if (outputResult.length() == 0 || (outputResult.length() == 1 && outputResult.at(0) > 0x20 && outputResult.at(0) < 0x7F)) {
+		m_shouldMatchAgain = false;
+	} else {
+		m_shouldMatchAgain = true;
+	}
+
+	printf("(");
+	for (KeyMagicString::iterator i = outputResult.begin(); i != outputResult.end(); i++) {
+		printf("0x%04x ", *i);
+	}
+	printf(")");
 	for (KeyMagicString::iterator i = m_textContext.begin(); i != m_textContext.end(); i++) {
 		printf("0x%04x ", *i);
 	}

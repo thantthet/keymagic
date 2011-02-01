@@ -63,6 +63,10 @@ private:
 	 */
 	bool matchRule(RuleInfo * rule, int keyval, int keycode, int modifier);
 	/**
+	 *
+	 */
+	bool processInput(int keyval, int keycode, int modifier);
+	/**
 	 * private function to process output once the rule was matched
 	 * @param ruleInfo rule that was matched
 	 */
@@ -97,7 +101,9 @@ private:
 
 	std::vector<KeyMagicString> m_backRef;
 
-	bool matchedVK;
+	bool m_matchedVK;
+
+	bool m_shouldMatchAgain;
 };
 
 #endif

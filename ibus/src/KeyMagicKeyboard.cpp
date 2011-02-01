@@ -19,20 +19,20 @@ bool sortRule (RuleInfo * r1, RuleInfo * r2) {
 
 	int s1 = r1->getSwitchCount();
 	int s2 = r2->getSwitchCount();
-	if (s1 < s2) {
-		return true;
+	if (s1 != s2) {
+		return s1 < s2;
 	}
 
 	int v1 = r1->getVKCount();
 	int v2 = r2->getVKCount();
-	if (v1 < v2) {
-		return true;
+	if (v1 != v2) {
+		return v1 < v2;
 	}
 
 	int m1 = r1->getMatchLength();
 	int m2 = r2->getMatchLength();
-	if (m1 < m2) {
-		return true;
+	if (m1 != m2) {
+		return m1 < m2;
 	}
 
 	return false;
@@ -47,7 +47,6 @@ bool KeyMagicKeyboard::loadKeyboardFile(const char * szPath) {
 
 	hFile = fopen(szPath, "rb");
 	if (!hFile){
-		//PrintLastError();
 		return false;
 	}
 
@@ -62,9 +61,6 @@ bool KeyMagicKeyboard::loadKeyboardFile(const char * szPath) {
 	m_strings.clear();
 	m_rules.clear();
 
-	std::wofstream df;
-	df.open("raw_strings.log", std::fstream::app);
-
 	for (int i = 0; i < fh.stringCount; i++)
 	{
 		short sLength;
@@ -73,16 +69,9 @@ bool KeyMagicKeyboard::loadKeyboardFile(const char * szPath) {
 		short * local_buf = new short[sLength+1];
 		local_buf[sLength]='\0';
 		fread(local_buf, sLength * sizeof(short), 1, hFile);
-		
-		for (int j = 0; j < sLength; j++) {
-			df << "\\x" << std::hex << local_buf[j];
-		}
-		df << std::endl;
 
 		strings.push_back(local_buf);
 	}
-
-	df.close();
 
 	for (int i = 0; i < fh.ruleCount; i++)
 	{
@@ -110,6 +99,11 @@ bool KeyMagicKeyboard::loadKeyboardFile(const char * szPath) {
 	binaryRulesToManagedRules(&rules, &m_rules);
 	std::sort(m_rules.begin(), m_rules.end(), sortRule);
 	std::reverse(m_rules.begin(), m_rules.end());
+
+	for (RuleList::iterator i = m_rules.begin(); i != m_rules.end(); i++) {
+		RuleInfo * ri = *i;
+		std::cerr << "sw=" << ri->getSwitchCount() << ";vk=" << ri->getVKCount() << ";str=" << ri->getMatchLength() << std::endl;
+	}
 
 	fclose(hFile);
 

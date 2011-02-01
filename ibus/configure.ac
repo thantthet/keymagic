@@ -19,7 +19,7 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 # if not 1, append datestamp to the version number.
-m4_define([package_name], [ibus-tmpl])
+m4_define([package_name], [ibus-keymagic])
 m4_define([ibus_released], [0])
 m4_define([ibus_major_version], [1])
 m4_define([ibus_minor_version], [2])
@@ -53,12 +53,8 @@ AM_PROG_LIBTOOL
 
 # check ibus
 PKG_CHECK_MODULES(IBUS, [
-    ibus-1.0 >= 1.3.0
+    ibus-1.0 >= 1.2
 ])
-
-
-#check python
-AM_PATH_PYTHON([2.5])
 
 # define GETTEXT_* variables
 GETTEXT_PACKAGE="$PACKAGE_NAME"
@@ -72,9 +68,9 @@ AM_GNU_GETTEXT_VERSION(0.16.1)
 # OUTPUT files
 AC_CONFIG_FILES(po/Makefile.in
 Makefile
-ibus-tmpl.spec
+ibus-keymagic.spec
 src/Makefile
-src/enchant.xml.in
+src/keymagic.xml.in
 icons/Makefile
 m4/Makefile
 )

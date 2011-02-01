@@ -19,9 +19,9 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-libexec_PROGRAMS = ibus-engine-enchant
+libexec_PROGRAMS = ibus-engine-keymagic
 
-ibus_engine_enchant_SOURCES = \
+ibus_engine_keymagic_SOURCES = \
 	main.cpp \
 	engine.cpp \
 	engine.h \
@@ -39,30 +39,28 @@ ibus_engine_enchant_SOURCES = \
 	KeyCodes.cpp \
 	KeyMagicTypes.h \
 	$(NULL)
-ibus_engine_enchant_CXXFLAGS = \
+ibus_engine_keymagic_CXXFLAGS = \
 	@IBUS_CFLAGS@ \
-	@ENCHANT_CFLAGS@ \
 	-DPKGDATADIR=\"$(pkgdatadir)\"
 	$(NULL)
-ibus_engine_enchant_LDFLAGS = \
+ibus_engine_keymagic_LDFLAGS = \
 	@IBUS_LIBS@ \
-	@ENCHANT_LIBS@
 	$(NULL)
 
 component_DATA = \
-	enchant.xml \
+	keymagic.xml \
 	$(NULL)
 componentdir = @datadir@/ibus/component
 
 EXTRA_DIST = \
-	enchant.xml.in \
+	keymagic.xml.in \
 	$(NULL)
 
 CLEANFILES = \
-	enchant.xml \
+	keymagic.xml \
 	$(NULL)
 
-enchant.xml: enchant.xml.in
+keymagic.xml: keymagic.xml.in
 	$(AM_V_GEN) \
 	( \
 		libexecdir=${libexecdir}; \
@@ -71,5 +69,5 @@ enchant.xml: enchant.xml.in
 		eval "echo \"$${s}\""; \
 	) > $@
 
-test: ibus-engine-enchant
-	$(builddir)/ibus-engine-enchant
+test: ibus-engine-keymagic
+	$(builddir)/ibus-engine-keymagic

@@ -1,19 +1,18 @@
 Name:       @PACKAGE_NAME@
 Version:    @PACKAGE_VERSION@
 Release:    1%{?dist}
-Summary:    IBus template project
+Summary:    IBus KeyMagic project
 License:    GPLv2+
 Group:      System Environment/Libraries
 URL:        http://code.google.com/p/ibus/
 Source0:    http://ibus.googlecode.com/files/%{name}-%{version}.tar.gz
 
 BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires:  ibus-devl
 
 Requires:   ibus
 
 %description
-IBus template project.
+IBus KeyMagic project.
 
 %prep
 %setup -q
@@ -37,10 +36,10 @@ rm -rf $RPM_BUILD_ROOT
 %doc AUTHORS COPYING README
 # %dir %{python_sitearch}/ibus
 # %{python_sitearch}/ibus/*
-%dir %{_datadir}/ibus-tmpl
-%{_datadir}/ibus-tmpl
-%{_bindir}/ibus-engine-enchant
+%dir %{_datadir}/ibus-keymagic
+%{_datadir}/ibus-keymagic
+%{_bindir}/ibus-engine-keymagic
 
 %changelog
-* Wed Jun 25 2008 Huang Peng <shawn.p.huang@gmail.com> - 0.1.0-1
+* Feb 01 2010 Thant Thet Khin Zaw <thantthetkz@gmail.com>
 - The first version.

@@ -1,0 +1,27 @@
+<?xml version=\"1.0\" encoding=\"utf-8\"?>
+<!-- filename: keymagic.xml -->
+<component>
+	<name>org.freedesktop.IBus.KeyMagic</name>
+	<description>KeyMagic Input Method</description>
+	<exec>${libexecdir}/ibus-engine-keymagic --ibus</exec>
+	<version>@VERSION@</version>
+	<author>Thant Thet Khin Zaw &lt;thantthetkz@gmail.com&gt;</author>
+	<license>GPL</license>
+	<homepage>http://code.google.com/p/keymagic</homepage>
+	<textdomain>ibus-keymagic</textdomain>
+
+	<engines>
+		<engine>
+			<name>keymagic</name>
+			<language>mm</language>
+			<license>GPL</license>
+			<author>hant Thet Khin Zaw &lt;thantthetkz@gmail.com&gt;</author>
+			<icon>${pkgdatadir}/icons/ibus-enchant.png</icon>
+			<layout>us</layout>
+			<longname>KeyMagic</longname>
+			<description>KeyMagic Input Method</description>
+			<rank>0</rank>
+		</engine>
+	</engines>
+
+</component>

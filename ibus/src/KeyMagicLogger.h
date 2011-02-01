@@ -8,7 +8,7 @@
 #ifndef KEYMAGICLOGGER_H_
 #define KEYMAGICLOGGER_H_
 
-#include <iostream>;
+#include <iostream>
 
 class KeyMagicLogger : public std::wostream {
 public:
