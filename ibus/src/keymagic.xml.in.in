@@ -9,8 +9,12 @@
 	<license>GPL</license>
 	<homepage>http://code.google.com/p/keymagic</homepage>
 	<textdomain>ibus-keymagic</textdomain>
+	<observed-paths>
+		<path>~/.keymagic</path>
+	</observed-paths>
+	<engines exec="${libexecdir}/ibus-engine-keymagic --xml" />
 
-	<engines>
+	<!--engines>
 		<engine>
 			<name>keymagic</name>
 			<language>mm</language>
@@ -22,6 +26,6 @@
 			<description>KeyMagic Input Method</description>
 			<rank>0</rank>
 		</engine>
-	</engines>
+	</engines-->
 
 </component>

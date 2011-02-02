@@ -6,10 +6,11 @@
 #include <string.h>
 #include "KeyMagicEngine.h"
 
-#define IBUS_TYPE_KEYMAGIC_ENGINE	\
-	(ibus_keymagic_engine_get_type ())
+//#define IBUS_TYPE_KEYMAGIC_ENGINE	\
+//	(ibus_keymagic_engine_get_type ())
 
-GType   ibus_keymagic_engine_get_type    (void);
+//GType   ibus_keymagic_engine_get_type    (void);
+GType   ibus_keymagic_engine_get_type_for_name (const gchar *name);
 
 inline int ucs2_to_utf8 (int ucs2, unsigned char * utf8)
 {

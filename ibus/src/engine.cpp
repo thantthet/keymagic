@@ -16,6 +16,7 @@ struct _IBusKeymagicEngine {
 
 struct _IBusKeymagicEngineClass {
 	IBusEngineClass parent;
+	gchar * path;
 };
 
 /* functions prototype */
@@ -61,13 +62,111 @@ static void ibus_keymagic_engine_commit_string
 static void ibus_keymagic_engine_commit_from_engine (IBusKeymagicEngine	*ibusKeymagic);
 static void ibus_keymagic_engine_update      (IBusKeymagicEngine	*ibusKeymagic);
 
-G_DEFINE_TYPE (IBusKeymagicEngine, ibus_keymagic_engine, IBUS_TYPE_ENGINE)
+//G_DEFINE_TYPE (IBusKeymagicEngine, ibus_keymagic_engine, IBUS_TYPE_ENGINE)
+
+static gboolean
+ibus_keymagic_scan_engine_name (const gchar *engine_name,
+                            gchar      **lang,
+                            gchar      **name)
+{
+    gchar **strv;
+
+    g_return_val_if_fail (g_str_has_prefix (engine_name, "keymagic:"), FALSE);
+    strv = g_strsplit (engine_name, ":", 2);
+
+    if (g_strv_length (strv) != 2) {
+        g_strfreev (strv);
+        g_return_val_if_reached (FALSE);
+    }
+
+    *lang = g_strdup("en");
+    *name = strv[1];
+
+    g_free (strv[0]);
+    g_free (strv);
+
+    return TRUE;
+}
+
+static gboolean
+ibus_keymagic_scan_class_name (const gchar *class_name,
+                           gchar      **lang,
+                           gchar      **name)
+{
+	gchar **strv;
+
+	g_return_val_if_fail (g_str_has_prefix (class_name, "KeyMagic_"), FALSE);
+	strv = g_strsplit (class_name, "_", 4);
+
+	if (g_strv_length (strv) != 4) {
+		g_strfreev (strv);
+		g_return_val_if_reached (FALSE);
+	}
+
+	*lang = strv[1];
+	*name = strv[2];
+
+	g_free (strv[0]);
+	g_free (strv);
+
+	return TRUE;
+}
+
+GType
+ibus_keymagic_engine_get_type_for_name (const gchar *engine_name)
+{
+    GType type;
+    gchar *type_name, *lang = NULL, *name = NULL;
+
+    GTypeInfo type_info = {
+        sizeof (IBusKeymagicEngineClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) ibus_keymagic_engine_class_init,
+        (GClassFinalizeFunc) NULL,
+        NULL,
+        sizeof (IBusKeymagicEngine),
+        0,
+        (GInstanceInitFunc) ibus_keymagic_engine_init,
+    };
+
+    if (!ibus_keymagic_scan_engine_name (engine_name, &lang, &name)) {
+        g_free (lang);
+        g_free (name);
+        return G_TYPE_INVALID;
+    }
+    //lang[0] = g_ascii_toupper (lang[0]);
+    //name[0] = g_ascii_toupper (name[0]);
+    type_name = g_strdup_printf ("KeyMagic_%s_%s_Engine", lang, name);
+    g_free (lang);
+    g_free (name);
+
+    type = g_type_from_name (type_name);
+    g_assert (type == 0 || g_type_is_a (type, IBUS_TYPE_ENGINE));
+
+    if (type == 0) {
+        /*type = g_type_module_register_type (G_TYPE_MODULE (module),
+                                            IBUS_TYPE_ENGINE,
+                                            type_name,
+                                            &type_info,
+                                            (GTypeFlags) 0);*/
+        type = g_type_register_static(IBUS_TYPE_ENGINE,
+									  type_name,
+                                      &type_info,
+                                      (GTypeFlags)0);
+    }
+    g_free (type_name);
+
+    return type;
+}
 
 static IBusEngineClass *parent_class = NULL;
 
 static void
 ibus_keymagic_engine_class_init (IBusKeymagicEngineClass *klass)
 {
+	gchar *engine_name = NULL, *lang = NULL, *name = NULL, *path;
+
 	IBusObjectClass *ibus_object_class = IBUS_OBJECT_CLASS (klass);
 	IBusEngineClass *engine_class = IBUS_ENGINE_CLASS (klass);
 	
@@ -82,13 +181,26 @@ ibus_keymagic_engine_class_init (IBusKeymagicEngineClass *klass)
     engine_class->reset = ibus_keymagic_engine_reset;
     engine_class->enable = ibus_keymagic_engine_enable;
     engine_class->disable = ibus_keymagic_engine_disable;
+
+    if (!ibus_keymagic_scan_class_name (G_OBJECT_CLASS_NAME (klass), &lang, &name)) {
+		g_free (lang);
+		g_free (name);
+		return;
+	}
+
+	path = g_strdup_printf("/home/thantthetkz/.keymagic/%s%s", name, ".km2");
+
+	klass->path = path;
 }
+
 
 static void
 ibus_keymagic_engine_init (IBusKeymagicEngine *ibusKeymagic)
 {
+	IBusKeymagicEngineClass *klass = (IBusKeymagicEngineClass *) G_OBJECT_GET_CLASS (ibusKeymagic);
+
 	ibusKeymagic->kme = new KeyMagicEngine();
-    ibusKeymagic->kme->loadKeyboardFile("/home/thantthetkz/workspace/KeyMagic/Debug/Zawgyi L - Unicode.km2");
+	ibusKeymagic->kme->loadKeyboardFile(klass->path);
 }
 
 static void
@@ -138,7 +250,7 @@ ibus_keymagic_engine_disable (IBusEngine *engine)
 static void
 ibus_keymagic_engine_destroy (IBusKeymagicEngine *ibusKeymagic)
 {
-	((IBusObjectClass *) ibus_keymagic_engine_parent_class)->destroy ((IBusObject *)ibusKeymagic);
+	((IBusObjectClass *) parent_class)->destroy ((IBusObject *)ibusKeymagic);
 }
 
 static void
