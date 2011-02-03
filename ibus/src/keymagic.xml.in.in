@@ -11,6 +11,7 @@
 	<textdomain>ibus-keymagic</textdomain>
 	<observed-paths>
 		<path>~/.keymagic</path>
+		<path>/usr/share/keymagic</path>
 	</observed-paths>
 	<engines exec=\"${libexecdir}/ibus-engine-keymagic --xml\" />
 

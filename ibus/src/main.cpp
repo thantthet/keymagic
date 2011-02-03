@@ -1,6 +1,7 @@
 /* vim:set et sts=4: */
 
 #include <ibus.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <dirent.h>
 
@@ -45,12 +46,12 @@ ibus_keymagic_engine_new (gchar*  lang,
     gchar *engine_desc;
 
 
-    engine_name = g_strdup_printf ("keymagic:%s", name);
+    engine_name = g_strdup_printf ("%s", name);
 
-    engine_longname = g_strdup_printf ("%s (keymagic)", name);
-    engine_title = title;
-    engine_icon = icon;
-    engine_desc = desc;
+    engine_longname = g_strdup_printf ("%s (KeyMagic)", title);
+    engine_title = g_strdup(title);
+    engine_icon = g_strdup(icon);
+    engine_desc = g_strdup(desc);
 
     engine = ibus_engine_desc_new (engine_name,
                                    engine_longname,
@@ -64,31 +65,29 @@ ibus_keymagic_engine_new (gchar*  lang,
 
     g_free (engine_name);
     g_free (engine_longname);
-    //g_free (engine_title);
-    //g_free (engine_icon);
-    //g_free (engine_desc);
+    g_free (engine_title);
+    g_free (engine_icon);
+    g_free (engine_desc);
 
     return engine;
 }
 
 GList *
-GetKeyboardNames()
+keymagic_get_keyboard_list(gchar * path)
 {
 	GList * names = NULL;
 	DIR *dir;
 	struct dirent *ent;
 
-	dir = opendir ("/home/thantthetkz/.keymagic");
+	dir = opendir (path);
 
 	if (dir != NULL) {
 		/* print all the files and directories within directory */
 		while ((ent = readdir (dir)) != NULL) {
-			std::string s = ent->d_name;
-			if (s == "." || s == ".." || !g_str_has_suffix(ent->d_name, ".km2"))
+			gchar * filename = ent->d_name;
+			if (g_str_equal(filename, ".") || g_str_equal(filename, "..") || !g_str_has_suffix(filename, ".km2"))
 				continue;
-			s = s.substr(0, s.length() - 4);
-			gchar * name = g_strdup(s.c_str());
-			names = g_list_append(names, name);
+			names = g_list_append(names, g_strdup_printf("%s/%s", path, filename));
 		}
 		closedir (dir);
 	} else {
@@ -98,6 +97,48 @@ GetKeyboardNames()
 	}
 
 	return names;
+}
+
+GList *
+ibus_keymagic_add_engines(GList * engines, GList * keyboard_list)
+{
+    GList *p;
+    for (p=keyboard_list; p != NULL; p = p->next) {
+        gchar * filename = (gchar *) p->data;
+        gchar * filetitle = g_strdup(basename(filename));
+        filetitle[strlen(filetitle) - 4] = '\0';
+        engines = g_list_append (engines,
+        		ibus_keymagic_engine_new ("en", filename, filetitle,
+				PKGDATADIR"/icons/ibus-keymagic.png", "keymagic"));
+        g_free(p->data);
+    }
+    return engines;
+}
+
+GList *
+ibus_keymagic_list_engines (void)
+{
+    GList *engines = NULL;
+    GList *keyboard_list;
+    gchar *local_keyboard_path;
+
+    keyboard_list = keymagic_get_keyboard_list("/usr/share/keymagic");
+
+    engines = ibus_keymagic_add_engines(engines, keyboard_list);
+
+    g_list_free(keyboard_list);
+
+    local_keyboard_path= g_strdup_printf("%s/.keymagic", getenv("HOME"));
+
+    keyboard_list = keymagic_get_keyboard_list(local_keyboard_path);
+
+    engines = ibus_keymagic_add_engines(engines, keyboard_list);
+
+    g_free(local_keyboard_path);
+
+    g_list_free(keyboard_list);
+
+    return engines;
 }
 
 IBusComponent *
@@ -117,13 +158,13 @@ ibus_keymagic_get_component (void)
 									"",
 									"ibus-keymagic");
 
-    GList *names = GetKeyboardNames();
-    for (p = names; p != NULL; p = p->next) {
-    	ibus_component_add_engine (component,
-    			ibus_keymagic_engine_new ("en", (gchar*)p->data, (gchar*)p->data,
-    					PKGDATADIR"/icons/ibus-keymagic.png", "keymagic"));
-    	g_free(p->data);
-    }
+    engines = ibus_keymagic_list_engines ();
+
+    for (p = engines; p != NULL; p = p->next) {
+		ibus_component_add_engine (component, (IBusEngineDesc *) p->data);
+	}
+
+	g_list_free (engines);
 
     return component;
 }
@@ -172,13 +213,7 @@ init (void)
 
 	for (p = engines; p != NULL; p = p->next) {
 		IBusEngineDesc *engine = (IBusEngineDesc *)p->data;
-		GType type = ibus_keymagic_engine_get_type_for_name (engine->name);
-
-		if (type == G_TYPE_INVALID) {
-			g_debug ("Can not create engine type for %s", engine->name);
-			continue;
-		}
-		ibus_factory_add_engine (factory, engine->name, type);
+		ibus_factory_add_engine (factory, engine->name, IBUS_TYPE_KEYMAGIC_ENGINE);
 	}
 
 	if (ibus) {
@@ -200,13 +235,6 @@ print_engines_xml (void)
     component = ibus_keymagic_get_component ();
     output = g_string_new ("");
 
-    /*GList *p, *names = GetKeyboardNames();
-    for (p = names; p != NULL; p = p->next) {
-    	ibus_component_add_engine (component,
-    			ibus_keymagic_engine_new ("en", (char*)p->data, (char*)p->data,
-    			"/usr/shared/ibus-keymagic/icon/ibus-keymagic.png", "keymagic"));
-    }*/
-
     ibus_component_output_engines(component, output, 0);
 
     fprintf (stdout, "%s", output->str);
@@ -219,7 +247,6 @@ print_engines_xml (void)
 
 int main(gint argc, gchar **argv)
 {
-
     GError *error = NULL;
     GOptionContext *context;
 
