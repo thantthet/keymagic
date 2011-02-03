@@ -12,7 +12,7 @@
 	<observed-paths>
 		<path>~/.keymagic</path>
 	</observed-paths>
-	<engines exec="${libexecdir}/ibus-engine-keymagic --xml" />
+	<engines exec=\"${libexecdir}/ibus-engine-keymagic --xml\" />
 
 	<!--engines>
 		<engine>
