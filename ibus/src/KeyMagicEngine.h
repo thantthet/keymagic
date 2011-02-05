@@ -8,6 +8,9 @@
 #include "RuleInfo.h"
 #include "KeyMagicKeyboard.h"
 
+/* The classes below are not exported */
+#pragma GCC visibility push(default)
+
 typedef std::vector<KeyMagicString> TypeContextHistory;
 
 /**
@@ -106,4 +109,5 @@ private:
 	bool m_shouldMatchAgain;
 };
 
+#pragma GCC visibility pop
 #endif

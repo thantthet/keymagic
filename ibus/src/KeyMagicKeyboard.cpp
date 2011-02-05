@@ -7,14 +7,6 @@
 
 #include "KeyMagicKeyboard.h"
 
-KeyMagicString toStringToCharRef(KeyMagicString * str) {
-	std::basic_stringstream<wchar_t> out;
-	for (KeyMagicString::iterator i = str->begin(); i < str->end(); i++) {
-		out << "\\u" << std::hex << (int)*i;
-	}
-	return out.str();
-}
-
 bool sortRule (RuleInfo * r1, RuleInfo * r2) {
 
 	int s1 = r1->getSwitchCount();
@@ -99,11 +91,6 @@ bool KeyMagicKeyboard::loadKeyboardFile(const char * szPath) {
 	binaryRulesToManagedRules(&rules, &m_rules);
 	std::sort(m_rules.begin(), m_rules.end(), sortRule);
 	std::reverse(m_rules.begin(), m_rules.end());
-
-	for (RuleList::iterator i = m_rules.begin(); i != m_rules.end(); i++) {
-		RuleInfo * ri = *i;
-		std::cerr << "sw=" << ri->getSwitchCount() << ";vk=" << ri->getVKCount() << ";str=" << ri->getMatchLength() << std::endl;
-	}
 
 	fclose(hFile);
 
