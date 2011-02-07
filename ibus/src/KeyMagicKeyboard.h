@@ -4,12 +4,15 @@
 #include "KeyMagicTypes.h"
 #include "KeyMagicString.h"
 #include "RuleInfo.h"
+#include "KeyMagicLogger.h"
 
 /**
  * Keyboard Data
  */
 class KeyMagicKeyboard {
 public:
+	KeyMagicKeyboard() : m_logger(KeyMagicLogger::getInstance())
+	{}
 	/**
 	 * Load compiled keyboard layout using filename
 	 * @param filename File name of keyboard to be loaded
@@ -32,6 +35,7 @@ private:
 	StringList m_strings;
 	RuleList m_rules;
 	LayoutOptions m_layoutOptions;
+	KeyMagicLogger * m_logger;
 
 	void variablesToStrings(BinaryStringList * variables, StringList * strings);
 	void binaryRulesToManagedRules(BinaryRuleList * binRules, RuleList * rules);

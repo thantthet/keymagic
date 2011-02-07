@@ -9,15 +9,26 @@
 #define KEYMAGICLOGGER_H_
 
 #include <iostream>
-#include <KeyMagicTypes.h>
+#include "KeyMagicTypes.h"
 
-class KeyMagicLogger : public std::wostream {
+#pragma GCC visibility push(default)
+
+class KeyMagicLogger {
 public:
-	KeyMagicLogger();
-	void log(const wchar_t * msg);
-	void log(const KeyMagicString * msg);
+	static KeyMagicLogger* getInstance();
+	void log(const char * fmt, ...);
+	FILE * getFile();
+	void setFile(FILE * file);
+	~KeyMagicLogger() {
+		m_instance = NULL;
+	}
 private:
-	void print(const wchar_t * msg);
+	KeyMagicLogger();
+	
+	static KeyMagicLogger * m_instance;
+	FILE * m_logFile;
 };
+
+#pragma GCC visibility pop
 
 #endif /* KEYMAGICLOGGER_H_ */

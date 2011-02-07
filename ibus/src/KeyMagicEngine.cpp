@@ -37,6 +37,8 @@ void KeyMagicEngine::updateHistory(KeyMagicString text) {
 bool KeyMagicEngine::processInput(int keyval, int keycode, int modifier) {
 	bool success = false;
 	
+	m_logger->log("processInput;keyval=%c;keycode=%x;modifier=%x\n", keyval, keycode, modifier);
+
 	for (RuleList::iterator i = m_rules->begin(); i != m_rules->end(); i++) {
 		RuleInfo * rule = *i;
 		success = matchRule(rule, keyval, keycode, modifier);
@@ -71,6 +73,9 @@ bool KeyMagicEngine::processKeyEvent(int keyval, int keycode, int modifier) {
 	
 	success = processInput(keyval, keycode, modifier);
 	
+	//un-press
+	m_keyStates[keycode] = 0;
+	
 	if (!success && keycode) {
 		m_switch.clear();
 	}
@@ -98,12 +103,12 @@ bool KeyMagicEngine::processKeyEvent(int keyval, int keycode, int modifier) {
 			}
 		}
 		
-		//un-press
-		m_keyStates[keycode] = 0;
-		
 		return true;
 		
 	} else {
+		std::string * str = getCharacterReferenceString(&m_textContext); 
+		m_logger->log("processInput:FAILED;%s\n", str->c_str());
+		delete str;
 		
 		if ((modifier & CTRL_MASK) || (modifier & ALT_MASK)) {
 			return false;
@@ -294,9 +299,14 @@ bool KeyMagicEngine::matchRule(RuleInfo * rule, int keyval, int keycode, int mod
 				itToMatch++;
 				break;
 			case RuleInfo::tSwitch:
-				if (!m_switch[curRule->switchId]) {
+				if (m_switch.find(curRule->switchId) != m_switch.end()) {
+					if (!m_switch[curRule->switchId]) {
+						return false;
+					}
+				} else {
 					return false;
 				}
+
 				break;
 			default:
 				break;
@@ -308,6 +318,8 @@ bool KeyMagicEngine::matchRule(RuleInfo * rule, int keyval, int keycode, int mod
 
 bool KeyMagicEngine::processOutput(RuleInfo * rule) {
 	KeyMagicString outputResult, backupResult;
+	
+	m_logger->log("processOutput;%d\n", rule->getRuleIndex());
 	
 	std::vector<RuleInfo::Item*> * inRules = rule->getLHS();
 	std::vector<RuleInfo::Item*>::iterator iInRule = inRules->begin();

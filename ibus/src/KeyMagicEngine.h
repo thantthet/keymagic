@@ -7,8 +7,9 @@
 #include "KeyMagicString.h"
 #include "RuleInfo.h"
 #include "KeyMagicKeyboard.h"
+#include "KeyMagicLogger.h"
 
-/* The classes below are not exported */
+/* The classes below are exported */
 #pragma GCC visibility push(default)
 
 typedef std::vector<KeyMagicString> TypeContextHistory;
@@ -18,6 +19,9 @@ typedef std::vector<KeyMagicString> TypeContextHistory;
  */
 class KeyMagicEngine {
 public:
+	KeyMagicEngine() : m_logger(KeyMagicLogger::getInstance())
+	{}
+	
 	enum {
 		SHIFT_MASK = 1 << 0,
 		CTRL_MASK = 1 << 1,
@@ -107,6 +111,8 @@ private:
 	bool m_matchedVK;
 
 	bool m_shouldMatchAgain;
+	
+	KeyMagicLogger * m_logger;
 };
 
 #pragma GCC visibility pop

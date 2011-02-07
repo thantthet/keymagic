@@ -5,4 +5,6 @@
 
 typedef std::basic_string<wchar_t> KeyMagicString;
 
+std::string * getCharacterReferenceString(KeyMagicString * text);
+
 #endif

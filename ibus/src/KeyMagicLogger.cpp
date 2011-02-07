@@ -7,17 +7,31 @@
 
 #include "KeyMagicLogger.h"
 
+KeyMagicLogger* KeyMagicLogger::m_instance = NULL;
+
 KeyMagicLogger::KeyMagicLogger() {
-
+	m_logFile = stderr;
 }
 
-void KeyMagicLogger::log(const wchar_t * msg) {
-	print(msg);
+KeyMagicLogger * KeyMagicLogger::getInstance() {
+	if (m_instance == NULL) {
+		m_instance = new KeyMagicLogger();
+	}
+	return m_instance;
 }
 
-void KeyMagicLogger::log(const KeyMagicString * msg) {
-	print(msg->c_str());
+void KeyMagicLogger::log(const char * fmt, ...) {
+	va_list vl;
+	
+	va_start (vl, fmt);
+	vfprintf(m_logFile, fmt, vl);
+	va_end(vl);
 }
 
-void KeyMagicLogger::print(const wchar_t * msg) {
+FILE * KeyMagicLogger::getFile() {
+	return m_logFile;
+}
+
+void KeyMagicLogger::setFile(FILE * file) {
+	m_logFile = file;
 }

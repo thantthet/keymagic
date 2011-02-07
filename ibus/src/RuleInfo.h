@@ -6,6 +6,7 @@
 
 #include "KeyMagicString.h"
 #include "KeyMagicTypes.h"
+#include "KeyMagicLogger.h"
 
 #define opSTRING		0x00F0
 #define opVARIABLE		0x00F1
@@ -132,16 +133,15 @@ public:
 	void setIndex(int index) {
 		m_index = index;
 	}
+	
+	std::string * description();
+	std::string * readable(std::vector<Item*> * rule);
 private:
 	int m_index;
 	/**
 	 * context length to be matched
 	 */
 	unsigned int m_matchLength;
-	/**
-	 * list of switches' id that we need to match
-	 */
-	std::vector<int> m_switches;
 	/**
 	 * array of left-hand-side rules
 	 */
@@ -158,6 +158,7 @@ private:
 	 * LHS vk count
 	 */
 	unsigned int m_countVkey;
+	KeyMagicLogger * m_logger;
 };
 
 typedef std::vector<RuleInfo*> RuleList;

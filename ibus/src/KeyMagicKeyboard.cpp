@@ -39,16 +39,23 @@ bool KeyMagicKeyboard::loadKeyboardFile(const char * szPath) {
 
 	hFile = fopen(szPath, "rb");
 	if (!hFile){
+		m_logger->log("Cannot open keyboard file;%s", szPath);
 		return false;
 	}
 
 	fread(&fh, sizeof(FileHeader), 1, hFile);
 
 	if (fh.magicCode[0] != 'K' || fh.magicCode[1] != 'M' || fh.magicCode[2] != 'K' || fh.magicCode[3] != 'L') {
+		m_logger->log("Not KeyMagic keyboard file;%s", szPath);
 		return false;
 	}
 
 	m_layoutOptions = fh.layoutOptions;
+	
+	m_logger->log("autoBksp=%x\n", m_layoutOptions.autoBksp);
+	m_logger->log("eat=%x\n", m_layoutOptions.eat);
+	m_logger->log("posBased=%x\n", m_layoutOptions.posBased);
+	m_logger->log("trackCaps=%x\n", m_layoutOptions.trackCaps);
 
 	m_strings.clear();
 	m_rules.clear();
@@ -91,6 +98,20 @@ bool KeyMagicKeyboard::loadKeyboardFile(const char * szPath) {
 	binaryRulesToManagedRules(&rules, &m_rules);
 	std::sort(m_rules.begin(), m_rules.end(), sortRule);
 	std::reverse(m_rules.begin(), m_rules.end());
+	
+	m_logger->log("strings;%d==%d\n", strings.size(), m_strings.size());
+	m_logger->log("rules;%d==%d\n", rules.size(), m_rules.size());
+	
+	m_logger->log("----rules-start----\n");
+	for (RuleList::iterator i = m_rules.begin(); i != m_rules.end(); i++) {
+		RuleInfo * rule = *i;
+		std::string * s;
+		m_logger->log("---index=%d---\n", rule->getRuleIndex());
+		s = rule->description();
+		m_logger->log(s->c_str());
+		delete s;
+	}
+	m_logger->log("----rules-end----\n");
 
 	fclose(hFile);
 
@@ -136,11 +157,6 @@ void KeyMagicKeyboard::binaryRulesToManagedRules(BinaryRuleList * binRules, Rule
 		managedMatchRule->setIndex(i - binRules->begin());
 		rules->push_back(managedMatchRule);
 	}
-}
-
-bool KeyMagicKeyboard::convertBinaryRuleToManagedRule(const BinaryRule * binRule, RuleInfo * managedMatchRule) {
-
-	return false;
 }
 
 KeyMagicString KeyMagicKeyboard::getVariableValue(int index, BinaryStringList * binStrings) {
