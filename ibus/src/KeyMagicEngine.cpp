@@ -296,7 +296,11 @@ bool KeyMagicEngine::matchRule(RuleInfo * rule, int keyval, int keycode, int mod
 				 }
 				 break;*/
 			case RuleInfo::tAny:
-				itToMatch++;
+				if ( (*itToMatch >= L'\x0021' && *itToMatch <= L'\x007D') || (*itToMatch >= L'\x00FF' && *itToMatch < L'\xFFFF') ) {
+					itToMatch++;
+				} else {
+					return false;
+				}
 				break;
 			case RuleInfo::tSwitch:
 				if (m_switch.find(curRule->switchId) != m_switch.end()) {

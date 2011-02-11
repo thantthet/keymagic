@@ -18,7 +18,6 @@
 
 #import "keyboard.h"
 
-
 @implementation keyboard
 
 -(NSString*) title {
@@ -33,13 +32,6 @@
 }
 -(void) setPath:(NSString *)_path {
 	path = _path;
-}
-
--(layoutFileReader*) LFR {
-	return LFR;
-}
--(void) setLFR:(layoutFileReader *)_LFR {
-	LFR = _LFR;
 }
 
 -(Hotkey) hotkey {

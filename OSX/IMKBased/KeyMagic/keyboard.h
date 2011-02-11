@@ -17,7 +17,6 @@
 //Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #import <Cocoa/Cocoa.h>
-#import "layoutFileReader.h"
 
 struct Hotkey {
 	int modkey;
@@ -30,7 +29,6 @@ typedef struct Hotkey Hotkey;
 	@public
 	NSString * title;
 	NSString * path;
-	layoutFileReader * LFR;
 	Hotkey hotkey;
 }
 
@@ -39,8 +37,6 @@ typedef struct Hotkey Hotkey;
 -(void) setTitle:(NSString*)_title;
 -(NSString*) path;
 -(void) setPath:(NSString*)_path;
--(layoutFileReader*) LFR;
--(void) setLFR:(layoutFileReader*)_LFR;
 -(Hotkey) hotkey;
 -(void) setHotkey:(Hotkey)_hotkey;
 @end

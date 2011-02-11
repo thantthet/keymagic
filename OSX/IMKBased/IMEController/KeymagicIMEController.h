@@ -23,15 +23,18 @@
 #else
 	#import "InputMethodKitTiger.h"
 #endif
+#import "KeyMagicNSString.h"
 
-#import "inputProcessor.h"
+#include "KeyMagicEngine.h"
 
 @interface KeyMagicIMEController : IMKInputController
 {
-	inputProcessor *InputProcessor;
 	NSMutableArray *Keyboards;
 	NSMutableDictionary *configDictionary;
 	NSString *ActivePath;
+	KeyMagicEngine kme;
+	BOOL m_success;
+	FILE * m_logFile;
 }
 
 -(void) selectionChanged:(id)sender;
