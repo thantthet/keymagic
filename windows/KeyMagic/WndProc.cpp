@@ -353,7 +353,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			hMenu = CreatePopupMenu();
 			int isPortable = GetPrivateProfileInt(TEXT("Settings"), TEXT("Portable"), 0, szINIFile);
 
-			AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_MANAGE, TEXT("Manage &Keyboards"));
+			//AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_MANAGE, TEXT("Manage &Keyboards"));
 			//AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_OSK, TEXT("On-Screen Keyboard"));
 			if (!isPortable) {
 				AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_STARTUP, TEXT("&Run at Startup"));

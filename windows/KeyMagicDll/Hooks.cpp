@@ -38,7 +38,10 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 
 		index = ShortCutCheck(wParam);
 
-		// If ActiveWindow is not Keymagic Application
+		BYTE KeyStatus[256];
+		GetKeyboardState(KeyStatus);
+
+		// If ActiveWindow is not KeyMagic Application
 		for (hwndExc::iterator it = hwndExceptions.begin(); it != hwndExceptions.end(); it++){
 			if (GetFocus() == (HWND)*it){
 				index = -1;
@@ -67,6 +70,21 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 				//hkl = LoadKeyboardLayout("00000409", KLF_ACTIVATE | KLF_SETFORPROCESS);
 			}
 			return 1;
+		} else {
+			if (KeyStatus[VK_CONTROL] & 0x80 && KeyStatus[VK_SHIFT] & 0x80) {
+				isActive = !isActive;
+				if (isActive && ActiveIndex == -1) {
+					ActiveIndex = 1;
+					PostMessage(hwndKWindows, KM_GETFOCUS, ActiveIndex, 0);
+					LoadKeymapFile(ActiveIndex);
+				}
+
+				if (isActive) {
+					PostMessage(hwndKWindows, KM_GETFOCUS, ActiveIndex, 0);
+				} else {
+					PostMessage(hwndKWindows, KM_GETFOCUS, 0, 0);
+				}
+			}
 		}
 
 		if (isActive == false)
