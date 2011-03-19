@@ -77,17 +77,15 @@
             this.fontDlg = new System.Windows.Forms.FontDialog();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.cboGRanges = new System.Windows.Forms.ComboBox();
-            this.SciEditor = new ScintillaNet.Scintilla();
             this.glyphTable = new kEditor.GlyphTable();
+            this.txtFilter = new kEditor.FilterEditBox();
+            this.lblGlyphName = new System.Windows.Forms.Label();
+            this.SciEditor = new ScintillaNet.Scintilla();
             this.mainMenu.SuspendLayout();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.flowLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SciEditor)).BeginInit();
             this.SuspendLayout();
             // 
@@ -415,30 +413,47 @@
             // 
             // tableLayoutPanel1
             // 
+            this.tableLayoutPanel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             resources.ApplyResources(this.tableLayoutPanel1, "tableLayoutPanel1");
-            this.tableLayoutPanel1.Controls.Add(this.glyphTable, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel1, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.glyphTable, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.txtFilter, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.lblGlyphName, 0, 1);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             // 
-            // flowLayoutPanel1
+            // glyphTable
             // 
-            this.flowLayoutPanel1.Controls.Add(this.label1);
-            this.flowLayoutPanel1.Controls.Add(this.cboGRanges);
-            resources.ApplyResources(this.flowLayoutPanel1, "flowLayoutPanel1");
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.glyphTable.AlternateGradientCellColorEnd = System.Drawing.Color.White;
+            this.glyphTable.AlternateGradientCellColorStart = System.Drawing.Color.WhiteSmoke;
+            resources.ApplyResources(this.glyphTable, "glyphTable");
+            this.glyphTable.AutoValidate = System.Windows.Forms.AutoValidate.EnableAllowFocusChange;
+            this.glyphTable.CellGradientColorEnd = System.Drawing.Color.WhiteSmoke;
+            this.glyphTable.CellGradientColorStart = System.Drawing.Color.Gainsboro;
+            this.glyphTable.FoucusForeColor = System.Drawing.Color.White;
+            this.glyphTable.FoucusGradientColorEnd = System.Drawing.Color.Silver;
+            this.glyphTable.FoucusGradientColorStart = System.Drawing.Color.DarkGray;
+            this.glyphTable.FoucusHexForeColor = System.Drawing.Color.White;
+            this.glyphTable.HexCodeColor = System.Drawing.Color.Black;
+            this.glyphTable.HexNotation = false;
+            this.glyphTable.Name = "glyphTable";
+            this.glyphTable.NumberOfColumns = 6;
+            this.glyphTable.NumberOfRows = 1;
+            this.glyphTable.SelectedCell = -1;
+            this.glyphTable.SelectionChanged += new System.EventHandler(this.glyphTable_SelectionChanged);
+            this.glyphTable.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.glyphTable_MouseDoubleClick);
+            this.glyphTable.MouseLeave += new System.EventHandler(this.glyphTable_MouseLeave);
+            this.glyphTable.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glyphTable_MouseMove);
             // 
-            // label1
+            // txtFilter
             // 
-            resources.ApplyResources(this.label1, "label1");
-            this.label1.Name = "label1";
+            this.txtFilter.ForeColor = System.Drawing.Color.Gray;
+            resources.ApplyResources(this.txtFilter, "txtFilter");
+            this.txtFilter.Name = "txtFilter";
+            this.txtFilter.TextChanged += new System.EventHandler(this.txtFilter_TextChanged);
             // 
-            // cboGRanges
+            // lblGlyphName
             // 
-            this.cboGRanges.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboGRanges.FormattingEnabled = true;
-            resources.ApplyResources(this.cboGRanges, "cboGRanges");
-            this.cboGRanges.Name = "cboGRanges";
-            this.cboGRanges.SelectedIndexChanged += new System.EventHandler(this.cboGRanges_SelectedIndexChanged);
+            resources.ApplyResources(this.lblGlyphName, "lblGlyphName");
+            this.lblGlyphName.Name = "lblGlyphName";
             // 
             // SciEditor
             // 
@@ -459,27 +474,6 @@
             this.SciEditor.ModifiedChanged += new System.EventHandler(this.SciEditor_ModifiedChanged);
             this.SciEditor.SelectionChanged += new System.EventHandler(this.SciEditor_SelectionChanged);
             // 
-            // glyphTable
-            // 
-            this.glyphTable.AlternateGradientCellColorEnd = System.Drawing.Color.LightGray;
-            this.glyphTable.AlternateGradientCellColorStart = System.Drawing.Color.Gainsboro;
-            this.glyphTable.AutoCellWidth = false;
-            resources.ApplyResources(this.glyphTable, "glyphTable");
-            this.glyphTable.AutoValidate = System.Windows.Forms.AutoValidate.EnableAllowFocusChange;
-            this.glyphTable.BackColor = System.Drawing.Color.White;
-            this.glyphTable.CellGradientColorEnd = System.Drawing.Color.WhiteSmoke;
-            this.glyphTable.CellGradientColorStart = System.Drawing.Color.Gainsboro;
-            this.glyphTable.ForeColor = System.Drawing.Color.Black;
-            this.glyphTable.FoucusForeColor = System.Drawing.Color.AliceBlue;
-            this.glyphTable.FoucusGradientColorEnd = System.Drawing.Color.Plum;
-            this.glyphTable.FoucusGradientColorStart = System.Drawing.Color.PaleVioletRed;
-            this.glyphTable.FoucusHexForeColor = System.Drawing.Color.FloralWhite;
-            this.glyphTable.HexCodeColor = System.Drawing.Color.Black;
-            this.glyphTable.Name = "glyphTable";
-            this.glyphTable.NumberOfColumns = 6;
-            this.glyphTable.NumberOfRows = 17;
-            this.glyphTable.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.glyphTable_MouseDoubleClick);
-            // 
             // mainFrame
             // 
             resources.ApplyResources(this, "$this");
@@ -496,8 +490,7 @@
             this.splitContainer.Panel2.ResumeLayout(false);
             this.splitContainer.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
-            this.flowLayoutPanel1.ResumeLayout(false);
-            this.flowLayoutPanel1.PerformLayout();
+            this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SciEditor)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -524,7 +517,6 @@
         private System.Windows.Forms.ToolStripMenuItem goToToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findAndReplaceToolStripMenuItem;
         private System.Windows.Forms.FontDialog fontDlg;
-        private GlyphTable glyphTable;
         private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
@@ -556,9 +548,9 @@
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private ScintillaNet.Scintilla SciEditor;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ComboBox cboGRanges;
+        private GlyphTable glyphTable;
+        private FilterEditBox txtFilter;
+        private System.Windows.Forms.Label lblGlyphName;
     }
 }
 

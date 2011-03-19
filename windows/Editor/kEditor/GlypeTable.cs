@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
+using System.Text.RegularExpressions;
 
 namespace kEditor
 {
@@ -19,7 +20,6 @@ namespace kEditor
 
         private void GlyphTable_Load(object sender, EventArgs e)
         {
-            GenerateCharacters();
             GeneratePointAndRect();
         }
 
@@ -90,12 +90,21 @@ namespace kEditor
 
         private void GeneratePointAndRect()
         {
+            if (characters == null)
+            {
+                GenerateCharacters();
+            }
+
             if (autoCellCount)
             {
                 int i;
                 for (i = 1; i * colWidth <= ClientRectangle.Width; i++) ;
                 colCount = --i;
-                int charCount = glyphRange.Length;
+                int charCount = characters.Length;
+                //foreach (CharacterRange glyphRange in glyphRanges)
+                //{
+                //    charCount += glyphRange.Length;
+                //}
                 colCount = colCount > 0 ? colCount : 1;
                 rowCount = (charCount + (colCount - (charCount % colCount))) / colCount;
             }
@@ -134,14 +143,38 @@ namespace kEditor
             AutoScrollMinSize = new Size(colWidth * colCount, rowHeight * rowCount);
         }
 
+        UnicodeData ud = new UnicodeData(@"UnicodeData.txt");
+
         private void GenerateCharacters()
         {
-            List<char> charactersList = new List<char>();
-            for (int u = glyphRange.First; u < glyphRange.First + glyphRange.Length; u++)
+            List<char> charList = new List<char>();
+
+            Regex regex = new Regex(@"[uU]([a-fA-F0-9]{4})\s*-\s*[uU]([a-fA-F0-9]{4})", RegexOptions.Compiled);
+            Match m = regex.Match(filter);
+            if (m.Success)
             {
-                charactersList.Add((char)u);
+                int start = int.Parse(m.Groups[1].Value, System.Globalization.NumberStyles.HexNumber);
+                int end = int.Parse(m.Groups[2].Value, System.Globalization.NumberStyles.HexNumber);
+                for (int i = start; i < end; i++)
+                {
+                    charList.Add((char)i);
+                }
+                characters = charList.ToArray();
             }
-            characters = charactersList.ToArray();
+            else
+            {
+                KeyValuePair<String, int>[] a = ud.getContains(filter);
+                if (a == null)
+                {
+                    return;
+                }
+                
+                foreach (KeyValuePair<String, int> kv in a)
+                {
+                    charList.Add((char)kv.Value);
+                }
+                characters = charList.ToArray();
+            }
         }
 
         private void GlyphTable_Paint(object sender, PaintEventArgs e)
@@ -163,7 +196,6 @@ namespace kEditor
                 Rectangle selectedRect = rectangles[selectedAtCell];
                 LinearGradientBrush gdBrush = new LinearGradientBrush(selectedRect, focusColorEnd, focusColorStart, LinearGradientMode.Vertical);
                 gx.FillRectangle(gdBrush, selectedRect);
-
             }
 
             StringFormat stringFormat = new StringFormat(StringFormat.GenericDefault);
@@ -181,29 +213,42 @@ namespace kEditor
 
             LinearGradientBrush cellBrush = new LinearGradientBrush(rectangles[0], cellColorEnd, cellColorStart, LinearGradientMode.Vertical);
             LinearGradientBrush alterBrush = new LinearGradientBrush(rectangles[0], alternateCellColorEnd, alternateCellColorStart, LinearGradientMode.Vertical);
+            
+            //foreach (CharacterRange glyphRange in glyphRanges)
+            //{
+            //    for (int i = 0; i < glyphRange.Length; i++)
+            //    {
+            for (int i = 0; i < characters.Length; i++) {
+                    Rectangle cell = rectangles[i];
 
-            for (int i = 0; i < glyphRange.Length; i++)
-            {
-                Rectangle cell = rectangles[i];
-                Brush textBrush;
+                    //Console.WriteLine("{0} {1} {2} {3}", e.ClipRectangle.X, e.ClipRectangle.Y, cell.X, cell.Y);
+                    if (gx.ClipBounds.IntersectsWith(cell) == false)
+                    {
+                        continue;
+                    }
+                    
+                    Brush textBrush;
 
-                if (((i - i % NumberOfColumns) / NumberOfColumns) % 2 == 0 && selectedAtCell != i)
-                {
-                    gx.FillRectangle(alterBrush, cell);
-                }
-                else if (selectedAtCell != i)
-                {
-                    gx.FillRectangle(cellBrush, cell);
-                }
-                ControlPaint.DrawVisualStyleBorder(gx, cell);
+                    if (((i - i % NumberOfColumns) / NumberOfColumns) % 2 == 0 && selectedAtCell != i)
+                    {
+                        gx.FillRectangle(alterBrush, cell);
+                    }
+                    else if (selectedAtCell != i)
+                    {
+                        gx.FillRectangle(cellBrush, cell);
+                    }
+                    ControlPaint.DrawVisualStyleBorder(gx, cell);
 
-                textBrush = selectedAtCell == i ? focusForeBrush : foreBrush;
-                gx.DrawString(characters[i].ToString(), glyphFont, textBrush,
-                    new Rectangle(cell.X, cell.Y, cell.Width, cell.Height - (cell.Height / 3)), stringFormat);
+                    //draw character
+                    textBrush = selectedAtCell == i ? focusForeBrush : foreBrush;
+                    gx.DrawString(characters[i].ToString(), glyphFont, textBrush,
+                        new Rectangle(cell.X, cell.Y, cell.Width, cell.Height - (cell.Height / 3)), stringFormat);
 
-                textBrush = selectedAtCell == i ? focusHexForeBrush : hexBrush;
-                gx.DrawString(((int)characters[i]).ToString(codeFormatStr), hexFont, textBrush,
-                    new Rectangle(cell.X, cell.Y + (cell.Height - (cell.Height / 3)), cell.Width, (cell.Height / 3)), stringFormat);
+                    //draw hex notation
+                    textBrush = selectedAtCell == i ? focusHexForeBrush : hexBrush;
+                    gx.DrawString(((int)characters[i]).ToString(codeFormatStr), hexFont, textBrush,
+                        new Rectangle(cell.X, cell.Y + (cell.Height - (cell.Height / 3)), cell.Width, (cell.Height / 3)), stringFormat);
+                //}
             }
 
             stringFormat.Dispose();
@@ -266,8 +311,10 @@ namespace kEditor
             int currentCell = GetCellAtPoint(e.Location);
             if (selectedAtCell != currentCell && currentCell != -1)
             {
-                Invalidate(selectedAtCell, currentCell);
-                selectedAtCell = currentCell;
+                SelectedCell = currentCell;
+                //Invalidate(selectedAtCell, currentCell);
+                //selectedAtCell = currentCell;
+                //SelectionChanged(this, new EventArgs());
             }
         }
 
@@ -275,16 +322,23 @@ namespace kEditor
         {
             Rectangle rect;
 
+            if (i2 == -1)
+            {
+                i2 = i1;
+            }
+
             rect = rectangles[i2];
-            //rect.X -= AutoScrollPosition.X;
-            //rect.Y -= AutoScrollPosition.Y;
             Region r = new Region(rect);
             if (i1 != -1)
             {
-                rect = rectangles[i1];
-                //rect.X -= AutoScrollPosition.X;
-                //rect.Y -= AutoScrollPosition.Y;
-                r.Union(rect);
+                try
+                {
+                    rect = rectangles[i1];
+                    r.Union(rect);
+                } catch (IndexOutOfRangeException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
             r.Translate(AutoScrollPosition.X, AutoScrollPosition.Y);
             Invalidate(r);
@@ -298,59 +352,45 @@ namespace kEditor
                 case Keys.Left:
                     if (selectedAtCell == -1)
                     {
-                        Invalidate(selectedAtCell, 0);
-                        selectedAtCell = 0;
-                        MakeSureCellVisible(selectedAtCell);
+                        SelectedCell = 0;
                     }
                     else if (selectedAtCell == 0) { }
                     else
                     {
-                        Invalidate(selectedAtCell, --selectedAtCell);
-                        MakeSureCellVisible(selectedAtCell);
+                        SelectedCell = selectedAtCell - 1;
                     }
                     break;
                 case Keys.Right:
                     if (selectedAtCell == -1)
                     {
-                        Invalidate(selectedAtCell, rectangles.Length - 1);
-                        selectedAtCell = rectangles.Length - 1;
-                        MakeSureCellVisible(selectedAtCell);
+                        SelectedCell = rectangles.Length;
                     }
-                    else if (selectedAtCell + 1 == glyphRange.Length) { }
+                    else if (selectedAtCell + 1 == characters.Length) { }
                     else
                     {
-                        Invalidate(selectedAtCell, ++selectedAtCell);
-                        MakeSureCellVisible(selectedAtCell);
+                        SelectedCell = selectedAtCell + 1;
                     }
                     break;
                 case Keys.Down:
                     if (selectedAtCell == -1)
                     {
-                        Invalidate(selectedAtCell, 0);
-                        selectedAtCell = 0;
-                        MakeSureCellVisible(selectedAtCell);
+                        SelectedCell = 0;
                     }
-                    else if (selectedAtCell + NumberOfColumns >= glyphRange.Length) { }
+                    else if (selectedAtCell + NumberOfColumns >= characters.Length) { }
                     else
                     {
-                        Invalidate(selectedAtCell, (selectedAtCell + NumberOfColumns));
-                        selectedAtCell += NumberOfColumns;
-                        MakeSureCellVisible(selectedAtCell);
+                        SelectedCell = selectedAtCell + NumberOfColumns;
                     }
                     break;
                 case Keys.Up:
                     if (selectedAtCell == -1)
                     {
-                        Invalidate(selectedAtCell, rectangles.Length - 1);
-                        selectedAtCell = rectangles.Length - 1;
-                        MakeSureCellVisible(selectedAtCell);
+                        SelectedCell = characters.Length - 1;
                     }
                     else if (selectedAtCell < NumberOfColumns) { }
                     else
                     {
-                        Invalidate(selectedAtCell, (selectedAtCell - NumberOfColumns));
-                        selectedAtCell -= NumberOfColumns;
-                        MakeSureCellVisible(selectedAtCell);
+                        SelectedCell = selectedAtCell - NumberOfColumns;
                     }
                     break;
             }
@@ -358,6 +398,10 @@ namespace kEditor
 
         private void MakeSureCellVisible(int index)
         {
+            if (index == -1)
+            {
+                return;
+            }
             Rectangle rect = GetCellRect(index);
             if (rect.Y + rect.Height > -AutoScrollPosition.Y + Height)
             {
@@ -379,25 +423,28 @@ namespace kEditor
 
         #region GlyphTable Property
 
-        public CharacterRange GlyphRange
+        public event EventHandler SelectionChanged;
+
+        [Category("GlyphTable"), DefaultValue("Myanmar")]
+        public String Filter
         {
             get
             {
-                return glyphRange;
+                return filter;
             }
             set
             {
-                if (value != glyphRange)
+                if (value != filter)
                 {
-                    selectedAtCell = -1;
-                    glyphRange = value;
+                    filter = value;
+                    SelectedCell = -1;
                     GenerateCharacters();
                     GeneratePointAndRect();
                     Invalidate();
                 }
             }
         }
-        private CharacterRange glyphRange = new CharacterRange(0x0020, 100);
+        private String filter = "Myanmar";
 
         [Category("Grid"), DefaultValue(true)]
         public bool AutoCellWidth
@@ -461,8 +508,7 @@ namespace kEditor
         }
         private int rowCount = 5;
 
-        [Category("Grid"),
-           DefaultValue(5)]
+        [Category("Grid"), DefaultValue(5)]
         public int NumberOfColumns
         {
             get
@@ -593,13 +639,13 @@ namespace kEditor
         {
             get
             {
-                return codeFormatStr == "X";
+                return codeFormatStr == "X4";
             }
             set
             {
                 if (value != hexNotation)
                 {
-                    if (value == true) codeFormatStr = "X";
+                    if (value == true) codeFormatStr = "X4";
                     else codeFormatStr = "d";
                     hexNotation = value;
                     Invalidate();
@@ -607,7 +653,7 @@ namespace kEditor
             }
         }
         private bool hexNotation = true;
-        private string codeFormatStr = "X";
+        private string codeFormatStr = "X4";
 
         [Category("Appearance")]
         public Color CellGradientColorStart
@@ -717,6 +763,37 @@ namespace kEditor
         }
         private Color focusHexForeColor = Color.White;
 
+        public int SelectedCell
+        {
+            get
+            {
+                return selectedAtCell;
+            }
+            set
+            {
+                if (value != selectedAtCell)
+                {
+                    Invalidate(value, selectedAtCell);
+                    selectedAtCell = value;
+                    MakeSureCellVisible(selectedAtCell);
+                    SelectionChanged(this, new EventArgs());
+                }
+            }
+        }
+
+        public char[] Characters
+        {
+            get
+            {
+                return characters;
+            }
+        }
+
         #endregion
+
+        public string GetNameForChar(char c)
+        {
+            return ud.GetNameForChar(c);
+        }
     }
 }

@@ -78,7 +78,7 @@ namespace kEditor
 
         private bool isDefaultEditor()
         {
-            using (RegistryKey userChoice = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.kms\\UserChoice"))
+            using (RegistryKey userChoice = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.kms\\UserChoice", false))
             {
                 if (userChoice != null)
                 {
@@ -88,7 +88,7 @@ namespace kEditor
                     }
                 }
             }
-            using (RegistryKey kms = Registry.ClassesRoot.OpenSubKey(".kms"))
+            using (RegistryKey kms = Registry.ClassesRoot.OpenSubKey(".kms", false))
             {
                 if (kms != null)
                 {
@@ -96,11 +96,11 @@ namespace kEditor
                     {
                         return false;
                     }
-                    using (RegistryKey keyKMS = Registry.ClassesRoot.OpenSubKey("KEYMAGIC.KMS"))
+                    using (RegistryKey keyKMS = Registry.ClassesRoot.OpenSubKey("KEYMAGIC.KMS", false))
                     {
                         if (keyKMS != null)
                         {
-                            using (RegistryKey openCommand = keyKMS.OpenSubKey("shell\\Open\\command"))
+                            using (RegistryKey openCommand = keyKMS.OpenSubKey("shell\\Open\\command", false))
                             {
                                 string command = string.Format("\"{0}\" \"%1\"", Environment.GetCommandLineArgs()[0]);
                                 if (openCommand.GetValue("").Equals(command) == false)
@@ -152,13 +152,10 @@ namespace kEditor
             }
             catch (UnauthorizedAccessException uax)
             {
-                DialogResult dr = MessageBox.Show(this, string.Format("{0}\n{1}",uax.Message, "Do you want to re-run the KMS Editor as administrator?"), "Access denied", MessageBoxButtons.YesNo);
-                if (dr == System.Windows.Forms.DialogResult.Yes)
-                {
-                    ProcessStartInfo psi = new ProcessStartInfo(thisExe);
-                    psi.UseShellExecute = false;
-                    Process newProcess = Process.Start(psi);
-                }
+                DialogResult dr = MessageBox.Show(this,
+                    string.Format("{0}\n{1}",uax.Message, "Please run the KMS Editor as administrator for once?"),
+                    "Access denied",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return false;
             }
             catch (Exception ex)
@@ -171,8 +168,6 @@ namespace kEditor
 
         private void mainForm_Load(object sender, EventArgs e)
         {
-            //SciEditor.ConfigurationManager.Language = "KeyMagic Layout Script";
-
             ScintillaNet.Style S = SciEditor.Styles[0x21];
             S.ForeColor = Color.DimGray;
             S.Italic = true;
@@ -210,15 +205,20 @@ namespace kEditor
 
             Text = "Untitled" + titleSuffix;
 
+            glyphTable.HexNotation = Properties.Settings.Default.HexNotation;
             hexadecimalToolStripMenuItem.Checked = glyphTable.HexNotation;
             lineNumbersToolStripMenuItem.Checked = Properties.Settings.Default.LineNumber;
 
             UpdateRecentFiles();
-            openFile(Properties.Settings.Default.LastFilePath);
+            if (openFile(Properties.Settings.Default.LastFilePath) == false)
+            {
+                SciEditor.Text = newDocumentTemplate;
+                SciEditor.UndoRedo.EmptyUndoBuffer();
+                SciEditor.Modified = false;
+            }
 
-            glyphTable.GlyphRange = new CharacterRange(Properties.Settings.Default.GlyphRangeFirst, Properties.Settings.Default.GlyphRangeLength);
-            cboGRanges.Items.Add(glyphTable.GlyphRange.First.ToString("X4") + " - " + (glyphTable.GlyphRange.First + glyphTable.GlyphRange.Length).ToString("X4"));
-            cboGRanges.SelectedIndex = 0;
+            glyphTable.Filter = Properties.Settings.Default.GlyphFilterText;
+            txtFilter.Text = glyphTable.Filter;
         }
 
         private void mainFrame_FormClosing(object sender, FormClosingEventArgs e)
@@ -231,12 +231,12 @@ namespace kEditor
             {
                 Properties.Settings.Default.LastFilePath = recentFiles[recentFiles.Count - 1];
             }
-            Properties.Settings.Default.RecentFiles = string.Join(",", recentFiles.ToArray());
+            Properties.Settings.Default.RecentFiles = string.Join("|", recentFiles.ToArray());
             Properties.Settings.Default.DefaultFontName = selectedFont.Name;
             Properties.Settings.Default.DefaultFontSize = selectedFont.Size;
-            Properties.Settings.Default.GlyphRangeFirst = glyphTable.GlyphRange.First;
-            Properties.Settings.Default.GlyphRangeLength = glyphTable.GlyphRange.Length;
+            Properties.Settings.Default.GlyphFilterText = glyphTable.Filter;
             Properties.Settings.Default.LineNumber = lineNumbersToolStripMenuItem.Checked;
+            Properties.Settings.Default.HexNotation = hexadecimalToolStripMenuItem.Checked;
             lex.SaveStyles();
             Properties.Settings.Default.Save();
         }
@@ -245,7 +245,7 @@ namespace kEditor
         {
             if (recentFiles == null)
             {
-                recentFiles = new List<string>(Properties.Settings.Default.RecentFiles.Split(','));
+                recentFiles = new List<string>(Properties.Settings.Default.RecentFiles.Split('|'));
                 recentFiles.Remove("");
             }
 
@@ -254,7 +254,7 @@ namespace kEditor
                 recentFilesToolStripMenuItem.DropDownItems[i - 1].Dispose();
             }
 
-            ToolStripItem[] tsi = new ToolStripItem[recentFiles.Count];
+            //ToolStripItem[] tsi = new ToolStripItem[recentFiles.Count];
             foreach (string s in recentFiles)
             {
                 ToolStripMenuItem menuItem = new ToolStripMenuItem(s);
@@ -365,7 +365,7 @@ namespace kEditor
 
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                int state = GetAsyncKeyState(0x11);
+                int state = GetAsyncKeyState(0x10);
                 string format = "U{0:X4}" + ((state & 0xf000) != 0 ? " + " : "");
                 SciEditor.InsertText(string.Format(format, (int)charValue));
             }
@@ -548,12 +548,16 @@ namespace kEditor
             }
         }
 
+        private string newDocumentTemplate = "/*\n@NAME = ''\n@DESCRIPTION = ''\n@HOTKEY = ''\n@EAT_ALL_UNUSED_KEYS = 'false'\n@TRACK_CAPSLOCK = 'false' \n@SMART_BACKSPACE = 'true'\n@US_LAYOUT_BASED = 'true'\n*/\n\n";
+
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (askToSaveModifiedDocument() != System.Windows.Forms.DialogResult.Cancel)
             {
-                SciEditor.Text = "";
+                SciEditor.Text = newDocumentTemplate;
                 SciEditor.UndoRedo.EmptyUndoBuffer();
+                SciEditor.Selection.Start = newDocumentTemplate.Length;
+                SciEditor.Selection.End = newDocumentTemplate.Length;
                 FileName = "Untitled" + titleSuffix;
                 FilePath = "";
 
@@ -586,16 +590,18 @@ namespace kEditor
 
         private void setGlyphRangeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            glyphRangeForm glyphRange = new glyphRangeForm();
-            glyphRange.GlyphRange = glyphTable.GlyphRange;
-            if (glyphRange.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                glyphTable.GlyphRange = glyphRange.GlyphRange;
-                string r = glyphTable.GlyphRange.First.ToString("X4") + " - " + (glyphTable.GlyphRange.First + glyphTable.GlyphRange.Length).ToString("X4");
-                cboGRanges.Items.Remove(r);
-                cboGRanges.Items.Add(r);
-                cboGRanges.SelectedIndex = cboGRanges.Items.Count - 1;
-            }
+
+            //TODO:
+            //glyphRangeForm glyphRange = new glyphRangeForm();
+            //glyphRange.GlyphRange = glyphTable.GlyphRange;
+            //if (glyphRange.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            //{
+            //    glyphTable.GlyphRange = glyphRange.GlyphRange;
+            //    string r = glyphTable.GlyphRange.First.ToString("X4") + " - " + (glyphTable.GlyphRange.First + glyphTable.GlyphRange.Length).ToString("X4");
+            //    cboGRanges.Items.Remove(r);
+            //    cboGRanges.Items.Add(r);
+            //    cboGRanges.SelectedIndex = cboGRanges.Items.Count - 1;
+            //}
         }
 
         private void RecentFileMenuItem_Click(object sender, EventArgs e)
@@ -822,11 +828,56 @@ namespace kEditor
             }
         }
 
-        private void cboGRanges_SelectedIndexChanged(object sender, EventArgs e)
+        Timer timer;
+        private void txtFilter_TextChanged(object sender, EventArgs e)
         {
-            string[] a = cboGRanges.Text.Split('-', ' ');
-            CharacterRange cr = new CharacterRange(Convert.ToInt32(a[0], 16), Convert.ToInt32(a[3], 16) - Convert.ToInt32(a[0], 16));
-            glyphTable.GlyphRange = cr;
+            if (timer != null)
+            {
+                timer.Stop();
+            }
+            else
+            {
+                timer = new Timer();
+                timer.Interval = 500;
+                timer.Tick += new EventHandler(timer_Tick);
+            }
+            timer.Start();
+        }
+
+        void timer_Tick(object sender, EventArgs e)
+        {
+            timer.Stop();
+            glyphTable.Filter = txtFilter.GetText();
+        }
+
+        private void glyphTable_SelectionChanged(object sender, EventArgs e)
+        {
+            if (glyphTable.SelectedCell == -1)
+            {
+                return;
+            }
+            char c = glyphTable.Characters[glyphTable.SelectedCell];
+            lblGlyphName.Text = glyphTable.GetNameForChar(c);
+        }
+
+        private void glyphTable_MouseMove(object sender, MouseEventArgs e)
+        {
+            int index = glyphTable.GetCellAtPoint(e.Location);
+            if (index == -1)
+            {
+                return;
+            }
+            lblGlyphName.Text = glyphTable.GetNameForChar(glyphTable.Characters[index]);
+        }
+
+        private void glyphTable_MouseLeave(object sender, EventArgs e)
+        {
+            if (glyphTable.SelectedCell == -1)
+            {
+                return;
+            }
+            char c = glyphTable.Characters[glyphTable.SelectedCell];
+            lblGlyphName.Text = glyphTable.GetNameForChar(c);
         }
     }
 }

@@ -3,14 +3,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{7C6E5FBC-B5E8-44FC-90AB-0342F97651E9}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>kEditor</RootNamespace>
     <AssemblyName>kEditor</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -31,7 +31,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -55,15 +55,14 @@
     <ApplicationIcon>KeyScript.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ScintillaNet">
-      <HintPath>.\ScintillaNet.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="ScintillaNet, Version=2.2.3581.19319, Culture=neutral, PublicKeyToken=948d6c9751444115">
+      <HintPath>ScintillaNet.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="aboutForm.cs">
@@ -78,17 +77,20 @@
     <Compile Include="ConfigColor.Designer.cs">
       <DependentUpon>ConfigColor.cs</DependentUpon>
     </Compile>
+    <Compile Include="FilterEditBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GlypeTable.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GlypeTable.designer.cs">
+      <DependentUpon>GlypeTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="glyphRangeForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="glyphRangeForm.Designer.cs">
       <DependentUpon>glyphRangeForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GlypeTable.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="GlypeTable.Designer.cs">
-      <DependentUpon>GlypeTable.cs</DependentUpon>
     </Compile>
     <Compile Include="mainForm.cs">
       <SubType>Form</SubType>
@@ -99,17 +101,18 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Styler.cs" />
+    <Compile Include="UnicodeData.cs" />
     <EmbeddedResource Include="aboutForm.resx">
       <DependentUpon>aboutForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ConfigColor.resx">
       <DependentUpon>ConfigColor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="glyphRangeForm.resx">
-      <DependentUpon>glyphRangeForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="GlypeTable.resx">
       <DependentUpon>GlypeTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="glyphRangeForm.resx">
+      <DependentUpon>glyphRangeForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="mainForm.resx">
       <DependentUpon>mainForm.cs</DependentUpon>
@@ -160,6 +163,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="UnicodeData.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
