@@ -15,14 +15,16 @@
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+#include <sys/stat.h>
+#include <errno.h>
+#include <keymagic.h>
+
+#include "../global/global.h"
+#include "CGdiPlusBitmap.h"
 #include "MyMenu.h"
 #include "MyButton.h"
 #include "WndProc.h"
-#include "CGdiPlusBitmap.h"
-#include <sys/stat.h>
-#include <errno.h>
 #include "DllUnload.h"
-#include "../global/global.h"
 #include "StrTypeFunc.h"
 #include "OSK/osk.h"
 
@@ -38,6 +40,7 @@ static DWORD StartupFlag;
 
 CGdiPlusBitmapResource *Logo;
 Gdiplus::Bitmap *Bmpbk;
+std::vector<HICON> icons;
 
 int WndHeight, WndWidth;
 HWND	hList, hPath,
@@ -55,10 +58,6 @@ HANDLE hThread=0;
 DWORD ThreadID=0;
 int txPos=0;
 
-<<<<<<< .mine
-kOSK onScreen;
-
-=======
 kOSK onScreen;
 
 std::wstring GetWindowTextAsWideString(HWND hWnd, int nIDDlgItem) {
@@ -208,10 +207,11 @@ VOID OnGetFocus(HWND hWnd, WPARAM wParam, LPARAM lParam) {
 		KeyBoardNum + IDKM_ID , 
 		wParam + IDKM_NORMAL, 
 		MF_BYCOMMAND);
+	
+	ChangeNotifyIcon(hWnd, icons.at(wParam > icons.size() || wParam < 0 ? 0 : wParam));
 	SendMessage((HWND)lParam, KM_RESCAN, 0, 0);
 }
 
->>>>>>> .r164
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	HMENU hMenu;
@@ -276,41 +276,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 
 		case IDC_KEYBOARDS:
-<<<<<<< .mine
-			if (wmEvent == LBN_SELCHANGE) {
-
-				CheckDlgButton(hWnd, IDC_DIR, false);
-				EnableWindow(hPath, true);
-				if (kbindex == -1)
-					goto next;
-				
-				Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, kbindex, 0);
-				if (!Data)
-					goto next;
-
-				SendMessage(hDisplay, WM_GETTEXT, 30, (LPARAM)Data->Display);
-				Data->wHotkey = (WORD)SendMessage(hShortcut, HKM_GETHOTKEY, 0, 0);
-				SendMessage(hPath, WM_GETTEXT, MAX_PATH, (LPARAM)Data->Path);
-next:
-				kbindex = SendMessage(hList, LB_GETCURSEL, 0, 0);
-				if (kbindex == -1)
-					break;
-				
-				Data = (KeyFileData*)SendMessage(hList, LB_GETITEMDATA, kbindex, 0);
-				if (!Data)
-					break;
-				SendMessage(hDisplay, WM_SETTEXT, 0, (LPARAM)Data->Display);
-				SendMessage(hShortcut, HKM_SETHOTKEY, Data->wHotkey, 0);
-				SendMessage(hPath, WM_SETTEXT, 0, (LPARAM)Data->Path);
-				//if (Data->Path[1] == ':'){
-				//	EnableWindow(hPath, true);
-				//	CheckDlgButton(hWnd, IDC_DIR, true);
-				//}
-				if (kbindex == 0)  EnableWindow(hPath, false);
-=======
 			if (wmEvent == LBN_SELCHANGE) {
 				OnKeyboardListSelectionChanged(hWnd, wParam, lParam);
->>>>>>> .r164
 			}
 			break;
 
@@ -391,15 +358,9 @@ next:
 			hMenu = CreatePopupMenu();
 			int isPortable = GetPrivateProfileInt(TEXT("Settings"), TEXT("Portable"), 0, szINIFile);
 
-<<<<<<< .mine
 			AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_MANAGE, TEXT("Manage &Keyboards"));
 			//AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_OSK, TEXT("On-Screen Keyboard"));
 			if (!isPortable) {
-=======
-			//AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_MANAGE, TEXT("Manage &Keyboards"));
-			//AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_OSK, TEXT("On-Screen Keyboard"));
-			if (!isPortable) {
->>>>>>> .r164
 				AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_STARTUP, TEXT("&Run at Startup"));
 			}
 			AppendMenu(hMenu, MF_BYCOMMAND, RMCMD_ABOUT, TEXT("&About"));
@@ -690,6 +651,9 @@ next:
 	Logo->Load(IDB_LOGO, TEXT("PNG"), lpcs -> hInstance);
 
 	Bmpbk = new Gdiplus::Bitmap(lpcs -> hInstance, MAKEINTRESOURCE(IDB_BK));
+
+	SetStartup(GetPrivateProfileInt(TEXT("Settings"), TEXT("Startup"), 0, szINIFile));
+
 
 	UpdateDlgData(hWnd);
 
@@ -1240,16 +1204,17 @@ VOID error(LPCTSTR lpszFunction)
 }
 
 VOID GetKeyBoards() {
-
+	char kbpath[MAX_PATH];
+	TCHAR szKBFile[MAX_PATH];
 	TCHAR szMenuDisplay[MAX_PATH];
 	TCHAR szKBNames[500];
 	TCHAR szShortCut[20];
 	WORD wHotKey;
 	MENUITEMINFO mii = {0};
+	KeyMagicKeyboard kmk;
 
 	mii.cbSize = sizeof(MENUITEMINFO) ;
-	mii.fMask = MIIM_STRING;
-	mii.fState = MFS_DEFAULT;
+	mii.fMask = MIIM_DATA;
 
 	if (hKeyMenu)
 		DestroyMenu(hKeyMenu);
@@ -1268,21 +1233,76 @@ VOID GetKeyBoards() {
 	lstrcat(szMenuDisplay, szShortCut);
 
 	AppendMenu(hKeyMenu, NULL, IDKM_NORMAL, szMenuDisplay);
-	//mii.dwItemData = (ULONG_PTR)szMenuDisplay;
-	//InsertMenuItem(hKeyMenu, IDKM_NORMAL, FALSE, &mii);
+	icons.clear();
+	icons.push_back(LoadIcon(hInst, MAKEINTRESOURCE(IDI_KEYMAGIC)));
+
 	KeyBoardNum=0;
 	for (int i=lstrlen(&szKBNames[0])+1,Length = lstrlen(&szKBNames[i]);
 		Length > 0; 
-		i+=Length+1, Length = lstrlen(&szKBNames[i])){
-			GetPrivateProfileStringW(szMS, &szKBNames[i], NULL, szMenuDisplay, MAX_PATH, szINIFile);
-			wHotKey = GetPrivateProfileIntW(szSC, &szKBNames[i], 0, szINIFile);
+		i+=Length+1, Length = lstrlen(&szKBNames[i]))
+	{
+		HBITMAP hbmpItem;
+		HICON hIcon;
 
-			lstrcat(szMenuDisplay, TEXT("\t"));
-			GetHotKey(wHotKey, szShortCut);
-			lstrcat(szMenuDisplay, szShortCut);
+		GetPrivateProfileString(szKBP, &szKBNames[i], NULL, szKBFile, MAX_PATH, szINIFile);
+		wstring path = wstring(wcCurDir) + wstring(szKBFile);
+		kbpath[WideCharToMultiByte(CP_ACP, 0, path.c_str(), path.length(), kbpath, MAX_PATH, NULL, NULL)] = '\0';
 
-			AppendMenu(hKeyMenu, NULL, IDKM_ID+KeyBoardNum, szMenuDisplay);
-			KeyBoardNum++;
+		kmk.loadKeyboardFile(kbpath);
+		Gdiplus::Bitmap* m_pBitmap;
+		const InfoList infos = kmk.getInfoList();
+		if (infos.find('icon') != infos.end())
+		{
+			std::pair<short, char*> icon = infos.find('icon')->second;
+			HGLOBAL m_hBuffer;
+			m_hBuffer  = ::GlobalAlloc(GMEM_MOVEABLE, icon.first);
+			if (m_hBuffer)
+			{
+				void* pBuffer = ::GlobalLock(m_hBuffer);
+				if (pBuffer)
+				{
+					CopyMemory(pBuffer, icon.second, icon.first);
+
+					IStream* pStream = NULL;
+					if (::CreateStreamOnHGlobal(m_hBuffer, FALSE, &pStream) == S_OK)
+					{
+						m_pBitmap = Gdiplus::Bitmap::FromStream(pStream);
+						pStream->Release();
+						if (m_pBitmap)
+						{ 
+							if (m_pBitmap->GetLastStatus() == Gdiplus::Ok)
+							{
+								m_pBitmap->GetHBITMAP(Gdiplus::Color::Transparent, &hbmpItem);
+								m_pBitmap->GetHICON(&hIcon);
+							} else {
+								hbmpItem = NULL;
+								hIcon = NULL;
+							}
+							icons.push_back(hIcon);
+							delete m_pBitmap;
+							m_pBitmap = NULL;
+						}
+					}
+					::GlobalUnlock(m_hBuffer);
+				}
+				::GlobalFree(m_hBuffer);
+			}
+		}
+
+		GetPrivateProfileStringW(szMS, &szKBNames[i], NULL, szMenuDisplay, MAX_PATH, szINIFile);
+		wHotKey = GetPrivateProfileIntW(szSC, &szKBNames[i], 0, szINIFile);
+
+		lstrcat(szMenuDisplay, TEXT("\t"));
+		GetHotKey(wHotKey, szShortCut);
+		lstrcat(szMenuDisplay, szShortCut);
+
+		mii.dwItemData = hIcon ? (ULONG_PTR)hIcon : (ULONG_PTR)icons.at(0);
+		hIcon = NULL;
+		//BOOL b = InsertMenuItem(hKeyMenu, IDKM_ID+KeyBoardNum, false, &mii);
+		AppendMenu(hKeyMenu, NULL, IDKM_ID+KeyBoardNum, szMenuDisplay);
+		BOOL b = SetMenuItemInfo(hKeyMenu, IDKM_ID+KeyBoardNum, false, &mii);
+
+		KeyBoardNum++;
 	}
 
 	CheckMenuRadioItem(hKeyMenu, IDKM_NORMAL, 
@@ -1314,6 +1334,10 @@ VOID SetStartup(BOOL isEnable){
 
 	OSVERSIONINFO osvi;
 	BOOL bIsWindowsVistaLater;
+
+	if (bAdmin == false) {
+		return;
+	}
 
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
     osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
@@ -1387,7 +1411,7 @@ VOID DeleteNotifyIcon(HWND hWnd) {
 	Shell_NotifyIcon(NIM_DELETE, &nid);
 }
 
-VOID ChangeNotifyIcon(HWND hWnd, HICON hIcon){
+VOID ChangeNotifyIcon(HWND hWnd, HICON hIcon) {
 	NOTIFYICONDATA nid = {0};
 	nid.cbSize = sizeof(NOTIFYICONDATA);
 	nid.hWnd = hWnd;

@@ -176,20 +176,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "KeyMagic"
             VALUE "FileDescription", "KeyMagic Program Manager"
-<<<<<<< .mine
-            VALUE "FileVersion", "1.3.2.0"
-=======
             VALUE "FileVersion", "1.3.3.0"
->>>>>>> .r164
             VALUE "InternalName", "KeyMagic"
             VALUE "LegalCopyright", "Copyright (C) 2008-2011"
             VALUE "OriginalFilename", "KeyMagic.exe"
             VALUE "ProductName", "KeyMagic Input Customizer"
-<<<<<<< .mine
-            VALUE "ProductVersion", "1.3.2.0"
-=======
             VALUE "ProductVersion", "1.3.3.0"
->>>>>>> .r164
         END
     END
     BLOCK "VarFileInfo"
@@ -215,30 +207,6 @@ IDR_PARABAIK            RCDATA                  "Res\\Parabaik_UTN11-3.ttf"
 
 /////////////////////////////////////////////////////////////////////////////
 //
-<<<<<<< .mine
-// String Table
-//
-
-STRINGTABLE
-BEGIN
-    IDS_EN_TITLE            "KeyMagic 1.3.2"
-END
-
-#endif    // English (United States) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// English (Singapore) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENE)
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_SINGAPORE
-#pragma code_page(1252)
-
-/////////////////////////////////////////////////////////////////////////////
-//
-=======
->>>>>>> .r164
 // PNG
 //
 

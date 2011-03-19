@@ -95,11 +95,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		ChangeWMFilter lpChangeWMFilter;
 		HMODULE hUser;
 
-<<<<<<< .mine
-		//lstrcat(szTitle, TEXT(" (Administrator)"));
-
-=======
->>>>>>> .r164
 		hUser = GetModuleHandle(TEXT("USER32"));
 		
 		lpChangeWMFilter = (ChangeWMFilter)GetProcAddress(hUser, "ChangeWindowMessageFilter");
@@ -380,8 +375,8 @@ VOID SetHook (HWND hwnd){
 
 	HMODULE hMod = GetModuleHandle(TEXT("KeyMagicDll.dll"));
 	if (hMod == NULL)   {
-		MessageBox(hwnd, TEXT("Log"), TEXT("Error: cannot start dll, KeyMagicDll.dll not found."), 0);
-		return ;
+			MessageBox(hwnd, TEXT("Log"), TEXT("Error: cannot start dll, KeyMagicDll.dll not found."), 0);
+			return ;
 	}
 
 	/*Hooks->hKeyHook = SetWindowsHookEx(WH_KEYBOARD, &HookKeyProc, hMod, NULL);
@@ -414,21 +409,16 @@ BOOL WorkOnCommand(LPTSTR lpCmdLine){
 				MessageBox(GetDesktopWindow(), TEXT("The keyboard has been successfully added."), szKeymagic, MB_ICONINFORMATION | MB_OK);
 			return true;
 		case 'u':
-<<<<<<< .mine
-			HWND hPreHandle = FindWindow(szMainClassName, NULL);
-			if (hPreHandle) {
-				PostMessage(hPreHandle, WM_QUIT, 0, 0);
-				//SendMessage(hPreHandle, WM_QUIT, 0, 0);
-=======
 			HWND hPreHandle = FindWindow(szMainClassName, NULL);
 			if (hPreHandle) {
 				PostMessage(hPreHandle, WM_QUIT, 0, 0);
 				//SendMessage(hPreHandle, WM_QUIT, 0, 0);
 				SetStartup(false);
->>>>>>> .r164
 				Sleep(1000);
 			}
+#ifndef _WIN64
 			ScannerAndInject();
+#endif
 			return true;
 		}
 	}
