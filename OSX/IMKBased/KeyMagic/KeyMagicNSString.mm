@@ -9,7 +9,7 @@
 #import "KeyMagicNSString.h"
 
 
-@implementation NSString (wstring_additions)
+@implementation NSString (KeyMagicString_Addition)
 
 #if TARGET_RT_BIG_ENDIAN
 const NSStringEncoding kEncoding_KeyMagicString =

@@ -20,15 +20,14 @@
 #import <Carbon/Carbon.h>
 #import "KeymagicIMEController.h"
 #import "keyboard.h"
-#include "KeyMagicLogger.h"
+#import	"keymagic.h"
+
+@implementation KeyMagicIMEController
 
 #define RETURNVAL(b, c) \
 case b: \
 *winVK = c;\
 return TRUE
-
-@implementation KeyMagicIMEController
-
 bool mapVK(int virtualkey, int * winVK)
 {
 	switch (virtualkey) {
@@ -58,6 +57,7 @@ bool mapVK(int virtualkey, int * winVK)
 		RETURNVAL(kVK_ANSI_X, 'X');
 		RETURNVAL(kVK_ANSI_Y, 'Y');
 		RETURNVAL(kVK_ANSI_Z, 'Z');
+		RETURNVAL(kVK_ANSI_0, '0');
 		RETURNVAL(kVK_ANSI_1, '1');
 		RETURNVAL(kVK_ANSI_2, '2');
 		RETURNVAL(kVK_ANSI_3, '3');
@@ -67,57 +67,62 @@ bool mapVK(int virtualkey, int * winVK)
 		RETURNVAL(kVK_ANSI_7, '7');
 		RETURNVAL(kVK_ANSI_8, '8');
 		RETURNVAL(kVK_ANSI_9, '9');
-		RETURNVAL(kVK_ANSI_Equal, 0xBC);
-		RETURNVAL(kVK_ANSI_Minus, 0xBD);
-		RETURNVAL(kVK_ANSI_LeftBracket, 0xDB);
-		RETURNVAL(kVK_ANSI_RightBracket, 0xDD);
-		RETURNVAL(kVK_ANSI_Quote, 0xDE);
-		RETURNVAL(kVK_ANSI_Semicolon, 0xBA);
-		RETURNVAL(kVK_ANSI_Backslash, 0xDC);
-		RETURNVAL(kVK_ANSI_Comma, 0xBC);
-		RETURNVAL(kVK_ANSI_Slash, 0xBF);
-		RETURNVAL(kVK_ANSI_Period, 0xBE);
-		RETURNVAL(kVK_ANSI_Grave, 0xC0);
-		RETURNVAL(kVK_ANSI_KeypadDecimal, 0x6E);
-		RETURNVAL(kVK_ANSI_KeypadMultiply, 0x6A);
-		RETURNVAL(kVK_ANSI_KeypadPlus, 0x6B);
-		RETURNVAL(kVK_ANSI_KeypadDivide, 0x6F);
-		RETURNVAL(kVK_ANSI_KeypadMinus, 0x6D);
-		RETURNVAL(kVK_ANSI_Keypad0, 0x60);
-		RETURNVAL(kVK_ANSI_Keypad1, 0x61);
-		RETURNVAL(kVK_ANSI_Keypad2, 0x62);
-		RETURNVAL(kVK_ANSI_Keypad3, 0x63);
-		RETURNVAL(kVK_ANSI_Keypad4, 0x64);
-		RETURNVAL(kVK_ANSI_Keypad5, 0x65);
-		RETURNVAL(kVK_ANSI_Keypad6, 0x66);
-		RETURNVAL(kVK_ANSI_Keypad7, 0x67);
-		RETURNVAL(kVK_ANSI_Keypad8, 0x68);
-		RETURNVAL(kVK_ANSI_Keypad9, 0x69);
-		RETURNVAL(kVK_Return, 0x0D);
-		RETURNVAL(kVK_Tab, 0x09);
-		RETURNVAL(kVK_Space, 0x20);
-		RETURNVAL(kVK_Delete, 0x08);
-		RETURNVAL(kVK_ForwardDelete, 0x2E);
-		RETURNVAL(kVK_Escape, 0x1B);
-		RETURNVAL(kVK_Shift, 0x10);
-		RETURNVAL(kVK_CapsLock, 0x14);
-		RETURNVAL(kVK_Option, 0x12);
-		RETURNVAL(kVK_Control, 0x11);
-		RETURNVAL(kVK_RightShift, 0xA1);
-		RETURNVAL(kVK_RightOption, 0xA5);
-		RETURNVAL(kVK_RightControl, 0xA3);
+		RETURNVAL(kVK_ANSI_Equal, VK_OEM_PLUS);
+		RETURNVAL(kVK_ANSI_Minus, VK_OEM_MINUS);
+		RETURNVAL(kVK_ANSI_LeftBracket, VK_OEM_4);
+		RETURNVAL(kVK_ANSI_RightBracket, VK_OEM_6);
+		RETURNVAL(kVK_ANSI_Quote, VK_OEM_7);
+		RETURNVAL(kVK_ANSI_Semicolon, VK_OEM_1);
+		RETURNVAL(kVK_ANSI_Backslash, VK_OEM_5);
+		RETURNVAL(kVK_ANSI_Comma, VK_OEM_COMMA);
+		RETURNVAL(kVK_ANSI_Slash, VK_OEM_2);
+		RETURNVAL(kVK_ANSI_Period, VK_OEM_PERIOD);
+		RETURNVAL(kVK_ANSI_Grave, VK_OEM_3);
+		RETURNVAL(kVK_ANSI_KeypadDecimal, VK_DECIMAL);
+		RETURNVAL(kVK_ANSI_KeypadMultiply, VK_MULTIPLY);
+		RETURNVAL(kVK_ANSI_KeypadPlus, VK_ADD);
+		RETURNVAL(kVK_ANSI_KeypadDivide, VK_DIVIDE);
+		RETURNVAL(kVK_ANSI_KeypadMinus, VK_SUBTRACT);
+		RETURNVAL(kVK_ANSI_Keypad0, VK_NUMPAD0);
+		RETURNVAL(kVK_ANSI_Keypad1, VK_NUMPAD1);
+		RETURNVAL(kVK_ANSI_Keypad2, VK_NUMPAD2);
+		RETURNVAL(kVK_ANSI_Keypad3, VK_NUMPAD3);
+		RETURNVAL(kVK_ANSI_Keypad4, VK_NUMPAD4);
+		RETURNVAL(kVK_ANSI_Keypad5, VK_NUMPAD5);
+		RETURNVAL(kVK_ANSI_Keypad6, VK_NUMPAD6);
+		RETURNVAL(kVK_ANSI_Keypad7, VK_NUMPAD7);
+		RETURNVAL(kVK_ANSI_Keypad8, VK_NUMPAD8);
+		RETURNVAL(kVK_ANSI_Keypad9, VK_NUMPAD9);
+		RETURNVAL(kVK_Return, VK_RETURN);
+		RETURNVAL(kVK_Tab, VK_TAB);
+		RETURNVAL(kVK_Space, VK_SPACE);
+		RETURNVAL(kVK_Delete, VK_BACK);
+		RETURNVAL(kVK_ForwardDelete, VK_DELETE);
+		RETURNVAL(kVK_Escape, VK_ESCAPE);
+		RETURNVAL(kVK_Shift, VK_SHIFT);
+		RETURNVAL(kVK_CapsLock, VK_CAPITAL);
+		RETURNVAL(kVK_Option, VK_MENU);
+		RETURNVAL(kVK_Control, VK_CONTROL);
+		RETURNVAL(kVK_RightShift, VK_RSHIFT);
+		RETURNVAL(kVK_RightOption, VK_RMENU);
+		RETURNVAL(kVK_RightControl, VK_RCONTROL);
 		default:
 			break;
 	}
 	return FALSE;
 }
 
+#undef RETURNVAL
+
 - (id)initWithServer:(IMKServer*)server delegate:(id)delegate client:(id)inputClient
 {
-	m_logFile = fopen("/Users/thantthetkz/Desktop/km.txt", "w");
-	KeyMagicLogger * logger = KeyMagicLogger::getInstance();
+	
+	m_logFile = fopen("/Users/thantthetkz/Library/Logs/KeyMagic.log", "w");
+	logger = KeyMagicLogger::getInstance();
 	if (m_logFile != 0) logger->setFile(m_logFile);
 	
+	//kme.m_verbose = true;
+	//kme.getKeyboard()->m_verbose = true;
 	if ([super initWithServer:server delegate:delegate client:inputClient] == self) {	
 		configDictionary = [NSMutableDictionary new];
 		ActivePath = @"";
@@ -126,10 +131,13 @@ bool mapVK(int virtualkey, int * winVK)
 		m_success = FALSE;
 		NSString *title = [configDictionary objectForKey:@"DefaultKeyboardTitle"];
 		NSString *path = [configDictionary objectForKey:@"DefaultKeyboardPath"];
+		
 		if (title && path) {
 			ActivePath = path;
 			m_success = kme.loadKeyboardFile([ActivePath cStringUsingEncoding:NSUTF8StringEncoding]);
 			keyboard *Keyboard = [keyboard new];
+		
+			
 			[Keyboard setTitle:title];
 			[Keyboard setPath:path];
 		}
@@ -160,9 +168,39 @@ bool mapVK(int virtualkey, int * winVK)
 	}
 }
 
+/*- (NSAttributedString*) lastAttributedString:(NSAttributedString *)attString
+{
+	NSUInteger length = [[attString string] length];
+	
+	if (length <= 0) {
+		return NULL;
+	}
+	
+	NSRange effectiveRange;
+
+	NSDictionary * lastAttDict = [attString attributesAtIndex:length-1 effectiveRange:&effectiveRange];
+	return [attString attributedSubstringFromRange:effectiveRange];
+}
+
+- (NSDictionary*) lastAttribute:(NSAttributedString *)attString
+{
+	NSUInteger length = [[attString string] length];
+	
+	if (length <= 0) {
+		return NULL;
+	}
+	
+	NSRange effectiveRange;
+	
+	NSDictionary * lastAttDict = [attString attributesAtIndex:length-1 effectiveRange:&effectiveRange];
+	return lastAttDict;
+}*/
+
 - (BOOL)handleEvent:(NSEvent*)event client:(id)sender
-{    
-    if ([event type] != NSKeyDown && m_success) {
+{
+	/*BOOL commit = NO;
+	NSRange replacementRange = NSMakeRange(NSNotFound, NSNotFound);*/
+    if ([event type] != NSKeyDown || m_success == NO) {
 		return NO;
 	}
 
@@ -188,6 +226,9 @@ bool mapVK(int virtualkey, int * winVK)
 	}
 	
 	int modifier = 0;
+	if (cocoaModifiers & NSCommandKeyMask) {
+		return NO;
+	}
 	if (cocoaModifiers & NSAlphaShiftKeyMask) {
 		modifier |= KeyMagicEngine::CAPS_MASK;
 	}
@@ -205,6 +246,25 @@ bool mapVK(int virtualkey, int * winVK)
 	if (mapVK(virtualKeyCode, &winVK) == NO) {
 		return NO;
 	}
+
+	/*if (kme.getContextText()->length() == 0 && virtualKeyCode == kVK_Delete) {
+		NSRange range = [sender selectedRange];
+		if (range.location != NSNotFound && range.length != NSNotFound) {
+			NSInteger location, length;
+			
+			location = range.location < 50 ? 0 : range.location - 50;
+			length = location == 0 ? range.location : 50;
+			
+			NSAttributedString * attString = [sender attributedSubstringFromRange:NSMakeRange(location, length)];
+			if (attString != NULL) {
+				attString = [self lastAttributedString:attString];
+				KeyMagicString kms = [[attString string] getKeyMagicString];
+				kme.setContextText(&kms);
+				replacementRange = NSMakeRange(range.location - attString.string.length, attString.string.length);
+				commit = YES;
+			}
+		}
+	}*/
 	
 	if (kme.processKeyEvent([chars characterAtIndex:0], winVK, modifier) == NO) {
 		switch (virtualKeyCode) {
@@ -221,7 +281,6 @@ bool mapVK(int virtualkey, int * winVK)
 		} else if (cocoaModifiers & NSCommandKeyMask) {
 			[self commitComposition:sender];
 		}
-		
 		return NO;
 	}
 	
@@ -237,7 +296,7 @@ bool mapVK(int virtualkey, int * winVK)
 		NSDictionary *attrDict = [NSDictionary dictionaryWithObjectsAndKeys:
 								  [NSNumber numberWithInt:NSUnderlineStyleSingle], @"UnderlineStyleAttribute",
 								  [NSNumber numberWithInt:0], @"MarkedClauseSegmentAttribute", nil];
-    #endif		
+    #endif
 
 	[attrString setAttributes:attrDict range:NSMakeRange(0, [_composingBuffer length])];  
 	
@@ -245,6 +304,9 @@ bool mapVK(int virtualkey, int * winVK)
 	NSRange selectionRange = NSMakeRange([_composingBuffer length], 0); 
 	[sender setMarkedText:attrString selectionRange:selectionRange replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
 	
+	/*if (commit) {
+		[self commitComposition:sender];
+	}*/
     return YES;
 }
 
@@ -257,13 +319,13 @@ bool mapVK(int virtualkey, int * winVK)
 	NSMenuItem *menuItem = [sender objectForKey:@"IMKCommandMenuItem"];
 	keyboard * Keyboard = [menuItem representedObject];
 	if (Keyboard.path != nil) {
-		kme.loadKeyboardFile([Keyboard.path cStringUsingEncoding:NSUTF8StringEncoding]);
-		[configDictionary setObject:[Keyboard title] forKey:@"DefaultKeyboardTitle"];
-		[configDictionary setObject:[Keyboard path] forKey:@"DefaultKeyboardPath"];
-		ActivePath = [Keyboard path];
-		[self WriteConfigurationFile];
+		if (m_success = kme.loadKeyboardFile([Keyboard.path cStringUsingEncoding:NSUTF8StringEncoding])) {
+			[configDictionary setObject:[Keyboard title] forKey:@"DefaultKeyboardTitle"];
+			[configDictionary setObject:[Keyboard path] forKey:@"DefaultKeyboardPath"];
+			ActivePath = [Keyboard path];
+			[self WriteConfigurationFile];
+		}
 	}
-
 }
 
 - (NSMenu *)menu

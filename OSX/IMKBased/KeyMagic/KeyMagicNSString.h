@@ -11,5 +11,5 @@
 
 @interface NSString (KeyMagicString_Addition)
 +(NSString*) stringWithKeyMagicString:(const KeyMagicString*)string;
--(std::wstring) getKeyMagicString;
+-(KeyMagicString) getKeyMagicString;
 @end

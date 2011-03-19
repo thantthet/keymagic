@@ -37,6 +37,8 @@ ibus_engine_keymagic_SOURCES = \
 	RuleInfo.cpp \
 	KeyCodes.h \
 	KeyCodes.cpp \
+	Util.h \
+	Util.cpp \
 	KeyMagicTypes.h \
 	$(NULL)
 ibus_engine_keymagic_CXXFLAGS = \

@@ -34,14 +34,11 @@
 #ifndef BISON_STACK_HH
 # define BISON_STACK_HH
 
-#include <Windows.h>
 #include <deque>
 
 
 namespace yy {
 
-/* Line 1067 of lalr1.cc  */
-#line 44 "stack.hh"
   template <class T, class S = std::deque<T> >
   class stack
   {
@@ -130,8 +127,6 @@ namespace yy {
 
 } // yy
 
-/* Line 1153 of lalr1.cc  */
-#line 134 "stack.hh"
 
 #endif // not BISON_STACK_HH[]dnl
 

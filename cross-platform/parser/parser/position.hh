@@ -46,8 +46,6 @@
 
 namespace yy {
 
-/* Line 38 of location.cc  */
-
   /// Abstract a position.
   class position
   {
@@ -81,11 +79,7 @@ namespace yy {
     /// (column related) Advance to the COUNT next columns.
     inline void columns (int count = 1)
     {
-#ifdef _WIN32
-      column = std::max<unsigned int> (1u, column + count);
-#else
       column = std::max (1u, column + count);
-#endif
     }
     /** \} */
 
@@ -160,7 +154,5 @@ namespace yy {
 
 
 } // yy
-
-/* Line 145 of location.cc  */
 
 #endif // not BISON_POSITION_HH

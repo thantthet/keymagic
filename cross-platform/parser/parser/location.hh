@@ -39,7 +39,6 @@
 #ifndef BISON_LOCATION_HH
 # define BISON_LOCATION_HH
 
-# include <Windows.h>
 # include <iostream>
 # include <string>
 # include "position.hh"
@@ -47,8 +46,6 @@
 
 namespace yy {
 
-/* Line 163 of location.cc  */
-#line 51 "location.hh"
 
   /// Abstract a location.
   class location
@@ -160,7 +157,5 @@ namespace yy {
 
 } // yy
 
-/* Line 272 of location.cc  */
-#line 164 "location.hh"
 
 #endif // not BISON_LOCATION_HH

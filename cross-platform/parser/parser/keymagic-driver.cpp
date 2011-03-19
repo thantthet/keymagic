@@ -1,10 +1,23 @@
-#include "keymagic-driver.h"
-#include "keymagic-parser.tab.h"
+#include <sstream>
+
+#include "keymagic-driver.hpp"
+#include "keymagic-parser.tab.hpp"
+#include "ConvertUTF.h"
 
 #ifdef _WIN32
 #pragma warning (disable: 4996)
 #endif
 
+#ifdef _WIN32
+#include <windows.h>
+#define FullPath(a,b) _fullpath(b, a, 256)
+#define GetCurrentDir(a) GetCurrentDirectoryA(256, a)
+#define SetCurrentDir(a) SetCurrentDirectoryA(a)
+#else
+#define FullPath(a,b) realpath(a,b)
+#define GetCurrentDir(a) getcwd(a, 256)
+#define SetCurrentDir(a) chdir(a)
+#endif
 keymagic_driver::keymagic_driver ()
   : trace_scanning (false), trace_parsing (false)
 {
@@ -154,6 +167,11 @@ keymagic_driver::keymagic_driver ()
 	predefineds["VK_ICO_HELP"] = pdVK_ICO_HELP;
 	predefineds["VK_ICO_00"] = pdVK_ICO_00;
 	}
+
+	layoutOptions.smartBksp = false;
+	layoutOptions.eat = false;
+	layoutOptions.trackCaps = true;
+	layoutOptions.posBased = false;
 }
 
 keymagic_driver::~keymagic_driver ()
@@ -188,14 +206,21 @@ keymagic_driver::CreateLayoutFile(const std::string &f)
 	
 	// VARIABLE COUNT
 	fileHeader.shNumOfString = variables.size();
+	// INFO COUNT
+	fileHeader.shNumOfInfos = infos.size();
 	// RULE COUNT
 	fileHeader.shNumOfRules = rules.size();
 	
 	// COPY LAYOUT OPTIONS
 	fileHeader.layout = layoutOptions;
 	
+	if (fileHeader.shNumOfRules == 0) {
+		std::cerr << "Warning: No rule is defined!";
+	}
+
 	FILE * fileOut = fopen(f.c_str(), "wb");
 	if (fileOut == 0) {
+		error("Cannot open file to write!");
 		return false;
 	}
 	fwrite(&fileHeader, 1, sizeof(fileHeader), fileOut);
@@ -207,6 +232,17 @@ keymagic_driver::CreateLayoutFile(const std::string &f)
 		for (std::list<int>::const_iterator lit = value.begin(); lit != value.end(); lit++) {
 			short s = *lit;
 			fwrite(&s, 1, sizeof(s), fileOut);
+		}
+	}
+	
+	for (INFOS::const_iterator it = infos.begin(); it != infos.end(); it++) {
+		INFO info = *it;
+		int id = info.id;
+		short len = info.data.size();
+		fwrite(&id, 1, sizeof(id), fileOut);
+		fwrite(&len, 1, sizeof(len), fileOut);
+		for (std::vector<char>::const_iterator vit = info.data.begin(); vit != info.data.end(); vit++) {
+			fwrite(&*vit, 1, sizeof(char), fileOut);
 		}
 	}
 	
@@ -252,10 +288,17 @@ keymagic_driver::StoreRule(const std::list<int>& lhs, const std::list<int>& rhs,
 bool
 keymagic_driver::CheckPreDefined(const std::string& id)
 {
-	if (predefineds.find(id) == predefineds.end()) {
+	/*if (predefineds.find(id) == predefineds.end()) {
 		return false;
-	}
-	return true;
+	}*/
+	for (PREDEFINEDVALUES::const_iterator it = predefineds.begin();
+			it != predefineds.end(); it++)
+			{
+				if ((*it).first == id) {
+					return true;
+				}
+			}
+	return false;
 }
 
 /*const std::string
@@ -270,16 +313,24 @@ keymagic_driver::LoadPreDefined(const std::string& id)
 int
 keymagic_driver::IndexOfPreDefined(const std::string& id)
 {
-	PREDEFINEDVALUES::const_iterator it = predefineds.find(id);
+	/*PREDEFINEDVALUES::const_iterator it = predefineds.find(id);
 	if (it == predefineds.end()) {
 		return 0;
 	}
-	return (*it).second;
+	return (*it).second;*/
+	for (PREDEFINEDVALUES::const_iterator it = predefineds.begin();
+			it != predefineds.end(); it++)
+			{
+				if ((*it).first == id) {
+					return (*it).second;
+				}
+			}
+	return 0;
 }
 
 /// switches are also store in variables list
 bool
-keymagic_driver::StoreSwitch(const std::string& name)
+keymagic_driver::StoreSwitch(const std::wstring& name)
 {
 	if (varindexs.find(name) == varindexs.end()) {
 		std::list<int> * dummyList = new std::list<int>();
@@ -293,50 +344,58 @@ keymagic_driver::StoreSwitch(const std::string& name)
 }
 
 int
-keymagic_driver::IndexOfSwitch(const std::string& name)
+keymagic_driver::IndexOfSwitch(const std::wstring& name, yy::location l)
 {	
 	if (varindexs.find(name) == varindexs.end()) {
 		result = 1;
-		std::cerr << "No such switch named: " << name << std::endl;
+		std::cerr << l << ":No such switch named : ";
+		std::wcerr << name;
+		std::cerr << std::endl;
 		return 0;
 	}
 	return varindexs[name] + 1;
 }
 
 bool
-keymagic_driver::StoreVariable(const std::string& name, const std::list<int>& value)
+keymagic_driver::StoreVariable(const std::wstring& name, const std::list<int>& value, yy::location l)
 {
 	if (varindexs.find(name) == varindexs.end()) {
 		variables.push_back(value);
 		varindexs[name] = variables.size() - 1;
 	} else {
 		result = 1;
-		std::cerr << "variable named : '" << name << "' already defined!" << std::endl;
+		std::cerr << l << ":Variable named : '";
+		std::wcerr << name;
+		std::cerr << "' already defined!" << std::endl;
 		exit(1);
 	}
 	return true;
 }
 
 std::list<int>&
-keymagic_driver::LoadVariable(const std::string& name)
+keymagic_driver::LoadVariable(const std::wstring& name, yy::location l)
 {
 	VARINDEXS::iterator i;
 	i = varindexs.find(name);
 	
 	if (i == varindexs.end()) {
-		std::cerr << "variable named : '" << name << "' does not exist!" << std::endl;
+		std::cerr << l << ":Variable named : '";
+		std::wcerr << name;
+		std::cerr << "' does not exist!" << std::endl;
 		exit(1);
 	}
 	return variables[varindexs[name] ];
 }
 
 int
-keymagic_driver::IndexOfVariable(const std::string& name)
+keymagic_driver::IndexOfVariable(const std::wstring& name, yy::location l)
 {
 	VARINDEXS::iterator it;
 	it = varindexs.find(name);
 	if (it == varindexs.end()) {
-		std::cerr << "variable named : '" << name << "' does not exist!" << std::endl;
+		std::cerr << l << ":Variable named : '";
+		std::wcerr << name;
+		std::cerr << "' does not exist!" << std::endl;
 		exit(1);
 	}
 	return varindexs[name] + 1;
@@ -362,13 +421,16 @@ keymagic_driver::ValidateRule(const std::list<int>& left, const std::list<int>& 
 			case opNANYOF:
 				haveMod[segCount] = true;
 				break;
+			case opANY:
+				segCount++;
+				break;
 			case opSTRING:
 				if (vkstate) { std::cerr << *l.begin.filename << ":" << l.begin.line << vksmsg << std::endl; exit(1); };
 				segCount++; it++;
 				break;
 			case opSWITCH:
 				if (vkstate) { std::cerr << *l.begin.filename << ":" << l.begin.line << vksmsg << std::endl; exit(1); };
-				segCount++; it++;
+				it++;
 				break;
 			case opAND:
 				vkstate = true;
@@ -383,6 +445,13 @@ keymagic_driver::ValidateRule(const std::list<int>& left, const std::list<int>& 
 	for (it = right.begin(); it != right.end(); it++)
 	{
 		switch (*it) {
+			case opVARIABLE:
+			case opSWITCH:
+				it++;
+				break;
+			case opSTRING:
+				for (int i = *++it; i > 0; i--) it++;
+				break;
 			case opREFERENCE:
 				if (segCount < *++it) {
 					std::cerr << *l.begin.filename << ":" << l.begin.line << ":Warning: reference should be maximum " << segCount << std::endl;
@@ -519,6 +588,154 @@ keymagic_driver::AppendList(std::list<int>& container, const std::list<int>& l)
 	}
 }
 
+bool
+keymagic_driver::AddInfo(int id, const char * data, short size)
+{
+	INFO info;
+	info.id = id;
+	for (int i = 0; i < size; i++) {
+		info.data.push_back(data[i]);
+	}
+	char c = info.data.at(0);
+	infos.push_back(info);
+	return true;
+}
+
+bool
+keymagic_driver::SetIcon(const std::string& path)
+{
+	char cwd[256],
+	base_path[256];
+	bool retVal = false;
+	
+	GetCurrentDir(cwd);
+	FullPath(file.c_str(), base_path);
+	for (int i = strlen(base_path); i > 0 &&
+		 !(base_path[i] == '/' || base_path[i] == '\\'); --i) {
+		base_path[i] = '\0';
+	}
+	SetCurrentDir(base_path);
+	
+	FILE * f = fopen(path.c_str(), "rb");
+	
+	SetCurrentDir(cwd);
+
+	if (f  == 0) {
+		std::cerr << "Error: Cannot open icon file '" << path.c_str() << "'" << std::endl;
+		exit(1);
+	}
+	
+	fseek(f, 0, SEEK_END);
+	long s = ftell(f);
+	fseek(f, 0, SEEK_SET);
+	
+	char * data = new char[s+1];
+	
+	int read = fread(data, 1, s, f);
+	if (read == s) {
+		AddInfo('icon', data, s);
+		retVal = true;
+	}
+
+	
+	fclose(f);
+	delete[] data;	
+	
+	return retVal;
+}
+
+std::wstring *
+keymagic_driver::U8toU16(const std::string& u8)
+{
+	unsigned int length = u8.length();
+	length++;
+
+	const UTF8 * source = (UTF8*)u8.c_str();
+	const UTF8 * sourceStart = source;
+	const UTF8 * sourceEnd = source + length;
+	
+	UTF16 * target = new UTF16[length];
+	UTF16 * targetStart = target;
+	UTF16 * targetEnd = target + length;
+	
+	ConvertUTF8toUTF16(&sourceStart, sourceEnd, &targetStart, targetEnd, lenientConversion);
+	
+	wchar_t * wcs = new wchar_t[length];
+	memset(wcs, 0, length * sizeof (wchar_t));
+	for (int i = 0; i < targetStart - target; i++) {
+		wcs[i] = target[i];
+	}
+
+	std::wstring * s = new std::wstring(wcs);
+
+	delete[] wcs;
+	delete[] target;
+
+	return s;
+}
+
+std::string *
+keymagic_driver::U16toU8(const std::wstring& u16)
+{
+	unsigned int length = u16.length() * 2;
+	length++;
+
+	const UTF16 * source = (UTF16*)u16.c_str();
+	const UTF16 * sourceStart = source;
+	const UTF16 * sourceEnd = source + length;
+	
+	UTF8 * target = new UTF8[length];
+	UTF8 * targetStart = target;
+	UTF8 * targetEnd = target + length;
+	
+	ConvertUTF16toUTF8(&sourceStart, sourceEnd, &targetStart, targetEnd, lenientConversion);
+	
+	char * cs = new char[length];
+	memset(cs, 0, length * sizeof (wchar_t));
+	for (int i = 0; i < targetStart - target; i++) {
+		cs[i] = target[i];
+	}
+
+	std::string * s = new std::string(cs);
+
+	delete[] cs;
+	delete[] target;
+
+	return s;
+}
+
+std::string *
+keymagic_driver::U16toU8(int u16)
+{
+	std::wstring * ws = new std::wstring();
+	ws->push_back(u16);
+	std::string * s = U16toU8(*ws);
+	delete ws;
+	return s;
+}
+
+bool
+keymagic_driver::openIncludeFile(const std::string& from, const std::string& incFile, std::string * realPath)
+{
+	bool fRet;
+	char cwd[256],
+		base_path[256];
+
+	GetCurrentDir(cwd);
+	FullPath(from.c_str(), base_path);
+
+	for (int i = strlen(base_path); i > 0 &&
+		!(base_path[i] == '/' || base_path[i] == '\\'); --i) {
+		base_path[i] = '\0';
+	}
+	*realPath = base_path + incFile;
+
+	SetCurrentDir(base_path);
+	fRet = openFile(incFile);
+	SetCurrentDir(cwd);
+
+	return fRet;
+}
 
 void
 keymagic_driver::error (const yy::location& l, const std::string& m)
@@ -543,11 +760,7 @@ keymagic_driver::warn (const yy::location& l, const std::string& m)
 bool
 keymagic_driver::StringToBool(std::string& booleanStr) 
 {
-	#ifdef _WIN32
-	if (_stricmp(booleanStr.c_str(), "true") == 0)
-	#else
-	if (strcasecmp(booleanStr.c_str(), "true") == 0)
-	#endif
+	if (booleanStr == "true" || booleanStr == "TRUE")
 		return true;
 	return false;
 }

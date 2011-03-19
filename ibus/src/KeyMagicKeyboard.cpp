@@ -9,14 +9,14 @@
 
 bool sortRule (RuleInfo * r1, RuleInfo * r2) {
 
-	int s1 = r1->getSwitchCount();
-	int s2 = r2->getSwitchCount();
+	int s1 = r1->getLHSSwitchCount();
+	int s2 = r2->getLHSSwitchCount();
 	if (s1 != s2) {
 		return s1 < s2;
 	}
 
-	int v1 = r1->getVKCount();
-	int v2 = r2->getVKCount();
+	int v1 = r1->getLHSVKCount();
+	int v2 = r2->getLHSVKCount();
 	if (v1 != v2) {
 		return v1 < v2;
 	}
@@ -28,6 +28,23 @@ bool sortRule (RuleInfo * r1, RuleInfo * r2) {
 	}
 
 	return false;
+}
+
+KeyMagicKeyboard::KeyMagicKeyboard() :
+	m_logger(KeyMagicLogger::getInstance()),
+	m_verbose(0)
+{
+}
+
+KeyMagicKeyboard::~KeyMagicKeyboard() {
+	deleteRules();
+}
+
+void KeyMagicKeyboard::deleteRules() {
+	for (RuleList::iterator i = m_rules.begin(); i != m_rules.end(); i++) {
+		delete *i;
+	}
+	m_rules.clear();
 }
 
 bool KeyMagicKeyboard::loadKeyboardFile(const char * szPath) {
@@ -52,13 +69,15 @@ bool KeyMagicKeyboard::loadKeyboardFile(const char * szPath) {
 
 	m_layoutOptions = fh.layoutOptions;
 	
-	m_logger->log("autoBksp=%x\n", m_layoutOptions.autoBksp);
-	m_logger->log("eat=%x\n", m_layoutOptions.eat);
-	m_logger->log("posBased=%x\n", m_layoutOptions.posBased);
-	m_logger->log("trackCaps=%x\n", m_layoutOptions.trackCaps);
-
+	if (m_verbose) {
+		m_logger->log("autoBksp=%x\n", m_layoutOptions.autoBksp);
+		m_logger->log("eat=%x\n", m_layoutOptions.eat);
+		m_logger->log("posBased=%x\n", m_layoutOptions.posBased);
+		m_logger->log("trackCaps=%x\n", m_layoutOptions.trackCaps);
+	}
+	
 	m_strings.clear();
-	m_rules.clear();
+	deleteRules();
 
 	for (int i = 0; i < fh.stringCount; i++)
 	{
@@ -99,21 +118,37 @@ bool KeyMagicKeyboard::loadKeyboardFile(const char * szPath) {
 	std::sort(m_rules.begin(), m_rules.end(), sortRule);
 	std::reverse(m_rules.begin(), m_rules.end());
 	
-	m_logger->log("strings;%d==%d\n", strings.size(), m_strings.size());
-	m_logger->log("rules;%d==%d\n", rules.size(), m_rules.size());
-	
-	m_logger->log("----rules-start----\n");
-	for (RuleList::iterator i = m_rules.begin(); i != m_rules.end(); i++) {
-		RuleInfo * rule = *i;
-		std::string * s;
-		m_logger->log("---index=%d---\n", rule->getRuleIndex());
-		s = rule->description();
-		m_logger->log(s->c_str());
-		delete s;
+	if (m_verbose) {
+		m_logger->log("strings;%d==%d\n", strings.size(), m_strings.size());
+		m_logger->log("rules;%d==%d\n", rules.size(), m_rules.size());
+		m_logger->log("/*----rules-start----*/\n");
+		for (RuleList::iterator i = m_rules.begin(); i != m_rules.end(); i++) {
+			RuleInfo * rule = *i;
+			std::string * s;
+			
+			if (i != m_rules.begin()) {
+				m_logger->log(",\n");
+			}
+			
+			m_logger->log("/*---index=%d---*/\n{\n", rule->getRuleIndex());
+			s = rule->description();
+			m_logger->log(s->c_str());
+			m_logger->log("}");
+			delete s;
+		}
+		m_logger->log("\n/*----rules-end----*/\n");
 	}
-	m_logger->log("----rules-end----\n");
-
+	
 	fclose(hFile);
+	
+	for (BinaryStringList::iterator i = strings.begin(); i != strings.end(); i++) {
+		delete[] *i;
+	}
+	
+	for (BinaryRuleList::iterator i = rules.begin(); i != rules.end(); i++) {
+		delete[] i->strInRule;
+		delete[] i->strOutRule;
+	}
 
 	return true;
 }

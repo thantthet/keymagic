@@ -414,6 +414,13 @@ keymagic_driver::ValidateRule(const std::list<int>& left, const std::list<int>& 
 	for (it = right.begin(); it != right.end(); it++)
 	{
 		switch (*it) {
+			case opVARIABLE:
+			case opSWITCH:
+				it++;
+				break;
+			case opSTRING:
+				for (int i = *++it; i > 0; i--) it++;
+				break;
 			case opREFERENCE:
 				if (segCount < *++it) {
 					std::cerr << *l.begin.filename << ":" << l.begin.line << ":Warning: reference should be maximum " << segCount << std::endl;
@@ -551,7 +558,7 @@ keymagic_driver::AppendList(std::list<int>& container, const std::list<int>& l)
 }
 
 std::wstring *
-keymagic_driver::U8toU16(std::string u8)
+keymagic_driver::U8toU16(const std::string& u8)
 {
 	unsigned int length = u8.length();
 	length++;
@@ -577,6 +584,46 @@ keymagic_driver::U8toU16(std::string u8)
 	delete[] wcs;
 	delete[] target;
 
+	return s;
+}
+
+std::string *
+keymagic_driver::U16toU8(const std::wstring& u16)
+{
+	unsigned int length = u16.length() * 2;
+	length++;
+
+	const UTF16 * source = (UTF16*)u16.c_str();
+	const UTF16 * sourceStart = source;
+	const UTF16 * sourceEnd = source + length;
+	
+	UTF8 * target = new UTF8[length];
+	UTF8 * targetStart = target;
+	UTF8 * targetEnd = target + length;
+	
+	ConvertUTF16toUTF8(&sourceStart, sourceEnd, &targetStart, targetEnd, lenientConversion);
+	
+	char * cs = new char[length];
+	memset(cs, 0, length * sizeof (wchar_t));
+	for (int i = 0; i < targetStart - target; i++) {
+		cs[i] = target[i];
+	}
+
+	std::string * s = new std::string(cs);
+
+	delete[] cs;
+	delete[] target;
+
+	return s;
+}
+
+std::string *
+keymagic_driver::U16toU8(int u16)
+{
+	std::wstring * ws = new std::wstring();
+	ws->push_back(u16);
+	std::string * s = U16toU8(*ws);
+	delete ws;
 	return s;
 }
 

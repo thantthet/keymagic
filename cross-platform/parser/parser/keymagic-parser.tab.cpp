@@ -35,29 +35,21 @@
 /* First part of user declarations.  */
 
 
-/* Line 311 of lalr1.cc  */
-#line 40 "keymagic-parser.tab.cpp"
 
 
-#include "keymagic-parser.tab.h"
+#include "keymagic-parser.tab.hpp"
 
 /* User implementation prologue.  */
 
 
-/* Line 317 of lalr1.cc  */
-#line 49 "keymagic-parser.tab.cpp"
 /* Unqualified %code blocks.  */
 
-/* Line 318 of lalr1.cc  */
-#line 29 "keymagic-parser.yy"
 
-# include "keymagic-driver.h"
+# include "keymagic-driver.hpp"
 typedef std::list<int> containerType;	
 
 
 
-/* Line 318 of lalr1.cc  */
-#line 61 "keymagic-parser.tab.cpp"
 
 #ifndef YY_
 # if defined YYENABLE_NLS && YYENABLE_NLS
@@ -122,8 +114,6 @@ do {					\
 
 namespace yy {
 
-/* Line 380 of lalr1.cc  */
-#line 127 "keymagic-parser.tab.cpp"
 #if YYERROR_VERBOSE
 
   /* Return YYSTR after stripping away unnecessary quotes and
@@ -223,41 +213,15 @@ namespace yy {
 
     switch (yytype)
       {
-        case 9: /* "\"identifier\"" */
+        case 18: /* "\"predefined-value\"" */
 
-/* Line 480 of lalr1.cc  */
-#line 72 "keymagic-parser.yy"
 	{ delete (yyvaluep->sval); };
 
-/* Line 480 of lalr1.cc  */
-#line 234 "keymagic-parser.tab.cpp"
 	break;
-      case 15: /* "\"predefined-value\"" */
+      case 59: /* "char_array" */
 
-/* Line 480 of lalr1.cc  */
-#line 72 "keymagic-parser.yy"
 	{ delete (yyvaluep->sval); };
 
-/* Line 480 of lalr1.cc  */
-#line 243 "keymagic-parser.tab.cpp"
-	break;
-      case 53: /* "char_array" */
-
-/* Line 480 of lalr1.cc  */
-#line 72 "keymagic-parser.yy"
-	{ delete (yyvaluep->sval); };
-
-/* Line 480 of lalr1.cc  */
-#line 252 "keymagic-parser.tab.cpp"
-	break;
-      case 55: /* "switch" */
-
-/* Line 480 of lalr1.cc  */
-#line 72 "keymagic-parser.yy"
-	{ delete (yyvaluep->sval); };
-
-/* Line 480 of lalr1.cc  */
-#line 261 "keymagic-parser.tab.cpp"
 	break;
 
 	default:
@@ -335,15 +299,11 @@ namespace yy {
 
     /* User initialization code.  */
     
-/* Line 559 of lalr1.cc  */
-#line 15 "keymagic-parser.yy"
 {
   // Initialize the initial location.
   yylloc.begin.filename = yylloc.end.filename = &driver.file;
 }
 
-/* Line 559 of lalr1.cc  */
-#line 347 "keymagic-parser.tab.cpp"
 
     /* Initialize the stacks.  The initial state will be pushed in
        yynewstate, since the latter expects the semantical and the
@@ -461,288 +421,250 @@ namespace yy {
       {
 	  case 15:
 
-/* Line 678 of lalr1.cc  */
-#line 92 "keymagic-parser.yy"
-    {driver.layoutOptions.trackCaps = driver.StringToBool(*(yysemantic_stack_[(2) - (2)].sval)); }
-    break;
-
-  case 16:
-
-/* Line 678 of lalr1.cc  */
-#line 93 "keymagic-parser.yy"
-    {driver.layoutOptions.eat = driver.StringToBool(*(yysemantic_stack_[(2) - (2)].sval)); }
+    { driver.AddInfo('name', (yysemantic_stack_[(2) - (2)].sval)->c_str(), (yysemantic_stack_[(2) - (2)].sval)->length()); delete (yysemantic_stack_[(2) - (2)].sval); }
     break;
 
   case 17:
 
-/* Line 678 of lalr1.cc  */
-#line 94 "keymagic-parser.yy"
-    {driver.layoutOptions.posBased = driver.StringToBool(*(yysemantic_stack_[(2) - (2)].sval)); }
+    { driver.AddInfo('font', (yysemantic_stack_[(2) - (2)].sval)->c_str(), (yysemantic_stack_[(2) - (2)].sval)->length()); delete (yysemantic_stack_[(2) - (2)].sval); }
+    break;
+
+  case 19:
+
+    { driver.AddInfo('desc', (yysemantic_stack_[(2) - (2)].sval)->c_str(), (yysemantic_stack_[(2) - (2)].sval)->length()); delete (yysemantic_stack_[(2) - (2)].sval); }
+    break;
+
+  case 21:
+
+    { driver.SetIcon(*(yysemantic_stack_[(2) - (2)].sval)); delete (yysemantic_stack_[(2) - (2)].sval); }
+    break;
+
+  case 23:
+
+    { driver.AddInfo('htky', (yysemantic_stack_[(2) - (2)].sval)->c_str(), (yysemantic_stack_[(2) - (2)].sval)->length()); delete (yysemantic_stack_[(2) - (2)].sval); }
     break;
 
   case 25:
 
-/* Line 678 of lalr1.cc  */
-#line 108 "keymagic-parser.yy"
-    { if (!driver.StoreVariable(*(yysemantic_stack_[(3) - (1)].sval), *(yysemantic_stack_[(3) - (3)].lval))) YYABORT; }
+    {driver.layoutOptions.trackCaps = driver.StringToBool(*(yysemantic_stack_[(2) - (2)].sval)); delete (yysemantic_stack_[(2) - (2)].sval); }
     break;
 
-  case 26:
+  case 27:
 
-/* Line 678 of lalr1.cc  */
-#line 111 "keymagic-parser.yy"
-    {(yyval.lval) = (yysemantic_stack_[(3) - (1)].lval); (yyval.lval)->insert((yyval.lval)->end(), (yysemantic_stack_[(3) - (3)].lval)->begin(), (yysemantic_stack_[(3) - (3)].lval)->end()); }
-    break;
-
-  case 28:
-
-/* Line 678 of lalr1.cc  */
-#line 114 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); driver.AppendString(*(yyval.lval), *(yysemantic_stack_[(1) - (1)].wsval), false); }
+    {driver.layoutOptions.eat = driver.StringToBool(*(yysemantic_stack_[(2) - (2)].sval)); delete (yysemantic_stack_[(2) - (2)].sval); }
     break;
 
   case 29:
 
-/* Line 678 of lalr1.cc  */
-#line 115 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); driver.AppendString(*(yyval.lval), *(yysemantic_stack_[(1) - (1)].sval), false); }
-    break;
-
-  case 30:
-
-/* Line 678 of lalr1.cc  */
-#line 116 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opVARIABLE); (yyval.lval)->push_back(driver.IndexOfVariable(*(yysemantic_stack_[(1) - (1)].sval))); }
+    {driver.layoutOptions.posBased = driver.StringToBool(*(yysemantic_stack_[(2) - (2)].sval)); delete (yysemantic_stack_[(2) - (2)].sval); }
     break;
 
   case 31:
 
-/* Line 678 of lalr1.cc  */
-#line 119 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType();}
-    break;
-
-  case 32:
-
-/* Line 678 of lalr1.cc  */
-#line 120 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opMODIFIER); (yyval.lval)->push_back(opANYOF); }
-    break;
-
-  case 33:
-
-/* Line 678 of lalr1.cc  */
-#line 121 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opMODIFIER); (yyval.lval)->push_back(opNANYOF); }
-    break;
-
-  case 34:
-
-/* Line 678 of lalr1.cc  */
-#line 123 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType();}
-    break;
-
-  case 35:
-
-/* Line 678 of lalr1.cc  */
-#line 124 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opMODIFIER); (yyval.lval)->push_back((yysemantic_stack_[(1) - (1)].ival)); }
-    break;
-
-  case 36:
-
-/* Line 678 of lalr1.cc  */
-#line 127 "keymagic-parser.yy"
-    {
-					int indx = driver.IndexOfVariable(*(yysemantic_stack_[(2) - (1)].sval));
-					if (indx == -1) YYABORT;
- 					(yyval.lval) = new containerType();
-					(yyval.lval)->push_back(opVARIABLE);
-					(yyval.lval)->push_back(indx);
-					driver.AppendList(*(yyval.lval), *(yysemantic_stack_[(2) - (2)].lval));
-				}
-    break;
-
-  case 37:
-
-/* Line 678 of lalr1.cc  */
-#line 137 "keymagic-parser.yy"
-    {
-					int indx = driver.IndexOfVariable(*(yysemantic_stack_[(2) - (1)].sval));
-					if (indx == -1) YYABORT;
- 					(yyval.lval) = new containerType();
-					(yyval.lval)->push_back(opVARIABLE);
-					(yyval.lval)->push_back(indx);
-					driver.AppendList(*(yyval.lval), *(yysemantic_stack_[(2) - (2)].lval));
-				}
-    break;
-
-  case 38:
-
-/* Line 678 of lalr1.cc  */
-#line 147 "keymagic-parser.yy"
-    { driver.StoreRule(*(yysemantic_stack_[(3) - (1)].lval), *(yysemantic_stack_[(3) - (3)].lval), yylloc); }
+    {driver.layoutOptions.smartBksp = driver.StringToBool(*(yysemantic_stack_[(2) - (2)].sval)); delete (yysemantic_stack_[(2) - (2)].sval); }
     break;
 
   case 39:
 
-/* Line 678 of lalr1.cc  */
-#line 150 "keymagic-parser.yy"
-    {(yyval.lval) = (yysemantic_stack_[(3) - (1)].lval); (yyval.lval)->insert((yyval.lval)->end(), (yysemantic_stack_[(3) - (3)].lval)->begin(), (yysemantic_stack_[(3) - (3)].lval)->end()); }
+    { if (!driver.StoreVariable(*(yysemantic_stack_[(3) - (1)].wsval), *(yysemantic_stack_[(3) - (3)].lval), yylloc)) YYABORT; }
     break;
 
-  case 41:
+  case 40:
 
-/* Line 678 of lalr1.cc  */
-#line 153 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); driver.AppendString(*(yyval.lval), *(yysemantic_stack_[(1) - (1)].wsval)); }
+    {(yyval.lval) = (yysemantic_stack_[(3) - (1)].lval); (yyval.lval)->insert((yyval.lval)->end(), (yysemantic_stack_[(3) - (3)].lval)->begin(), (yysemantic_stack_[(3) - (3)].lval)->end()); }
     break;
 
   case 42:
 
-/* Line 678 of lalr1.cc  */
-#line 154 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opSWITCH); (yyval.lval)->push_back(driver.IndexOfSwitch(*(yysemantic_stack_[(1) - (1)].sval))); }
+    {(yyval.lval) = new containerType(); driver.AppendString(*(yyval.lval), *(yysemantic_stack_[(1) - (1)].wsval), false); }
     break;
 
   case 43:
 
-/* Line 678 of lalr1.cc  */
-#line 155 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); driver.AppendString(*(yyval.lval), *(yysemantic_stack_[(1) - (1)].sval)); }
+    {(yyval.lval) = new containerType(); driver.AppendString(*(yyval.lval), *driver.U8toU16(*(yysemantic_stack_[(1) - (1)].sval)), false); delete (yysemantic_stack_[(1) - (1)].sval); }
     break;
 
   case 44:
 
-/* Line 678 of lalr1.cc  */
-#line 156 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); driver.AppendList(*(yyval.lval), *(yysemantic_stack_[(1) - (1)].lval)); }
+    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opVARIABLE); (yyval.lval)->push_back(driver.IndexOfVariable(*(yysemantic_stack_[(1) - (1)].wsval), yylloc)); }
     break;
 
   case 45:
 
-/* Line 678 of lalr1.cc  */
-#line 157 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opANY); }
+    {(yyval.lval) = new containerType();}
     break;
 
   case 46:
 
-/* Line 678 of lalr1.cc  */
-#line 158 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opPREDEFINED); (yyval.lval)->push_back(driver.IndexOfPreDefined(*(yysemantic_stack_[(1) - (1)].sval))); }
+    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opMODIFIER); (yyval.lval)->push_back(opANYOF); }
     break;
 
   case 47:
 
-/* Line 678 of lalr1.cc  */
-#line 159 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opAND); (yyval.lval)->insert((yyval.lval)->end(), (yysemantic_stack_[(1) - (1)].lval)->begin(), (yysemantic_stack_[(1) - (1)].lval)->end()); }
+    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opMODIFIER); (yyval.lval)->push_back(opNANYOF); }
     break;
 
   case 48:
 
-/* Line 678 of lalr1.cc  */
-#line 162 "keymagic-parser.yy"
-    {(yyval.lval) = (yysemantic_stack_[(3) - (1)].lval); (yyval.lval)->insert((yyval.lval)->end(), (yysemantic_stack_[(3) - (3)].lval)->begin(), (yysemantic_stack_[(3) - (3)].lval)->end()); }
+    {(yyval.lval) = new containerType();}
+    break;
+
+  case 49:
+
+    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opMODIFIER); (yyval.lval)->push_back((yysemantic_stack_[(1) - (1)].ival)); }
     break;
 
   case 50:
 
-/* Line 678 of lalr1.cc  */
-#line 165 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); driver.AppendString(*(yyval.lval), *(yysemantic_stack_[(1) - (1)].wsval)); }
+    {
+					int indx = driver.IndexOfVariable(*(yysemantic_stack_[(2) - (1)].wsval), yylloc);
+					if (indx == -1) YYABORT;
+ 					(yyval.lval) = new containerType();
+					(yyval.lval)->push_back(opVARIABLE);
+					(yyval.lval)->push_back(indx);
+					driver.AppendList(*(yyval.lval), *(yysemantic_stack_[(2) - (2)].lval));
+				}
     break;
 
   case 51:
 
-/* Line 678 of lalr1.cc  */
-#line 166 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); driver.AppendString(*(yyval.lval), *(yysemantic_stack_[(1) - (1)].sval)); }
+    {
+					int indx = driver.IndexOfVariable(*(yysemantic_stack_[(2) - (1)].wsval), yylloc);
+					if (indx == -1) YYABORT;
+ 					(yyval.lval) = new containerType();
+					(yyval.lval)->push_back(opVARIABLE);
+					(yyval.lval)->push_back(indx);
+					driver.AppendList(*(yyval.lval), *(yysemantic_stack_[(2) - (2)].lval));
+				}
     break;
 
   case 52:
 
-/* Line 678 of lalr1.cc  */
-#line 167 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); driver.AppendList(*(yyval.lval), *(yysemantic_stack_[(1) - (1)].lval)); }
+    { driver.StoreRule(*(yysemantic_stack_[(3) - (1)].lval), *(yysemantic_stack_[(3) - (3)].lval), yylloc); }
     break;
 
   case 53:
 
-/* Line 678 of lalr1.cc  */
-#line 168 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opREFERENCE); (yyval.lval)->push_back((yysemantic_stack_[(1) - (1)].ival)); }
-    break;
-
-  case 54:
-
-/* Line 678 of lalr1.cc  */
-#line 169 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opSWITCH); (yyval.lval)->push_back(driver.IndexOfSwitch(*(yysemantic_stack_[(1) - (1)].sval))); }
+    {(yyval.lval) = (yysemantic_stack_[(3) - (1)].lval); (yyval.lval)->insert((yyval.lval)->end(), (yysemantic_stack_[(3) - (3)].lval)->begin(), (yysemantic_stack_[(3) - (3)].lval)->end()); }
     break;
 
   case 55:
 
-/* Line 678 of lalr1.cc  */
-#line 170 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opPREDEFINED); (yyval.lval)->push_back(driver.IndexOfPreDefined(*(yysemantic_stack_[(1) - (1)].sval))); }
+    {(yyval.lval) = new containerType(); driver.AppendString(*(yyval.lval), *(yysemantic_stack_[(1) - (1)].wsval)); }
     break;
 
   case 56:
 
-/* Line 678 of lalr1.cc  */
-#line 173 "keymagic-parser.yy"
-    {(yyval.lval) = (yysemantic_stack_[(3) - (2)].lval); }
+    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opSWITCH); (yyval.lval)->push_back(driver.IndexOfSwitch(*(yysemantic_stack_[(1) - (1)].wsval), yylloc)); }
     break;
 
   case 57:
 
-/* Line 678 of lalr1.cc  */
-#line 175 "keymagic-parser.yy"
-    { (yyval.lval)->push_back(opPREDEFINED); (yyval.lval)->push_back(driver.IndexOfPreDefined(*(yysemantic_stack_[(3) - (3)].sval))); }
+    {(yyval.lval) = new containerType(); driver.AppendString(*(yyval.lval), *driver.U8toU16(*(yysemantic_stack_[(1) - (1)].sval))); delete (yysemantic_stack_[(1) - (1)].sval); }
     break;
 
   case 58:
 
-/* Line 678 of lalr1.cc  */
-#line 176 "keymagic-parser.yy"
-    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opPREDEFINED); (yyval.lval)->push_back(driver.IndexOfPreDefined(*(yysemantic_stack_[(1) - (1)].sval))); }
+    {(yyval.lval) = new containerType(); driver.AppendList(*(yyval.lval), *(yysemantic_stack_[(1) - (1)].lval)); }
     break;
 
   case 59:
 
-/* Line 678 of lalr1.cc  */
-#line 179 "keymagic-parser.yy"
-    { (yyval.sval)->push_back((yysemantic_stack_[(2) - (2)].ival)); }
+    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opANY); }
     break;
 
   case 60:
 
-/* Line 678 of lalr1.cc  */
-#line 180 "keymagic-parser.yy"
-    { (yyval.sval) = new std::string(); (yyval.sval)->push_back((yysemantic_stack_[(1) - (1)].ival)); }
+    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opPREDEFINED); (yyval.lval)->push_back(driver.IndexOfPreDefined(*(yysemantic_stack_[(1) - (1)].sval))); delete (yysemantic_stack_[(1) - (1)].sval); }
     break;
 
   case 61:
 
-/* Line 678 of lalr1.cc  */
-#line 182 "keymagic-parser.yy"
-    { (yyval.wsval) = new std::wstring(); (yyval.wsval)->push_back((yysemantic_stack_[(1) - (1)].ival)); }
+    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opAND); (yyval.lval)->insert((yyval.lval)->end(), (yysemantic_stack_[(1) - (1)].lval)->begin(), (yysemantic_stack_[(1) - (1)].lval)->end()); }
     break;
 
   case 62:
 
-/* Line 678 of lalr1.cc  */
-#line 185 "keymagic-parser.yy"
-    { (yyval.sval) = (yysemantic_stack_[(3) - (2)].sval); driver.StoreSwitch(*(yysemantic_stack_[(3) - (2)].sval)); }
+    {(yyval.lval) = (yysemantic_stack_[(3) - (1)].lval); (yyval.lval)->insert((yyval.lval)->end(), (yysemantic_stack_[(3) - (3)].lval)->begin(), (yysemantic_stack_[(3) - (3)].lval)->end()); }
+    break;
+
+  case 64:
+
+    {(yyval.lval) = new containerType(); driver.AppendString(*(yyval.lval), *(yysemantic_stack_[(1) - (1)].wsval)); }
+    break;
+
+  case 65:
+
+    {(yyval.lval) = new containerType(); driver.AppendString(*(yyval.lval), *driver.U8toU16(*(yysemantic_stack_[(1) - (1)].sval))); delete (yysemantic_stack_[(1) - (1)].sval); }
+    break;
+
+  case 66:
+
+    {(yyval.lval) = new containerType(); driver.AppendList(*(yyval.lval), *(yysemantic_stack_[(1) - (1)].lval)); }
+    break;
+
+  case 67:
+
+    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opREFERENCE); (yyval.lval)->push_back((yysemantic_stack_[(1) - (1)].ival)); }
+    break;
+
+  case 68:
+
+    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opSWITCH); (yyval.lval)->push_back(driver.IndexOfSwitch(*(yysemantic_stack_[(1) - (1)].wsval), yylloc)); }
+    break;
+
+  case 69:
+
+    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opPREDEFINED); (yyval.lval)->push_back(driver.IndexOfPreDefined(*(yysemantic_stack_[(1) - (1)].sval))); delete (yysemantic_stack_[(1) - (1)].sval); }
+    break;
+
+  case 70:
+
+    { (yyval.lval) = (yysemantic_stack_[(3) - (2)].lval); }
+    break;
+
+  case 71:
+
+    { (yyval.lval)->push_back(opPREDEFINED); (yyval.lval)->push_back(driver.IndexOfPreDefined(*(yysemantic_stack_[(3) - (3)].sval))); delete (yysemantic_stack_[(3) - (3)].sval); }
+    break;
+
+  case 72:
+
+    {(yyval.lval) = new containerType(); (yyval.lval)->push_back(opPREDEFINED); (yyval.lval)->push_back(driver.IndexOfPreDefined(*(yysemantic_stack_[(1) - (1)].sval))); delete (yysemantic_stack_[(1) - (1)].sval); }
+    break;
+
+  case 73:
+
+    { (yysemantic_stack_[(2) - (1)].sval)->push_back((yysemantic_stack_[(2) - (2)].ival)); (yyval.sval) = (yysemantic_stack_[(2) - (1)].sval); }
+    break;
+
+  case 74:
+
+    { (yysemantic_stack_[(2) - (1)].sval)->append(driver.U16toU8((yysemantic_stack_[(2) - (2)].ival))->c_str()); (yyval.sval) = (yysemantic_stack_[(2) - (1)].sval); }
+    break;
+
+  case 75:
+
+    { (yyval.sval) = new std::string(); (yyval.sval)->push_back((yysemantic_stack_[(1) - (1)].ival)); }
+    break;
+
+  case 76:
+
+    { (yyval.sval) = driver.U16toU8((yysemantic_stack_[(1) - (1)].ival)); }
+    break;
+
+  case 77:
+
+    { (yyval.wsval) = new std::wstring(); (yyval.wsval)->push_back((yysemantic_stack_[(1) - (1)].ival)); }
+    break;
+
+  case 78:
+
+    { std::wstring * wcs = driver.U8toU16(*(yysemantic_stack_[(3) - (2)].sval)); (yyval.wsval) = wcs; driver.StoreSwitch(*wcs); delete (yysemantic_stack_[(3) - (2)].sval); }
     break;
 
 
 
-/* Line 678 of lalr1.cc  */
-#line 746 "keymagic-parser.tab.cpp"
 	default:
           break;
       }
@@ -951,14 +873,15 @@ namespace yy {
   const signed char
   keymagic_parser::yypact_[] =
   {
-        48,   -46,    -9,    -9,    -9,    -9,    -9,    -9,    -1,   -46,
-     -46,   -46,   -46,   -46,    -5,    -9,    12,    97,   -46,   -46,
-     -46,   -46,   -46,   -46,   -46,    74,   -46,   -46,   -46,   -46,
-       3,   -46,   -46,     9,   -46,   -46,     9,     9,     9,     9,
-       9,     9,    52,   -46,   -46,   -46,   -46,     4,    13,   -46,
-     -46,   -46,    19,     2,   -46,   -46,    17,   -46,     9,   -46,
-     -46,    16,   -46,    15,   -46,   -46,   -46,    29,   -46,     9,
-     -46,   -46,    22,   -46,    52,   -46,   -46,   -46,    19,   -46,
+        18,   -46,    -8,    -8,    -8,    -8,    -8,    -8,    -8,    -8,
+      -8,    44,   -46,   -46,   -46,   -46,   -46,   -46,    30,    -8,
+      45,   110,   -46,   -46,   -46,   -46,   -46,   -46,   -46,   -46,
+     -46,    58,   -46,   -46,   -46,   -46,     0,   -46,   -46,    11,
+     -46,   -46,    11,    11,    11,    11,    11,    11,    11,    11,
+      11,    32,   -46,   -46,   -46,   -46,     9,   -10,   -46,   -46,
+     -46,    83,    71,   -46,   -46,   -46,    35,   -46,    11,   -46,
+     -46,    38,   -46,    34,   -46,   -46,   -46,    43,   -46,    11,
+     -46,   -46,    27,   -46,    32,   -46,   -46,   -46,    83,   -46,
      -46
   };
 
@@ -968,33 +891,36 @@ namespace yy {
   const unsigned char
   keymagic_parser::yydefact_[] =
   {
-         0,    20,     0,     0,     0,     0,     0,     0,    31,    24,
-      46,    61,    60,    45,     0,     0,     0,    23,     5,     9,
-      10,    11,     6,     7,     8,     3,    19,    22,    44,    21,
-       0,    40,    47,    43,    41,    42,    12,    13,    14,    15,
-      16,    17,     0,    32,    33,    36,    58,     0,     0,     1,
-       4,    18,     0,     0,    59,    30,    25,    27,    29,    28,
-      56,     0,    62,    34,    53,    55,    52,    38,    49,    51,
-      50,    54,    31,    39,     0,    57,    35,    37,     0,    26,
-      48
+         0,    34,    14,    16,    18,    20,    22,    24,    26,    28,
+      30,    45,    38,    60,    77,    75,    76,    59,     0,     0,
+       0,    37,     5,     9,    11,    12,    10,     6,     7,     8,
+      13,     3,    33,    36,    58,    35,     0,    54,    61,    57,
+      55,    56,    15,    17,    19,    21,    23,    25,    27,    29,
+      31,     0,    46,    47,    50,    72,     0,     0,     1,     4,
+      32,     0,     0,    73,    74,    44,    39,    41,    43,    42,
+      70,     0,    78,    48,    67,    69,    66,    52,    63,    65,
+      64,    68,    45,    53,     0,    71,    49,    51,     0,    40,
+      62
   };
 
   /* YYPGOTO[NTERM-NUM].  */
   const signed char
   keymagic_parser::yypgoto_[] =
   {
-       -46,   -46,   -46,    26,   -46,   -46,   -46,   -46,   -46,   -46,
-     -46,    24,   -46,   -46,   -27,   -46,   -46,   -46,   -46,   -46,
-     -46,     5,   -46,   -19,   -46,   -46,    -2,   -36,   -45
+       -46,   -46,   -46,    52,   -46,   -46,   -46,   -46,   -46,   -46,
+     -46,   -46,   -46,    53,   -46,   -46,     1,   -46,   -46,   -46,
+     -46,   -46,   -46,    12,   -46,     8,   -46,   -46,    -2,   -42,
+     -45
   };
 
   /* YYDEFGOTO[NTERM-NUM].  */
   const signed char
   keymagic_parser::yydefgoto_[] =
   {
-        -1,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    56,    57,    45,    77,    28,    66,    29,
-      30,    31,    67,    68,    32,    47,    33,    34,    35
+        -1,    20,    21,    22,    23,    24,    25,    26,    27,    28,
+      29,    30,    31,    32,    33,    66,    67,    54,    87,    34,
+      76,    35,    36,    37,    77,    78,    38,    56,    39,    40,
+      41
   };
 
   /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -1004,34 +930,38 @@ namespace yy {
   const unsigned char
   keymagic_parser::yytable_[] =
   {
-        36,    37,    38,    39,    40,    41,    59,    71,    12,    42,
-      46,    72,    49,    48,    52,    53,    70,    10,    11,    12,
-      13,    14,    43,    44,    60,    61,    54,    15,    63,    74,
-      54,    75,    64,    71,    65,    11,    12,    76,    59,    62,
-      58,    78,    70,    50,    15,    43,    44,    79,     1,    51,
-      69,     2,     3,     4,     5,     6,     7,     8,    73,    80,
-       0,    55,     9,    10,    11,    12,    13,    14,    11,    12,
-       0,     0,    58,    15,     0,     0,    69,     2,     3,     4,
-       5,     6,     7,     8,     0,     0,     0,     0,     9,    10,
-      11,    12,    13,    14,     0,     0,     0,     0,     0,    15,
-       2,     3,     4,     5,     6,     7
+        42,    43,    44,    45,    46,    47,    48,    49,    50,    69,
+      63,    64,    15,    16,    61,    62,    81,    57,     1,    80,
+      72,     2,     3,     4,     5,     6,     7,     8,     9,    10,
+      11,    63,    64,    70,    71,    12,    13,    14,    15,    16,
+      17,    18,    69,    81,    65,    58,    80,    19,    55,    68,
+      84,    14,    15,    16,    52,    53,    85,    51,    88,    79,
+      86,     2,     3,     4,     5,     6,     7,     8,     9,    10,
+      11,    52,    53,    59,    83,    12,    13,    14,    15,    16,
+      17,    18,    68,    82,    60,    89,    79,    19,     0,    13,
+      14,    15,    16,    17,    18,    73,    90,     0,     0,    74,
+      19,    75,    14,    15,    16,     0,     0,     0,     0,     0,
+       0,     0,    19,     2,     3,     4,     5,     6,     7,     8,
+       9,    10
   };
 
   /* YYCHECK.  */
   const signed char
   keymagic_parser::yycheck_[] =
   {
-         2,     3,     4,     5,     6,     7,    42,    52,    17,    10,
-      15,     9,     0,    15,    11,    12,    52,    15,    16,    17,
-      18,    19,    23,    24,    20,    21,    17,    25,     9,    12,
-      17,    15,    13,    78,    15,    16,    17,    22,    74,    26,
-      42,    12,    78,    17,    25,    23,    24,    74,     0,    25,
-      52,     3,     4,     5,     6,     7,     8,     9,    53,    78,
-      -1,     9,    14,    15,    16,    17,    18,    19,    16,    17,
-      -1,    -1,    74,    25,    -1,    -1,    78,     3,     4,     5,
-       6,     7,     8,     9,    -1,    -1,    -1,    -1,    14,    15,
-      16,    17,    18,    19,    -1,    -1,    -1,    -1,    -1,    25,
-       3,     4,     5,     6,     7,     8
+         2,     3,     4,     5,     6,     7,     8,     9,    10,    51,
+      20,    21,    20,    21,    14,    15,    61,    19,     0,    61,
+      30,     3,     4,     5,     6,     7,     8,     9,    10,    11,
+      12,    20,    21,    24,    25,    17,    18,    19,    20,    21,
+      22,    23,    84,    88,    12,     0,    88,    29,    18,    51,
+      15,    19,    20,    21,    27,    28,    18,    13,    15,    61,
+      26,     3,     4,     5,     6,     7,     8,     9,    10,    11,
+      12,    27,    28,    21,    62,    17,    18,    19,    20,    21,
+      22,    23,    84,    12,    31,    84,    88,    29,    -1,    18,
+      19,    20,    21,    22,    23,    12,    88,    -1,    -1,    16,
+      29,    18,    19,    20,    21,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    29,     3,     4,     5,     6,     7,     8,     9,
+      10,    11
   };
 
   /* STOS_[STATE-NUM] -- The (internal number of the) accessing
@@ -1039,15 +969,16 @@ namespace yy {
   const unsigned char
   keymagic_parser::yystos_[] =
   {
-         0,     0,     3,     4,     5,     6,     7,     8,     9,    14,
-      15,    16,    17,    18,    19,    25,    28,    29,    30,    31,
-      32,    33,    34,    35,    36,    37,    38,    39,    44,    46,
-      47,    48,    51,    53,    54,    55,    53,    53,    53,    53,
-      53,    53,    10,    23,    24,    42,    15,    52,    53,     0,
-      30,    38,    11,    12,    17,     9,    40,    41,    53,    54,
-      20,    21,    26,     9,    13,    15,    45,    49,    50,    53,
-      54,    55,     9,    48,    12,    15,    22,    43,    12,    41,
-      50
+         0,     0,     3,     4,     5,     6,     7,     8,     9,    10,
+      11,    12,    17,    18,    19,    20,    21,    22,    23,    29,
+      32,    33,    34,    35,    36,    37,    38,    39,    40,    41,
+      42,    43,    44,    45,    50,    52,    53,    54,    57,    59,
+      60,    61,    59,    59,    59,    59,    59,    59,    59,    59,
+      59,    13,    27,    28,    48,    18,    58,    59,     0,    34,
+      44,    14,    15,    20,    21,    12,    46,    47,    59,    60,
+      24,    25,    30,    12,    16,    18,    51,    55,    56,    59,
+      60,    61,    12,    54,    15,    18,    26,    49,    15,    47,
+      56
   };
 
 #if YYDEBUG
@@ -1058,7 +989,8 @@ namespace yy {
   {
          0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276,   277,   278,   279,   280,   281
+     275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
+     285
   };
 #endif
 
@@ -1066,13 +998,14 @@ namespace yy {
   const unsigned char
   keymagic_parser::yyr1_[] =
   {
-         0,    27,    28,    28,    29,    29,    30,    30,    30,    30,
-      30,    30,    31,    32,    33,    34,    35,    36,    37,    37,
-      37,    38,    38,    38,    38,    39,    40,    40,    41,    41,
-      41,    42,    42,    42,    43,    43,    44,    45,    46,    47,
-      47,    48,    48,    48,    48,    48,    48,    48,    49,    49,
-      50,    50,    50,    50,    50,    50,    51,    52,    52,    53,
-      53,    54,    55
+         0,    31,    32,    32,    33,    33,    34,    34,    34,    34,
+      34,    34,    34,    34,    35,    35,    36,    36,    37,    37,
+      38,    38,    38,    38,    39,    39,    40,    40,    41,    41,
+      42,    42,    43,    43,    43,    44,    44,    44,    44,    45,
+      46,    46,    47,    47,    47,    48,    48,    48,    49,    49,
+      50,    51,    52,    53,    53,    54,    54,    54,    54,    54,
+      54,    54,    55,    55,    56,    56,    56,    56,    56,    56,
+      57,    58,    58,    59,    59,    59,    59,    60,    61
   };
 
   /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
@@ -1080,12 +1013,13 @@ namespace yy {
   keymagic_parser::yyr2_[] =
   {
          0,     2,     0,     1,     2,     1,     1,     1,     1,     1,
-       1,     1,     2,     2,     2,     2,     2,     2,     2,     1,
-       1,     1,     1,     1,     1,     3,     3,     1,     1,     1,
-       1,     0,     1,     1,     0,     1,     2,     2,     3,     3,
-       1,     1,     1,     1,     1,     1,     1,     1,     3,     1,
-       1,     1,     1,     1,     1,     1,     3,     3,     1,     2,
-       1,     1,     3
+       1,     1,     1,     1,     1,     2,     1,     2,     1,     2,
+       1,     2,     1,     2,     1,     2,     1,     2,     1,     2,
+       1,     2,     2,     1,     1,     1,     1,     1,     1,     3,
+       3,     1,     1,     1,     1,     0,     1,     1,     0,     1,
+       2,     2,     3,     3,     1,     1,     1,     1,     1,     1,
+       1,     1,     3,     1,     1,     1,     1,     1,     1,     1,
+       3,     3,     1,     2,     2,     1,     1,     1,     3
   };
 
 #if YYDEBUG || YYERROR_VERBOSE || YYTOKEN_TABLE
@@ -1095,18 +1029,20 @@ namespace yy {
   const keymagic_parser::yytname_[] =
   {
     "\"end-of-file\"", "error", "$undefined", "OPT_NAME", "OPT_FONTFAMILY",
-  "OPT_DESCRIPTION", "OPT_CAPS", "OPT_EAT", "OPT_US_LAYOUT",
-  "\"identifier\"", "\"=\"", "\"=>\"", "\"+\"", "\"match-reference\"",
-  "\"new-line\"", "\"predefined-value\"", "\"unicode\"", "\"character\"",
-  "\"any-key\"", "\"virtual-key-states-begin (<)\"",
+  "OPT_DESCRIPTION", "OPT_ICON", "OPT_HOTKEY", "OPT_CAPS", "OPT_EAT",
+  "OPT_US_LAYOUT", "OPT_SMART_BACKSPACE", "\"identifier\"", "\"=\"",
+  "\"=>\"", "\"+\"", "\"match-reference\"", "\"new-line\"",
+  "\"predefined-value\"", "\"unicode\"", "\"character\"",
+  "\"uni-character\"", "\"any-key\"", "\"virtual-key-states-begin (<)\"",
   "\"virtual-key-states-end (>)\"", "\"&\"", "\"match-index\"",
   "\"any (*)\"", "\"not (^)\"", "\"(\"", "\")\"", "$accept", "input",
   "options", "option", "option_name", "option_font", "option_desc",
-  "option_caps", "option_eat", "option_pos", "statement_list", "statement",
-  "var_decl", "var_assign_exp", "var_assign", "lhs_modifier",
-  "rhs_modifier", "lhs_variable", "rhs_variable", "rule", "left_rule_exps",
-  "left_rule_exp", "right_rule_exps", "right_rule_exp", "vk_states",
-  "vk_keys", "char_array", "unicode", "switch", 0
+  "option_icon", "option_caps", "option_eat", "option_pos", "option_bksp",
+  "statement_list", "statement", "var_decl", "var_assign_exp",
+  "var_assign", "lhs_modifier", "rhs_modifier", "lhs_variable",
+  "rhs_variable", "rule", "left_rule_exps", "left_rule_exp",
+  "right_rule_exps", "right_rule_exp", "vk_states", "vk_keys",
+  "char_array", "unicode", "switch", 0
   };
 #endif
 
@@ -1115,21 +1051,25 @@ namespace yy {
   const keymagic_parser::rhs_number_type
   keymagic_parser::yyrhs_[] =
   {
-        28,     0,    -1,    -1,    37,    -1,    29,    30,    -1,    30,
-      -1,    34,    -1,    35,    -1,    36,    -1,    31,    -1,    32,
-      -1,    33,    -1,     3,    53,    -1,     4,    53,    -1,     5,
-      53,    -1,     6,    53,    -1,     7,    53,    -1,     8,    53,
-      -1,    37,    38,    -1,    38,    -1,     0,    -1,    46,    -1,
-      39,    -1,    29,    -1,    14,    -1,     9,    10,    40,    -1,
-      40,    12,    41,    -1,    41,    -1,    54,    -1,    53,    -1,
-       9,    -1,    -1,    23,    -1,    24,    -1,    -1,    22,    -1,
-       9,    42,    -1,     9,    43,    -1,    47,    11,    49,    -1,
-      47,    12,    48,    -1,    48,    -1,    54,    -1,    55,    -1,
-      53,    -1,    44,    -1,    18,    -1,    15,    -1,    51,    -1,
-      49,    12,    50,    -1,    50,    -1,    54,    -1,    53,    -1,
-      45,    -1,    13,    -1,    55,    -1,    15,    -1,    19,    52,
-      20,    -1,    52,    21,    15,    -1,    15,    -1,    53,    17,
-      -1,    17,    -1,    16,    -1,    25,    53,    26,    -1
+        32,     0,    -1,    -1,    43,    -1,    33,    34,    -1,    34,
+      -1,    39,    -1,    40,    -1,    41,    -1,    35,    -1,    38,
+      -1,    36,    -1,    37,    -1,    42,    -1,     3,    -1,     3,
+      59,    -1,     4,    -1,     4,    59,    -1,     5,    -1,     5,
+      59,    -1,     6,    -1,     6,    59,    -1,     7,    -1,     7,
+      59,    -1,     8,    -1,     8,    59,    -1,     9,    -1,     9,
+      59,    -1,    10,    -1,    10,    59,    -1,    11,    -1,    11,
+      59,    -1,    43,    44,    -1,    44,    -1,     0,    -1,    52,
+      -1,    45,    -1,    33,    -1,    17,    -1,    12,    13,    46,
+      -1,    46,    15,    47,    -1,    47,    -1,    60,    -1,    59,
+      -1,    12,    -1,    -1,    27,    -1,    28,    -1,    -1,    26,
+      -1,    12,    48,    -1,    12,    49,    -1,    53,    14,    55,
+      -1,    53,    15,    54,    -1,    54,    -1,    60,    -1,    61,
+      -1,    59,    -1,    50,    -1,    22,    -1,    18,    -1,    57,
+      -1,    55,    15,    56,    -1,    56,    -1,    60,    -1,    59,
+      -1,    51,    -1,    16,    -1,    61,    -1,    18,    -1,    23,
+      58,    24,    -1,    58,    25,    18,    -1,    18,    -1,    59,
+      20,    -1,    59,    21,    -1,    20,    -1,    21,    -1,    19,
+      -1,    29,    59,    30,    -1
   };
 
   /* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
@@ -1138,25 +1078,27 @@ namespace yy {
   keymagic_parser::yyprhs_[] =
   {
          0,     0,     3,     4,     6,     9,    11,    13,    15,    17,
-      19,    21,    23,    26,    29,    32,    35,    38,    41,    44,
-      46,    48,    50,    52,    54,    56,    60,    64,    66,    68,
-      70,    72,    73,    75,    77,    78,    80,    83,    86,    90,
-      94,    96,    98,   100,   102,   104,   106,   108,   110,   114,
-     116,   118,   120,   122,   124,   126,   128,   132,   136,   138,
-     141,   143,   145
+      19,    21,    23,    25,    27,    29,    32,    34,    37,    39,
+      42,    44,    47,    49,    52,    54,    57,    59,    62,    64,
+      67,    69,    72,    75,    77,    79,    81,    83,    85,    87,
+      91,    95,    97,    99,   101,   103,   104,   106,   108,   109,
+     111,   114,   117,   121,   125,   127,   129,   131,   133,   135,
+     137,   139,   141,   145,   147,   149,   151,   153,   155,   157,
+     159,   163,   167,   169,   172,   175,   177,   179,   181
   };
 
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
   const unsigned char
   keymagic_parser::yyrline_[] =
   {
-         0,    76,    76,    76,    79,    80,    82,    83,    84,    85,
-      86,    87,    89,    90,    91,    92,    93,    94,    96,    97,
-      98,   101,   102,   103,   104,   107,   111,   112,   114,   115,
-     116,   119,   120,   121,   123,   124,   126,   136,   146,   150,
-     151,   153,   154,   155,   156,   157,   158,   159,   162,   163,
-     165,   166,   167,   168,   169,   170,   173,   175,   176,   179,
-     180,   182,   185
+         0,    80,    80,    80,    83,    84,    86,    87,    88,    89,
+      90,    91,    92,    93,    95,    96,    99,   100,   103,   104,
+     107,   108,   111,   112,   115,   116,   119,   120,   123,   124,
+     127,   128,   131,   132,   133,   136,   137,   138,   139,   142,
+     146,   147,   149,   150,   151,   154,   155,   156,   158,   159,
+     161,   171,   181,   185,   186,   188,   189,   190,   191,   192,
+     193,   194,   197,   198,   200,   201,   202,   203,   204,   205,
+     208,   210,   211,   214,   215,   216,   217,   219,   222
   };
 
   // Print the state stack on the debug stream.
@@ -1224,7 +1166,7 @@ namespace yy {
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26
+      25,    26,    27,    28,    29,    30
     };
     if ((unsigned int) t <= yyuser_token_number_max_)
       return translate_table[t];
@@ -1233,26 +1175,22 @@ namespace yy {
   }
 
   const int keymagic_parser::yyeof_ = 0;
-  const int keymagic_parser::yylast_ = 105;
-  const int keymagic_parser::yynnts_ = 29;
+  const int keymagic_parser::yylast_ = 121;
+  const int keymagic_parser::yynnts_ = 31;
   const int keymagic_parser::yyempty_ = -2;
-  const int keymagic_parser::yyfinal_ = 49;
+  const int keymagic_parser::yyfinal_ = 58;
   const int keymagic_parser::yyterror_ = 1;
   const int keymagic_parser::yyerrcode_ = 256;
-  const int keymagic_parser::yyntokens_ = 27;
+  const int keymagic_parser::yyntokens_ = 31;
 
-  const unsigned int keymagic_parser::yyuser_token_number_max_ = 281;
+  const unsigned int keymagic_parser::yyuser_token_number_max_ = 285;
   const keymagic_parser::token_number_type keymagic_parser::yyundef_token_ = 2;
 
 
 } // yy
 
-/* Line 1054 of lalr1.cc  */
-#line 1252 "keymagic-parser.tab.cpp"
 
 
-/* Line 1056 of lalr1.cc  */
-#line 186 "keymagic-parser.yy"
 
 void
 yy::keymagic_parser::error (const yy::keymagic_parser::location_type& l,

@@ -1,0 +1,5 @@
+﻿$digits = U1041 + U1042 + U1043 + U1044 + U1045 + U1046 + U1047 + U1048 + U1049 + U1040
+$digitsZWS = $digits + U200B
+$digits[*] + U200B + $digits[*] => $1 + $3
+$digitsZWS[^] + $digits[*] => $1 + U200B + $2
+U200B + $digits[*] + <VK_BACK> => NULL
