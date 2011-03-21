@@ -71,7 +71,8 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 			}
 			return 1;
 		} else {
-			if (KeyStatus[VK_CONTROL] & 0x80 && KeyStatus[VK_SHIFT] & 0x80) {
+			//ON/OFF
+			if (KeyStatus[VK_CONTROL] & 0x80 && KeyStatus[VK_SPACE] & 0x80) {
 				isActive = !isActive;
 				if (isActive && ActiveIndex == -1) {
 					ActiveIndex = 1;
@@ -84,6 +85,8 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 				} else {
 					PostMessage(hwndKWindows, KM_GETFOCUS, 0, 0);
 				}
+
+				return true;
 			}
 		}
 

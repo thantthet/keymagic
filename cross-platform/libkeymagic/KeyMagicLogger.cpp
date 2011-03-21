@@ -5,19 +5,9 @@
  *      Author: thantthetkz
  */
 
-#include <stdio.h>
-#include <stdarg.h>
 #include "KeyMagicLogger.h"
 
 KeyMagicLogger* KeyMagicLogger::m_instance = NULL;
-
-KeyMagicLogger::KeyMagicLogger() {
-	m_logFile = stdout;
-}
-
-KeyMagicLogger::~KeyMagicLogger() {
-	m_instance = NULL;
-}
 
 KeyMagicLogger * KeyMagicLogger::getInstance() {
 	if (m_instance == NULL) {
@@ -26,24 +16,9 @@ KeyMagicLogger * KeyMagicLogger::getInstance() {
 	return m_instance;
 }
 
-void KeyMagicLogger::log(const char * fmt, ...) {
-	va_list vl;
-	
-	va_start (vl, fmt);
-	vfprintf(m_logFile, fmt, vl);
-	va_end(vl);
-	
-	flush();
+KeyMagicLogger::KeyMagicLogger() : LogFileWriter(stderr) {
 }
 
-void KeyMagicLogger::flush() {
-	fflush(m_logFile);
-}
-
-FILE * KeyMagicLogger::getFile() {
-	return m_logFile;
-}
-
-void KeyMagicLogger::setFile(FILE * file) {
-	m_logFile = file;
+KeyMagicLogger::~KeyMagicLogger() {
+	m_instance = NULL;
 }

@@ -314,7 +314,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				KeyBoardNum + IDKM_ID, 
 				IDKM_NORMAL, 
 				MF_BYCOMMAND);
-
+			ChangeNotifyIcon(hWnd, icons.at(0));
 			break;
 
 		default:
@@ -326,7 +326,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				if (MF_CHECKED & GetMenuState(hKeyMenu, wmId, MF_BYCOMMAND)) {
 					wmId = IDKM_NORMAL;
 				}
-
+				ChangeNotifyIcon(hWnd, icons.at(wmId - IDKM_NORMAL));
 				CheckMenuRadioItem(hKeyMenu, IDKM_NORMAL, KeyBoardNum + IDKM_ID, wmId, MF_BYCOMMAND);
 			}
 		}
@@ -471,9 +471,17 @@ void CreateSettingFileIfNeeded()
 	HANDLE hfile = CreateFile(szINIFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if(hfile == INVALID_HANDLE_VALUE) {
-		WritePrivateProfileString(szMS, TEXT("Normal"), TEXT("Turn OFF"), szINIFile);
-		WritePrivateProfileString(szKBP, TEXT("Normal"), TEXT("NONE"), szINIFile);
-		WritePrivateProfileString(szSC, TEXT("Normal"), TEXT("0"), szINIFile);
+		HANDLE hfile = CreateFile(szINIFile, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+		if (hfile != INVALID_HANDLE_VALUE) {
+			
+			DWORD dw;
+			WriteFile(hfile, "\xff\xfe", 2, &dw, 0); // force to create unicode INI file, write BOM before anything else
+			CloseHandle(hfile);
+
+			WritePrivateProfileStringW(szMS, L"Normal", L"Turn Off", szINIFile);
+			WritePrivateProfileStringW(szKBP, L"Normal", L"NONE", szINIFile);
+			WritePrivateProfileStringW(szSC, L"Normal", L"0", szINIFile);
+		}
 	} else {
 		CloseHandle(hfile);
 	}
@@ -1235,13 +1243,13 @@ VOID GetKeyBoards() {
 	AppendMenu(hKeyMenu, NULL, IDKM_NORMAL, szMenuDisplay);
 	icons.clear();
 	icons.push_back(LoadIcon(hInst, MAKEINTRESOURCE(IDI_KEYMAGIC)));
+	HICON hIconEmpty = LoadIcon(hInst, MAKEINTRESOURCE(IDI_EMPTY));
 
 	KeyBoardNum=0;
 	for (int i=lstrlen(&szKBNames[0])+1,Length = lstrlen(&szKBNames[i]);
 		Length > 0; 
 		i+=Length+1, Length = lstrlen(&szKBNames[i]))
 	{
-		HBITMAP hbmpItem;
 		HICON hIcon;
 
 		GetPrivateProfileString(szKBP, &szKBNames[i], NULL, szKBFile, MAX_PATH, szINIFile);
@@ -1253,15 +1261,15 @@ VOID GetKeyBoards() {
 		const InfoList infos = kmk.getInfoList();
 		if (infos.find('icon') != infos.end())
 		{
-			std::pair<short, char*> icon = infos.find('icon')->second;
+			Info icon = infos.find('icon')->second;
 			HGLOBAL m_hBuffer;
-			m_hBuffer  = ::GlobalAlloc(GMEM_MOVEABLE, icon.first);
+			m_hBuffer  = ::GlobalAlloc(GMEM_MOVEABLE, icon.size);
 			if (m_hBuffer)
 			{
 				void* pBuffer = ::GlobalLock(m_hBuffer);
 				if (pBuffer)
 				{
-					CopyMemory(pBuffer, icon.second, icon.first);
+					CopyMemory(pBuffer, icon.data, icon.size);
 
 					IStream* pStream = NULL;
 					if (::CreateStreamOnHGlobal(m_hBuffer, FALSE, &pStream) == S_OK)
@@ -1272,13 +1280,10 @@ VOID GetKeyBoards() {
 						{ 
 							if (m_pBitmap->GetLastStatus() == Gdiplus::Ok)
 							{
-								m_pBitmap->GetHBITMAP(Gdiplus::Color::Transparent, &hbmpItem);
 								m_pBitmap->GetHICON(&hIcon);
 							} else {
-								hbmpItem = NULL;
-								hIcon = NULL;
+								hIcon = hIconEmpty;
 							}
-							icons.push_back(hIcon);
 							delete m_pBitmap;
 							m_pBitmap = NULL;
 						}
@@ -1296,8 +1301,9 @@ VOID GetKeyBoards() {
 		GetHotKey(wHotKey, szShortCut);
 		lstrcat(szMenuDisplay, szShortCut);
 
-		mii.dwItemData = hIcon ? (ULONG_PTR)hIcon : (ULONG_PTR)icons.at(0);
-		hIcon = NULL;
+		icons.push_back(hIcon);
+		mii.dwItemData = (ULONG_PTR)hIcon;
+		hIcon = hIconEmpty;
 		//BOOL b = InsertMenuItem(hKeyMenu, IDKM_ID+KeyBoardNum, false, &mii);
 		AppendMenu(hKeyMenu, NULL, IDKM_ID+KeyBoardNum, szMenuDisplay);
 		BOOL b = SetMenuItemInfo(hKeyMenu, IDKM_ID+KeyBoardNum, false, &mii);

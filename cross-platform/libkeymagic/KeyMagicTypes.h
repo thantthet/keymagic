@@ -8,6 +8,10 @@
 #ifndef KEYMAGICTYPES_H_
 #define KEYMAGICTYPES_H_
 
+#if defined (_WIN32) || defined (_WIN64)
+#include <windows.h>
+#endif
+
 #include <vector>
 #include <map>
 #include "KeyMagicString.h"
@@ -31,7 +35,12 @@ typedef struct {
 typedef vector<BinaryRule> BinaryRuleList;
 typedef vector<const short * > BinaryStringList;
 typedef vector<KeyMagicString> StringList;
-typedef map<int, pair<short, char*>> InfoList;
+
+typedef struct {
+	short size;
+	char * data;
+} Info;
+typedef map<int, Info> InfoList;
 
 /**
  * LayoutOptions use to alternate the behavior of the keyboard layout

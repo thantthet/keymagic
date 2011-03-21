@@ -11,7 +11,7 @@
 #include <fstream>
 #include <vector>
 
-#include <keymagic.h>
+#include "keymagic.h"
 
 using namespace std;
 

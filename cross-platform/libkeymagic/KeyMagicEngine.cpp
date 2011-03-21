@@ -28,7 +28,30 @@ bool KeyMagicEngine::loadKeyboardFile(const char * keyboardFile) {
 		m_haveKeyboard = false;
 		return false;
 	}
+
+	prepareForMatching();
+	return true;
+}
+
+#if defined (_WIN32) || defined (_WIN64)
+bool KeyMagicEngine::loadKeyboardFile(const WCHAR * keyboardFile) {
+	bool success;
 	
+	//load keyboard from file
+	success = m_keyboard.loadKeyboardFile(keyboardFile);
+	
+	//keyboard failed to load ?
+	if (!success) {
+		m_haveKeyboard = false;
+		return false;
+	}
+
+	prepareForMatching();
+	return true;
+}
+#endif
+
+void KeyMagicEngine::prepareForMatching() {
 	//prepare rules to match
 	
 	m_strings = m_keyboard.getStrings();
@@ -37,8 +60,10 @@ bool KeyMagicEngine::loadKeyboardFile(const char * keyboardFile) {
 	
 	//now we have vaild keyboard in memory
 	m_haveKeyboard = true;
-	
-	return true;
+}
+
+int KeyMagicEngine::getKeyState(int keycode) {
+	return m_keyStates[keycode];
 }
 
 void KeyMagicEngine::updateHistory(KeyMagicString text) {

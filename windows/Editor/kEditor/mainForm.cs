@@ -548,7 +548,18 @@ namespace kEditor
             }
         }
 
-        private string newDocumentTemplate = "/*\n@NAME = ''\n@DESCRIPTION = ''\n@HOTKEY = ''\n@EAT_ALL_UNUSED_KEYS = 'false'\n@TRACK_CAPSLOCK = 'false' \n@SMART_BACKSPACE = 'true'\n@US_LAYOUT_BASED = 'true'\n*/\n\n";
+        private string newDocumentTemplate =
+            "/*\n" +
+            "@NAME = 'Untitled Keyboard Layout'\n" + 
+            "@DESCRIPTION = 'Created using kEditor'\n" + 
+            "@ICON = ''\n" +
+            "@FONTFAMILY = ''\n" +
+            "@HOTKEY = ''\n" + 
+            "@EAT_ALL_UNUSED_KEYS = 'false'\n" + 
+            "@TRACK_CAPSLOCK = 'false'\n" +
+            "@SMART_BACKSPACE = 'true'\n" + 
+            "@US_LAYOUT_BASED = 'true'\n" + 
+            "*/\n\n";
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {

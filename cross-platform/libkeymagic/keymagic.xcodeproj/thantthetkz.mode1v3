@@ -273,7 +273,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>13</integer>
+									<integer>17</integer>
 									<integer>4</integer>
 									<integer>0</integer>
 								</array>
@@ -328,7 +328,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B5290DD9133508B200563AC9</string>
+										<string>B588D5E71336B6BE00641BBD</string>
 										<key>history</key>
 										<array>
 											<string>B5C1EBAB12FC4BE40061BF73</string>
@@ -366,7 +366,8 @@
 											<string>B5AE40E413339FE70038F54A</string>
 											<string>B5AE41EF1333AA930038F54A</string>
 											<string>B5290DC21335086000563AC9</string>
-											<string>B5290DC31335086000563AC9</string>
+											<string>B588D5E41336B6BE00641BBD</string>
+											<string>B588D5E61336B6BE00641BBD</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -378,14 +379,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1232, 532}}</string>
+								<string>{{0, 0}, {1232, 511}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 125 1440 753 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>532pt</string>
+							<string>511pt</string>
 						</dict>
 						<dict>
 							<key>ContentConfiguration</key>
@@ -398,14 +399,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 537}, {1232, 175}}</string>
+								<string>{{0, 516}, {1232, 196}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 125 1440 753 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
 							<key>Proportion</key>
-							<string>175pt</string>
+							<string>196pt</string>
 						</dict>
 					</array>
 					<key>Proportion</key>
@@ -424,9 +425,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B5290DC51335086000563AC9</string>
+				<string>B588D5E81336B6BE00641BBD</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>B5290DC61335086000563AC9</string>
+				<string>B588D5E91336B6BE00641BBD</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -596,14 +597,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1440, 476}}</string>
+								<string>{{0, 0}, {1440, 472}}</string>
 								<key>RubberWindowFrame</key>
-								<string>0 120 1440 758 0 0 1440 878 </string>
+								<string>0 126 1440 752 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>476pt</string>
+							<string>472pt</string>
 						</dict>
 						<dict>
 							<key>ContentConfiguration</key>
@@ -620,18 +621,18 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 481}, {1440, 236}}</string>
+								<string>{{0, 477}, {1440, 234}}</string>
 								<key>RubberWindowFrame</key>
-								<string>0 120 1440 758 0 0 1440 878 </string>
+								<string>0 126 1440 752 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXBuildResultsModule</string>
 							<key>Proportion</key>
-							<string>236pt</string>
+							<string>234pt</string>
 						</dict>
 					</array>
 					<key>Proportion</key>
-					<string>717pt</string>
+					<string>711pt</string>
 				</dict>
 			</array>
 			<key>Name</key>
@@ -645,7 +646,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>B5C1EB9D12FC4A270061BF73</string>
-				<string>B5290DC71335086000563AC9</string>
+				<string>B588D5EA1336B6BE00641BBD</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -654,7 +655,7 @@
 			<key>WindowContentMinSize</key>
 			<string>486 300</string>
 			<key>WindowString</key>
-			<string>0 120 1440 758 0 0 1440 878 </string>
+			<string>0 126 1440 752 0 0 1440 878 </string>
 			<key>WindowToolGUID</key>
 			<string>B5C1EB9D12FC4A270061BF73</string>
 			<key>WindowToolIsVisible</key>

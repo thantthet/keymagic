@@ -200,6 +200,7 @@ void DrawMyMenu(LPDRAWITEMSTRUCT lpdis){
 			//HPALETTE hpalette = CreateHalftonePalette(lpdis->hDC);
 			//g.DrawImage(Gdiplus::Bitmap::FromHBITMAP(pMyItem->hbmpItem, hpalette), 1, lpdis->rcItem.top+3);
 			DrawIconEx(lpdis->hDC, 1, lpdis->rcItem.top+3, pMyItem->hbmpItem, 16, 16, 0, 0, DI_NORMAL);
+			//DrawIcon(lpdis->hDC, 1, lpdis->rcItem.top+3, pMyItem->hbmpItem);
 		}
 
 		TCHAR Temp[CCH_MAXITEMTEXT];

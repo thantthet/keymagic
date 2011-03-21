@@ -8,6 +8,7 @@
 #include "KeyMagicString.h"
 #include "RuleInfo.h"
 #include "KeyMagicLogger.h"
+#include "KeyMagicErrorLogger.h"
 
 #define KML_INFO_NAME 'name'
 #define KML_INFO_DESC 'desc'
@@ -29,6 +30,9 @@ public:
 	 * @param filename File name of keyboard to be loaded
 	 */
 	bool loadKeyboardFile(const char * filename);
+#if defined (_WIN32) || defined (_WIN64)
+	bool loadKeyboardFile(const WCHAR * filename);
+#endif
 	/**
 	 * Get the list of strings
 	 */
@@ -45,6 +49,13 @@ public:
 	 * Get infos
 	 */
 	const InfoList& getInfoList();
+
+	static bool ReadHeader(FILE * hFile, FileHeader * fh);
+
+#if defined (_WIN32) || defined (_WIN64)
+	static InfoList * getInfosFromKeyboardFile(const WCHAR * file);
+#endif
+	static InfoList * getInfosFromKeyboardFile(const char * file);
 	
 	bool m_verbose;
 private:

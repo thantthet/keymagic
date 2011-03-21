@@ -223,15 +223,15 @@ keymagic_driver::CreateLayoutFile(const std::string &f)
 		error("Cannot open file to write!");
 		return false;
 	}
-	fwrite(&fileHeader, 1, sizeof(fileHeader), fileOut);
+	fwrite(&fileHeader, sizeof(fileHeader), 1, fileOut);
 	
 	for (VARIABLES::const_iterator it = variables.begin(); it != variables.end(); it++) {
 		std::list<int> value = *it;
 		short len = value.size();
-		fwrite(&len, 1, sizeof(len), fileOut);
+		fwrite(&len, sizeof(len), 1, fileOut);
 		for (std::list<int>::const_iterator lit = value.begin(); lit != value.end(); lit++) {
 			short s = *lit;
-			fwrite(&s, 1, sizeof(s), fileOut);
+			fwrite(&s, sizeof(s), 1, fileOut);
 		}
 	}
 	
@@ -239,21 +239,21 @@ keymagic_driver::CreateLayoutFile(const std::string &f)
 		INFO info = *it;
 		int id = info.id;
 		short len = info.data.size();
-		fwrite(&id, 1, sizeof(id), fileOut);
-		fwrite(&len, 1, sizeof(len), fileOut);
+		fwrite(&id, sizeof(id), 1, fileOut);
+		fwrite(&len, sizeof(len), 1, fileOut);
 		for (std::vector<char>::const_iterator vit = info.data.begin(); vit != info.data.end(); vit++) {
-			fwrite(&*vit, 1, sizeof(char), fileOut);
+			fwrite(&*vit, sizeof(char), 1, fileOut);
 		}
 	}
 	
 	for (RULES::const_iterator it = rules.begin(); it != rules.end(); it++) {
 		RULE rule = *it;
 		
-		fwrite(&rule.lhsRuleLength, 1, sizeof(short), fileOut);
-		fwrite(&rule.lhsRule[0], 1, rule.lhsRuleLength * sizeof(short), fileOut);
+		fwrite(&rule.lhsRuleLength, sizeof(short), 1, fileOut);
+		fwrite(&rule.lhsRule[0], rule.lhsRuleLength * sizeof(short), 1, fileOut);
 		
-		fwrite(&rule.rhsRuleLength, 1, sizeof(short), fileOut);
-		fwrite(&rule.rhsRule[0], 1, rule.rhsRuleLength * sizeof(short), fileOut);
+		fwrite(&rule.rhsRuleLength, sizeof(short), 1, fileOut);
+		fwrite(&rule.rhsRule[0], rule.rhsRuleLength * sizeof(short), 1, fileOut);
 	}
 	
 	fclose(fileOut);
@@ -596,7 +596,7 @@ keymagic_driver::AddInfo(int id, const char * data, short size)
 	for (int i = 0; i < size; i++) {
 		info.data.push_back(data[i]);
 	}
-	char c = info.data.at(0);
+	
 	infos.push_back(info);
 	return true;
 }

@@ -61,9 +61,11 @@ RuleInfo::~RuleInfo() {
 	for (std::vector<Item*>::iterator i = m_rhsRule.begin(); i != m_rhsRule.end(); i++) {
 		delete *i;
 	}
+	m_rhsRule.clear();
 	for (std::vector<Item*>::iterator i = m_lhsRule.begin(); i != m_lhsRule.end(); i++) {
 		delete *i;
 	}
+	m_lhsRule.clear();
 }
 
 int RuleInfo::getVKCount(std::vector<Item*> * rule) {

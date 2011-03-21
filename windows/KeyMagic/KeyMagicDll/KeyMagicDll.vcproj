@@ -48,7 +48,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;KEYMAGICDLL_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="1"
@@ -67,7 +67,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="shlwapi.lib Userenv.lib shell32.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="C:\boost_1_45_0\stage\lib"
+				AdditionalLibraryDirectories="C:\boost_1_45_0\32\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -144,7 +144,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="shlwapi.lib Userenv.lib shell32.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="C:\boost_1_45_0\stage\lib"
+				AdditionalLibraryDirectories="C:\boost_1_45_0\64\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="17"
@@ -220,7 +220,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="shlwapi.lib Userenv.lib shell32.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="%BOOSTLIB%"
+				AdditionalLibraryDirectories="C:\boost_1_45_0\32\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -301,7 +301,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="shlwapi.lib Userenv.lib shell32.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="C:\boost_1_45_0\stage\lib"
+				AdditionalLibraryDirectories="C:\boost_1_45_0\64\lib"
 				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -453,6 +453,10 @@
 			</File>
 			<File
 				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\resource1.h"
 				>
 			</File>
 			<File

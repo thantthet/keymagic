@@ -46,7 +46,7 @@
 				Optimization="0"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -107,7 +107,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
+				PreprocessorDefinitions="WIN64;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -172,6 +172,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				BasicRuntimeChecks="0"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -235,7 +236,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				PreprocessorDefinitions="WIN64;NDEBUG;_LIB"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -289,6 +290,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\KeyMagicErrorLogger.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\KeyMagicKeyboard.cpp"
 				>
 			</File>
@@ -298,6 +303,10 @@
 			</File>
 			<File
 				RelativePath="..\KeyMagicString.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\LogFileWriter.cpp"
 				>
 			</File>
 			<File
@@ -323,6 +332,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\KeyMagicErrorLogger.h"
+				>
+			</File>
+			<File
 				RelativePath="..\KeyMagicKeyboard.h"
 				>
 			</File>
@@ -336,6 +349,10 @@
 			</File>
 			<File
 				RelativePath="..\KeyMagicTypes.h"
+				>
+			</File>
+			<File
+				RelativePath="..\LogFileWriter.h"
 				>
 			</File>
 			<File

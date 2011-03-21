@@ -38,14 +38,19 @@ bool tester::beginTest(const char * file, const char * keyboardfile)
 		return false;
 	}
 
+	KeyMagicKeyboard::getInfosFromKeyboardFile(keyboardfile);
+
 	if (_kme.loadKeyboardFile(keyboardfile) == false) {
 		cerr << "Failed to load keyboard layout file." << std::endl;
 		return false;
 	}
+	_kme.loadKeyboardFile(keyboardfile);
+	_kme.loadKeyboardFile(keyboardfile);
 
 	const InfoList infos = _kme.getKeyboard()->getInfoList();
-	cout << "Testing with Keyboard Layout: " << infos.find('name')->second.second << std::endl;
-	
+	if (infos.find('name') != infos.end()) {
+		cout << "Testing with Keyboard Layout: " << infos.find('name')->second.data << std::endl;
+	}
 	for (StringList::iterator i = _stringList.begin(); i != _stringList.end(); i++) {
 		if ((i+1) != _stringList.end()) {
 			wstring * in = &*i++;

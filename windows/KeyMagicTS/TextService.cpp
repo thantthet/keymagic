@@ -188,20 +188,20 @@ STDAPI CTextService::Activate(ITfThreadMgr *pThreadMgr, TfClientId tfClientId)
     _pThreadMgr->AddRef();
     _tfClientId = tfClientId;
 
-	string path;
-	if (_GetConfig("Active Path", path))
+	wstring path;
+	if (_GetConfig(L"Active Path", path) && _kme.loadKeyboardFile(path.c_str()))
 	{
-		if (_kme.loadKeyboardFile(path.c_str()))
-		{
-			WCHAR wcPath[MAX_PATH];
-			_SetKeyboardOpen(TRUE);
-			int ret = MultiByteToWideChar(CP_UTF8, 0,
-				path.c_str(), path.length(),
-				wcPath, MAX_PATH);
-			wcPath[ret] = '\0';
-			_activeKeyboardPath = wcPath;
-			
-		}
+		_SetKeyboardOpen(TRUE);
+		_activeKeyboardPath = path;
+		_LoadActiveKeyboardIcon();
+		wstring * wstr;
+		wstr = GetKeyboardNameOrFileTitle(_kme.getKeyboard()->getInfoList(), _activeKeyboardPath);
+		_keyboardName = wstr->c_str();
+		delete wstr;
+		wstr = GetDescription(_kme.getKeyboard()->getInfoList());
+		_keyboardDescription = wstr->c_str();
+		delete wstr;
+	
 	} else {
 		// Get KeyMagic keyboard layout list
 		KEYBOARD_LIST * _keyboards = GetKeyboards();
@@ -304,21 +304,31 @@ STDAPI CTextService::Deactivate()
     return S_OK;
 }
 
+void CTextService::_LoadActiveKeyboardIcon()
+{
+	HICON hIcon = LoadIconFromKeyboard(_kme.getKeyboard()->getInfoList());
+	if (!hIcon) {
+		hIcon = (HICON)LoadImage(g_hInst, TEXT("IDI_TEXTSERVICE_EMPTY"), IMAGE_ICON, 16, 16, 0);
+	}
+	_hIcon = hIcon;
+}
+
 void CTextService::_SetActiveKeyboard(const wstring& keyboardPath)
 {
-	char szKeyboardPath[MAX_PATH];
-	
-	int ret = WideCharToMultiByte(CP_ACP, 0,
-		keyboardPath.c_str(), keyboardPath.length(),
-		szKeyboardPath, MAX_PATH,
-		NULL, NULL);
-
-	szKeyboardPath[ret] = '\0';
-
-	if (_kme.loadKeyboardFile(szKeyboardPath)) {
-		_SetConfig("Active Path", szKeyboardPath);
+	if (_kme.loadKeyboardFile(keyboardPath.c_str())) {
+		_SetConfig(L"Active Path", keyboardPath);
 		_activeKeyboardPath = keyboardPath;
 		_SetKeyboardOpen(TRUE);
+
+		_LoadActiveKeyboardIcon();
+		
+		wstring * wstr;
+		wstr = GetKeyboardNameOrFileTitle(_kme.getKeyboard()->getInfoList(), _activeKeyboardPath);
+		_keyboardName = wstr->c_str();
+		delete wstr;
+		wstr = GetDescription(_kme.getKeyboard()->getInfoList());
+		_keyboardDescription = wstr->c_str();
+		delete wstr;
 
 		if (_pLangBarItem != NULL) {
 			_UninitLanguageBar();
@@ -369,17 +379,17 @@ void CTextService::_SwitchPrevLayout()
 	delete keyboards;
 }
 
-BOOL CTextService::_SetConfig(const string& key, const string& value)
+BOOL CTextService::_SetConfig(const wstring& key, const wstring& value)
 {
 	DWORD dw;
 	HKEY hKey, hSubKey;
 	BOOL fRet;
 
-	if (fRet = RegOpenKeyExA(HKEY_CURRENT_USER, "Software", REG_OPTION_NON_VOLATILE, KEY_WRITE, &hKey) == ERROR_SUCCESS)
+	if (fRet = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software", REG_OPTION_NON_VOLATILE, KEY_WRITE, &hKey) == ERROR_SUCCESS)
 	{
-		if (fRet &= RegCreateKeyExA(hKey, "KeyMagic", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hSubKey, &dw) == ERROR_SUCCESS)
+		if (fRet &= RegCreateKeyExW(hKey, L"KeyMagic", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hSubKey, &dw) == ERROR_SUCCESS)
 		{
-			fRet &= RegSetValueExA(hSubKey, key.c_str(), 0, REG_SZ, (BYTE *)value.c_str(), value.length() * sizeof(char)) == ERROR_SUCCESS;
+			fRet &= RegSetValueExW(hSubKey, key.c_str(), 0, REG_SZ, (BYTE *)value.c_str(), value.length() * sizeof(WCHAR)) == ERROR_SUCCESS;
 			RegCloseKey(hSubKey);
 		}
 		RegCloseKey(hKey);
@@ -388,22 +398,70 @@ BOOL CTextService::_SetConfig(const string& key, const string& value)
 	return fRet;
 }
 
-BOOL CTextService::_GetConfig(const string& key, string& value)
+BOOL CTextService::_SetConfig(const string& key, const string& value)
+{
+	int converted = 0;
+	WCHAR *wcKey = new WCHAR[key.length() + 1];
+	WCHAR *wcValue = new WCHAR[value.length() + 1];
+
+	if (converted = MultiByteToWideChar(CP_ACP, 0, key.c_str(), key.length(), wcKey, key.length())) {
+		wcKey[converted] = '\0';
+		if (converted = MultiByteToWideChar(CP_ACP, 0, value.c_str(), value.length(), wcValue, value.length())) {
+			wcKey[converted] = '\0';
+			BOOL b = _SetConfig(key, value);
+			delete[] wcKey;
+			delete[] wcValue;
+			return b;
+		}
+	}
+	delete[] wcKey;
+	delete[] wcValue;
+	return false;
+}
+
+BOOL CTextService::_GetConfig(const wstring& key, wstring& value)
 {
 	DWORD dw, dwType;
 	HKEY hKey;
 	BOOL fRet;
 
-	char szValue[1000];
+	WCHAR szValue[1000];
 
-	if (fRet = RegOpenKeyExA(HKEY_CURRENT_USER, "Software", REG_OPTION_NON_VOLATILE, KEY_READ, &hKey) == ERROR_SUCCESS)
+	if (fRet = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software", REG_OPTION_NON_VOLATILE, KEY_READ, &hKey) == ERROR_SUCCESS)
 	{
 		dw = sizeof(szValue);
-		if (fRet = RegGetValueA(hKey, "KeyMagic", key.c_str(), RRF_RT_REG_SZ, &dwType, szValue, &dw) == ERROR_SUCCESS)
+		if (fRet = RegGetValueW(hKey, L"KeyMagic", key.c_str(), RRF_RT_REG_SZ, &dwType, szValue, &dw) == ERROR_SUCCESS)
 		{
 			value = szValue;
 		}
 		RegCloseKey(hKey);
 	}
 	return fRet;
+}
+
+BOOL CTextService::_GetConfig(const string& key, string& value)
+{
+	int converted = 0;
+	WCHAR *wcKey = new WCHAR[key.length() + 1];
+
+	if (converted = MultiByteToWideChar(CP_ACP, 0, key.c_str(), key.length(), wcKey, key.length()))
+	{
+		wcKey[converted] = '\0';
+		wstring wvalue;
+
+		BOOL b = _GetConfig(wcKey, wvalue);
+		if (b)
+		{
+			int length = wvalue.length();
+			char *szValue = new char[length + 1];
+			converted = WideCharToMultiByte(CP_ACP, 0, wvalue.c_str(), length, szValue, length, 0, 0);
+			szValue[converted] = '\0';
+			value = szValue;
+			delete[] szValue;
+		}
+		delete[] wcKey;
+		return b;
+	}
+	delete[] wcKey;
+	return false;
 }

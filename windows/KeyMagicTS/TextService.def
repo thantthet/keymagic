@@ -1,4 +1,4 @@
-LIBRARY TextService.dll
+LIBRARY 
 
 EXPORTS
         DllGetClassObject               PRIVATE

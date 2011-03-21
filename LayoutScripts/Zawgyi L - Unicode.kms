@@ -3,7 +3,7 @@
 @FONTFAMILY = "Myanmar3"
 @DESCRIPTION = "ZawgyiL Layout based Unicode output."
 @ICON = "Zawgyi L - Unicode.png"
-@HOTKEY = "CTRL + SHIFT + A"
+@HOTKEY = "CTRL + SHIFT + Z"
 @TRACK_CAPSLOCK = "false"
 @EAT_KEYS = "true"
 @US_LAYOUT_BASED = "true"

@@ -46,11 +46,11 @@
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="C:\boost_1_45_0\"
+				AdditionalIncludeDirectories="C:\boost_1_45_0;&quot;..\..\..\cross-platform\libkeymagic&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="1"
@@ -67,9 +67,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../../x64/Debug/KeyMagicDll.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Advapi32.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib psapi.lib gdiplus.lib Ole32.lib msvcrtd.lib $(NOINHERIT)"
+				AdditionalDependencies="$(OutDir)\KeyMagicDll.lib $(SolutionDir)\..\..\cross-platform\libkeymagic\vs\bin\libkeymagic.dbg.x32.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Advapi32.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib psapi.lib gdiplus.lib Ole32.lib $(NOINHERIT)"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="C:\boost_1_45_0\stage\lib"
+				AdditionalLibraryDirectories="C:\boost_1_45_0\32\lib"
 				UACExecutionLevel="1"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="LIBCMTD.lib"
@@ -132,7 +132,7 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				EnableFunctionLevelLinking="false"
+				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="1"
 				Detect64BitPortabilityProblems="true"
@@ -149,9 +149,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../x64/Debug/KeyMagicDll.lib ..\..\..\cross-platform\libkeymagic\vs\bin\libkeymagic.dbg.x64.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Advapi32.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib psapi.lib gdiplus.lib Ole32.lib msvcrtd.lib $(NOINHERIT)"
+				AdditionalDependencies="$(OutDir)\KeyMagicDll.lib $(SolutionDir)..\..\cross-platform\libkeymagic\vs\bin\libkeymagic.dbg.x64.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Advapi32.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib psapi.lib gdiplus.lib Ole32.lib $(NOINHERIT)"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="C:\boost_1_45_0\stage\lib"
+				AdditionalLibraryDirectories="C:\boost_1_45_0\64\lib"
 				UACExecutionLevel="1"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="LIBCMTD.lib"
@@ -209,7 +209,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;C:\boost_1_45_0&quot;"
+				AdditionalIncludeDirectories="C:\boost_1_45_0;&quot;..\..\..\cross-platform\libkeymagic&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
@@ -231,9 +231,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../../x64/Release/KeyMagicDll.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Advapi32.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib psapi.lib gdiplus.lib Ole32.lib $(NOINHERIT)"
+				AdditionalDependencies="$(OutDir)\KeyMagicDll.lib $(SolutionDir)..\..\cross-platform\libkeymagic\vs\bin\libkeymagic.x32.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Advapi32.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib psapi.lib gdiplus.lib Ole32.lib $(NOINHERIT)"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;C:\boost_1_45_0\stage\lib&quot;"
+				AdditionalLibraryDirectories="&quot;C:\boost_1_45_0\32\lib&quot;"
 				EnableUAC="true"
 				UACExecutionLevel="1"
 				IgnoreAllDefaultLibraries="false"
@@ -294,7 +294,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="&quot;C:\boost_1_45_0&quot;"
+				AdditionalIncludeDirectories="C:\boost_1_45_0;&quot;..\..\..\cross-platform\libkeymagic&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -316,9 +316,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../../Release/KeyMagicDll.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Advapi32.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib psapi.lib gdiplus.lib Ole32.lib $(NOINHERIT)"
+				AdditionalDependencies="$(OutDir)\KeyMagicDll.lib $(SolutionDir)..\..\cross-platform\libkeymagic\vs\bin\libkeymagic.x64.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Advapi32.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib psapi.lib gdiplus.lib Ole32.lib $(NOINHERIT)"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;C:\boost_1_45_0\stage\lib&quot;"
+				AdditionalLibraryDirectories="&quot;C:\boost_1_45_0\64\lib&quot;"
 				GenerateManifest="true"
 				EnableUAC="true"
 				UACExecutionLevel="1"
@@ -460,6 +460,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\empty.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\Res\key.png"
 				>
 			</File>
@@ -480,6 +484,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\Res\Parabaik_UTN11-3.ttf"
+			>
+		</File>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>

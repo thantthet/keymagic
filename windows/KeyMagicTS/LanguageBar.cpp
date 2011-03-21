@@ -66,9 +66,18 @@ private:
     ITfLangBarItemSink *_pLangBarItemSink;
     TF_LANGBARITEMINFO _tfLangBarItemInfo;
 
+	typedef struct {
+		wstring keyboardPath;
+		wstring keyboardName;
+		HBITMAP hBitmap;
+	} KEYBOARD_DATA;
+
+	typedef vector<KEYBOARD_DATA> KEYBOARD_DATA_LIST;
+
+	KEYBOARD_DATA_LIST keyboardData;
+
     CTextService *_pTextService;
     LONG _cRef;
-	KEYBOARD_LIST * _keyboards;
 };
 
 //+---------------------------------------------------------------------------
@@ -80,6 +89,29 @@ private:
 CLangBarItemButton::CLangBarItemButton(CTextService *pTextService)
 {
     DllAddRef();
+
+	KEYBOARD_LIST * _keyboards = GetKeyboards();
+	if (_keyboards->size())
+	{
+		for (KEYBOARD_LIST::iterator i = _keyboards->begin(); i != _keyboards->end(); i++)
+		{
+			KEYBOARD_DATA data;
+
+			wstring kbPath = *i;
+			InfoList * infos = KeyMagicKeyboard::getInfosFromKeyboardFile(kbPath.c_str());
+
+			wstring * keyboardName = GetKeyboardNameOrFileTitle(*infos, (*i));
+			data.hBitmap = LoadBitmapFromKeyboard(*infos);
+			//DebugStr(L"CLangBarItemButton > HBITMAP for %s = %x\n", keyboardName->c_str(), data.hBitmap);
+			data.keyboardName = keyboardName->c_str();
+			data.keyboardPath = kbPath;
+			delete keyboardName;
+			delete infos;
+			keyboardData.push_back(data);
+		}
+	}
+
+	delete _keyboards;
 
     //
     // initialize TF_LANGBARITEMINFO structure.
@@ -97,8 +129,6 @@ CLangBarItemButton::CLangBarItemButton(CTextService *pTextService)
     _pTextService->AddRef();
 
     _cRef = 1;
-
-	_keyboards = NULL;
 }
 
 //+---------------------------------------------------------------------------
@@ -111,8 +141,6 @@ CLangBarItemButton::~CLangBarItemButton()
 {
     DllRelease();
     _pTextService->Release();
-	if (_keyboards != NULL)
-		delete _keyboards;
 }
 
 //+---------------------------------------------------------------------------
@@ -223,7 +251,7 @@ STDAPI CLangBarItemButton::Show(BOOL fShow)
 
 STDAPI CLangBarItemButton::GetTooltipString(BSTR *pbstrToolTip)
 {
-    *pbstrToolTip = SysAllocString(LANGBAR_ITEM_DESC);
+    *pbstrToolTip = SysAllocString(_pTextService->_GetKeyboardDescription().c_str());
 
     return (*pbstrToolTip == NULL) ? E_OUTOFMEMORY : S_OK;
 }
@@ -247,34 +275,20 @@ STDAPI CLangBarItemButton::OnClick(TfLBIClick click, POINT pt, const RECT *prcAr
 
 STDAPI CLangBarItemButton::InitMenu(ITfMenu *pMenu)
 {
-	if (_keyboards != NULL) 
-		delete _keyboards;
-
-	_keyboards = GetKeyboards();
-
-	if (_keyboards->size())
+	if (keyboardData.size())
 	{
-		for (KEYBOARD_LIST::iterator i = _keyboards->begin(); i != _keyboards->end(); i++)
+		for (KEYBOARD_DATA_LIST::iterator i = keyboardData.begin(); i != keyboardData.end(); i++)
 		{
-			WCHAR fileTitle[MAX_PATH] = {0};
-			GetFileTitleW((*i).c_str(), fileTitle, MAX_PATH);
-
-			int length = wcslen(fileTitle);
-
-			if (length) {
-				length -= 4;
-				fileTitle[length] = '\0';
-			}
-
+			KEYBOARD_DATA data = *i;
 			DWORD dwFlags = 0;
-			dwFlags |= _pTextService->_GetActiveKeyboard() == *i ? TF_LBMENUF_RADIOCHECKED : 0;
+			dwFlags |= _pTextService->_GetActiveKeyboard() == data.keyboardPath ? TF_LBMENUF_RADIOCHECKED : 0;
 
-			pMenu->AddMenuItem(MENUITEM_INDEX_0 + (i-_keyboards->begin()),
+			pMenu->AddMenuItem(MENUITEM_INDEX_0 + ( i-keyboardData.begin() ),
 				dwFlags,
+				data.hBitmap,
 				NULL,
-				NULL,
-				fileTitle,
-				(ULONG)wcslen(fileTitle),
+				data.keyboardName.c_str(),
+				(ULONG)data.keyboardName.length(),
 				NULL);
 		}
 	} else {
@@ -298,11 +312,11 @@ STDAPI CLangBarItemButton::InitMenu(ITfMenu *pMenu)
 
 STDAPI CLangBarItemButton::OnMenuSelect(UINT wID)
 {
-	if (wID > _keyboards->size()) {
+	if (wID > keyboardData.size()) {
 		return S_OK;
 	}
 
-	wstring keyboardPath = _keyboards->at(wID);
+	wstring keyboardPath = keyboardData.at(wID).keyboardPath;
 	_pTextService->_SetActiveKeyboard(keyboardPath);
 
 	return S_OK;
@@ -316,8 +330,8 @@ STDAPI CLangBarItemButton::OnMenuSelect(UINT wID)
 
 STDAPI CLangBarItemButton::GetIcon(HICON *phIcon)
 {
-    *phIcon = (HICON)LoadImage(g_hInst, TEXT("IDI_TEXTSERVICE"), IMAGE_ICON, 16, 16, 0);
- 
+    //*phIcon = (HICON)LoadImage(g_hInst, TEXT("IDI_TEXTSERVICE"), IMAGE_ICON, 16, 16, 0);
+	*phIcon = _pTextService->_GetIcon();
     return (*phIcon != NULL) ? S_OK : E_FAIL;
 }
 
@@ -329,16 +343,9 @@ STDAPI CLangBarItemButton::GetIcon(HICON *phIcon)
 
 STDAPI CLangBarItemButton::GetText(BSTR *pbstrText)
 {
-	WCHAR szDescription[MAX_PATH] = {0};
-	GetFileTitleW(_pTextService->_GetActiveKeyboard().c_str(), szDescription, MAX_PATH);
-	int length = wcslen(szDescription);
+	const wstring& keyboardName = _pTextService->_GetKeyboardName();
 
-	if (length) {
-		length -= 4;
-		szDescription[length] = '\0';
-	}
-
-	*pbstrText = SysAllocString(length ? szDescription : L"No Layout Selected");
+	*pbstrText = SysAllocString(keyboardName.length() ? keyboardName.c_str() : L"No Layout Selected");
 
     return (*pbstrText == NULL) ? E_OUTOFMEMORY : S_OK;
 }

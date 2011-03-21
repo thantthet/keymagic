@@ -26,8 +26,11 @@ TCHAR szKBP[]=TEXT("KeyBoardPaths");
 TCHAR szMS[]=TEXT("MenuDisplays");
 TCHAR szSC[]=TEXT("ShortCuts");
 TCHAR szNeedRestart[] = TEXT("Application needs to restart to work correctly");
-TCHAR szKeymagic[] = TEXT("KeyMagic");
-
+#if defined(_WIN64)
+TCHAR szKeymagic[] = TEXT("KeyMagic (64bit)");
+#else
+TCHAR szKeymagic[] = TEXT("KeyMagic (32bit)");
+#endif
 // Global Variables:
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
@@ -106,14 +109,14 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		}
 	}
 
-	if (OpenMutex(SYNCHRONIZE, NULL, TEXT("\u1000\u102E\u1038\u1019\u1000\u1039\u1002\u103A\u1005\u1039"))){
+	if (OpenMutex(SYNCHRONIZE, NULL, TEXT(MUTEX_STRING))){
 		HWND hPreHandle = FindWindow(NULL, szTitle);
 		ShowWindow(hPreHandle, SW_SHOW);
 		SetForegroundWindow(hPreHandle);
 		return 0;
 	}
 
-	HANDLE MtxHANDLE = CreateMutexW(NULL, TRUE, TEXT("\u1000\u102E\u1038\u1019\u1000\u1039\u1002\u103A\u1005\u1039"));
+	HANDLE MtxHANDLE = CreateMutexW(NULL, TRUE, TEXT(MUTEX_STRING));
 
 	MSG messages;
     WNDCLASSEX wincl;

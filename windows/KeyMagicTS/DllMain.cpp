@@ -20,14 +20,21 @@
 // DllMain
 //
 //----------------------------------------------------------------------------
+ULONG_PTR m_gdiplusToken;
 
 BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID pvReserved)
 {
+	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+
     switch (dwReason)
     {
         case DLL_PROCESS_ATTACH:
 
             g_hInst = hInstance;
+			gdiplusStartupInput.GdiplusVersion = 1;
+			gdiplusStartupInput.SuppressBackgroundThread = false;
+			gdiplusStartupInput.SuppressExternalCodecs = false;
+			Gdiplus::GdiplusStartup(&m_gdiplusToken, &gdiplusStartupInput, NULL);
 
             if (!InitializeCriticalSectionAndSpinCount(&g_cs, 0))
                 return FALSE;
@@ -35,6 +42,8 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID pvReserved)
             break;
 
         case DLL_PROCESS_DETACH:
+
+			Gdiplus::GdiplusShutdown(m_gdiplusToken);
 
             DeleteCriticalSection(&g_cs);
 

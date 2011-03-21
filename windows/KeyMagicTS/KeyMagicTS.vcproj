@@ -44,6 +44,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="..\..\cross-platform\libkeymagic\"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;BASICTEXTSERVICE_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -64,7 +65,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies=".\libkeymagic\libkeymagic.dbg.x32.lib"
+				AdditionalDependencies="..\..\cross-platform\libkeymagic\vs\bin\libkeymagic.dbg.x32.lib gdiplus.lib"
 				OutputFile="$(OutDir)\$(ProjectName).dbg.x32.dll"
 				LinkIncremental="2"
 				ModuleDefinitionFile="TextService.def"
@@ -120,6 +121,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="..\..\cross-platform\libkeymagic\"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;BASICTEXTSERVICE_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -140,8 +142,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies=".\libkeymagic\libkeymagic.dbg.x64.lib"
-				OutputFile="$(OutDir)\$(ProjectName).dbg.x64dll"
+				AdditionalDependencies="..\..\cross-platform\libkeymagic\vs\bin\libkeymagic.dbg.x64.lib gdiplus.lib"
+				OutputFile="$(OutDir)\$(ProjectName).dbg.x64.dll"
 				LinkIncremental="2"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames=""
@@ -199,6 +201,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="..\..\cross-platform\libkeymagic\"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;BASICTEXTSERVICE_EXPORTS"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -217,7 +220,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="./libkeymagic/libkeymagic.x32.lib"
+				AdditionalDependencies="..\..\cross-platform\libkeymagic\vs\bin\libkeymagic.x32.lib gdiplus.lib"
 				OutputFile="$(OutDir)\$(ProjectName).x32.dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile="TextService.def"
@@ -277,6 +280,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="..\..\cross-platform\libkeymagic\"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;BASICTEXTSERVICE_EXPORTS"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -295,7 +299,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="./libkeymagic/libkeymagic.x64.lib"
+				AdditionalDependencies="..\..\cross-platform\libkeymagic\vs\bin\libkeymagic.x64.lib gdiplus.lib"
 				OutputFile="$(OutDir)\$(ProjectName).x64.dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile="TextService.def"
@@ -454,52 +458,16 @@
 					>
 				</File>
 			</Filter>
-			<Filter
-				Name="libkeymagic"
-				>
-				<File
-					RelativePath=".\libkeymagic\KeyCodes.h"
-					>
-				</File>
-				<File
-					RelativePath=".\libkeymagic\keymagic.h"
-					>
-				</File>
-				<File
-					RelativePath=".\libkeymagic\KeyMagicEngine.h"
-					>
-				</File>
-				<File
-					RelativePath=".\libkeymagic\KeyMagicKeyboard.h"
-					>
-				</File>
-				<File
-					RelativePath=".\libkeymagic\KeyMagicLogger.h"
-					>
-				</File>
-				<File
-					RelativePath=".\libkeymagic\KeyMagicString.h"
-					>
-				</File>
-				<File
-					RelativePath=".\libkeymagic\KeyMagicTypes.h"
-					>
-				</File>
-				<File
-					RelativePath=".\libkeymagic\RuleInfo.h"
-					>
-				</File>
-				<File
-					RelativePath=".\libkeymagic\Util.h"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath=".\empty.ico"
+				>
+			</File>
 			<File
 				RelativePath=".\KeyMagic.ico"
 				>
@@ -509,10 +477,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\ReadMe.txt"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

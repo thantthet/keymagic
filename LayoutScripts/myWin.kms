@@ -16,7 +16,8 @@
 // Thant Thet Khin Zaw - 10-March-2011 - Tweak rules to have smaller layout file for jKeyMagic
 
 /*
-NAME "my-Win 2.3.0 Unicode 5.2"
+@NAME = "my-Win 2.3.0 Unicode 5.2"
+@ICON = "myWin.png"
 Copyright = "? 2004-2009 SIL & ThanLwinSoft.org (License: LGPL)"
 Message  = "Myanmar keyboard for typing Burmese with Unicode 5.2.0. "\
 "<http://www.unicode.org/versions/Unicode5.2.0/>. "\

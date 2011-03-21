@@ -73,30 +73,6 @@ namespace kEditor.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("32")]
-        public int GlyphRangeFirst {
-            get {
-                return ((int)(this["GlyphRangeFirst"]));
-            }
-            set {
-                this["GlyphRangeFirst"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("62")]
-        public int GlyphRangeLength {
-            get {
-                return ((int)(this["GlyphRangeLength"]));
-            }
-            set {
-                this["GlyphRangeLength"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool forceDefaultEditor {
             get {
@@ -158,6 +134,30 @@ namespace kEditor.Properties {
             }
             set {
                 this["LineNumber"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Myanmar")]
+        public string GlyphFilterText {
+            get {
+                return ((string)(this["GlyphFilterText"]));
+            }
+            set {
+                this["GlyphFilterText"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool HexNotation {
+            get {
+                return ((bool)(this["HexNotation"]));
+            }
+            set {
+                this["HexNotation"] = value;
             }
         }
     }

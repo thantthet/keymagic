@@ -22,9 +22,10 @@
 #include <ole2.h>
 #include <olectl.h>
 #include <assert.h>
-#include "msctf.h"
+#include <msctf.h>
+#include <keymagic.h>
+#include <GdiPlus.h>
 #include "KeyMagicUtil.h"
-#include "libkeymagic/keymagic.h"
 
 void DllAddRef();
 void DllRelease();

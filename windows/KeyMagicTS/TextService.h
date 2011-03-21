@@ -96,9 +96,19 @@ public:
 	const wstring& _GetActiveKeyboard();
 	void _SwitchNextLayout();
 	void _SwitchPrevLayout();
+	BOOL _SetConfig(const wstring& key, const wstring& value);
 	BOOL _SetConfig(const string& key, const string& value);
+	BOOL _GetConfig(const wstring& key, wstring& value);
 	BOOL _GetConfig(const string& key, string& value);
-
+	HICON _GetIcon() {
+		return _hIcon;
+	}
+	const wstring& _GetKeyboardName() {
+		return _keyboardName;
+	}
+	const wstring& _GetKeyboardDescription() {
+		return _keyboardDescription;
+	}
 private:
     // initialize and uninitialize ThreadMgrEventSink.
     BOOL _InitThreadMgrEventSink();
@@ -121,7 +131,9 @@ private:
 
     // utility function for KeyEventSink
     BOOL _IsKeyEaten(WPARAM wParam);
-
+	
+	//
+	void _LoadActiveKeyboardIcon();
     //
     // state
     //
@@ -148,8 +160,10 @@ private:
     LONG _cRef;     // COM ref count
 
 	KeyMagicEngine _kme;
-
+	HICON _hIcon;
+	wstring _keyboardName;
 	wstring _activeKeyboardPath;
+	wstring _keyboardDescription;
 };
 
 

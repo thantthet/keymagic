@@ -22,6 +22,10 @@
 		B5C1EB9912FC49AE0061BF73 /* RuleInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5C1EB9412FC49AE0061BF73 /* RuleInfo.cpp */; };
 		B5C1EB9A12FC49AE0061BF73 /* RuleInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = B5C1EB9512FC49AE0061BF73 /* RuleInfo.h */; };
 		B5C1EBA012FC4A460061BF73 /* keymagic_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = B5C1EB9F12FC4A460061BF73 /* keymagic_Prefix.pch */; };
+		B5D2601213365ABE00BCEC22 /* KeyMagicErrorLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5D2600E13365ABE00BCEC22 /* KeyMagicErrorLogger.cpp */; };
+		B5D2601313365ABE00BCEC22 /* KeyMagicErrorLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = B5D2600F13365ABE00BCEC22 /* KeyMagicErrorLogger.h */; };
+		B5D2601413365ABE00BCEC22 /* LogFileWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5D2601013365ABE00BCEC22 /* LogFileWriter.cpp */; };
+		B5D2601513365ABE00BCEC22 /* LogFileWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = B5D2601113365ABE00BCEC22 /* LogFileWriter.h */; };
 		B5E05C18131FC68F0050B283 /* Util.h in Headers */ = {isa = PBXBuildFile; fileRef = B5E05C16131FC68F0050B283 /* Util.h */; };
 		B5E05C19131FC68F0050B283 /* Util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5E05C17131FC68F0050B283 /* Util.cpp */; };
 /* End PBXBuildFile section */
@@ -44,6 +48,10 @@
 		B5C1EB9412FC49AE0061BF73 /* RuleInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RuleInfo.cpp; sourceTree = "<group>"; };
 		B5C1EB9512FC49AE0061BF73 /* RuleInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RuleInfo.h; sourceTree = "<group>"; };
 		B5C1EB9F12FC4A460061BF73 /* keymagic_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keymagic_Prefix.pch; sourceTree = "<group>"; };
+		B5D2600E13365ABE00BCEC22 /* KeyMagicErrorLogger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyMagicErrorLogger.cpp; sourceTree = "<group>"; };
+		B5D2600F13365ABE00BCEC22 /* KeyMagicErrorLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyMagicErrorLogger.h; sourceTree = "<group>"; };
+		B5D2601013365ABE00BCEC22 /* LogFileWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LogFileWriter.cpp; sourceTree = "<group>"; };
+		B5D2601113365ABE00BCEC22 /* LogFileWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogFileWriter.h; sourceTree = "<group>"; };
 		B5E05C16131FC68F0050B283 /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
 		B5E05C17131FC68F0050B283 /* Util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Util.cpp; sourceTree = "<group>"; };
 		D2AAC09D05546B4700DB518D /* libkeymagic.a */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libkeymagic.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -89,6 +97,10 @@
 		08FB77ACFE841707C02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				B5D2600E13365ABE00BCEC22 /* KeyMagicErrorLogger.cpp */,
+				B5D2600F13365ABE00BCEC22 /* KeyMagicErrorLogger.h */,
+				B5D2601013365ABE00BCEC22 /* LogFileWriter.cpp */,
+				B5D2601113365ABE00BCEC22 /* LogFileWriter.h */,
 				B5C1EB9F12FC4A460061BF73 /* keymagic_Prefix.pch */,
 				B5C1EB9112FC49AE0061BF73 /* KeyMagicString.cpp */,
 				B5C1EB9212FC49AE0061BF73 /* KeyMagicString.h */,
@@ -136,6 +148,8 @@
 				B5C1EBA012FC4A460061BF73 /* keymagic_Prefix.pch in Headers */,
 				B5E05C18131FC68F0050B283 /* Util.h in Headers */,
 				B5761A201320E07B0095AADC /* keymagic.h in Headers */,
+				B5D2601313365ABE00BCEC22 /* KeyMagicErrorLogger.h in Headers */,
+				B5D2601513365ABE00BCEC22 /* LogFileWriter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -196,6 +210,8 @@
 				B5C1EB9612FC49AE0061BF73 /* KeyMagicString.cpp in Sources */,
 				B5C1EB9912FC49AE0061BF73 /* RuleInfo.cpp in Sources */,
 				B5E05C19131FC68F0050B283 /* Util.cpp in Sources */,
+				B5D2601213365ABE00BCEC22 /* KeyMagicErrorLogger.cpp in Sources */,
+				B5D2601413365ABE00BCEC22 /* LogFileWriter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

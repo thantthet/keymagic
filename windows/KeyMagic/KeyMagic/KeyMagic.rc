@@ -18,11 +18,13 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (United States) resources
+// English (U.S.) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
+#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -33,13 +35,14 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // remains consistent on all systems.
 IDI_KEYMAGIC            ICON                    "KeyMagic.ico"
 IDI_BSHIELD             ICON                    "Res\\shield.ico"
+IDI_EMPTY               ICON                    "empty.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Accelerator
 //
 
-ACCLC ACCELERATORS
+ACCLC ACCELERATORS 
 BEGIN
     "?",            IDM_ABOUT,              ASCII,  ALT
     "/",            IDM_ABOUT,              ASCII,  ALT
@@ -100,7 +103,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO
+GUIDELINES DESIGNINFO 
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -158,8 +161,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,3,2,0
- PRODUCTVERSION 1,3,2,0
+ FILEVERSION 1,4,0,0
+ PRODUCTVERSION 1,4,0,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -176,12 +179,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "KeyMagic"
             VALUE "FileDescription", "KeyMagic Program Manager"
-            VALUE "FileVersion", "1.3.3.0"
+            VALUE "FileVersion", "1.4.0.0"
             VALUE "InternalName", "KeyMagic"
             VALUE "LegalCopyright", "Copyright (C) 2008-2011"
             VALUE "OriginalFilename", "KeyMagic.exe"
             VALUE "ProductName", "KeyMagic Input Customizer"
-            VALUE "ProductVersion", "1.3.3.0"
+            VALUE "ProductVersion", "1.4.0.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -217,10 +220,23 @@ IDB_LOGO                PNG                     "Res\\key.png"
 // String Table
 //
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
-    IDS_EN_TITLE            "KeyMagic 1.3.3"
+    IDS_EN_TITLE            "KeyMagic 1.4"
 END
 
-#endif    // English (United States) resources
+#endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

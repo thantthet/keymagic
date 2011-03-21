@@ -14,12 +14,6 @@
     <Setting Name="DefaultFontSize" Type="System.Single" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
-    <Setting Name="GlyphRangeFirst" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">32</Value>
-    </Setting>
-    <Setting Name="GlyphRangeLength" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">62</Value>
-    </Setting>
     <Setting Name="forceDefaultEditor" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -58,6 +52,12 @@
     </Setting>
     <Setting Name="LineNumber" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="GlyphFilterText" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Myanmar</Value>
+    </Setting>
+    <Setting Name="HexNotation" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

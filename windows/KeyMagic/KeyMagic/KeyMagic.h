@@ -19,6 +19,12 @@
 
 #pragma once
 
+#if defined(_WIN64)
+#define MUTEX_STRING "\u1000\u102E\u1038\u1019\u1000\u1039\u1002\u103A\u1005\u1039_64"
+#else
+#define MUTEX_STRING "\u1000\u102E\u1038\u1019\u1000\u1039\u1002\u103A\u1005\u1039_32"
+#endif
+
 #include "resource.h"
 
 #include <Userenv.h>
