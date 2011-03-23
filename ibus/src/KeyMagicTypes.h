@@ -8,9 +8,15 @@
 #ifndef KEYMAGICTYPES_H_
 #define KEYMAGICTYPES_H_
 
+#if defined (_WIN32) || defined (_WIN64)
+#include <windows.h>
+#endif
+
 #include <vector>
+#include <map>
 #include "KeyMagicString.h"
 
+using namespace std;
 /**
  * BinaryRule is the array of bytes about rule patterns\n
  * @see ruleInfo::toRuleInfo() to know how these byte can be decoded
@@ -26,9 +32,15 @@ typedef struct {
 	short* strOutRule;
 } BinaryRule;
 
-typedef std::vector<BinaryRule> BinaryRuleList;
-typedef std::vector<const short * > BinaryStringList;
-typedef std::vector<KeyMagicString> StringList;
+typedef vector<BinaryRule> BinaryRuleList;
+typedef vector<const short * > BinaryStringList;
+typedef vector<KeyMagicString> StringList;
+
+typedef struct {
+	short size;
+	char * data;
+} Info;
+typedef map<int, Info> InfoList;
 
 /**
  * LayoutOptions use to alternate the behavior of the keyboard layout
@@ -80,7 +92,37 @@ typedef struct {
 	 * Layout Options of this file
 	 */
 	LayoutOptions layoutOptions;
-} FileHeader;
+} FileHeader_1_3;
 
+typedef struct {
+	/**
+	 * always 'KMKL'
+	 */
+	char magicCode[4];
+	/**
+	 * KeyMagic version to use with
+	 */
+	char majorVersion;
+	/**
+	 * KeyMagic version to use with
+	 */
+	char minorVersion;
+	/**
+	 * Count of strings/variables
+	 */
+	short stringCount;
+	/**
+	 * Cont of infos
+	 */
+	short infoCount;
+	/**
+	 * Count of rules
+	 */
+	short ruleCount;
+	/**
+	 * Layout Options of this file
+	 */
+	LayoutOptions layoutOptions;
+} FileHeader;
 
 #endif /* KEYMAGICTYPES_H_ */

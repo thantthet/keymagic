@@ -19,7 +19,6 @@
 
 #import <Carbon/Carbon.h>
 #import "KeymagicIMEController.h"
-#import "keyboard.h"
 #import	"keymagic.h"
 
 @implementation KeyMagicIMEController
@@ -116,6 +115,12 @@ bool mapVK(int virtualkey, int * winVK)
 
 - (id)initWithServer:(IMKServer*)server delegate:(id)delegate client:(id)inputClient
 {
+	/*if (statusItem == NULL) {
+		statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
+	}
+	[statusItem setHighlightMode:NO];*/
+	
+	activeKeyboard = [keyboard new];
 	
 	m_logFile = fopen("/Users/thantthetkz/Library/Logs/KeyMagic.log", "w");
 	logger = KeyMagicLogger::getInstance();
@@ -135,28 +140,45 @@ bool mapVK(int virtualkey, int * winVK)
 		if (title && path) {
 			ActivePath = path;
 			m_success = kme.loadKeyboardFile([ActivePath cStringUsingEncoding:NSUTF8StringEncoding]);
-			keyboard *Keyboard = [keyboard new];
-		
+			if (m_success == FALSE) {
+				return self;
+			}
 			
-			[Keyboard setTitle:title];
-			[Keyboard setPath:path];
+			const InfoList infos = kme.getKeyboard()->getInfoList();
+			
+			NSImage * icon = [self getIconImageFromKeyboard:infos];
+			
+			[activeKeyboard setTitle:title];
+			[activeKeyboard setPath:path];
+			[activeKeyboard setImage:icon];
 		}
 	}
-
+	
 	return self;
 }
 
 - (void)dealloc
 {
+	/*if (statusItem != NULL) {
+		[[NSStatusBar systemStatusBar] removeStatusItem:statusItem];
+	}*/
     [super dealloc];
 }
 
 - (void)activateServer:(id)sender
-{
+{	
+	/*if (statusItem == NULL) {
+		statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
+	}
+	[statusItem setEnabled:YES];
+	[statusItem setTitle:[activeKeyboard title]];
+	[statusItem setImage:[activeKeyboard image]];*/
 }
 
 - (void)deactivateServer:(id)sender
 {
+	//[[NSStatusBar systemStatusBar] removeStatusItem:statusItem];
+	//statusItem = NULL;
 }
 
 - (void)commitComposition:(id)sender 
@@ -323,31 +345,70 @@ bool mapVK(int virtualkey, int * winVK)
 			[configDictionary setObject:[Keyboard title] forKey:@"DefaultKeyboardTitle"];
 			[configDictionary setObject:[Keyboard path] forKey:@"DefaultKeyboardPath"];
 			ActivePath = [Keyboard path];
+			activeKeyboard = Keyboard;
 			[self WriteConfigurationFile];
+			
+			/*[statusItem setEnabled:YES];
+			[statusItem setTitle:[Keyboard title]];
+			[statusItem setImage:[Keyboard image]];*/
 		}
 	}
+}
+
+-(NSImage *) getIconImageFromKeyboard:(const InfoList&)infos
+{
+	if (infos.find('icon') != infos.end()) {
+		Info icon = infos.find('icon')->second;
+		NSData * data = [NSData dataWithBytes:icon.data length:icon.size];
+		NSImage * image = [[[NSImage new] autorelease] initWithData:data];
+		return image;
+	}
+	return NULL;
+}
+
+-(NSString*) getKeyboardNameOrTitle:(const InfoList&)infos pathName:(NSString*) filePath
+{
+	NSString * keyboardName;
+	if (infos.find('name') != infos.end()) {
+		Info name = infos.find('name')->second;
+		keyboardName = [NSString stringWithCString:name.data encoding:NSUTF8StringEncoding];
+	} else {
+		NSString * fileName = [filePath lastPathComponent];
+		keyboardName = [fileName substringToIndex:[fileName length] - 4];
+	}
+	return keyboardName;
 }
 
 - (NSMenu *)menu
 {
 	NSMenu *menu = [[NSMenu new] autorelease];
-	
+
 	NSBundle * mainBundle = [NSBundle mainBundle];
 	NSArray * paths = [mainBundle pathsForResourcesOfType:@"km2" inDirectory:nil];
 	NSEnumerator *e = [paths objectEnumerator];
 	NSString *path;
 	while (path = [e nextObject]) {
+		InfoList * infos = KeyMagicKeyboard::getInfosFromKeyboardFile([path cStringUsingEncoding:NSUTF8StringEncoding]);
+		
+		if (infos == NULL) {
+			continue;
+		}
+		
+		NSImage * icon = [self getIconImageFromKeyboard:*infos];
 		NSMenuItem * menuItem = [NSMenuItem new];
-		NSString * fileName = [path lastPathComponent];
-		NSString * fileTitle = [fileName substringToIndex:[fileName length] - 4];
-		[menuItem setTitle:fileTitle];
+		NSString * keyboardName = [self getKeyboardNameOrTitle:*infos pathName:path];
+		[menuItem setTitle:keyboardName];
 		[menuItem setTarget:self];
 		[menuItem setAction:@selector(selectionChanged:)];
+		if (icon != NULL) {
+			[menuItem setImage:icon];
+		}
 		
 		keyboard * Keyboard;
 		Keyboard = [keyboard new];
-		[Keyboard setTitle:fileTitle];
+		[Keyboard setTitle:keyboardName];
 		[Keyboard setPath:path];
+		[Keyboard setImage:icon];
 		
 		[menuItem setRepresentedObject:Keyboard];
 		 
@@ -358,6 +419,7 @@ bool mapVK(int virtualkey, int * winVK)
 		[menu addItem:menuItem];
 		
 		[Keyboards addObject:Keyboard];
+		delete infos;
 	}
 	
 	[menu addItem:[NSMenuItem separatorItem]];

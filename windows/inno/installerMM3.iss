@@ -1,6 +1,6 @@
 [Files]
 Source: KeyMagic.exe; DestDir: {app}; Flags: uninsrestartdelete; 
-Source: C:\Keymagic\windows\inno\KeyMagicMM3.ini; DestDir: {app}; DestName: KeyMagic.ini; 
+Source: KeyMagicMM3.ini; DestDir: {app}; DestName: KeyMagic.ini; 
 Source: KeyMagicDll.dll; DestDir: {app}; Flags: uninsrestartdelete; 
 Source: SetElevatedStartupTask.exe; DestDir: {app};
 Source: "Keyboards\Myanmar3.km2"; DestDir: {app}\Keyboards; 
@@ -11,18 +11,18 @@ Source: Yunghkio.ttf; DestDir: {fonts}; FontInstall: Yungkio; Flags: uninsneveru
 [Setup]
 AppCopyright=Thant Thet Khin Zaw
 AppName=KeyMagic
-AppVerName=1.3.3
+AppVerName=1.4
 DefaultDirName={pf}\KeyMagic
 DefaultGroupName=KeyMagic
 PrivilegesRequired=poweruser
 SetupLogging=true
-AppID={{A528DC93-F421-4DFC-92CE-35EAC9E1AC42}
+AppID={{BEADDC93-F421-4DFC-92CE-35EAC9E1AC42}
 SolidCompression=true
 Compression=lzma/Ultra64
 InternalCompressLevel=Ultra64
 UninstallLogMode=new
-OutputBaseFilename=KeyMagic1.3-MM3-Fonts
-VersionInfoVersion=1.3.3
+OutputBaseFilename=KeyMagic-1.4-MM3+Fonts
+VersionInfoVersion=1.4
 VersionInfoCompany=Thant Thet Khin Zaw
 
 [Run]

@@ -33,7 +33,9 @@ public:
 	 * @param filename File name of the file to load
 	 */
 	bool loadKeyboardFile(const char * filename);
-	
+#if defined (_WIN32) || defined (_WIN64)
+	bool loadKeyboardFile(const WCHAR * filename);
+#endif
 	/**
 	 * process input key event
 	 * @param keyval character value
@@ -83,9 +85,8 @@ private:
 	 * Get the key state of `keycode`
 	 * @param keycode keycode to get
 	 */
-	int getKeyState(int keycode) {
-		return m_keyStates[keycode];
-	}
+	int getKeyState(int keycode);
+	void prepareForMatching();
 	/**
 	 * update context history
 	 */

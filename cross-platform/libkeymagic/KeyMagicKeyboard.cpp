@@ -73,7 +73,7 @@ InfoList * KeyMagicKeyboard::getInfosFromKeyboardFile(const WCHAR * file) {
 		szFile[len] = '\0';
 		return getInfosFromKeyboardFile(szFile);
 	}
-	return false;
+	return NULL;
 }
 #endif
 
@@ -86,12 +86,13 @@ InfoList * KeyMagicKeyboard::getInfosFromKeyboardFile(const char * file) {
 	hFile = fopen(file, "rb");
 	if (!hFile){
 		PERROR("Cannot open keyboard file : %s\n", file);
-		return false;
+		return NULL;
 	}
 
 	if (ReadHeader(hFile, &fh) == false) {
 		PERROR("Fail to load keyboard file : %s\n", file);
-		return false;
+		fclose(hFile);
+		return NULL;
 	}
 
 	for (int i = 0; i < fh.stringCount; i++)
@@ -123,6 +124,8 @@ InfoList * KeyMagicKeyboard::getInfosFromKeyboardFile(const char * file) {
 		infos->operator [](id).size = sLength;
 		infos->operator [](id).data = local_buf;
 	}
+	
+	fclose(hFile);
 
 	return infos;
 }
@@ -177,6 +180,7 @@ bool KeyMagicKeyboard::loadKeyboardFile(const char * szPath) {
 
 	if (ReadHeader(hFile, &fh) == false) {
 		PERROR("Fail to load keyboard file : %s\n", szPath);
+		fclose(hFile);
 		return false;
 	}
 

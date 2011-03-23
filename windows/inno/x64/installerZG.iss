@@ -12,19 +12,21 @@ Source: .\..\Yunghkio.ttf; DestDir: {fonts}; FontInstall: Yungkio; Flags: uninsn
 [Setup]
 AppCopyright=Thant Thet Khin Zaw
 AppName=KeyMagic
-AppVerName=1.3.3
+AppVerName=1.4
 DefaultDirName={pf}\KeyMagic
 DefaultGroupName=KeyMagic
 PrivilegesRequired=poweruser
 SetupLogging=true
-AppID={{A528DC93-F421-4DFC-92CE-35EAC9E1AC42}
+AppID={{66DA10CF-8425-4C95-8865-00E63DFE2332}
 SolidCompression=true
 Compression=lzma/Ultra64
 InternalCompressLevel=Ultra64
 UninstallLogMode=new
-OutputBaseFilename=KeyMagic1.3-x64-ZG-Fonts
-VersionInfoVersion=1.3.3
+OutputBaseFilename=KeyMagic-1.4-x64-ZG+Fonts
+VersionInfoVersion=1.4
 VersionInfoCompany=Thant Thet Khin Zaw
+ArchitecturesAllowed=x64
+ArchitecturesInstallIn64BitMode=x64
 
 [Run]
 Filename: {app}\SetElevatedStartupTask.exe; WorkingDir: {app}; Flags: RunHidden 32bit; MinVersion: 0,6.0.6000; 

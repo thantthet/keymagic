@@ -271,7 +271,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>1</integer>
+									<integer>12</integer>
+									<integer>11</integer>
 									<integer>0</integer>
 								</array>
 							</array>
@@ -313,7 +314,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>keymagic-parser.ypp</string>
+								<string>keymagic-scanner.lpp</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -321,11 +322,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>keymagic-parser.ypp</string>
+										<string>keymagic-scanner.lpp</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B53A47651337A65300688EEB</string>
+										<string>B557BC3F133A2C8600774375</string>
 										<key>history</key>
 										<array>
 											<string>B57F2EAB1333FC9B00EF1C8E</string>
@@ -340,8 +341,8 @@
 											<string>B53FF04313361CE900321C06</string>
 											<string>B588D5F7133778CC00641BBD</string>
 											<string>B53A47621337A65300688EEB</string>
-											<string>B53A47631337A65300688EEB</string>
-											<string>B53A47641337A65300688EEB</string>
+											<string>B557BB37133A174400774375</string>
+											<string>B557BC33133A2C7A00774375</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -353,14 +354,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1232, 524}}</string>
+								<string>{{0, 0}, {1232, 495}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 125 1440 753 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>524pt</string>
+							<string>495pt</string>
 						</dict>
 						<dict>
 							<key>ContentConfiguration</key>
@@ -373,14 +374,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 529}, {1232, 183}}</string>
+								<string>{{0, 500}, {1232, 212}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 125 1440 753 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
 							<key>Proportion</key>
-							<string>183pt</string>
+							<string>212pt</string>
 						</dict>
 					</array>
 					<key>Proportion</key>
@@ -399,9 +400,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B53A47661337A65300688EEB</string>
+				<string>B557BC40133A2C8600774375</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>B53A47671337A65300688EEB</string>
+				<string>B557BC41133A2C8600774375</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -540,7 +541,7 @@
 	<key>WindowOrderList</key>
 	<array>
 		<string>B57F2E441333FA3A00EF1C8E</string>
-		<string>/Users/thantthetkz/codes/keymagic_expoted/cross-platform/parser/parser/parser.xcodeproj</string>
+		<string>/Users/thantthetkz/codes/Keymagic/cross-platform/parser/parser/parser.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>0 125 1440 753 0 0 1440 878 </string>
@@ -620,7 +621,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>B57F2E441333FA3A00EF1C8E</string>
-				<string>B53A47681337A65300688EEB</string>
+				<string>B557BC42133A2C8600774375</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>

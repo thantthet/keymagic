@@ -1,7 +1,8 @@
-﻿// @Name = "Parabaik"
-// @FontFamily = "Parabiak"
-// @Description = "Unoffical Parabaik layout"
-// @US_LAYOUT_BASED = "true"
+﻿// @NAME = "Parabaik"
+// @ICON = "Parabaik.bmp"
+// @FONTFAMILY = "Parabiak"
+// @DESCRIPTION = "Unoffical Parabaik layout"
+// @POSITIONAL_LAYOUT = "true"
 
 $consA = 'uc*Ci' + \
 		'pqZn' + \

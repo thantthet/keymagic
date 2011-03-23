@@ -8,35 +8,17 @@
 #ifndef KEYMAGICLOGGER_H_
 #define KEYMAGICLOGGER_H_
 
-#include <iostream>
-#include "KeyMagicTypes.h"
+#include "LogFileWriter.h"
 
 /**
  * Logger
  */
-class KeyMagicLogger {
+class KeyMagicLogger : public LogFileWriter {
 public:
 	/**
 	 * Get instance of class
 	 */
 	static KeyMagicLogger* getInstance();
-	/**
-	 * Log to file
-	 * @param fmt Format
-	 */
-	void log(const char * fmt, ...);
-	/**
-	 * Get current destination file
-	 */
-	FILE * getFile();
-	/**
-	 * Set file to output
-	 */
-	void setFile(FILE * file);
-	/**
-	 * Flush
-	 */
-	void flush();
 	/**
 	 * Destructor
 	 */
@@ -45,7 +27,6 @@ private:
 	KeyMagicLogger();
 	
 	static KeyMagicLogger * m_instance;
-	FILE * m_logFile;
 };
 
 #define LOG if (m_verbose) m_logger->log

@@ -31,14 +31,16 @@ ibus_engine_keymagic_SOURCES = \
 	KeyMagicString.cpp \
 	KeyMagicKeyboard.h \
 	KeyMagicKeyboard.cpp \
+	LogFileWriter.h \
+	LogFileWriter.cpp \
 	KeyMagicLogger.h \
 	KeyMagicLogger.cpp \
+	KeyMagicErrorLogger.h \
+	KeyMagicErrorLogger.cpp \
 	RuleInfo.h \
 	RuleInfo.cpp \
 	KeyCodes.h \
 	KeyCodes.cpp \
-	Util.h \
-	Util.cpp \
 	KeyMagicTypes.h \
 	$(NULL)
 ibus_engine_keymagic_CXXFLAGS = \

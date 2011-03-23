@@ -43,7 +43,7 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID pvReserved)
 
         case DLL_PROCESS_DETACH:
 
-			Gdiplus::GdiplusShutdown(m_gdiplusToken);
+			//Gdiplus::GdiplusShutdown(m_gdiplusToken);
 
             DeleteCriticalSection(&g_cs);
 

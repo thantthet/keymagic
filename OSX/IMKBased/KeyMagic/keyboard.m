@@ -41,4 +41,11 @@
 	hotkey = _hotkey;
 }
 
+-(NSImage*) image {
+	return image;
+}
+-(void) setImage:(NSImage*)_image {
+	image = _image;
+}
+
 @end

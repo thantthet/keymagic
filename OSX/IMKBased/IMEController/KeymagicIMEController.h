@@ -24,22 +24,26 @@
 	#import "InputMethodKitTiger.h"
 #endif
 #import "KeyMagicNSString.h"
+#import "keyboard.h"
 
 #include "KeyMagicEngine.h"
 
 @interface KeyMagicIMEController : IMKInputController
 {
-	NSMutableArray *Keyboards;
-	NSMutableDictionary *configDictionary;
-	NSString *ActivePath;
+	NSMutableArray * Keyboards;
+	NSMutableDictionary * configDictionary;
+	NSString * ActivePath;
 	KeyMagicEngine kme;
 	BOOL m_success;
 	FILE * m_logFile;
 	KeyMagicLogger * logger;
+	NSStatusItem * statusItem;
+	keyboard * activeKeyboard;
 }
 
 -(void) selectionChanged:(id)sender;
 -(void) WriteConfigurationFile;
 -(void) LoadConfigurationFile;
-
+-(NSImage *) getIconImageFromKeyboard:(const InfoList&)infos;
+-(NSString*) getKeyboardNameOrTitle:(const InfoList&)infos pathName:(NSString*) filePath;
 @end

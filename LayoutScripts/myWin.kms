@@ -19,7 +19,7 @@
 @NAME = "my-Win 2.3.0 Unicode 5.2"
 @ICON = "myWin.png"
 Copyright = "? 2004-2009 SIL & ThanLwinSoft.org (License: LGPL)"
-Message  = "Myanmar keyboard for typing Burmese with Unicode 5.2.0. "\
+@DESCRIPTION  = "Myanmar keyboard for typing Burmese with Unicode 5.2.0. "\
 "<http://www.unicode.org/versions/Unicode5.2.0/>. "\
 "This keyboard is freely redistributable under the terms of the GNU Lesser General Public License."
 */

@@ -99,17 +99,82 @@ keymagic_get_keyboard_list(gchar * path)
 	return names;
 }
 
+gchar * getKeyboardNameOrTitle (const InfoList& infos, const gchar * fileName)
+{
+	gchar * keyboardName;
+	if (infos.find('name') != infos.end()) {
+		Info name = infos.find('name')->second;
+		keyboardName = g_strndup(name.data, name.size);
+	} else {
+		keyboardName = g_strdup(basename(fileName));
+		keyboardName[strlen(keyboardName) - 4] = '\0';
+	}
+	return keyboardName;
+}
+
+bool ExtractIcon(const InfoList& infos, const gchar * iconFile)
+{
+	if (infos.find('icon') != infos.end()) {
+		Info icon = infos.find('icon')->second;
+		FILE * f = fopen(iconFile, "wb");
+		if (f == 0) {
+			return false;
+		}
+		fwrite(icon.data, icon.size, 1, f);
+		fclose(f);
+		return true;
+	}
+
+	return false;
+}
+
+gchar * getDescription(const InfoList& infos)
+{
+	gchar * description;
+	if (infos.find('desc') != infos.end()) {
+		Info desc = infos.find('desc')->second;
+		description = g_strndup(desc.data, desc.size);
+	} else {
+		description = g_strdup("");
+	}
+	return description;
+}
+
+gchar * dirname (const char * dir)
+{
+	gchar * dir_copy = g_strdup(dir);
+	const char * fileName = basename(dir);
+	dir_copy[strlen(dir_copy) - strlen(fileName)] = '\0';
+
+	return dir_copy;
+}
+
 GList *
 ibus_keymagic_add_engines(GList * engines, GList * keyboard_list)
 {
     GList *p;
     for (p=keyboard_list; p != NULL; p = p->next) {
-        gchar * filename = (gchar *) p->data;
-        gchar * filetitle = g_strdup(basename(filename));
-        filetitle[strlen(filetitle) - 4] = '\0';
+    	gchar * filename = (gchar *) p->data;
+    	InfoList * infos = KeyMagicKeyboard::getInfosFromKeyboardFile(filename);
+
+    	gchar * keyboardName = getKeyboardNameOrTitle(*infos, filename);
+    	gchar * desc = getDescription(*infos);
+    	gchar * kbDir = dirname(filename);
+
+    	gchar * iconFile = g_strdup_printf("%s/%s.icon", kbDir, keyboardName);
+
+        if (ExtractIcon(*infos, iconFile) == false) {
+        	iconFile = g_strdup(PKGDATADIR"/icons/ibus-keymagic.png");
+        }
+
         engines = g_list_append (engines,
-        		ibus_keymagic_engine_new ("en", filename, filetitle,
-				PKGDATADIR"/icons/ibus-keymagic.png", "keymagic"));
+        		ibus_keymagic_engine_new ("en", filename, keyboardName,
+				iconFile, desc));
+
+        g_free(kbDir);
+        g_free(iconFile);
+        g_free(desc);
+        g_free(keyboardName);
         g_free(p->data);
     }
     return engines;
@@ -268,3 +333,4 @@ int main(gint argc, gchar **argv)
     ibus_main ();
     return 0;
 }
+
