@@ -1,9 +1,9 @@
 ﻿// @NAME = "Myanmar3std"
 // @FONTFAMILY = "Myanmar3"
 // @DESCRIPTION = "Unoffical Myanmar3 layout"
-
+// @ICON = "Myanmar3.bmp"
 // @TRACK_CAPSLOCK = "FALSE"
-// @EAT_ALL_UNUSED_KEYS = "FALSE"
+// @EAT_ALL_UNUSED_KEYS = "TRUE"
 // @US_LAYOUT_BASED = "TRUE"
 // @SMART_BACKSPACE = "TRUE"
 
