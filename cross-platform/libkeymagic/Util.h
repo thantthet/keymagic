@@ -10,9 +10,9 @@
 #ifndef UTIL_H_
 #define UTIL_H_
 
-#ifndef VK_BACK
 
 enum {
+#ifndef VK_BACK
 	VK_BACK = 0x0008,
 	VK_TAB = 0x0009,
 	VK_RETURN = 0x000D,
@@ -27,7 +27,7 @@ enum {
 	VK_PRIOR = 0x0021,
 	VK_NEXT = 0x0022,
 	VK_DELETE = 0x002E,
-	
+#endif
 	VK_KEY_0 = '0',
 	VK_KEY_1 = '1',
 	VK_KEY_2 = '2',
@@ -65,7 +65,7 @@ enum {
 	VK_KEY_X = 'X',
 	VK_KEY_Y = 'Y',
 	VK_KEY_Z = 'Z',
-	
+#ifndef VK_NUMPAD0
 	VK_NUMPAD0 = 0x0060,
 	VK_NUMPAD1 = 0x0061,
 	VK_NUMPAD2 = 0x0062,
@@ -125,9 +125,8 @@ enum {
 	
 	VK_ICO_HELP = 0x00E3,
 	VK_ICO_00 = 0x00E4
-};
-
 #endif
+};
 
 /**
  * Convert keycode and modifier value from keyval. eg. A[keyval] = A[keycode] SHIFT_MASK[modifier]
@@ -136,6 +135,10 @@ enum {
  * @param modifier pointer to receive modifier value
  * @return true if keyval was converted else false
  */
-bool getKeyCodeAndModifier(int keyval, int * keycode, int * modifier);
+bool GetKeyCodeAndModifier(int keyval, int * keycode, int * modifier);
+
+#if defined(_WIN32)
+InfoList * GetInfosFromKeyboardFile(const char * file);
+#endif
 
 #endif

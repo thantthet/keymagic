@@ -17,7 +17,7 @@ typedef std::vector<KeyMagicString> TypeContextHistory;
 /**
  * IME-engine which processes matching and replacing patterns
  */
-class KeyMagicEngine {
+class KeyMagicEngine  {
 public:
 	KeyMagicEngine();
 	~KeyMagicEngine();

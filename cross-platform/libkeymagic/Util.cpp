@@ -7,12 +7,14 @@
  *
  */
 
-#include "Util.h"
+#include "KeyMagicTypes.h"
+#include "KeyMagicKeyboard.h"
 #include "KeyMagicEngine.h"
+#include "Util.h"
 
 #define CASE(a,b,c) case a:case b: *keycode = c;break
 
-bool getKeyCodeAndModifier(int keyval, int * keycode, int * modifier)
+bool GetKeyCodeAndModifier(int keyval, int * keycode, int * modifier)
 {
 	if (isalpha(keyval)) {
 		if (isupper(keyval)) {
@@ -62,3 +64,11 @@ bool getKeyCodeAndModifier(int keyval, int * keycode, int * modifier)
 	
 	return true;
 }
+
+#if defined(_WIN32)
+
+InfoList * GetInfosFromKeyboardFile(const char * file) {
+	return KeyMagicKeyboard::getInfosFromKeyboardFile(file);
+}
+
+#endif
