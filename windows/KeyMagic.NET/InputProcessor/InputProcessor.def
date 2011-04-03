@@ -6,6 +6,5 @@ EXPORTS
 	GetGetMsgProcHook
 	SetMainWindowsHandle
 	SetMainDir
-	GetHotkeyCount
 	fileNameToLoad DATA
 	Hotkeys DATA

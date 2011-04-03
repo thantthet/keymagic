@@ -55,9 +55,6 @@ namespace KeyMagic
         [DllImport("InputProcessor.x64.dll", EntryPoint = "SetMainDir", CharSet = CharSet.Unicode)]
         static extern void SetMainDir64(String dir);
 
-        [DllImport("InputProcessor.x64.dll", EntryPoint = "GetHotkeyCount", CharSet = CharSet.Unicode)]
-        static extern uint GetHotkeyCount();
-
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool UnhookWindowsHookEx(IntPtr hhk);

@@ -164,13 +164,6 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 	return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 }
 
-UINT GetHotkeyCount()
-{
-	int i;
-	for (i = 0; Hotkeys[i] != 0; i++);
-	return i;
-}
-
 void sendBackspace(int count)
 {
 	if (!GetFocus() || count < 1)

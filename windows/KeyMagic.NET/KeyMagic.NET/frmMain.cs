@@ -47,24 +47,6 @@ namespace KeyMagic
         IntPtr DllPtrHotkeys = IntPtr.Zero;
         IntPtr LastClientHandle = IntPtr.Zero;
 
-        //[StructLayout(LayoutKind.Sequential)]
-        //public class CommunicationData
-        //{
-        //    public IntPtr HWnd;
-        //    public GetHotkeysProc GetHotkeysProc;
-        //    public GetKeyboardLayoutNameByIndexProc GetKeyboardLayoutNameByIndexProc;
-        //}
-
-        //[StructLayout(LayoutKind.Sequential)]
-        //public class Hotkeys
-        //{
-        //    public uint Index;
-        //    public int Hotkey;
-        //}
-        
-        //public delegate int GetHotkeysProc(uint count, IntPtr _hotkeys);
-        //public delegate int GetKeyboardLayoutNameByIndexProc(uint index, IntPtr receiver, uint size);
-
         #region Main Form Events
 
         public frmMain()
@@ -392,14 +374,12 @@ namespace KeyMagic
                     DllPtrHotkeys = GetProcAddress(hModule, "Hotkeys");
                     RaiseWin32Exception(DllPtrHotkeys != IntPtr.Zero);
 
-                    //CommunicationData comData = new CommunicationData();
-                    //comData.HWnd = Handle;
-                    //comData.GetHotkeysProc = new GetHotkeysProc(GetHotKeys);
-                    //comData.GetKeyboardLayoutNameByIndexProc = new GetKeyboardLayoutNameByIndexProc(GetKeyboardLayoutNameByIndex);
-                    //IntPtr nativeStruct = Marshal.AllocHGlobal(Marshal.SizeOf(comData));
-                    //Marshal.StructureToPtr(comData, nativeStruct, false);
-                    SetMainWindowsHandle64(Handle);
-                    //Marshal.DestroyStructure(nativeStruct, typeof(CommunicationData));
+                    //SetMainWindowsHandle64(Handle);
+                    ProcessStartInfo psi = new ProcessStartInfo("HookInput.x64.exe", hModule.ToString("X"));
+                    psi.UseShellExecute = false;
+                    psi.RedirectStandardOutput = true;
+                    
+                    Process.Start(psi);
 
                     SetMainDir64(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
                     SetWindowsHooks64(hModule);
@@ -915,8 +895,7 @@ namespace KeyMagic
                         MessageBox.Show(this, failedMessage, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
-                    Dispose();
-                    Application.Exit();
+                    Close();
                 }
                 catch (Exception)
                 {

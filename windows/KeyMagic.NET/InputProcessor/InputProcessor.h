@@ -3,10 +3,11 @@
 
 #pragma once
 
-//typedef struct {
-//	UINT index;
-//	int hotkey;
-//} HotkeyInt;
+#ifdef INPUTPROCESSOR_EXPORTS
+#define INPUTPROCESSOR_API __declspec(dllexport)
+#else
+#define INPUTPROCESSOR_API __declspec(dllimport)
+#endif
 
 typedef struct {
 	bool ctrl;
@@ -15,23 +16,12 @@ typedef struct {
 	char key;
 } Hotkey;
 
-//typedef int (* GetHotkeysProc) (UINT count, HotkeyInt * hotkey);
-//typedef int (* GetKeyboardLayoutNameByIndexProc) (UINT index, WCHAR * receiver, UINT size);
-//
-//typedef struct {
-//    HWND HWnd;
-//    GetHotkeysProc GetHotkeys;
-//    GetKeyboardLayoutNameByIndexProc GetKeyboardLayoutNameByIndex;
-//} CommunicationData;
-
-void SetMainWindowsHandle(HWND hWnd);
-void SetMainDir(WCHAR * dir);
-void SetWindowsHooks ();
-HHOOK GetKeyProcHook ();
-HHOOK GetWndProcHook ();
-HHOOK GetGetMsgProcHook ();
-
-UINT GetHotkeyCount();
+INPUTPROCESSOR_API void SetMainWindowsHandle(HWND hWnd);
+INPUTPROCESSOR_API void SetMainDir(WCHAR * dir);
+INPUTPROCESSOR_API void SetWindowsHooks (HMODULE hMod);
+INPUTPROCESSOR_API HHOOK GetKeyProcHook ();
+INPUTPROCESSOR_API HHOOK GetWndProcHook ();
+INPUTPROCESSOR_API HHOOK GetGetMsgProcHook ();
 
 void sendSingleKey(WORD wVk, DWORD dwFlags);
 void sendKeyStrokes (const std::wstring& s);
