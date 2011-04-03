@@ -204,9 +204,10 @@ bool KeyMagicEngine::processKeyEvent(int keyval, int keycode, int modifier) {
 		}
 		
 		//no match found
-		//but check if `eat` options is active
+		//if not char key, dont eat
 		if (keycode <= 0x20 || keyval == 0) {
 			return false;
+		//but check if `eat` options is active
 		} else if (m_layoutOptions->eat == true) {
 			//if yes, eat the key and return as processed
 			return true;
