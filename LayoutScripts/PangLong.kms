@@ -1,11 +1,12 @@
 ﻿/*
-@Name = "PangLong"
-@Description = "This is keyboard description"
+@Name = "PangLong SHAN"
+@Description = "Developed by Sai Sai | Converted into KeyMagic Layout by Thant Thet Khin Zaw"
 @TRACK_CAPSLOCK = "false"
 @EAT_KEYS = "false"
 @US_LAYOUT_BASED = "true"
 @SMART_BACKSPACE = "true"
 @ICON = "pl_shan.bmp"
+@HOTKEY = "ALT CTRL P"
 */
 // (Developed by Sai Sai)
 // (Converted Into KeyMagic Layout Script By ttkz)

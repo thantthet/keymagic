@@ -18,6 +18,7 @@
 /*
 @NAME = "my-Win 2.3.0 Unicode 5.2"
 @ICON = "myWin.png"
+@HOTKEY = "CTRL+ALT+W"
 Copyright = "? 2004-2009 SIL & ThanLwinSoft.org (License: LGPL)"
 @DESCRIPTION  = "Myanmar keyboard for typing Burmese with Unicode 5.2.0. "\
 "<http://www.unicode.org/versions/Unicode5.2.0/>. "\

@@ -1,0 +1,11 @@
+LIBRARY
+EXPORTS
+	SetWindowsHooks
+	GetKeyProcHook
+	GetWndProcHook
+	GetGetMsgProcHook
+	SetMainWindowsHandle
+	SetMainDir
+	GetHotkeyCount
+	fileNameToLoad DATA
+	Hotkeys DATA

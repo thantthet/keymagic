@@ -1,7 +1,8 @@
 ﻿// @NAME = "Parabaik"
 // @ICON = "Parabaik.bmp"
+// @HOTKEY = "CTRL+ALT+K"
 // @FONTFAMILY = "Parabiak"
-// @DESCRIPTION = "Unoffical Parabaik layout"
+// @DESCRIPTION = "Converted into KeyMagic Layout from Offical Parabaik Keyman Layout | by Thant Thet Khin Zaw"
 // @POSITIONAL_LAYOUT = "true"
 
 $consA = 'uc*Ci' + \
@@ -68,7 +69,7 @@ $afvA[*] => $afvU[$1]
 $afsA[*] => $afsU[$1]
 
 // outs zwsp + vowel E while pressing A
-< VK_KEY_A > => $zsve
+'a' => $zsve
 // reorder vowel E + any consonants and digits
 $zsve + $consA[*] => $consU[$2] + U1031
 // reorder vowel E + single medial Character ra, ya, wa and ha
