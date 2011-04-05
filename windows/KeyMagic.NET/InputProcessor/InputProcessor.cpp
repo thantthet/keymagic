@@ -52,6 +52,7 @@ void SetKeyboardLayoutToDefault()
 	kblIndex = 0;
 	SendMessage(hWndMainWindows, KM_GOTFOCUS, kblIndex , (LPARAM)GetFocus());
 }
+
 LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
 	if (nCode != HC_ACTION){
@@ -72,8 +73,11 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 	else if (lParam) {
 		//If no focus
 		if (!GetFocus()) {
+			DebugPrint(L"No Focus:%d:%X\n", GetCurrentProcessId(), GetForegroundWindow());
 			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 		}
+
+		DebugPrint(L"HookKeyProc:%d:%X\n", GetCurrentProcessId(), GetForegroundWindow());
 
 		if ((lParam >> 16 & 255) == 255) {
 			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
@@ -82,15 +86,17 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 		HKL HKLDefault = (HKL)0x04090409;
 		HKL HKLCurrent = GetKeyboardLayout(GetCurrentThreadId());
 
+		DebugPrint(L"HKLCurrent=%X\n", HKLCurrent);
+
 		BYTE KeyboardState[256];
 		GetKeyboardState(KeyboardState);
 		
-		for (int i = 0; Hotkeys[i] != 0; i++) {
+		for (int i = 0; i < HotKeyCount; i++) {
 			Hotkey hotkey;
-			hotkey.key = Hotkeys[i] & 0xff;
-			hotkey.ctrl = Hotkeys[i] & 0x100;
-			hotkey.alt = Hotkeys[i] & 0x200;
-			hotkey.shift = Hotkeys[i] & 0x400;
+			hotkey.key = HotKeys[i] & 0xff;
+			hotkey.ctrl = HotKeys[i] & 0x100;
+			hotkey.alt = HotKeys[i] & 0x200;
+			hotkey.shift = HotKeys[i] & 0x400;
 
 			if (hotkey.key != wParam) {
 				continue;
@@ -106,17 +112,18 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 				continue;
 			}
 
-			if (i + 1 == kblIndex) {
+			if (i == kblIndex) {
 				SetKeyboardLayoutToDefault();
 				return true;
-			} else if (ChangeKeyboardLayout(i + 1)) {
+			} else if (ChangeKeyboardLayout(i)) {
 				wcscpy(activeFileName, fileNameToLoad);
-				kblIndex = i + 1;
-				SendMessage(hWndMainWindows, KM_GOTFOCUS, kblIndex , (LPARAM)GetFocus());
+				kblIndex = i;
+				SendMessage(hWndMainWindows, KM_GOTFOCUS, kblIndex , (LPARAM)GetForegroundWindow());
 				return true;
 			}
 		}
 
+		DebugPrint(L"activeFileName=%s\n", activeFileName);
 		// No Active Keyboard File
 		if (activeFileName[0] == 0) {
 			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
@@ -247,9 +254,25 @@ LRESULT CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 		return CallNextHookEx(hWndProcHook, nCode, wParam, lParam);
 
 	CWPSTRUCT* cwp = (CWPSTRUCT*)lParam;
-	
+	COPYDATASTRUCT* cds;
+
 	switch (cwp->message)
 	{
+	case WM_COPYDATA:
+		cds = (COPYDATASTRUCT*) cwp->lParam;
+		switch (cds->dwData)
+		{
+		case 0xB0B0:
+			ZeroMemory(fileNameToLoad, sizeof(fileNameToLoad));
+			memcpy(fileNameToLoad, cds->lpData, cds->cbData);
+			break;
+		case 0xBEEF:
+			ZeroMemory(HotKeys, sizeof(HotKeys));
+			memcpy(HotKeys, cds->lpData, cds->cbData);
+			HotKeyCount = cds->cbData / sizeof(short);
+			break;
+		}
+		break;
 	case KM_LISTCHANGED:
 		SetKeyboardLayoutToDefault();
 		break;
@@ -373,34 +396,6 @@ void SetWindowsHooks (HMODULE hMod) {
 	hGetMsgProcHook = SetWindowsHookEx(WH_GETMESSAGE, &HookGetMsgProc, hMod, NULL);
 	hWndProcHook = SetWindowsHookEx(WH_CALLWNDPROC, &HookWndProc, hMod, NULL);
 }
-
-//void ReloadHotkeys()
-//{
-//	if (GetHotkeys == NULL) {
-//		return;
-//	}
-//
-//	if (hotkeys != NULL) {
-//		delete[] hotkeys;
-//		hotkeys = NULL;
-//	}
-//
-//	keyboardLayoutCount = GetHotkeys(0, NULL);
-//	HotkeyInt * hotkeyInt = new HotkeyInt[keyboardLayoutCount];
-//	GetHotkeys(keyboardLayoutCount, hotkeyInt);
-//
-//	hotkeys = new Hotkey[keyboardLayoutCount];
-//	for (int i = 0; i < keyboardLayoutCount; i++)
-//	{
-//		int hk = hotkeyInt[i].hotkey;
-//		hotkeys[i].key = hk & 0xff;
-//		hotkeys[i].ctrl = hk & 4;
-//		hotkeys[i].alt = hk & 8;
-//		hotkeys[i].shift = hk & 16;
-//	}
-//
-//	delete[] hotkeyInt;
-//}
 
 void SetMainWindowsHandle(HWND hWnd)
 {

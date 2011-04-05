@@ -70,7 +70,9 @@
 				LinkIncremental="2"
 				ModuleDefinitionFile="InputProcessor.def"
 				GenerateDebugInformation="true"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
 				SubSystem="2"
+				ImportLibrary="$(TargetDir)$(TargetName).lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -144,9 +146,12 @@
 				AdditionalDependencies="$(SolutionDir)\..\..\cross-platform\libkeymagic\vs\bin\libkeymagic.dbg.x64.lib"
 				OutputFile="$(OutDir)\$(ProjectName).x64.dll"
 				LinkIncremental="2"
+				ManifestFile="$(IntDir)\$(TargetFileName).intermediate.manifest"
 				ModuleDefinitionFile="InputProcessor.def"
 				GenerateDebugInformation="true"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
 				SubSystem="2"
+				ImportLibrary="$(TargetDir)$(TargetName).lib"
 				TargetMachine="17"
 			/>
 			<Tool

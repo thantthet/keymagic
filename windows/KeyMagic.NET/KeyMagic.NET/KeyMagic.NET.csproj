@@ -119,8 +119,7 @@
       <DependentUpon>HotkeyControl.cs</DependentUpon>
     </Compile>
     <Compile Include="RoundedRectangles.cs" />
-    <Compile Include="Win32Imports.cs">
-      <SubType>Form</SubType>
+    <Compile Include="NavtiveMethods.cs">
     </Compile>
     <Compile Include="WndProc.cs">
       <SubType>Form</SubType>

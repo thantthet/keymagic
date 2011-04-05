@@ -28,7 +28,7 @@ namespace KeyMagic
                     }
                     catch (Exception)
                     {
-                        Marshal.WriteByte(DllPtrFileToLoad, 0);
+                        //Marshal.WriteByte(DllPtrFileToLoad, 0);
                     }
                     break;
                 case (int)DLLMSG.KM_GOTFOCUS:
@@ -38,12 +38,20 @@ namespace KeyMagic
                         break;
                     }
 
+                    Debug.WriteLine("KM_GOTFOCUS=" + msg.LParam.ToString("X"));
+
                     uint pid;
-                    GetWindowThreadProcessId(msg.LParam, out pid);
+                    NavtiveMethods.GetWindowThreadProcessId(msg.LParam, out pid);
                     if (Process.GetCurrentProcess().Id == pid)
                     {
                         Debug.WriteLine("Same process with me so ignoring.");
                         break;
+                    }
+
+                    if (LastClientHandle == IntPtr.Zero)
+                    {
+                        LastClientHandle = msg.LParam;
+                        SendHotKeys();
                     }
 
                     LastClientHandle = msg.LParam;

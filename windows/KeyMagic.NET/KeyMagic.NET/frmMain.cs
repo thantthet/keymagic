@@ -43,8 +43,8 @@ namespace KeyMagic
         bool is64bit = false;
         bool isVistaOrLater = false;
 
-        IntPtr DllPtrFileToLoad = IntPtr.Zero;
-        IntPtr DllPtrHotkeys = IntPtr.Zero;
+        //IntPtr DllPtrFileToLoad = IntPtr.Zero;
+        //IntPtr DllPtrHotkeys = IntPtr.Zero;
         IntPtr LastClientHandle = IntPtr.Zero;
 
         #region Main Form Events
@@ -97,9 +97,12 @@ namespace KeyMagic
 
         private void frmMain_FormClosed(object sender, FormClosedEventArgs e)
         {
-            UnHookWindowsHooks();
+            //UnHookWindowsHooks();
             SaveColumnWidths();
             KeyMagic.Properties.Settings.Default.Save();
+
+            processX64.Kill();
+            processX32.Kill();
         }
 
         private void SaveColumnWidths()
@@ -357,35 +360,42 @@ namespace KeyMagic
 
         #region Hook/Messaging with hook dll
 
+        Process processX64;
+        Process processX32;
+
         private void InitializeHook()
         {
             try
             {
-                IntPtr hHook;
-                IntPtr hModule;
+                //IntPtr hHook;
+                //IntPtr hModule;
 
                 if (is64bit)
                 {
-                    hHook = IntPtr.Zero;
-                    hModule = LoadLibrary("InputProcessor.x64.dll");
-                    RaiseWin32Exception(hModule != IntPtr.Zero);
-                    DllPtrFileToLoad = GetProcAddress(hModule, "fileNameToLoad");
-                    RaiseWin32Exception(DllPtrFileToLoad != IntPtr.Zero);
-                    DllPtrHotkeys = GetProcAddress(hModule, "Hotkeys");
-                    RaiseWin32Exception(DllPtrHotkeys != IntPtr.Zero);
+                    //hHook = IntPtr.Zero;
+                    //hModule = LoadLibrary("InputProcessor.x64.dll");
+                    //RaiseWin32Exception(hModule != IntPtr.Zero);
+                    //DllPtrFileToLoad = GetProcAddress(hModule, "fileNameToLoad");
+                    //RaiseWin32Exception(DllPtrFileToLoad != IntPtr.Zero);
+                    //DllPtrHotkeys = GetProcAddress(hModule, "Hotkeys");
+                    //RaiseWin32Exception(DllPtrHotkeys != IntPtr.Zero);
 
                     //SetMainWindowsHandle64(Handle);
-                    ProcessStartInfo psi = new ProcessStartInfo("HookInput.x64.exe", hModule.ToString("X"));
-                    psi.UseShellExecute = false;
-                    psi.RedirectStandardOutput = true;
+                    ProcessStartInfo psi;
                     
-                    Process.Start(psi);
+                    psi = new ProcessStartInfo("HookInput.x64.exe", Handle.ToString("X"));
+                    //psi.WindowStyle = ProcessWindowStyle.Hidden;
+                    processX64 = Process.Start(psi);
 
-                    SetMainDir64(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-                    SetWindowsHooks64(hModule);
-                    RaiseWin32Exception(GetKeyProcHook64() != IntPtr.Zero);
-                    RaiseWin32Exception(GetWndProcHook64() != IntPtr.Zero);
-                    RaiseWin32Exception(GetGetMsgProcHook64() != IntPtr.Zero);
+                    psi = new ProcessStartInfo("HookInput.x32.exe", Handle.ToString("X"));
+                    //psi.WindowStyle = ProcessWindowStyle.Hidden;
+                    processX32 = Process.Start(psi);
+
+                    //SetMainDir64(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+                    //SetWindowsHooks64(hModule);
+                    //RaiseWin32Exception(GetKeyProcHook64() != IntPtr.Zero);
+                    //RaiseWin32Exception(GetWndProcHook64() != IntPtr.Zero);
+                    //RaiseWin32Exception(GetGetMsgProcHook64() != IntPtr.Zero);
                 }
             }
             catch (Win32Exception ex)
@@ -443,18 +453,37 @@ namespace KeyMagic
         //    return lvLayouts.Items.Count;
         //}
 
-        private void UnHookWindowsHooks()
-        {
-            RaiseWin32Exception(UnhookWindowsHookEx(GetKeyProcHook64()));
-            RaiseWin32Exception(UnhookWindowsHookEx(GetWndProcHook64()));
-            RaiseWin32Exception(UnhookWindowsHookEx(GetGetMsgProcHook64()));
-        }
+        //private void UnHookWindowsHooks()
+        //{
+        //    RaiseWin32Exception(UnhookWindowsHookEx(GetKeyProcHook64()));
+        //    RaiseWin32Exception(UnhookWindowsHookEx(GetWndProcHook64()));
+        //    RaiseWin32Exception(UnhookWindowsHookEx(GetGetMsgProcHook64()));
+        //}
 
         private void SetFileToLoad(string fileName)
         {
             UnicodeEncoding enc = new UnicodeEncoding();
-            Marshal.Copy(enc.GetBytes(fileName), 0, DllPtrFileToLoad, enc.GetByteCount(fileName));
-            Marshal.WriteByte(DllPtrFileToLoad, enc.GetByteCount(fileName), 0);
+            int count = enc.GetByteCount(fileName);
+            IntPtr buffer = Marshal.AllocHGlobal(count);
+            Marshal.Copy(enc.GetBytes(fileName), 0, buffer, count);
+
+            NavtiveMethods.COPYDATASTRUCT copyData = new NavtiveMethods.COPYDATASTRUCT();
+            copyData.dwData = 0xB0B0;
+            copyData.lpData = buffer;
+            copyData.cbData = count;
+            
+            IntPtr copyDataBuff = NavtiveMethods.IntPtrAlloc(copyData);
+            
+            NavtiveMethods.SendMessage(LastClientHandle, (uint)NavtiveMethods.WM.COPYDATA, IntPtr.Zero, copyDataBuff);
+            
+            NavtiveMethods.IntPtrFree(copyDataBuff);
+            copyDataBuff = IntPtr.Zero;
+
+            NavtiveMethods.IntPtrFree(buffer);
+            buffer = IntPtr.Zero;
+            //UnicodeEncoding enc = new UnicodeEncoding();
+            //Marshal.Copy(enc.GetBytes(fileName), 0, DllPtrFileToLoad, enc.GetByteCount(fileName));
+            //Marshal.WriteByte(DllPtrFileToLoad, enc.GetByteCount(fileName), 0);
         }
 
         #endregion
@@ -687,7 +716,7 @@ namespace KeyMagic
                 Console.WriteLine(ex.Message);
             }
 
-            long lPtr = DllPtrHotkeys.ToInt64();
+            //long lPtr = DllPtrHotkeys.ToInt64();
 
             foreach (KeyboardLayout layout in keyboardList)
             {
@@ -706,11 +735,6 @@ namespace KeyMagic
                     if (layout.enable)
                     {
                         ActiveKeyboardList.Add(layout);
-
-                        IntPtr iPtr = new IntPtr(lPtr);
-                        Marshal.WriteInt16(iPtr, (short)new Hotkey(layout.hotkey).ToInt());
-                        Marshal.WriteInt16(iPtr, 2, (short)0);
-                        lPtr += sizeof(short);
 
                         lvItem.Group = lvLayouts.Groups["Enabled"];
                         KToolStripMenuItem menuItem = new KToolStripMenuItem(layout.display);
@@ -734,7 +758,35 @@ namespace KeyMagic
                 lvLayouts.Items.Add(lvItem);
             }
 
-            PostMessage(new IntPtr(0xffff), (uint)DLLMSG.KM_LISTCHANGED, IntPtr.Zero, IntPtr.Zero);
+            SendHotKeys();
+
+            NavtiveMethods.PostMessage(new IntPtr(0xffff), (uint)DLLMSG.KM_LISTCHANGED, IntPtr.Zero, IntPtr.Zero);
+        }
+
+        private void SendHotKeys()
+        {
+            IntPtr HotKeys = Marshal.AllocHGlobal(sizeof(short) * ActiveKeyboardList.Count);
+            int HotKeysPtr = HotKeys.ToInt32();
+            foreach (KeyboardLayout kbLayout in ActiveKeyboardList)
+            {
+                Marshal.WriteInt16(new IntPtr(HotKeysPtr), (short)new Hotkey(kbLayout.hotkey).ToInt());
+                HotKeysPtr += sizeof(short);
+            }
+
+            NavtiveMethods.COPYDATASTRUCT copyData = new NavtiveMethods.COPYDATASTRUCT();
+            copyData.cbData = sizeof(short) * ActiveKeyboardList.Count;
+            copyData.dwData = 0xBEEF;
+            copyData.lpData = HotKeys;
+
+            IntPtr copyDataBuff = NavtiveMethods.IntPtrAlloc(copyData);
+
+            NavtiveMethods.SendMessage(LastClientHandle, (uint)NavtiveMethods.WM.COPYDATA, IntPtr.Zero, copyDataBuff);
+
+            NavtiveMethods.IntPtrFree(copyDataBuff);
+            copyDataBuff = IntPtr.Zero;
+
+            NavtiveMethods.IntPtrFree(HotKeys);
+            HotKeys = IntPtr.Zero;
         }
 
         private void SaveKeyboardLayoutList()
@@ -804,7 +856,7 @@ namespace KeyMagic
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.Dispose();
+            Application.Exit();
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -986,7 +1038,7 @@ namespace KeyMagic
             if (index == 0)
             {
                 SetFileToLoad("");
-                if (SendMessage(LastClientHandle, (uint)DLLMSG.KM_SETKEYBOARD, IntPtr.Zero, IntPtr.Zero) == IntPtr.Zero)
+                if (NavtiveMethods.SendMessage(LastClientHandle, (uint)DLLMSG.KM_SETKEYBOARD, IntPtr.Zero, IntPtr.Zero) == IntPtr.Zero)
                 {
                     nIcon.Icon = mainIcon;
                 }
@@ -995,10 +1047,10 @@ namespace KeyMagic
 
             try
             {
-                String fileName = ActiveKeyboardList[index - 1].file;
+                String fileName = ActiveKeyboardList[index].file;
                 SetFileToLoad(fileName);
 
-                if (SendMessage(LastClientHandle, (uint)DLLMSG.KM_SETKEYBOARD, (IntPtr)index, IntPtr.Zero) == IntPtr.Zero)
+                if (NavtiveMethods.SendMessage(LastClientHandle, (uint)DLLMSG.KM_SETKEYBOARD, (IntPtr)index, IntPtr.Zero) == IntPtr.Zero)
                 {
                     nIcon.Icon = iconList[fileName];
                     //using (Bitmap bm = new Bitmap(imageList.Images[fileName]))

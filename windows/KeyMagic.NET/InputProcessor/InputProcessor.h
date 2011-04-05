@@ -27,17 +27,25 @@ void sendSingleKey(WORD wVk, DWORD dwFlags);
 void sendKeyStrokes (const std::wstring& s);
 void sendDifference(const std::wstring& contextBefore, const std::wstring& contextAfter);
 
-#pragma data_seg(".KMG")
+#ifdef _M_IX86
+#pragma data_seg(".KMG32")
+#else
+#pragma data_seg(".KMG64")
+#endif
 HHOOK hKeyHook = NULL;
 HHOOK hWndProcHook = NULL;
 HHOOK hGetMsgProcHook = NULL;
-short Hotkeys[500] = {0};
+short HotKeys[500] = {0};
+UINT HotKeyCount = 0;
 HWND hWndMainWindows = NULL;
 TCHAR szMainDir[MAX_PATH] = {0};
 WCHAR fileNameToLoad[MAX_PATH] = {0};
 #pragma data_seg()
 
 //Make sure that section can READ WRITE and SHARE
-#pragma comment(linker, "/SECTION:.KMG,RWS")
-
+#ifdef _M_IX86
+#pragma comment(linker, "/SECTION:.KMG32,RWS")
+#else
+#pragma comment(linker, "/SECTION:.KMG64,RWS")
+#endif
 #endif

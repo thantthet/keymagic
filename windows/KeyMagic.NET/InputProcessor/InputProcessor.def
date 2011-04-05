@@ -7,4 +7,3 @@ EXPORTS
 	SetMainWindowsHandle
 	SetMainDir
 	fileNameToLoad DATA
-	Hotkeys DATA
