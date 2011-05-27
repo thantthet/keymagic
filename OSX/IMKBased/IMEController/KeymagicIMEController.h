@@ -44,6 +44,9 @@
 -(void) selectionChanged:(id)sender;
 -(void) WriteConfigurationFile;
 -(void) LoadConfigurationFile;
--(NSImage *) getIconImageFromKeyboard:(const InfoList&)infos;
--(NSString*) getKeyboardNameOrTitle:(const InfoList&)infos pathName:(NSString*) filePath;
+-(NSArray *) getKeyboardPathsFrom:(NSString*)directory;
+-(BOOL) changeKeyboardLayout:(keyboard*) Keyboard;
+-(void) switchKeyboardLayout:(BOOL)previous;
+-(void) GetKeyboardLayouts;
+
 @end

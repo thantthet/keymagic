@@ -203,8 +203,9 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\..\..\cross-platform\libkeymagic\&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;INPUTPROCESSOR_EXPORTS"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -221,7 +222,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="$(SolutionDir)\..\..\cross-platform\libkeymagic\vs\bin\libkeymagic.x32.lib"
+				OutputFile="$(OutDir)\$(ProjectName).x32.dll"
 				LinkIncremental="1"
+				ModuleDefinitionFile="InputProcessor.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -252,7 +256,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\bin"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="1"
@@ -280,7 +284,7 @@
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\..\..\cross-platform\libkeymagic\&quot;"
 				PreprocessorDefinitions="WIN64;NDEBUG;_WINDOWS;_USRDLL;INPUTPROCESSOR_EXPORTS"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -298,8 +302,10 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="$(SolutionDir)\..\..\cross-platform\libkeymagic\vs\bin\libkeymagic.x64.lib"
+				OutputFile="$(OutDir)\$(ProjectName).x64.dll"
 				LinkIncremental="1"
 				IgnoreAllDefaultLibraries="false"
+				ModuleDefinitionFile="InputProcessor.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"

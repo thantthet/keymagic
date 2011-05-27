@@ -66,6 +66,7 @@ namespace KeyMagic
 
             CreateKeyboardDirectory();
             LoadKeyboardLayoutList();
+            this.reportViewer1.RefreshReport();
         }
 
         private void ProcessCommandLineArgs()
@@ -100,9 +101,10 @@ namespace KeyMagic
             //UnHookWindowsHooks();
             SaveColumnWidths();
             KeyMagic.Properties.Settings.Default.Save();
-
-            processX64.Kill();
-            processX32.Kill();
+            if (processX64 != null)
+                processX64.Kill();
+            if (processX32 != null)
+                processX32.Kill();
         }
 
         private void SaveColumnWidths()
@@ -360,42 +362,24 @@ namespace KeyMagic
 
         #region Hook/Messaging with hook dll
 
-        Process processX64;
-        Process processX32;
+        Process processX64 = null;
+        Process processX32 = null;
 
         private void InitializeHook()
         {
             try
             {
-                //IntPtr hHook;
-                //IntPtr hModule;
+                ProcessStartInfo psi;
+
+                psi = new ProcessStartInfo("HookInput.x32.exe", Handle.ToString("X"));
+                psi.WindowStyle = ProcessWindowStyle.Hidden;
+                //processX32 = Process.Start(psi);
 
                 if (is64bit)
                 {
-                    //hHook = IntPtr.Zero;
-                    //hModule = LoadLibrary("InputProcessor.x64.dll");
-                    //RaiseWin32Exception(hModule != IntPtr.Zero);
-                    //DllPtrFileToLoad = GetProcAddress(hModule, "fileNameToLoad");
-                    //RaiseWin32Exception(DllPtrFileToLoad != IntPtr.Zero);
-                    //DllPtrHotkeys = GetProcAddress(hModule, "Hotkeys");
-                    //RaiseWin32Exception(DllPtrHotkeys != IntPtr.Zero);
-
-                    //SetMainWindowsHandle64(Handle);
-                    ProcessStartInfo psi;
-                    
                     psi = new ProcessStartInfo("HookInput.x64.exe", Handle.ToString("X"));
-                    //psi.WindowStyle = ProcessWindowStyle.Hidden;
-                    processX64 = Process.Start(psi);
-
-                    psi = new ProcessStartInfo("HookInput.x32.exe", Handle.ToString("X"));
-                    //psi.WindowStyle = ProcessWindowStyle.Hidden;
-                    processX32 = Process.Start(psi);
-
-                    //SetMainDir64(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-                    //SetWindowsHooks64(hModule);
-                    //RaiseWin32Exception(GetKeyProcHook64() != IntPtr.Zero);
-                    //RaiseWin32Exception(GetWndProcHook64() != IntPtr.Zero);
-                    //RaiseWin32Exception(GetGetMsgProcHook64() != IntPtr.Zero);
+                    psi.WindowStyle = ProcessWindowStyle.Hidden;
+                    //processX64 = Process.Start(psi);
                 }
             }
             catch (Win32Exception ex)
@@ -471,11 +455,11 @@ namespace KeyMagic
             copyData.dwData = 0xB0B0;
             copyData.lpData = buffer;
             copyData.cbData = count;
-            
+
             IntPtr copyDataBuff = NavtiveMethods.IntPtrAlloc(copyData);
-            
+
             NavtiveMethods.SendMessage(LastClientHandle, (uint)NavtiveMethods.WM.COPYDATA, IntPtr.Zero, copyDataBuff);
-            
+
             NavtiveMethods.IntPtrFree(copyDataBuff);
             copyDataBuff = IntPtr.Zero;
 
@@ -745,6 +729,7 @@ namespace KeyMagic
                             }
                         menuItem.ImageKey = lvItem.ImageKey;
                         menuItem.ShortcutKeyDisplayString = layout.hotkey;
+                        String fontFamily = infos.GetFontFamily();
                         menuItem.Click += new EventHandler(cmsLeftMenuItem_Click);
                         cmsLeft.Items.Add(menuItem);
 

@@ -13,9 +13,15 @@ namespace kEditor
 {
     public partial class GlyphTable : UserControl
     {
+        UnicodeData ud;
+
         public GlyphTable()
         {
             InitializeComponent();
+            if (this.DesignMode == false)
+            {
+                ud = new UnicodeData(@"UnicodeData.txt");
+            }
         }
 
         private void GlyphTable_Load(object sender, EventArgs e)
@@ -86,7 +92,13 @@ namespace kEditor
         private LinePoints[] rowLinePoints;
         private LinePoints[] colLinePoints;
         private Rectangle[] rectangles;
-        private Char[] characters;
+        private int[] characters;
+
+        private int lastRowCount = 0;
+        private int lastColCount = 0;
+        private int lastColWidth = 0;
+        private int lastRowHeight = 0;
+        private int lastCharactersCount = 0;
 
         private void GeneratePointAndRect()
         {
@@ -101,10 +113,6 @@ namespace kEditor
                 for (i = 1; i * colWidth <= ClientRectangle.Width; i++) ;
                 colCount = --i;
                 int charCount = characters.Length;
-                //foreach (CharacterRange glyphRange in glyphRanges)
-                //{
-                //    charCount += glyphRange.Length;
-                //}
                 colCount = colCount > 0 ? colCount : 1;
                 rowCount = (charCount + (colCount - (charCount % colCount))) / colCount;
             }
@@ -117,37 +125,51 @@ namespace kEditor
                 colCount = colCount > 0 ? colCount : 1;
             }
 
-            List<LinePoints> newRowLinePoints = new List<LinePoints>();
-            for (int i = 0; i <= NumberOfRows; i++)
+            if (lastColWidth == colWidth &&
+                lastRowHeight == rowHeight &&
+                lastColCount == NumberOfColumns &&
+                lastRowCount >= NumberOfRows &&
+                lastCharactersCount >= characters.Length)
             {
-                newRowLinePoints.Add(new LinePoints(0, i * rowHeight, colWidth * NumberOfColumns, i * rowHeight));
-            }
-            rowLinePoints = newRowLinePoints.ToArray();
 
-            List<LinePoints> newColLinePoints = new List<LinePoints>();
-            for (int i = 0; i <= NumberOfColumns; i++)
+            }
+            else
             {
-                newColLinePoints.Add(new LinePoints(i * colWidth, 0, i * colWidth, rowHeight * NumberOfColumns));
+                List<LinePoints> newRowLinePoints = new List<LinePoints>();
+                for (int i = 0; i <= NumberOfRows; i++)
+                {
+                    newRowLinePoints.Add(new LinePoints(0, i * rowHeight, colWidth * NumberOfColumns, i * rowHeight));
+                }
+                rowLinePoints = newRowLinePoints.ToArray();
+
+                List<LinePoints> newColLinePoints = new List<LinePoints>();
+                for (int i = 0; i <= NumberOfColumns; i++)
+                {
+                    newColLinePoints.Add(new LinePoints(i * colWidth, 0, i * colWidth, rowHeight * NumberOfColumns));
+                }
+                colLinePoints = newColLinePoints.ToArray();
+
+                List<Rectangle> newRectanges = new List<Rectangle>();
+                for (int i = 0; i < NumberOfColumns * NumberOfRows; i++)
+                {
+                    newRectanges.Add(GetCellRect(i));
+                }
+
+                rectangles = newRectanges.ToArray();
+
+                lastRowCount = NumberOfRows;
+                lastColCount = NumberOfColumns;
+                lastColWidth = colWidth;
+                lastRowHeight = rowHeight;
+                lastCharactersCount = characters.Length;
             }
-            colLinePoints = newColLinePoints.ToArray();
-
-            List<Rectangle> newRectanges = new List<Rectangle>();
-            for (int i = 0; i < NumberOfColumns * NumberOfRows; i++)
-            {
-                newRectanges.Add(GetCellRect(i));
-            }
-
-            rectangles = newRectanges.ToArray();
-
             AutoScroll = true;
             AutoScrollMinSize = new Size(colWidth * colCount, rowHeight * rowCount);
         }
 
-        UnicodeData ud = new UnicodeData(@"UnicodeData.txt");
-
         private void GenerateCharacters()
         {
-            List<char> charList = new List<char>();
+            List<int> charList = new List<int>();
 
             Regex regex = new Regex(@"[uU]([a-fA-F0-9]{4})\s*-\s*[uU]([a-fA-F0-9]{4})", RegexOptions.Compiled);
             Match m = regex.Match(filter);
@@ -157,7 +179,7 @@ namespace kEditor
                 int end = int.Parse(m.Groups[2].Value, System.Globalization.NumberStyles.HexNumber);
                 for (int i = start; i < end; i++)
                 {
-                    charList.Add((char)i);
+                    charList.Add(i);
                 }
                 characters = charList.ToArray();
             }
@@ -168,10 +190,10 @@ namespace kEditor
                 {
                     return;
                 }
-                
+
                 foreach (KeyValuePair<String, int> kv in a)
                 {
-                    charList.Add((char)kv.Value);
+                    charList.Add(kv.Value);
                 }
                 characters = charList.ToArray();
             }
@@ -213,42 +235,51 @@ namespace kEditor
 
             LinearGradientBrush cellBrush = new LinearGradientBrush(rectangles[0], cellColorEnd, cellColorStart, LinearGradientMode.Vertical);
             LinearGradientBrush alterBrush = new LinearGradientBrush(rectangles[0], alternateCellColorEnd, alternateCellColorStart, LinearGradientMode.Vertical);
-            
+
             //foreach (CharacterRange glyphRange in glyphRanges)
             //{
             //    for (int i = 0; i < glyphRange.Length; i++)
             //    {
-            for (int i = 0; i < characters.Length; i++) {
-                    Rectangle cell = rectangles[i];
+            for (int i = 0; i < rectangles.Length && i < characters.Length; i++)
+            {
+                Rectangle cell = rectangles[i];
 
-                    //Console.WriteLine("{0} {1} {2} {3}", e.ClipRectangle.X, e.ClipRectangle.Y, cell.X, cell.Y);
-                    if (gx.ClipBounds.IntersectsWith(cell) == false)
-                    {
-                        continue;
-                    }
-                    
-                    Brush textBrush;
+                //Console.WriteLine("{0} {1} {2} {3}", e.ClipRectangle.X, e.ClipRectangle.Y, cell.X, cell.Y);
+                if (gx.ClipBounds.IntersectsWith(cell) == false)
+                {
+                    continue;
+                }
 
-                    if (((i - i % NumberOfColumns) / NumberOfColumns) % 2 == 0 && selectedAtCell != i)
-                    {
-                        gx.FillRectangle(alterBrush, cell);
-                    }
-                    else if (selectedAtCell != i)
-                    {
-                        gx.FillRectangle(cellBrush, cell);
-                    }
-                    ControlPaint.DrawVisualStyleBorder(gx, cell);
+                Brush textBrush;
 
-                    //draw character
-                    textBrush = selectedAtCell == i ? focusForeBrush : foreBrush;
-                    gx.DrawString(characters[i].ToString(), glyphFont, textBrush,
-                        new Rectangle(cell.X, cell.Y, cell.Width, cell.Height - (cell.Height / 3)), stringFormat);
+                if (((i - i % NumberOfColumns) / NumberOfColumns) % 2 == 0 && selectedAtCell != i)
+                {
+                    gx.FillRectangle(alterBrush, cell);
+                }
+                else if (selectedAtCell != i)
+                {
+                    gx.FillRectangle(cellBrush, cell);
+                }
+                ControlPaint.DrawVisualStyleBorder(gx, cell);
 
-                    //draw hex notation
-                    textBrush = selectedAtCell == i ? focusHexForeBrush : hexBrush;
-                    gx.DrawString(((int)characters[i]).ToString(codeFormatStr), hexFont, textBrush,
-                        new Rectangle(cell.X, cell.Y + (cell.Height - (cell.Height / 3)), cell.Width, (cell.Height / 3)), stringFormat);
-                //}
+                //draw character
+                textBrush = selectedAtCell == i ? focusForeBrush : foreBrush;
+                string character;
+                if (char.MaxValue < characters[i])
+                {
+                    character = char.ConvertFromUtf32(characters[i]);
+                }
+                else
+                {
+                    character = ((char)characters[i]).ToString();
+                }
+                gx.DrawString(character, glyphFont, textBrush,
+                    new Rectangle(cell.X, cell.Y, cell.Width, cell.Height - (cell.Height / 3)), stringFormat);
+
+                //draw hex notation
+                textBrush = selectedAtCell == i ? focusHexForeBrush : hexBrush;
+                gx.DrawString(characters[i].ToString(codeFormatStr), hexFont, textBrush,
+                    new Rectangle(cell.X, cell.Y + (cell.Height - (cell.Height / 3)), cell.Width, (cell.Height / 3)), stringFormat);
             }
 
             stringFormat.Dispose();
@@ -284,7 +315,7 @@ namespace kEditor
             }
         }
 
-        internal char characterAtCell(int index)
+        internal int characterAtCell(int index)
         {
             return characters[index];
         }
@@ -293,7 +324,7 @@ namespace kEditor
         {
             point.X -= AutoScrollPosition.X;
             point.Y -= AutoScrollPosition.Y;
-            for (int i = 0; i < NumbersOfGlyph; i++)
+            for (int i = 0; i < rectangles.Length && i < characters.Length; i++)
             {
                 Rectangle rect = rectangles[i];
                 if (rect.Contains(point))
@@ -335,7 +366,8 @@ namespace kEditor
                 {
                     rect = rectangles[i1];
                     r.Union(rect);
-                } catch (IndexOutOfRangeException ex)
+                }
+                catch (IndexOutOfRangeException ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
@@ -438,6 +470,7 @@ namespace kEditor
                 {
                     filter = value;
                     SelectedCell = -1;
+
                     GenerateCharacters();
                     GeneratePointAndRect();
                     Invalidate();
@@ -781,7 +814,7 @@ namespace kEditor
             }
         }
 
-        public char[] Characters
+        public int[] Characters
         {
             get
             {
@@ -791,7 +824,7 @@ namespace kEditor
 
         #endregion
 
-        public string GetNameForChar(char c)
+        public string GetNameForChar(int c)
         {
             return ud.GetNameForChar(c);
         }

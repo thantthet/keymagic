@@ -31,8 +31,8 @@
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Enabled", System.Windows.Forms.HorizontalAlignment.Left);
             System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Disabled", System.Windows.Forms.HorizontalAlignment.Left);
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             KeyMagic.Hotkey hotkey1 = new KeyMagic.Hotkey();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.nIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.cmsRight = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.imageList = new System.Windows.Forms.ImageList(this.components);
@@ -56,6 +56,8 @@
             this.grupSettings = new System.Windows.Forms.GroupBox();
             this.tableSettings = new System.Windows.Forms.TableLayoutPanel();
             this.chkRunAtLogon = new System.Windows.Forms.CheckBox();
+            this.hotkeyControl1 = new KeyMagic.HotkeyControl();
+            this.lblOnOffKey = new System.Windows.Forms.Label();
             this.tabAbout = new System.Windows.Forms.TabPage();
             this.tableAbout = new System.Windows.Forms.TableLayoutPanel();
             this.txtLicense = new System.Windows.Forms.TextBox();
@@ -64,8 +66,6 @@
             this.showToolStripMenuItem = new KeyMagic.KToolStripMenuItem();
             this.aboutToolStripMenuItem = new KeyMagic.KToolStripMenuItem();
             this.exitToolStripMenuItem = new KeyMagic.KToolStripMenuItem();
-            this.hotkeyControl1 = new KeyMagic.HotkeyControl();
-            this.lblOnOffKey = new System.Windows.Forms.Label();
             this.cmsRight.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabLayouts.SuspendLayout();
@@ -292,7 +292,7 @@
             this.grupSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grupSettings.Location = new System.Drawing.Point(3, 3);
             this.grupSettings.Name = "grupSettings";
-            this.grupSettings.Size = new System.Drawing.Size(655, 354);
+            this.grupSettings.Size = new System.Drawing.Size(186, 65);
             this.grupSettings.TabIndex = 2;
             this.grupSettings.TabStop = false;
             this.grupSettings.Text = "Settings";
@@ -311,7 +311,7 @@
             this.tableSettings.RowCount = 2;
             this.tableSettings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.253732F));
             this.tableSettings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 90.74627F));
-            this.tableSettings.Size = new System.Drawing.Size(649, 335);
+            this.tableSettings.Size = new System.Drawing.Size(180, 46);
             this.tableSettings.TabIndex = 0;
             // 
             // chkRunAtLogon
@@ -320,13 +320,31 @@
             this.chkRunAtLogon.Checked = global::KeyMagic.Properties.Settings.Default.RunAtStartup;
             this.chkRunAtLogon.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkRunAtLogon.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::KeyMagic.Properties.Settings.Default, "RunAtStartup", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.chkRunAtLogon.Location = new System.Drawing.Point(117, 34);
+            this.chkRunAtLogon.Location = new System.Drawing.Point(34, 7);
             this.chkRunAtLogon.Name = "chkRunAtLogon";
             this.chkRunAtLogon.Size = new System.Drawing.Size(137, 17);
             this.chkRunAtLogon.TabIndex = 1;
             this.chkRunAtLogon.Text = "Run KeyMagic at logon";
             this.chkRunAtLogon.UseVisualStyleBackColor = true;
             this.chkRunAtLogon.CheckedChanged += new System.EventHandler(this.chkRunAtLogon_CheckedChanged);
+            // 
+            // hotkeyControl1
+            // 
+            this.hotkeyControl1.Hotkey = hotkey1;
+            this.hotkeyControl1.Location = new System.Drawing.Point(34, 3);
+            this.hotkeyControl1.Name = "hotkeyControl1";
+            this.hotkeyControl1.Size = new System.Drawing.Size(143, 1);
+            this.hotkeyControl1.TabIndex = 2;
+            // 
+            // lblOnOffKey
+            // 
+            this.lblOnOffKey.AutoSize = true;
+            this.lblOnOffKey.Location = new System.Drawing.Point(3, 10);
+            this.lblOnOffKey.Margin = new System.Windows.Forms.Padding(3, 10, 3, 0);
+            this.lblOnOffKey.Name = "lblOnOffKey";
+            this.lblOnOffKey.Size = new System.Drawing.Size(24, 1);
+            this.lblOnOffKey.TabIndex = 3;
+            this.lblOnOffKey.Text = "Turn On/Off Hotkey:";
             // 
             // tabAbout
             // 
@@ -413,24 +431,6 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
-            // hotkeyControl1
-            // 
-            this.hotkeyControl1.Hotkey = hotkey1;
-            this.hotkeyControl1.Location = new System.Drawing.Point(117, 3);
-            this.hotkeyControl1.Name = "hotkeyControl1";
-            this.hotkeyControl1.Size = new System.Drawing.Size(202, 25);
-            this.hotkeyControl1.TabIndex = 2;
-            // 
-            // lblOnOffKey
-            // 
-            this.lblOnOffKey.AutoSize = true;
-            this.lblOnOffKey.Location = new System.Drawing.Point(3, 10);
-            this.lblOnOffKey.Margin = new System.Windows.Forms.Padding(3, 10, 3, 0);
-            this.lblOnOffKey.Name = "lblOnOffKey";
-            this.lblOnOffKey.Size = new System.Drawing.Size(105, 13);
-            this.lblOnOffKey.TabIndex = 3;
-            this.lblOnOffKey.Text = "Turn On/Off Hotkey:";
             // 
             // frmMain
             // 

@@ -39,30 +39,21 @@
 		6AAE6B250EAC6AA400E8EBBA /* KeyMagic.icns in Resources */ = {isa = PBXBuildFile; fileRef = 6AAE6B220EAC6AA400E8EBBA /* KeyMagic.icns */; };
 		6AAE6B560EAC6BE900E8EBBA /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6AAE6B550EAC6BE900E8EBBA /* MainMenu.xib */; };
 		6AAE6B570EAC6BE900E8EBBA /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6AAE6B550EAC6BE900E8EBBA /* MainMenu.xib */; };
+		B510C5B413769F16008798E7 /* KeyMagicUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = B510C5B313769F16008798E7 /* KeyMagicUtil.mm */; };
+		B510C5B513769F16008798E7 /* KeyMagicUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = B510C5B313769F16008798E7 /* KeyMagicUtil.mm */; };
 		B511BFC412009E270060A548 /* keyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = B511BFB612009E270060A548 /* keyboard.m */; };
 		B511BFCD12009E270060A548 /* keyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = B511BFB612009E270060A548 /* keyboard.m */; };
 		B511BFD612009E270060A548 /* keyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = B511BFB612009E270060A548 /* keyboard.m */; };
 		B511C1BC1200A6CA0060A548 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A31F7460EAC68880045D7EE /* Carbon.framework */; };
-		B511C3F41200CAB80060A548 /* Ayar-Zawgyi.km2 in Resources */ = {isa = PBXBuildFile; fileRef = B511C3E21200CA460060A548 /* Ayar-Zawgyi.km2 */; };
-		B511C3F51200CAB80060A548 /* Ayar.km2 in Resources */ = {isa = PBXBuildFile; fileRef = B511C3E31200CA460060A548 /* Ayar.km2 */; };
-		B511C3F61200CAB80060A548 /* Myanmar3.km2 in Resources */ = {isa = PBXBuildFile; fileRef = B511C3E41200CA460060A548 /* Myanmar3.km2 */; };
-		B511C3F71200CAB80060A548 /* myWin.km2 in Resources */ = {isa = PBXBuildFile; fileRef = B511C3E51200CA460060A548 /* myWin.km2 */; };
-		B511C3F81200CAB80060A548 /* Parabaik.km2 in Resources */ = {isa = PBXBuildFile; fileRef = B511C3E61200CA460060A548 /* Parabaik.km2 */; };
-		B511C3F91200CAB80060A548 /* Zawgyi L.km2 in Resources */ = {isa = PBXBuildFile; fileRef = B511C3E71200CA460060A548 /* Zawgyi L.km2 */; };
-		B511C3FA1200CAB90060A548 /* Ayar-Zawgyi.km2 in Resources */ = {isa = PBXBuildFile; fileRef = B511C3E21200CA460060A548 /* Ayar-Zawgyi.km2 */; };
-		B511C3FB1200CAB90060A548 /* Ayar.km2 in Resources */ = {isa = PBXBuildFile; fileRef = B511C3E31200CA460060A548 /* Ayar.km2 */; };
-		B511C3FC1200CAB90060A548 /* Myanmar3.km2 in Resources */ = {isa = PBXBuildFile; fileRef = B511C3E41200CA460060A548 /* Myanmar3.km2 */; };
-		B511C3FD1200CAB90060A548 /* myWin.km2 in Resources */ = {isa = PBXBuildFile; fileRef = B511C3E51200CA460060A548 /* myWin.km2 */; };
-		B511C3FE1200CAB90060A548 /* Parabaik.km2 in Resources */ = {isa = PBXBuildFile; fileRef = B511C3E61200CA460060A548 /* Parabaik.km2 */; };
-		B511C3FF1200CAB90060A548 /* Zawgyi L.km2 in Resources */ = {isa = PBXBuildFile; fileRef = B511C3E71200CA460060A548 /* Zawgyi L.km2 */; };
 		B51D988012FFA555008E0A2F /* KeyMagicNSString.mm in Sources */ = {isa = PBXBuildFile; fileRef = B51D987D12FFA555008E0A2F /* KeyMagicNSString.mm */; };
 		B51D988212FFA555008E0A2F /* KeyMagicNSString.mm in Sources */ = {isa = PBXBuildFile; fileRef = B51D987D12FFA555008E0A2F /* KeyMagicNSString.mm */; };
 		B51D989012FFA5AC008E0A2F /* KeymagicIMEController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B51D988E12FFA5AC008E0A2F /* KeymagicIMEController.mm */; };
 		B51D989112FFA5AC008E0A2F /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = B51D988F12FFA5AC008E0A2F /* main.mm */; };
 		B52F5CAC1339D0DA00745A53 /* libkeymagic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B52F5CAB1339D0DA00745A53 /* libkeymagic.a */; };
 		B52F5CAD1339D0DA00745A53 /* libkeymagic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B52F5CAB1339D0DA00745A53 /* libkeymagic.a */; };
-		B52F5D911339D2C100745A53 /* ZawgyiL-Unicode.km2 in Resources */ = {isa = PBXBuildFile; fileRef = B52F5D901339D2C100745A53 /* ZawgyiL-Unicode.km2 */; };
-		B52F5D921339D2C100745A53 /* ZawgyiL-Unicode.km2 in Resources */ = {isa = PBXBuildFile; fileRef = B52F5D901339D2C100745A53 /* ZawgyiL-Unicode.km2 */; };
+		B55969D713799A2100690DE3 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B55969D613799A2100690DE3 /* Growl.framework */; };
+		B55969D813799A2100690DE3 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B55969D613799A2100690DE3 /* Growl.framework */; };
+		B55969E413799A3400690DE3 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B55969D613799A2100690DE3 /* Growl.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -106,6 +97,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				B55969E413799A3400690DE3 /* Growl.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -140,21 +132,17 @@
 		6AA6D20F0EAC655B00DF1C2C /* InputMethodKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = InputMethodKit.framework; path = /System/Library/Frameworks/InputMethodKit.framework; sourceTree = "<absolute>"; };
 		6AAE6B220EAC6AA400E8EBBA /* KeyMagic.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = KeyMagic.icns; sourceTree = "<group>"; };
 		6AAE6B550EAC6BE900E8EBBA /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		B510C5B213769F16008798E7 /* KeyMagicUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyMagicUtil.h; path = KeyMagic/KeyMagicUtil.h; sourceTree = "<group>"; };
+		B510C5B313769F16008798E7 /* KeyMagicUtil.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = KeyMagicUtil.mm; path = KeyMagic/KeyMagicUtil.mm; sourceTree = "<group>"; };
 		B511BF9D12009D950060A548 /* KeymagicIMEController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeymagicIMEController.h; path = IMEController/KeymagicIMEController.h; sourceTree = "<group>"; };
 		B511BFB512009E270060A548 /* keyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = keyboard.h; path = KeyMagic/keyboard.h; sourceTree = "<group>"; };
 		B511BFB612009E270060A548 /* keyboard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = keyboard.m; path = KeyMagic/keyboard.m; sourceTree = "<group>"; };
-		B511C3E21200CA460060A548 /* Ayar-Zawgyi.km2 */ = {isa = PBXFileReference; explicitFileType = file; name = "Ayar-Zawgyi.km2"; path = "Keyboards/Ayar-Zawgyi.km2"; sourceTree = "<group>"; };
-		B511C3E31200CA460060A548 /* Ayar.km2 */ = {isa = PBXFileReference; explicitFileType = file; name = Ayar.km2; path = Keyboards/Ayar.km2; sourceTree = "<group>"; };
-		B511C3E41200CA460060A548 /* Myanmar3.km2 */ = {isa = PBXFileReference; explicitFileType = file; name = Myanmar3.km2; path = Keyboards/Myanmar3.km2; sourceTree = "<group>"; };
-		B511C3E51200CA460060A548 /* myWin.km2 */ = {isa = PBXFileReference; explicitFileType = file; name = myWin.km2; path = Keyboards/myWin.km2; sourceTree = "<group>"; };
-		B511C3E61200CA460060A548 /* Parabaik.km2 */ = {isa = PBXFileReference; explicitFileType = file; name = Parabaik.km2; path = Keyboards/Parabaik.km2; sourceTree = "<group>"; };
-		B511C3E71200CA460060A548 /* Zawgyi L.km2 */ = {isa = PBXFileReference; explicitFileType = file; name = "Zawgyi L.km2"; path = "Keyboards/Zawgyi L.km2"; sourceTree = "<group>"; };
 		B51D987C12FFA555008E0A2F /* KeyMagicNSString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyMagicNSString.h; path = KeyMagic/KeyMagicNSString.h; sourceTree = "<group>"; };
 		B51D987D12FFA555008E0A2F /* KeyMagicNSString.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = KeyMagicNSString.mm; path = KeyMagic/KeyMagicNSString.mm; sourceTree = "<group>"; };
 		B51D988E12FFA5AC008E0A2F /* KeymagicIMEController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = KeymagicIMEController.mm; path = IMEController/KeymagicIMEController.mm; sourceTree = "<group>"; };
 		B51D988F12FFA5AC008E0A2F /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = main.mm; path = IMEController/main.mm; sourceTree = "<group>"; };
 		B52F5CAB1339D0DA00745A53 /* libkeymagic.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libkeymagic.a; path = "../../cross-platform/libkeymagic/build/Release/libkeymagic.a"; sourceTree = SOURCE_ROOT; };
-		B52F5D901339D2C100745A53 /* ZawgyiL-Unicode.km2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ZawgyiL-Unicode.km2"; path = "Keyboards/ZawgyiL-Unicode.km2"; sourceTree = "<group>"; };
+		B55969D613799A2100690DE3 /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Growl.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,6 +153,7 @@
 				6A31F7470EAC68880045D7EE /* Carbon.framework in Frameworks */,
 				6A31F7480EAC68880045D7EE /* Cocoa.framework in Frameworks */,
 				B52F5CAD1339D0DA00745A53 /* libkeymagic.a in Frameworks */,
+				B55969D713799A2100690DE3 /* Growl.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -185,6 +174,7 @@
 				6AA6D2100EAC655B00DF1C2C /* InputMethodKit.framework in Frameworks */,
 				B511C1BC1200A6CA0060A548 /* Carbon.framework in Frameworks */,
 				B52F5CAC1339D0DA00745A53 /* libkeymagic.a in Frameworks */,
+				B55969D813799A2100690DE3 /* Growl.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,6 +223,7 @@
 		6AA6D1D40EAC63E100DF1C2C = {
 			isa = PBXGroup;
 			children = (
+				B55969D613799A2100690DE3 /* Growl.framework */,
 				B511C3EF1200CA880060A548 /* Keyboards */,
 				B511BFAC12009E1A0060A548 /* KeyMagic */,
 				6A31F71C0EAC67450045D7EE /* IMK-Tiger */,
@@ -277,6 +268,8 @@
 				B51D987D12FFA555008E0A2F /* KeyMagicNSString.mm */,
 				B511BFB512009E270060A548 /* keyboard.h */,
 				B511BFB612009E270060A548 /* keyboard.m */,
+				B510C5B213769F16008798E7 /* KeyMagicUtil.h */,
+				B510C5B313769F16008798E7 /* KeyMagicUtil.mm */,
 			);
 			name = KeyMagic;
 			sourceTree = "<group>";
@@ -284,13 +277,6 @@
 		B511C3EF1200CA880060A548 /* Keyboards */ = {
 			isa = PBXGroup;
 			children = (
-				B52F5D901339D2C100745A53 /* ZawgyiL-Unicode.km2 */,
-				B511C3E21200CA460060A548 /* Ayar-Zawgyi.km2 */,
-				B511C3E31200CA460060A548 /* Ayar.km2 */,
-				B511C3E41200CA460060A548 /* Myanmar3.km2 */,
-				B511C3E51200CA460060A548 /* myWin.km2 */,
-				B511C3E61200CA460060A548 /* Parabaik.km2 */,
-				B511C3E71200CA460060A548 /* Zawgyi L.km2 */,
 			);
 			name = Keyboards;
 			sourceTree = "<group>";
@@ -389,13 +375,6 @@
 			files = (
 				6AAE6B250EAC6AA400E8EBBA /* KeyMagic.icns in Resources */,
 				6AAE6B560EAC6BE900E8EBBA /* MainMenu.xib in Resources */,
-				B511C3FA1200CAB90060A548 /* Ayar-Zawgyi.km2 in Resources */,
-				B511C3FB1200CAB90060A548 /* Ayar.km2 in Resources */,
-				B511C3FC1200CAB90060A548 /* Myanmar3.km2 in Resources */,
-				B511C3FD1200CAB90060A548 /* myWin.km2 in Resources */,
-				B511C3FE1200CAB90060A548 /* Parabaik.km2 in Resources */,
-				B511C3FF1200CAB90060A548 /* Zawgyi L.km2 in Resources */,
-				B52F5D921339D2C100745A53 /* ZawgyiL-Unicode.km2 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -413,13 +392,6 @@
 			files = (
 				6AAE6B230EAC6AA400E8EBBA /* KeyMagic.icns in Resources */,
 				6AAE6B570EAC6BE900E8EBBA /* MainMenu.xib in Resources */,
-				B511C3F41200CAB80060A548 /* Ayar-Zawgyi.km2 in Resources */,
-				B511C3F51200CAB80060A548 /* Ayar.km2 in Resources */,
-				B511C3F61200CAB80060A548 /* Myanmar3.km2 in Resources */,
-				B511C3F71200CAB80060A548 /* myWin.km2 in Resources */,
-				B511C3F81200CAB80060A548 /* Parabaik.km2 in Resources */,
-				B511C3F91200CAB80060A548 /* Zawgyi L.km2 in Resources */,
-				B52F5D911339D2C100745A53 /* ZawgyiL-Unicode.km2 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -445,6 +417,7 @@
 				6A31F73D0EAC680D0045D7EE /* InputMethodKitTiger.mm in Sources */,
 				B511BFD612009E270060A548 /* keyboard.m in Sources */,
 				B51D988012FFA555008E0A2F /* KeyMagicNSString.mm in Sources */,
+				B510C5B413769F16008798E7 /* KeyMagicUtil.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -466,6 +439,7 @@
 				B51D988212FFA555008E0A2F /* KeyMagicNSString.mm in Sources */,
 				B51D989012FFA5AC008E0A2F /* KeymagicIMEController.mm in Sources */,
 				B51D989112FFA5AC008E0A2F /* main.mm in Sources */,
+				B510C5B513769F16008798E7 /* KeyMagicUtil.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -495,6 +469,11 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -532,6 +511,11 @@
 				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -573,8 +557,11 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				HEADER_SEARCH_PATHS = "$(LIBKEYMAGIC)";
 				INFOPLIST_FILE = "KeyMagic-TSM-Info.plist";
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				LIBKEYMAGIC = "../../cross-platform/libkeymagic";
+				LIBRARY_SEARCH_PATHS = "$(LIBKEYMAGIC)/build/Release";
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -602,8 +589,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
 				GCC_VERSION = 4.2;
+				HEADER_SEARCH_PATHS = "$(LIBKEYMAGIC)";
 				INFOPLIST_FILE = "KeyMagic-TSM-Info.plist";
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				LIBKEYMAGIC = "../../cross-platform/libkeymagic";
+				LIBRARY_SEARCH_PATHS = "$(LIBKEYMAGIC)/build/Release";
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -668,6 +658,11 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -708,6 +703,11 @@
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;

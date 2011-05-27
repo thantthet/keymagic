@@ -73,11 +73,11 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 	else if (lParam) {
 		//If no focus
 		if (!GetFocus()) {
-			DebugPrint(L"No Focus:%d:%X\n", GetCurrentProcessId(), GetForegroundWindow());
+			DebugPrint(L"No Focus:PID=%d,TID=%d,FGW=%X\n", GetCurrentProcessId(), GetCurrentThreadId(), GetForegroundWindow());
 			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
 		}
 
-		DebugPrint(L"HookKeyProc:%d:%X\n", GetCurrentProcessId(), GetForegroundWindow());
+		DebugPrint(L"HookKeyProc:PID=%d,TID=%d,FGW=%X\n", GetCurrentProcessId(), GetCurrentThreadId(), GetForegroundWindow());
 
 		if ((lParam >> 16 & 255) == 255) {
 			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
@@ -375,7 +375,6 @@ void sendKeyStrokes (const std::wstring& s)
 		ip[ii].ki.time = 0;
 		ip[ii].ki.wScan = s.at(i);
 		ip[ii].ki.wVk = 0;
-		//SendInput(1, &ip, sizeof(INPUT));
 
 		ii++;
 
@@ -385,7 +384,6 @@ void sendKeyStrokes (const std::wstring& s)
 		ip[ii].ki.time = 0;
 		ip[ii].ki.wScan = s.at(i);
 		ip[ii].ki.wVk = 0;
-		//SendInput(1, &ip, sizeof(INPUT));
 	}
 
 	int cSent = SendInput(cInputs, ip, sizeof(INPUT));

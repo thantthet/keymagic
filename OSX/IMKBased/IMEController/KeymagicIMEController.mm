@@ -18,8 +18,11 @@
 //Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #import <Carbon/Carbon.h>
+#import <Growl/Growl.h>
+
 #import "KeymagicIMEController.h"
 #import	"keymagic.h"
+#import "KeyMagicUtil.h"
 
 @implementation KeyMagicIMEController
 
@@ -114,71 +117,76 @@ bool mapVK(int virtualkey, int * winVK)
 #undef RETURNVAL
 
 - (id)initWithServer:(IMKServer*)server delegate:(id)delegate client:(id)inputClient
-{
-	/*if (statusItem == NULL) {
-		statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
-	}
-	[statusItem setHighlightMode:NO];*/
+{	
+	activeKeyboard = [[keyboard new] autorelease];
+	Keyboards = [[NSMutableArray new] autorelease];
 	
-	activeKeyboard = [keyboard new];
+	char logPath[300];
+	char * home = getenv("HOME");
+	sprintf(logPath, "%s%s", home, "/Library/Logs/KeyMagic.log");
+	m_logFile = fopen(logPath, "w");
 	
-	m_logFile = fopen("/Users/thantthetkz/Library/Logs/KeyMagic.log", "w");
 	logger = KeyMagicLogger::getInstance();
 	if (m_logFile != 0) logger->setFile(m_logFile);
 	
-	//kme.m_verbose = true;
-	//kme.getKeyboard()->m_verbose = true;
+	[self GetKeyboardLayouts];
+	
 	if ([super initWithServer:server delegate:delegate client:inputClient] == self) {	
 		configDictionary = [NSMutableDictionary new];
 		ActivePath = @"";
 		
 		[self LoadConfigurationFile];
 		m_success = FALSE;
-		NSString *title = [configDictionary objectForKey:@"DefaultKeyboardTitle"];
 		NSString *path = [configDictionary objectForKey:@"DefaultKeyboardPath"];
 		
-		if (title && path) {
+		if (path) {
 			ActivePath = path;
 			m_success = kme.loadKeyboardFile([ActivePath cStringUsingEncoding:NSUTF8StringEncoding]);
-			if (m_success == FALSE) {
-				return self;
+			if (m_success) {
+				const InfoList infos = kme.getKeyboard()->getInfoList();
+				NSString *title = [KeyMagicUtil getKeyboardNameOrTitle:infos pathName:path];
+							
+				[activeKeyboard setTitle:title];
+				[activeKeyboard setPath:path];
+				
+				[GrowlApplicationBridge notifyWithTitle:@"KeyMagic" description:activeKeyboard.title notificationName:@"Layout Switched" iconData:nil priority:2 isSticky:NO clickContext:nil identifier:@"SWITCHED_KB"];
 			}
-			
-			const InfoList infos = kme.getKeyboard()->getInfoList();
-			
-			NSImage * icon = [self getIconImageFromKeyboard:infos];
-			
-			[activeKeyboard setTitle:title];
-			[activeKeyboard setPath:path];
-			[activeKeyboard setImage:icon];
 		}
+	}
+	
+	NSBundle *myBundle = [NSBundle mainBundle];
+	NSString *growlPath = [[myBundle privateFrameworksPath] stringByAppendingPathComponent:@"Growl.framework"];
+	NSBundle *growlBundle = [NSBundle bundleWithPath:growlPath];
+	if (growlBundle && [growlBundle load]) { // Register ourselves as a Growl delegate 
+		[GrowlApplicationBridge setGrowlDelegate:self];
+	} else {
+		NSLog(@"Could not load Growl.framework");
 	}
 	
 	return self;
 }
 
+- (NSDictionary *) registrationDictionaryForGrowl
+{
+	NSArray *notifications = [NSArray arrayWithObject: @"Layout Switched"];
+	NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
+						  notifications, GROWL_NOTIFICATIONS_ALL,
+						  notifications, GROWL_NOTIFICATIONS_DEFAULT, nil];
+	
+	return dict;	
+}
+
 - (void)dealloc
 {
-	/*if (statusItem != NULL) {
-		[[NSStatusBar systemStatusBar] removeStatusItem:statusItem];
-	}*/
     [super dealloc];
 }
 
 - (void)activateServer:(id)sender
-{	
-	/*if (statusItem == NULL) {
-		statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
-	}
-	[statusItem setEnabled:YES];
-	[statusItem setTitle:[activeKeyboard title]];
-	[statusItem setImage:[activeKeyboard image]];*/
+{
 }
 
 - (void)deactivateServer:(id)sender
 {
-	//[[NSStatusBar systemStatusBar] removeStatusItem:statusItem];
-	//statusItem = NULL;
 }
 
 - (void)commitComposition:(id)sender 
@@ -190,38 +198,35 @@ bool mapVK(int virtualkey, int * winVK)
 	}
 }
 
-/*- (NSAttributedString*) lastAttributedString:(NSAttributedString *)attString
+- (void)switchKeyboardLayout:(BOOL)previous
 {
-	NSUInteger length = [[attString string] length];
+	keyboard * first = [Keyboards objectAtIndex:0];
+	keyboard * last = [Keyboards objectAtIndex:[Keyboards count] - 1];
 	
-	if (length <= 0) {
-		return NULL;
+	NSEnumerator * e;
+	if (previous) {
+		e = [Keyboards reverseObjectEnumerator];
+	} else {
+		e = [Keyboards objectEnumerator];
 	}
 	
-	NSRange effectiveRange;
-
-	NSDictionary * lastAttDict = [attString attributesAtIndex:length-1 effectiveRange:&effectiveRange];
-	return [attString attributedSubstringFromRange:effectiveRange];
+	while (keyboard * kb = [e nextObject]) {
+		if ([kb.path compare:ActivePath] == NSOrderedSame) {
+			if (kb = [e nextObject]) {
+				[self changeKeyboardLayout:kb];
+			} else {
+				if (previous) {
+					[self changeKeyboardLayout:last];
+				} else {
+					[self changeKeyboardLayout:first];
+				}
+			}
+		}
+	}
 }
-
-- (NSDictionary*) lastAttribute:(NSAttributedString *)attString
-{
-	NSUInteger length = [[attString string] length];
-	
-	if (length <= 0) {
-		return NULL;
-	}
-	
-	NSRange effectiveRange;
-	
-	NSDictionary * lastAttDict = [attString attributesAtIndex:length-1 effectiveRange:&effectiveRange];
-	return lastAttDict;
-}*/
 
 - (BOOL)handleEvent:(NSEvent*)event client:(id)sender
 {
-	/*BOOL commit = NO;
-	NSRange replacementRange = NSMakeRange(NSNotFound, NSNotFound);*/
     if ([event type] != NSKeyDown || m_success == NO) {
 		return NO;
 	}
@@ -231,6 +236,14 @@ bool mapVK(int virtualkey, int * winVK)
 	NSString *chars = [event characters];
 	unsigned int cocoaModifiers = [event modifierFlags];
 	unsigned short virtualKeyCode = [event keyCode];
+	
+	if (virtualKeyCode == kVK_Space && (cocoaModifiers & NSControlKeyMask) && (cocoaModifiers & NSShiftKeyMask)) {
+		[self switchKeyboardLayout:YES]; // <-
+		return YES;
+	} else if (virtualKeyCode == kVK_Space && (cocoaModifiers & NSControlKeyMask)) {
+		[self switchKeyboardLayout:NO]; // ->
+		return YES;
+	}
 	
 	switch (virtualKeyCode) {
 		case kVK_LeftArrow:
@@ -268,25 +281,6 @@ bool mapVK(int virtualkey, int * winVK)
 	if (mapVK(virtualKeyCode, &winVK) == NO) {
 		return NO;
 	}
-
-	/*if (kme.getContextText()->length() == 0 && virtualKeyCode == kVK_Delete) {
-		NSRange range = [sender selectedRange];
-		if (range.location != NSNotFound && range.length != NSNotFound) {
-			NSInteger location, length;
-			
-			location = range.location < 50 ? 0 : range.location - 50;
-			length = location == 0 ? range.location : 50;
-			
-			NSAttributedString * attString = [sender attributedSubstringFromRange:NSMakeRange(location, length)];
-			if (attString != NULL) {
-				attString = [self lastAttributedString:attString];
-				KeyMagicString kms = [[attString string] getKeyMagicString];
-				kme.setContextText(&kms);
-				replacementRange = NSMakeRange(range.location - attString.string.length, attString.string.length);
-				commit = YES;
-			}
-		}
-	}*/
 	
 	if (kme.processKeyEvent([chars characterAtIndex:0], winVK, modifier) == NO) {
 		switch (virtualKeyCode) {
@@ -326,9 +320,6 @@ bool mapVK(int virtualkey, int * winVK)
 	NSRange selectionRange = NSMakeRange([_composingBuffer length], 0); 
 	[sender setMarkedText:attrString selectionRange:selectionRange replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
 	
-	/*if (commit) {
-		[self commitComposition:sender];
-	}*/
     return YES;
 }
 
@@ -337,89 +328,104 @@ bool mapVK(int virtualkey, int * winVK)
 	[NSApp orderFrontStandardAboutPanel:sender];
 }
 
--(void) selectionChanged:(id)sender {
-	NSMenuItem *menuItem = [sender objectForKey:@"IMKCommandMenuItem"];
-	keyboard * Keyboard = [menuItem representedObject];
+-(BOOL) changeKeyboardLayout:(keyboard*) Keyboard
+{
 	if (Keyboard.path != nil) {
 		if (m_success = kme.loadKeyboardFile([Keyboard.path cStringUsingEncoding:NSUTF8StringEncoding])) {
-			[configDictionary setObject:[Keyboard title] forKey:@"DefaultKeyboardTitle"];
 			[configDictionary setObject:[Keyboard path] forKey:@"DefaultKeyboardPath"];
+			[activeKeyboard dealloc];
 			ActivePath = [Keyboard path];
 			activeKeyboard = Keyboard;
 			[self WriteConfigurationFile];
 			
-			/*[statusItem setEnabled:YES];
-			[statusItem setTitle:[Keyboard title]];
-			[statusItem setImage:[Keyboard image]];*/
+			[GrowlApplicationBridge notifyWithTitle:@"KeyMagic" description:Keyboard.title notificationName:@"Layout Switched" iconData:nil priority:2 isSticky:NO clickContext:nil identifier:@"SWITCHED_KB"];
 		}
 	}
 }
 
--(NSImage *) getIconImageFromKeyboard:(const InfoList&)infos
-{
-	if (infos.find('icon') != infos.end()) {
-		Info icon = infos.find('icon')->second;
-		NSData * data = [NSData dataWithBytes:icon.data length:icon.size];
-		NSImage * image = [[[NSImage new] autorelease] initWithData:data];
-		return image;
-	}
-	return NULL;
+-(void) selectionChanged:(id)sender {
+	NSMenuItem *menuItem = [sender objectForKey:@"IMKCommandMenuItem"];
+	keyboard * Keyboard = [menuItem representedObject];
+	[self changeKeyboardLayout:Keyboard];
 }
 
--(NSString*) getKeyboardNameOrTitle:(const InfoList&)infos pathName:(NSString*) filePath
+-(NSArray *) getKeyboardPathsFrom:(NSString*)directory
 {
-	NSString * keyboardName;
-	if (infos.find('name') != infos.end()) {
-		Info name = infos.find('name')->second;
-		keyboardName = [NSString stringWithCString:name.data encoding:NSUTF8StringEncoding];
-	} else {
-		NSString * fileName = [filePath lastPathComponent];
-		keyboardName = [fileName substringToIndex:[fileName length] - 4];
+	NSMutableArray * paths = [[NSMutableArray new] autorelease];
+	NSFileManager *localFileManager = [[NSFileManager alloc] init];
+	NSDirectoryEnumerator *dirEnum = [localFileManager enumeratorAtPath:directory];
+	
+	NSString *file;
+	while (file = [dirEnum nextObject]) {
+		if ([[file pathExtension] isEqualToString: @"km2"]) {
+			[paths addObject:[directory stringByAppendingPathComponent:file]];
+		}
 	}
-	return keyboardName;
+	[localFileManager release];
+	
+	return paths;
 }
 
-- (NSMenu *)menu
+-(void) GetKeyboardLayouts
 {
-	NSMenu *menu = [[NSMenu new] autorelease];
-
+	[Keyboards removeAllObjects];
+	
+	NSMutableArray * allPaths = [[NSMutableArray new] autorelease];
+	NSArray * paths;
+	
+	NSString *layoutDir = [NSHomeDirectory() stringByAppendingPathComponent:@".keymagic"];
+	paths = [self getKeyboardPathsFrom:layoutDir];
+	[allPaths addObjectsFromArray:paths];
+	
 	NSBundle * mainBundle = [NSBundle mainBundle];
-	NSArray * paths = [mainBundle pathsForResourcesOfType:@"km2" inDirectory:nil];
-	NSEnumerator *e = [paths objectEnumerator];
-	NSString *path;
-	while (path = [e nextObject]) {
-		InfoList * infos = KeyMagicKeyboard::getInfosFromKeyboardFile([path cStringUsingEncoding:NSUTF8StringEncoding]);
+	paths = [mainBundle pathsForResourcesOfType:@"km2" inDirectory:nil];
+	[allPaths addObjectsFromArray:paths];
+
+	NSEnumerator *e = [allPaths objectEnumerator];
+	
+	while (NSString *path = [e nextObject]) {		
+		const char * szPath = [path cStringUsingEncoding:NSUTF8StringEncoding];
+		InfoList * infos = KeyMagicKeyboard::getInfosFromKeyboardFile(szPath);
 		
 		if (infos == NULL) {
 			continue;
 		}
 		
-		NSImage * icon = [self getIconImageFromKeyboard:*infos];
 		NSMenuItem * menuItem = [NSMenuItem new];
-		NSString * keyboardName = [self getKeyboardNameOrTitle:*infos pathName:path];
-		[menuItem setTitle:keyboardName];
-		[menuItem setTarget:self];
-		[menuItem setAction:@selector(selectionChanged:)];
-		if (icon != NULL) {
-			[menuItem setImage:icon];
-		}
-		
-		keyboard * Keyboard;
-		Keyboard = [keyboard new];
+		NSString * keyboardName = [KeyMagicUtil getKeyboardNameOrTitle:*infos pathName:path];
+
+		keyboard * Keyboard = [[keyboard new] autorelease];
 		[Keyboard setTitle:keyboardName];
 		[Keyboard setPath:path];
-		[Keyboard setImage:icon];
 		
-		[menuItem setRepresentedObject:Keyboard];
-		 
-		if ([[Keyboard path] compare:ActivePath] == NSOrderedSame) {
+		[Keyboards addObject:Keyboard];
+		
+		for (InfoList::iterator i = infos->begin(); i != infos->end(); i++) {
+			delete[] i->second.data;
+		}
+		delete infos;
+	}
+}
+
+- (NSMenu *)menu
+{
+	NSMenu *menu = [[NSMenu new] autorelease];
+	
+	[self GetKeyboardLayouts];
+	NSEnumerator * e = [Keyboards objectEnumerator];
+	while (keyboard * kb = [e nextObject]) {
+		NSMenuItem * menuItem = [[NSMenuItem new] autorelease];
+		
+		[menuItem setTarget:self];
+		[menuItem setTitle:kb.title];
+		[menuItem setAction:@selector(selectionChanged:)];
+		[menuItem setRepresentedObject:kb];
+		
+		if ([kb.path compare:ActivePath] == NSOrderedSame) {
 			[menuItem setState:NSOnState];
 		}
 		
 		[menu addItem:menuItem];
-		
-		[Keyboards addObject:Keyboard];
-		delete infos;
 	}
 	
 	[menu addItem:[NSMenuItem separatorItem]];

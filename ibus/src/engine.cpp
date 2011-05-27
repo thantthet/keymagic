@@ -384,8 +384,10 @@ ibus_keymagic_engine_process_key_event (IBusEngine *engine,
     if (modifiers & IBUS_RELEASE_MASK)
         return FALSE;
 
-    std::cerr << std::hex << "keyval=" << keyval << '(' << (char)keyval << ')' << ";";
-    std::cerr << "keycode=" << keycode << std::endl;
+#ifdef _DEBUG
+    std::cout << std::hex << "keyval=" << keyval << '(' << (char)keyval << ')' << ";";
+    std::cout << "keycode=" << keycode << std::endl;
+#endif
 
     int km_modifier = 0;
     if (modifiers & IBUS_CONTROL_MASK) {
@@ -400,9 +402,21 @@ ibus_keymagic_engine_process_key_event (IBusEngine *engine,
 
     int kx_code;
     if (!iBusKeycodeToKeyMagic(keycode, &kx_code)) {
+#ifdef _DEBUG
     	std::cerr << "Key won't be handled-" << keycode << std::endl;
+#endif
     	return false;
     }
+
+    switch (kx_code) {
+		case 0x10:
+		case 0x11:
+		case 0x12:
+#ifdef _DEBUG
+		std::cout << "Key seems to be modifier key. Won't handle" << std::endl;
+#endif
+		return false;
+	}
 
 	bool y = ibusKeymagic->kme->processKeyEvent(keyval, kx_code, km_modifier);
 

@@ -1,9 +1,10 @@
-﻿// @NAME = "Parabaik"
+// @NAME = "Parabaik"
 // @ICON = "Parabaik.bmp"
 // @HOTKEY = "CTRL+ALT+K"
 // @FONTFAMILY = "Parabiak"
 // @DESCRIPTION = "Converted into KeyMagic Layout from Offical Parabaik Keyman Layout | by Thant Thet Khin Zaw"
 // @POSITIONAL_LAYOUT = "true"
+// @EAT_KEYS = "true"
 
 $consA = 'uc*Ci' + \
 		'pqZn' + \

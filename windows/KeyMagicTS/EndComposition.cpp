@@ -58,7 +58,7 @@ void CTextService::_TerminateComposition(TfEditCookie ec, ITfContext *pContext)
         _pComposition->Release();
         _pComposition = NULL;
 
-		_kme.reset();
+		_engine.reset();
     }
 }
 

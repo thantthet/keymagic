@@ -119,5 +119,15 @@ namespace KeyMagic
             }
             return null;
         }
+
+        public string GetFontFamily()
+        {
+            LayoutInfo font = FindById("font");
+            if (font != null)
+            {
+                return Encoding.UTF8.GetString(font.data);
+            }
+            return null;
+        }
     }
 }

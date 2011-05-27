@@ -1,7 +1,7 @@
 ﻿/*
-@NAME = "Zawgyi Unicode"
-@FONTFAMILY = "Myanmar3"
-@DESCRIPTION = "ZawgyiL Layout based Unicode output. | by Thant Thet Khin Zaw"
+@NAME = "Zawgyi - Unicode"
+@FONTFAMILY = "Yunghkio"
+@DESCRIPTION = "A Unicode Keyboard Layout that can be type the same as normal Zawgyi Layout but outs Unicode. | Thant Thet Khin Zaw"
 @ICON = "Zawgyi L - Unicode.png"
 @HOTKEY = "CTRL + SHIFT + Z"
 @TRACK_CAPSLOCK = "false"

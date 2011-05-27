@@ -115,8 +115,9 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\..\..\libkeymagic&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -133,7 +134,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(ProjectDir)\..\libkeymagic.lib"
+				AdditionalDependencies="$(SolutionDir)\..\..\libkeymagic\vs\bin\libkeymagic.x32.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -198,46 +199,6 @@
 				RelativePath="..\keyboard.h"
 				>
 			</File>
-			<Filter
-				Name="libkeymagic"
-				>
-				<File
-					RelativePath="..\libkeymagic\KeyCodes.h"
-					>
-				</File>
-				<File
-					RelativePath="..\libkeymagic\keymagic.h"
-					>
-				</File>
-				<File
-					RelativePath="..\libkeymagic\KeyMagicEngine.h"
-					>
-				</File>
-				<File
-					RelativePath="..\libkeymagic\KeyMagicKeyboard.h"
-					>
-				</File>
-				<File
-					RelativePath="..\libkeymagic\KeyMagicLogger.h"
-					>
-				</File>
-				<File
-					RelativePath="..\libkeymagic\KeyMagicString.h"
-					>
-				</File>
-				<File
-					RelativePath="..\libkeymagic\KeyMagicTypes.h"
-					>
-				</File>
-				<File
-					RelativePath="..\libkeymagic\RuleInfo.h"
-					>
-				</File>
-				<File
-					RelativePath="..\libkeymagic\Util.h"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"

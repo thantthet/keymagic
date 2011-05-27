@@ -11,17 +11,17 @@
 	<textdomain>ibus-keymagic</textdomain>
 	<observed-paths>
 		<path>~/.keymagic</path>
-		<path>/usr/share/keymagic</path>
+		<path>${pkgdatadir}</path>
 	</observed-paths>
 	<engines exec=\"${libexecdir}/ibus-engine-keymagic --xml\" />
 
 	<!--engines>
 		<engine>
 			<name>keymagic</name>
-			<language>mm</language>
+			<language>en</language>
 			<license>GPL</license>
-			<author>hant Thet Khin Zaw &lt;thantthetkz@gmail.com&gt;</author>
-			<icon>${pkgdatadir}/icons/ibus-enchant.png</icon>
+			<author>Thant Thet Khin Zaw &lt;thantthetkz@gmail.com&gt;</author>
+			<icon>${pkgdatadir}/icons/ibus-keymagic.png</icon>
 			<layout>us</layout>
 			<longname>KeyMagic</longname>
 			<description>KeyMagic Input Method</description>

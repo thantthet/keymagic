@@ -159,7 +159,7 @@ private:
 
     LONG _cRef;     // COM ref count
 
-	KeyMagicEngine _kme;
+	KeyMagicEngine _engine;
 	HICON _hIcon;
 	wstring _keyboardName;
 	wstring _activeKeyboardPath;

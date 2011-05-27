@@ -2,57 +2,64 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace kEditor
 {
     class FilterEditBox : TextBox
     {
-        private string _emptyText = "Type to filter";
-        private bool _isEmpty = true;
-        private System.Drawing.Color _foreColor;
+        private string emptyText = "Type to filter";
+        private System.Drawing.Color foreColor;
 
         public FilterEditBox()
         {
-            setText();
+            Text = emptyText;
         }
 
-        public bool isEmpty()
+        public string GetText()
         {
-            return _isEmpty;
+            if (Text == emptyText)
+            {
+                return "";
+            }
+            return Text;
         }
 
-        private void setText()
+        private void SetForeColor()
         {
-            this.Text = _emptyText;
-            _foreColor = this.ForeColor;
-            this.ForeColor = System.Drawing.Color.Gray;
+            foreColor = ForeColor;
+            ForeColor = System.Drawing.Color.Gray;
         }
 
-        private void setColorBack()
+        private void RevertForeColor()
         {
-            this.ForeColor = _foreColor;
+            ForeColor = foreColor;
         }
 
         protected override void OnGotFocus(EventArgs e)
         {
-            if (_isEmpty)
+            if (Text == emptyText)
             {
-                this.Text = "";
-                setColorBack();
+                Text = "";
+                RevertForeColor();
             }
             base.OnGotFocus(e);
         }
 
         protected override void OnLostFocus(EventArgs e)
         {
-            if (_isEmpty)
+            if (Text == emptyText)
             {
-                setText();
-                _isEmpty = true;
+                SetForeColor();
+            }
+            else if (Text == "")
+            {
+                Text = emptyText;
+                SetForeColor();
             }
             else
             {
-                setColorBack();
+                RevertForeColor();
             }
             base.OnLostFocus(e);
         }
@@ -61,39 +68,18 @@ namespace kEditor
         {
             if (e.Control == true && e.KeyCode == Keys.A)
             {
-                this.SelectAll();
+                SelectAll();
             }
             base.OnKeyDown(e);
         }
 
         protected override void OnTextChanged(EventArgs e)
         {
-            if (this.Text == "")
+            if (Text != emptyText)
             {
-                if (this.Focused == false)
-                {
-                    setText();
-                }
-                _isEmpty = true;
-            }
-            else
-            {
-                _isEmpty = false;
-                setColorBack();
+                RevertForeColor();
             }
             base.OnTextChanged(e);
-        }
-
-        public string GetText()
-        {
-            if (_isEmpty)
-            {
-                return "";
-            }
-            else
-            {
-                return this.Text;
-            }
         }
     }
 }

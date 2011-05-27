@@ -438,10 +438,10 @@
             this.glyphTable.NumberOfColumns = 6;
             this.glyphTable.NumberOfRows = 1;
             this.glyphTable.SelectedCell = -1;
-            this.glyphTable.SelectionChanged += new System.EventHandler(this.glyphTable_SelectionChanged);
-            this.glyphTable.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.glyphTable_MouseDoubleClick);
             this.glyphTable.MouseLeave += new System.EventHandler(this.glyphTable_MouseLeave);
+            this.glyphTable.SelectionChanged += new System.EventHandler(this.glyphTable_SelectionChanged);
             this.glyphTable.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glyphTable_MouseMove);
+            this.glyphTable.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.glyphTable_MouseDoubleClick);
             // 
             // txtFilter
             // 
@@ -482,8 +482,8 @@
             this.Controls.Add(this.mainMenu);
             this.MainMenuStrip = this.mainMenu;
             this.Name = "mainFrame";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.mainFrame_FormClosing);
             this.Load += new System.EventHandler(this.mainForm_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.mainFrame_FormClosing);
             this.mainMenu.ResumeLayout(false);
             this.mainMenu.PerformLayout();
             this.splitContainer.Panel1.ResumeLayout(false);

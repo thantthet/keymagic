@@ -19,7 +19,7 @@
 	<key>CFBundleSignature</key>
 	<string>TTKZ</string>
 	<key>CFBundleVersion</key>
-	<string>2.0</string>
+	<string>1.4</string>
 	<key>InputMethodConnectionName</key>
 	<string>KeyMagic_1_Connection</string>
 	<key>InputMethodServerControllerClass</key>

@@ -189,16 +189,16 @@ STDAPI CTextService::Activate(ITfThreadMgr *pThreadMgr, TfClientId tfClientId)
     _tfClientId = tfClientId;
 
 	wstring path;
-	if (_GetConfig(L"Active Path", path) && _kme.loadKeyboardFile(path.c_str()))
+	if (_GetConfig(L"Active Path", path) && _engine.loadKeyboardFile(path.c_str()))
 	{
 		_SetKeyboardOpen(TRUE);
 		_activeKeyboardPath = path;
 		_LoadActiveKeyboardIcon();
 		wstring * wstr;
-		wstr = GetKeyboardNameOrFileTitle(_kme.getKeyboard()->getInfoList(), _activeKeyboardPath);
+		wstr = GetKeyboardNameOrFileTitle(_engine.getKeyboard()->getInfoList(), _activeKeyboardPath);
 		_keyboardName = wstr->c_str();
 		delete wstr;
-		wstr = GetDescription(_kme.getKeyboard()->getInfoList());
+		wstr = GetDescription(_engine.getKeyboard()->getInfoList());
 		_keyboardDescription = wstr->c_str();
 		delete wstr;
 	
@@ -306,7 +306,7 @@ STDAPI CTextService::Deactivate()
 
 void CTextService::_LoadActiveKeyboardIcon()
 {
-	HICON hIcon = LoadIconFromKeyboard(_kme.getKeyboard()->getInfoList());
+	HICON hIcon = LoadIconFromKeyboard(_engine.getKeyboard()->getInfoList());
 	if (!hIcon) {
 		hIcon = (HICON)LoadImage(g_hInst, TEXT("IDI_TEXTSERVICE_EMPTY"), IMAGE_ICON, 16, 16, 0);
 	}
@@ -315,7 +315,7 @@ void CTextService::_LoadActiveKeyboardIcon()
 
 void CTextService::_SetActiveKeyboard(const wstring& keyboardPath)
 {
-	if (_kme.loadKeyboardFile(keyboardPath.c_str())) {
+	if (_engine.loadKeyboardFile(keyboardPath.c_str())) {
 		_SetConfig(L"Active Path", keyboardPath);
 		_activeKeyboardPath = keyboardPath;
 		_SetKeyboardOpen(TRUE);
@@ -323,10 +323,10 @@ void CTextService::_SetActiveKeyboard(const wstring& keyboardPath)
 		_LoadActiveKeyboardIcon();
 		
 		wstring * wstr;
-		wstr = GetKeyboardNameOrFileTitle(_kme.getKeyboard()->getInfoList(), _activeKeyboardPath);
+		wstr = GetKeyboardNameOrFileTitle(_engine.getKeyboard()->getInfoList(), _activeKeyboardPath);
 		_keyboardName = wstr->c_str();
 		delete wstr;
-		wstr = GetDescription(_kme.getKeyboard()->getInfoList());
+		wstr = GetDescription(_engine.getKeyboard()->getInfoList());
 		_keyboardDescription = wstr->c_str();
 		delete wstr;
 

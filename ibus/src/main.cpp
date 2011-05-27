@@ -140,6 +140,8 @@ gchar * getDescription(const InfoList& infos)
 	return description;
 }
 
+//#define PKGDATADIR ""
+
 gchar * dirname (const char * dir)
 {
 	gchar * dir_copy = g_strdup(dir);
@@ -187,7 +189,7 @@ ibus_keymagic_list_engines (void)
     GList *keyboard_list;
     gchar *local_keyboard_path;
 
-    keyboard_list = keymagic_get_keyboard_list("/usr/share/keymagic");
+    keyboard_list = keymagic_get_keyboard_list("/usr/share/ibus-keymagic");
 
     engines = ibus_keymagic_add_engines(engines, keyboard_list);
 
@@ -270,8 +272,7 @@ init (void)
                                                      "us",
                                                      "GPL",
                                                      "Peng Huang <shawn.p.huang@gmail.com>",
-                                                     //PKGDATADIR"/icons/ibus-keymagic.png",
-                                                     "/icons/ibus-keymagic.png",
+                                                     PKGDATADIR"/icons/ibus-keymagic.png",
                                                      "us"));
 	*/
     engines = ibus_component_get_engines (component);
@@ -285,7 +286,8 @@ init (void)
 		ibus_bus_request_name (bus, "org.freedesktop.IBus.KeyMagic", 0);
 	}
 	else {
-		ibus_bus_register_component (bus, component);
+		bool success = ibus_bus_register_component (bus, component);
+		g_assert(success != false);
 	}
 
 	g_object_unref (component);
@@ -333,4 +335,3 @@ int main(gint argc, gchar **argv)
     ibus_main ();
     return 0;
 }
-

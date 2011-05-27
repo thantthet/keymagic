@@ -113,6 +113,7 @@ namespace KeyMagic
             }
 
             g.DrawString(this.Text, textFont, textBrush, r.Left + leftPadding, r.Top + 2);
+            //TextRenderer.DrawText(e.Graphics, Text, textFont, new Point(r.Left + leftPadding, r.Top + 2), Color.Black);
 
             StringFormat sf = new StringFormat();
             sf.Alignment = StringAlignment.Far;

@@ -164,12 +164,16 @@ BEGIN
 		BEGIN
             VALUE "CompanyName", "TODO: <Company name>"
             VALUE "FileDescription", "TODO: <File description>"
-			VALUE "FileVersion",     "1.0.0.1"
-			VALUE "InternalName",    "HookInput.exe"
+			VALUE "FileVersion",     "1.0.0.0"
+#ifdef _M_IX86
+			VALUE "InternalName",    "HookInput.x32.exe"
+#else
+			VALUE "InternalName",    "HookInput.x64.exe"
+#endif
             VALUE "LegalCopyright", "TODO: (c) <Company name>.  All rights reserved."
 			VALUE "OriginalFilename","HookInput.exe"
             VALUE "ProductName", "TODO: <Product name>"
-			VALUE "ProductVersion",  "1.0.0.1"
+			VALUE "ProductVersion",  "1.0.0.0"
 		END
 	END
 	BLOCK "VarFileInfo"

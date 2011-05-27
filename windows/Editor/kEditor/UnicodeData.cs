@@ -4,18 +4,32 @@ using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Reflection;
+using System.Linq;
+using System.Collections;
 
 namespace kEditor
 {
     class UnicodeData
     {
-        private string unicodeData = "";
+        private Dictionary<int, string> uniList = new Dictionary<int, string>();
         
         public UnicodeData(string fileName)
         {
             try
             {
-                unicodeData = File.ReadAllText(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) + @"\" + fileName);
+                String unicodeDataFile = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\" + fileName;
+                StreamReader sr = new StreamReader(unicodeDataFile);
+                
+                char[] sep = new char[] { ';' };
+
+                string line = sr.ReadLine();
+                while (string.IsNullOrEmpty(line) == false)
+                {
+                    string[] ss = line.Split(sep);
+                    uniList.Add(int.Parse(ss[0], System.Globalization.NumberStyles.HexNumber), ss[1]);
+                    line = sr.ReadLine();
+                }
             }
             catch (Exception ex)
             {
@@ -25,38 +39,26 @@ namespace kEditor
 
         public KeyValuePair<String, int>[] getContains(string filter)
         {
-            List<KeyValuePair<String, int>> list = new List<KeyValuePair<string, int>>();
-            Regex regex;
+            filter = filter.ToUpper();
+            
+            var a = from r in uniList
+                    where r.Value.Contains(filter)
+                    select new KeyValuePair<string, int>(r.Value, r.Key);
 
-            try
-            {
-                regex = new Regex("^([a-fA-F0-9]{4});([^;]*?" + filter + "[^;]*);", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-            } catch (ArgumentException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return null;
-            }
-            Match m = regex.Match(unicodeData);
-            while (m.Success)
-            {
-                string name = m.Groups[2].Value;
-                string code = m.Groups[1].Value;
-                list.Add(new KeyValuePair<string,int>(name, int.Parse(code, System.Globalization.NumberStyles.HexNumber)));
-                m = m.NextMatch();
-            }
-
-            return list.ToArray();
+            return a.ToArray();
         }
 
-        public string GetNameForChar(char c)
+        public string GetNameForChar(int c)
         {
-            string code = ((int)c).ToString("X4");
-            Regex regex = new Regex("^" + code + ";([^;]+);", RegexOptions.Multiline);
-            Match m = regex.Match(unicodeData);
-            if (m.Success)
+            var a = (from r in uniList
+                     where r.Key == (int)c
+                     select r.Value).FirstOrDefault();
+
+            if (a != null)
             {
-                return m.Groups[1].Value;
+                return a;
             }
+
             return "Not found in UnicodeData.txt";
         }
     }

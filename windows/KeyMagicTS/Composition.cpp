@@ -33,7 +33,7 @@ STDAPI CTextService::OnCompositionTerminated(TfEditCookie ecWrite, ITfCompositio
         _pComposition->Release();
         _pComposition = NULL;
 
-		_kme.reset();
+		_engine.reset();
     }
 
     return S_OK;

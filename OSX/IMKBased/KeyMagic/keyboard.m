@@ -34,18 +34,18 @@
 	path = _path;
 }
 
--(Hotkey) hotkey {
-	return hotkey;
-}
--(void) setHotkey:(Hotkey)_hotkey {
-	hotkey = _hotkey;
-}
+//-(Hotkey) hotkey {
+//	return hotkey;
+//}
+//-(void) setHotkey:(Hotkey)_hotkey {
+//	hotkey = _hotkey;
+//}
 
--(NSImage*) image {
-	return image;
-}
--(void) setImage:(NSImage*)_image {
-	image = _image;
-}
+//-(NSImage*) image {
+//	return image;
+//}
+//-(void) setImage:(NSImage*)_image {
+//	image = _image;
+//}
 
 @end

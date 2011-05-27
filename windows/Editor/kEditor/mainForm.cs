@@ -361,7 +361,7 @@ namespace kEditor
             {
                 return;
             }
-            char charValue = glyphTable.characterAtCell(cellIndex);
+            int charValue = glyphTable.characterAtCell(cellIndex);
 
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
@@ -839,25 +839,8 @@ namespace kEditor
             }
         }
 
-        Timer timer;
         private void txtFilter_TextChanged(object sender, EventArgs e)
         {
-            if (timer != null)
-            {
-                timer.Stop();
-            }
-            else
-            {
-                timer = new Timer();
-                timer.Interval = 500;
-                timer.Tick += new EventHandler(timer_Tick);
-            }
-            timer.Start();
-        }
-
-        void timer_Tick(object sender, EventArgs e)
-        {
-            timer.Stop();
             glyphTable.Filter = txtFilter.GetText();
         }
 
@@ -867,7 +850,7 @@ namespace kEditor
             {
                 return;
             }
-            char c = glyphTable.Characters[glyphTable.SelectedCell];
+            int c = glyphTable.Characters[glyphTable.SelectedCell];
             lblGlyphName.Text = glyphTable.GetNameForChar(c);
         }
 
@@ -887,7 +870,7 @@ namespace kEditor
             {
                 return;
             }
-            char c = glyphTable.Characters[glyphTable.SelectedCell];
+            int c = glyphTable.Characters[glyphTable.SelectedCell];
             lblGlyphName.Text = glyphTable.GetNameForChar(c);
         }
     }

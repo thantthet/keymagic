@@ -148,7 +148,7 @@ HRESULT CTextService::_ProcessKeyEvent(TfEditCookie ec, ITfContext *pContext, UI
     if (!_IsComposing())
         _StartComposition(pContext);
 
-	fSuccess = _kme.processKeyEvent(keyval, keycode, modifier);
+	fSuccess = _engine.processKeyEvent(keyval, keycode, modifier);
 
 	// first, test where a keystroke would go in the document if an insert is done
     if (pContext->GetSelection(ec, TF_DEFAULT_SELECTION, 1, &tfSelection, &cFetched) != S_OK || cFetched != 1)
@@ -170,7 +170,7 @@ HRESULT CTextService::_ProcessKeyEvent(TfEditCookie ec, ITfContext *pContext, UI
     // insert the text
     // use SetText here instead of InsertTextAtSelection because a composition was already started
     //Don't allow to the app to adjust the insertion point inside the composition
-	KeyMagicString * kms = _kme.getContextText();
+	KeyMagicString * kms = _engine.getContextText();
 
     if (tfSelection.range->SetText(ec, 0, kms->c_str(), kms->length()) != S_OK)
         goto Exit;

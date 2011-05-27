@@ -29,8 +29,8 @@ typedef struct Hotkey Hotkey;
 	@public
 	NSString * title;
 	NSString * path;
-	Hotkey hotkey;
-	NSImage * image;
+	//Hotkey hotkey;
+	//NSImage * image;
 }
 
 //@property(assign) NSString * title;
@@ -38,8 +38,8 @@ typedef struct Hotkey Hotkey;
 -(void) setTitle:(NSString*)_title;
 -(NSString*) path;
 -(void) setPath:(NSString*)_path;
--(Hotkey) hotkey;
--(void) setHotkey:(Hotkey)_hotkey;
--(NSImage*) image;
--(void) setImage:(NSImage*)_image;
+//-(Hotkey) hotkey;
+//-(void) setHotkey:(Hotkey)_hotkey;
+//-(NSImage*) image;
+//-(void) setImage:(NSImage*)_image;
 @end

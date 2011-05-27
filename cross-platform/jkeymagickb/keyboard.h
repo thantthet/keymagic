@@ -7,7 +7,7 @@
  *
  */
 
-#include "libkeymagic/KeyMagicKeyboard.h"
+#include <KeyMagicKeyboard.h>
 
 class keyboard : public KeyMagicKeyboard {
 public:
