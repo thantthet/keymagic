@@ -74,7 +74,15 @@ namespace KeyMagic
 
         void handler_HotkeyMatched(object sender, KeyEventHandler.HotkeyMatchedEvent e)
         {
-            ChangeKeyboardLayout((int)e.index);
+            try
+            {
+                ChangeKeyboardLayout((int)e.index);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                Debug.WriteLine(ex.StackTrace);
+            }
         }
 
         KeyEventHandler handler;
@@ -198,7 +206,7 @@ namespace KeyMagic
 
             try
             {
-                RegistryKey runKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", false);
+                RegistryKey runKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
                 runKey.DeleteValue("KeyMagic");
             }
             catch (UnauthorizedAccessException)
@@ -399,18 +407,18 @@ namespace KeyMagic
 
         private void InitializeHook()
         {
-
+            String mainDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             try
             {
                 ProcessStartInfo psi;
 
-                psi = new ProcessStartInfo("HookInput.x32.exe", Handle.ToString("X"));
+                psi = new ProcessStartInfo(Path.Combine(mainDir, "HookInput.x32.exe"), Handle.ToString("X"));
                 psi.WindowStyle = ProcessWindowStyle.Hidden;
                 processX32 = Process.Start(psi);
 
                 if (is64bit)
                 {
-                    psi = new ProcessStartInfo("HookInput.x64.exe", Handle.ToString("X"));
+                    psi = new ProcessStartInfo(Path.Combine(mainDir, "HookInput.x64.exe"), Handle.ToString("X"));
                     psi.WindowStyle = ProcessWindowStyle.Hidden;
                     processX64 = Process.Start(psi);
                 }

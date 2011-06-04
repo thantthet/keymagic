@@ -20,7 +20,7 @@ namespace KeyMagic
 
         private void OnHotkeyMatched(uint index)
         {
-            Trace.WriteLine("OnHotkeyMatched:" + index);
+            Debug.WriteLine("OnHotkeyMatched:" + index);
             if (HotkeyMatched != null) HotkeyMatched(this, new HotkeyMatchedEvent(index));
         }
 
@@ -61,7 +61,6 @@ namespace KeyMagic
 
         void sendBackspace(int count)
         {
-
             if (count < 1)
                 return;
 
@@ -157,104 +156,118 @@ namespace KeyMagic
 
         int keyboardProc(int code, IntPtr wParam, IntPtr lParam)
         {
-            if (code < 0)
+            try
             {
-                return NativeMethods.CallNextHookEx(hhk, code, wParam, lParam);
-            }
+                if (code < 0)
+                {
+                    return NativeMethods.CallNextHookEx(hhk, code, wParam, lParam);
+                }
 
-            uint dwProcessId;
-            uint threadId = NativeMethods.GetWindowThreadProcessId(NativeMethods.GetForegroundWindow(), out dwProcessId);
-            if (threadId != NativeMethods.GetCurrentThreadId())
+                uint dwProcessId;
+                uint threadId = NativeMethods.GetWindowThreadProcessId(NativeMethods.GetForegroundWindow(), out dwProcessId);
+                if (threadId != NativeMethods.GetCurrentThreadId())
+                {
+                    NativeMethods.AttachThreadInput(NativeMethods.GetCurrentThreadId(), threadId, true);
+                }
+
+                NativeMethods.KBDLLHOOKSTRUCT kbHooks = Marshal.PtrToStructure(lParam, typeof(NativeMethods.KBDLLHOOKSTRUCT)) as NativeMethods.KBDLLHOOKSTRUCT;
+
+                if (kbHooks.flags != NativeMethods.KBDLLHOOKSTRUCTFlags.LLKHF_DOWN)
+                {
+                    return NativeMethods.CallNextHookEx(hhk, code, wParam, lParam);
+                }
+
+                byte[] keys = new byte[256];
+
+                NativeMethods.GetKeyboardState(keys);
+
+                Trace.WriteLine(string.Format("{0} {1} {2}",
+                    keys[(int)NativeMethods.VirtualKey.VK_CONTROL],
+                    keys[(int)NativeMethods.VirtualKey.VK_MENU],
+                    keys[(int)NativeMethods.VirtualKey.VK_SHIFT]));
+
+                int modifier = 0;
+                bool CTRL, ALT, SHIFT;
+                if (CTRL = (keys[(int)NativeMethods.VirtualKey.VK_CONTROL] & 0x80) != 0)
+                {
+                    modifier |= (int)KeyMagicDotNet.NetKeyMagicEngine.ModifierMask.CTRL_MASK;
+                }
+                if (ALT = (keys[(int)NativeMethods.VirtualKey.VK_MENU] & 0x80) != 0)
+                {
+                    modifier |= (int)KeyMagicDotNet.NetKeyMagicEngine.ModifierMask.ALT_MASK;
+                }
+                if (SHIFT = (keys[(int)NativeMethods.VirtualKey.VK_SHIFT] & 0x80) != 0)
+                {
+                    modifier |= (int)KeyMagicDotNet.NetKeyMagicEngine.ModifierMask.SHIFT_MASK;
+                }
+
+                if (CheckHotkeys(kbHooks.vkCode, CTRL, ALT, SHIFT)) return 1;
+
+                if (engine == null)
+                {
+                    return NativeMethods.CallNextHookEx(hhk, code, wParam, lParam);
+                }
+
+                IntPtr HKLCurrent = NativeMethods.GetKeyboardLayout(NativeMethods.GetCurrentThreadId());
+
+                uint scanCode = NativeMethods.MapVirtualKeyEx(kbHooks.vkCode, NativeMethods.MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC, HKLCurrent);
+                if (scanCode == 0)
+                {
+                    return NativeMethods.CallNextHookEx(hhk, code, wParam, lParam);
+                }
+
+                StringBuilder TranslatedChar = new StringBuilder();
+
+                uint vkey = NativeMethods.MapVirtualKeyEx(scanCode, NativeMethods.MapVirtualKeyMapTypes.MAPVK_VSC_TO_VK, (IntPtr)0x04090409);
+                int ret = NativeMethods.ToUnicodeEx(vkey, scanCode, keys, TranslatedChar, 1, 0, (IntPtr)0x04090409);
+                String contextBefore = engine.getContextText();
+
+                if (
+                    engine.processKeyEvent(
+                        (int)(TranslatedChar.Length > 0 ? TranslatedChar[0] : 0),
+                        (int)vkey, modifier
+                        )
+                    )
+                {
+                    sendDifference(contextBefore, engine.getContextText());
+                    return 1;
+                }
+                else if (NativeMethods.GetKeyState(NativeMethods.VirtualKey.VK_CONTROL) != 0 || NativeMethods.GetKeyState(NativeMethods.VirtualKey.VK_MENU) != 0)
+                {
+                    engine.reset();
+                }
+            }
+            catch (Exception e)
             {
-                NativeMethods.AttachThreadInput(NativeMethods.GetCurrentThreadId(), threadId, true);
+                Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.StackTrace);
             }
-
-            NativeMethods.KBDLLHOOKSTRUCT kbHooks = Marshal.PtrToStructure(lParam, typeof(NativeMethods.KBDLLHOOKSTRUCT)) as NativeMethods.KBDLLHOOKSTRUCT;
-
-            if (kbHooks.flags != NativeMethods.KBDLLHOOKSTRUCTFlags.LLKHF_DOWN)
-            {
-                return NativeMethods.CallNextHookEx(hhk, code, wParam, lParam);
-            }
-
-            //Trace.WriteLine("code={0} wParam={1} vkCode={2} scanCode={3} flags={4} dwExtraInfo={5}",
-            //    code, wParam, kbHooks.vkCode, kbHooks.scanCode, kbHooks.flags, kbHooks.dwExtraInfo);
-
-            byte[] keys = new byte[256];
-
-            NativeMethods.GetKeyboardState(keys);
-
-            Trace.WriteLine(string.Format("{0} {1} {2}",
-                keys[(int)NativeMethods.VirtualKey.VK_CONTROL],
-                keys[(int)NativeMethods.VirtualKey.VK_MENU],
-                keys[(int)NativeMethods.VirtualKey.VK_SHIFT]));
-
-            int modifier = 0;
-            bool CTRL, ALT, SHIFT;
-            if (CTRL = (keys[(int)NativeMethods.VirtualKey.VK_CONTROL] & 0x80) != 0)
-            {
-                modifier |= (int)KeyMagicDotNet.NetKeyMagicEngine.ModifierMask.CTRL_MASK;
-            }
-            if (ALT = (keys[(int)NativeMethods.VirtualKey.VK_MENU] & 0x80) != 0)
-            {
-                modifier |= (int)KeyMagicDotNet.NetKeyMagicEngine.ModifierMask.ALT_MASK;
-            }
-            if (SHIFT = (keys[(int)NativeMethods.VirtualKey.VK_SHIFT] & 0x80) != 0)
-            {
-                modifier |= (int)KeyMagicDotNet.NetKeyMagicEngine.ModifierMask.SHIFT_MASK;
-            }
-
-            if (CheckHotkeys(kbHooks.vkCode, CTRL, ALT, SHIFT)) return 1;
-
-            if (engine == null)
-            {
-                return NativeMethods.CallNextHookEx(hhk, code, wParam, lParam);
-            }
-
-            IntPtr HKLCurrent = NativeMethods.GetKeyboardLayout(NativeMethods.GetCurrentThreadId());
-
-            uint scanCode = NativeMethods.MapVirtualKeyEx(kbHooks.vkCode, NativeMethods.MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC, HKLCurrent);
-            if (scanCode == 0)
-            {
-                return NativeMethods.CallNextHookEx(hhk, code, wParam, lParam);
-            }
-
-            StringBuilder TranslatedChar = new StringBuilder();
-
-            uint vkey = NativeMethods.MapVirtualKeyEx(scanCode, NativeMethods.MapVirtualKeyMapTypes.MAPVK_VSC_TO_VK, (IntPtr)0x04090409);
-            int ret = NativeMethods.ToUnicodeEx(vkey, scanCode, keys, TranslatedChar, 1, 0, (IntPtr)0x04090409);
-            String contextBefore = engine.getContextText();
-
-            if (engine.processKeyEvent((int)TranslatedChar[0], (int)vkey, modifier))
-            {
-                sendDifference(contextBefore, engine.getContextText());
-                return 1;
-            }
-            else if (NativeMethods.GetKeyState(NativeMethods.VirtualKey.VK_CONTROL) != 0 || NativeMethods.GetKeyState(NativeMethods.VirtualKey.VK_MENU) != 0)
-            {
-                engine.reset();
-            }
-
-            //Console.WriteLine(engine.getContextText());
             return NativeMethods.CallNextHookEx(hhk, code, wParam, lParam);
         }
 
         private bool CheckHotkeys(uint key, bool CTRL, bool ALT, bool SHIFT)
         {
-            Trace.WriteLine(string.Format("CheckHotkeys:{0} {1} {2} {3}", key, CTRL, ALT, SHIFT));
-            uint index = 0;
-            foreach (Hotkey hk in hotkeys)
+            try
             {
-                index++;
-                if (hk.keyChar != key) continue;
-                if (hk.ctrl != CTRL) continue;
-                if (hk.alt != ALT) continue;
-                if (hk.shift != SHIFT) continue;
+                Debug.WriteLine(string.Format("CheckHotkeys:{0} {1} {2} {3}", key, CTRL, ALT, SHIFT));
+                uint index = 0;
+                foreach (Hotkey hk in hotkeys)
+                {
+                    index++;
+                    if (hk.keyChar != key) continue;
+                    if (hk.ctrl != CTRL) continue;
+                    if (hk.alt != ALT) continue;
+                    if (hk.shift != SHIFT) continue;
 
-                OnHotkeyMatched(index);
-
-                return true;
+                    OnHotkeyMatched(index);
+                    return true;
+                }
             }
-
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.StackTrace);
+            }
             return false;
         }
 

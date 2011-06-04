@@ -8,7 +8,7 @@
 #define DllName L"InputProcessor.x64.dll"
 #endif
 
-KeyMagicEngine engine;
+//KeyMagicEngine engine;
 WCHAR activeFileName[MAX_PATH];
 UINT kblIndex = 0;
 UINT keyboardLayoutCount = 0;
@@ -302,7 +302,7 @@ LRESULT CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 		if (LOWORD(cwp->wParam) == WA_INACTIVE) {
 			if (isTrayWindow(cwp->hwnd)) break;
 
-			engine.reset();
+			//engine.reset();
 
 			//wcscpy(fileNameToLoad, activeFileName);
 			SendMessage(hWndMainWindows, KM_LOSTFOCUS, 0, (LPARAM)cwp->hwnd);

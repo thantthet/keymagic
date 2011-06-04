@@ -64,7 +64,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(SolutionDir)\..\..\cross-platform\libkeymagic\vs\bin\libkeymagic.dbg.x32.lib"
 				OutputFile="$(OutDir)\$(ProjectName).x32.dll"
 				LinkIncremental="2"
 				ModuleDefinitionFile="InputProcessor.def"
@@ -204,7 +203,7 @@
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\..\..\cross-platform\libkeymagic\&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;INPUTPROCESSOR_EXPORTS"
-				RuntimeLibrary="0"
+				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -221,7 +220,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(SolutionDir)\..\..\cross-platform\libkeymagic\vs\bin\libkeymagic.x32.lib"
 				OutputFile="$(OutDir)\$(ProjectName).x32.dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile="InputProcessor.def"
@@ -283,7 +281,7 @@
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\..\..\cross-platform\libkeymagic\&quot;"
 				PreprocessorDefinitions="WIN64;NDEBUG;_WINDOWS;_USRDLL;INPUTPROCESSOR_EXPORTS"
-				RuntimeLibrary="0"
+				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"

@@ -18,8 +18,18 @@ namespace KeyMagic
         [DllImport("dwmapi.dll", PreserveSig = false)]
         public static extern void DwmExtendFrameIntoClientArea(IntPtr hWnd, MARGINS pMargins);
 
-        [DllImport("dwmapi.dll", PreserveSig = false)]
-        public static extern bool DwmIsCompositionEnabled();
+        [DllImport("dwmapi.dll", EntryPoint = "DwmIsCompositionEnabled", PreserveSig = false)]
+        private static extern bool NativeDwmIsCompositionEnabled();
+
+        public static bool DwmIsCompositionEnabled()
+        {
+            try
+            {
+                return NativeDwmIsCompositionEnabled();
+            }
+            catch { }
+            return false;
+        }
 
         [DllImport("dwmapi.dll", PreserveSig = false)]
         public static extern void DwmGetColorizationColor(
