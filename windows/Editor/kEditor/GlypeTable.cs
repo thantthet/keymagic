@@ -343,9 +343,9 @@ namespace kEditor
             if (selectedAtCell != currentCell && currentCell != -1)
             {
                 SelectedCell = currentCell;
-                //Invalidate(selectedAtCell, currentCell);
-                //selectedAtCell = currentCell;
-                //SelectionChanged(this, new EventArgs());
+                Invalidate(selectedAtCell, currentCell);
+                selectedAtCell = currentCell;
+                OnSelectionChanged(new EventArgs());
             }
         }
 
@@ -809,9 +809,14 @@ namespace kEditor
                     Invalidate(value, selectedAtCell);
                     selectedAtCell = value;
                     MakeSureCellVisible(selectedAtCell);
-                    SelectionChanged(this, new EventArgs());
+                    OnSelectionChanged(new EventArgs());
                 }
             }
+        }
+
+        private void OnSelectionChanged(EventArgs eventArgs)
+        {
+            if (SelectionChanged != null) SelectionChanged(this, eventArgs);
         }
 
         public int[] Characters

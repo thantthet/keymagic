@@ -17,11 +17,11 @@ typedef struct {
 } Hotkey;
 
 INPUTPROCESSOR_API void SetMainWindowsHandle(HWND hWnd);
-INPUTPROCESSOR_API void SetMainDir(WCHAR * dir);
+//INPUTPROCESSOR_API void SetMainDir(WCHAR * dir);
 INPUTPROCESSOR_API void SetWindowsHooks (HMODULE hMod);
-INPUTPROCESSOR_API HHOOK GetKeyProcHook ();
+//INPUTPROCESSOR_API HHOOK GetKeyProcHook ();
 INPUTPROCESSOR_API HHOOK GetWndProcHook ();
-INPUTPROCESSOR_API HHOOK GetGetMsgProcHook ();
+//INPUTPROCESSOR_API HHOOK GetGetMsgProcHook ();
 
 void sendSingleKey(WORD wVk, DWORD dwFlags);
 void sendKeyStrokes (const std::wstring& s);
@@ -32,14 +32,14 @@ void sendDifference(const std::wstring& contextBefore, const std::wstring& conte
 #else
 #pragma data_seg(".KMG64")
 #endif
-HHOOK hKeyHook = NULL;
+//HHOOK hKeyHook = NULL;
 HHOOK hWndProcHook = NULL;
-HHOOK hGetMsgProcHook = NULL;
-short HotKeys[500] = {0};
-UINT HotKeyCount = 0;
+//HHOOK hGetMsgProcHook = NULL;
+//short HotKeys[500] = {0};
+//UINT HotKeyCount = 0;
 HWND hWndMainWindows = NULL;
-TCHAR szMainDir[MAX_PATH] = {0};
-WCHAR fileNameToLoad[MAX_PATH] = {0};
+//TCHAR szMainDir[MAX_PATH] = {0};
+//WCHAR fileNameToLoad[MAX_PATH] = {0};
 #pragma data_seg()
 
 //Make sure that section can READ WRITE and SHARE

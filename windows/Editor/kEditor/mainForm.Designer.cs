@@ -33,6 +33,9 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
+            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripSeparator();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -40,7 +43,7 @@
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.clearRecentFileListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
-            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -63,6 +66,7 @@
             this.formatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.defaultFontToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkSyntaxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.compileAndSaveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -75,18 +79,14 @@
             this.openFileDlg = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDlg = new System.Windows.Forms.SaveFileDialog();
             this.fontDlg = new System.Windows.Forms.FontDialog();
-            this.splitContainer = new System.Windows.Forms.SplitContainer();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.SciEditor = new ScintillaNet.Scintilla();
+            this.GlyphMapTableLayout = new System.Windows.Forms.TableLayoutPanel();
             this.glyphTable = new kEditor.GlyphTable();
             this.txtFilter = new kEditor.FilterEditBox();
             this.lblGlyphName = new System.Windows.Forms.Label();
-            this.SciEditor = new ScintillaNet.Scintilla();
             this.mainMenu.SuspendLayout();
-            this.splitContainer.Panel1.SuspendLayout();
-            this.splitContainer.Panel2.SuspendLayout();
-            this.splitContainer.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SciEditor)).BeginInit();
+            this.GlyphMapTableLayout.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainMenu
@@ -107,12 +107,15 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripMenuItem,
             this.openToolStripMenuItem,
+            this.toolStripMenuItem6,
+            this.closeToolStripMenuItem,
+            this.toolStripMenuItem7,
             this.saveToolStripMenuItem,
             this.saveAsToolStripMenuItem,
             this.toolStripSeparator1,
             this.recentFilesToolStripMenuItem,
             this.toolStripMenuItem2,
-            this.closeToolStripMenuItem});
+            this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             resources.ApplyResources(this.fileToolStripMenuItem, "fileToolStripMenuItem");
             // 
@@ -127,6 +130,22 @@
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             resources.ApplyResources(this.openToolStripMenuItem, "openToolStripMenuItem");
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem6
+            // 
+            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
+            resources.ApplyResources(this.toolStripMenuItem6, "toolStripMenuItem6");
+            // 
+            // closeToolStripMenuItem
+            // 
+            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
+            resources.ApplyResources(this.closeToolStripMenuItem, "closeToolStripMenuItem");
+            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem7
+            // 
+            this.toolStripMenuItem7.Name = "toolStripMenuItem7";
+            resources.ApplyResources(this.toolStripMenuItem7, "toolStripMenuItem7");
             // 
             // saveToolStripMenuItem
             // 
@@ -169,11 +188,11 @@
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
             resources.ApplyResources(this.toolStripMenuItem2, "toolStripMenuItem2");
             // 
-            // closeToolStripMenuItem
+            // exitToolStripMenuItem
             // 
-            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            resources.ApplyResources(this.closeToolStripMenuItem, "closeToolStripMenuItem");
-            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            resources.ApplyResources(this.exitToolStripMenuItem, "exitToolStripMenuItem");
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
@@ -320,11 +339,18 @@
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.testToolStripMenuItem,
             this.checkSyntaxToolStripMenuItem,
             this.compileAndSaveToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             resources.ApplyResources(this.toolsToolStripMenuItem, "toolsToolStripMenuItem");
             this.toolsToolStripMenuItem.Click += new System.EventHandler(this.toolsToolStripMenuItem_Click);
+            // 
+            // testToolStripMenuItem
+            // 
+            this.testToolStripMenuItem.Name = "testToolStripMenuItem";
+            resources.ApplyResources(this.testToolStripMenuItem, "testToolStripMenuItem");
+            this.testToolStripMenuItem.Click += new System.EventHandler(this.testToolStripMenuItem_Click);
             // 
             // checkSyntaxToolStripMenuItem
             // 
@@ -396,29 +422,29 @@
             resources.ApplyResources(this.saveFileDlg, "saveFileDlg");
             this.saveFileDlg.RestoreDirectory = true;
             // 
-            // splitContainer
+            // SciEditor
             // 
-            this.splitContainer.BackColor = System.Drawing.SystemColors.ActiveBorder;
-            resources.ApplyResources(this.splitContainer, "splitContainer");
-            this.splitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            this.splitContainer.Name = "splitContainer";
+            this.SciEditor.AutoComplete.DropRestOfWord = true;
+            this.SciEditor.AutoComplete.ListString = "";
+            resources.ApplyResources(this.SciEditor, "SciEditor");
+            this.SciEditor.Name = "SciEditor";
+            this.SciEditor.Styles.BraceBad.FontName = "Verdana";
+            this.SciEditor.Styles.BraceLight.FontName = "Verdana";
+            this.SciEditor.Styles.ControlChar.FontName = "Verdana";
+            this.SciEditor.Styles.Default.FontName = "Verdana";
+            this.SciEditor.Styles.IndentGuide.FontName = "Verdana";
+            this.SciEditor.Styles.LastPredefined.FontName = "Verdana";
+            this.SciEditor.Styles.LineNumber.FontName = "Verdana";
+            this.SciEditor.Styles.Max.FontName = "Verdana";
             // 
-            // splitContainer.Panel1
+            // GlyphMapTableLayout
             // 
-            this.splitContainer.Panel1.Controls.Add(this.tableLayoutPanel1);
-            // 
-            // splitContainer.Panel2
-            // 
-            this.splitContainer.Panel2.Controls.Add(this.SciEditor);
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            resources.ApplyResources(this.tableLayoutPanel1, "tableLayoutPanel1");
-            this.tableLayoutPanel1.Controls.Add(this.glyphTable, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.txtFilter, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.lblGlyphName, 0, 1);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.GlyphMapTableLayout.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            resources.ApplyResources(this.GlyphMapTableLayout, "GlyphMapTableLayout");
+            this.GlyphMapTableLayout.Controls.Add(this.glyphTable, 0, 0);
+            this.GlyphMapTableLayout.Controls.Add(this.txtFilter, 0, 2);
+            this.GlyphMapTableLayout.Controls.Add(this.lblGlyphName, 0, 1);
+            this.GlyphMapTableLayout.Name = "GlyphMapTableLayout";
             // 
             // glyphTable
             // 
@@ -435,7 +461,6 @@
             this.glyphTable.HexCodeColor = System.Drawing.Color.Black;
             this.glyphTable.HexNotation = false;
             this.glyphTable.Name = "glyphTable";
-            this.glyphTable.NumberOfColumns = 6;
             this.glyphTable.NumberOfRows = 1;
             this.glyphTable.SelectedCell = -1;
             this.glyphTable.MouseLeave += new System.EventHandler(this.glyphTable_MouseLeave);
@@ -448,50 +473,29 @@
             this.txtFilter.ForeColor = System.Drawing.Color.Gray;
             resources.ApplyResources(this.txtFilter, "txtFilter");
             this.txtFilter.Name = "txtFilter";
-            this.txtFilter.TextChanged += new System.EventHandler(this.txtFilter_TextChanged);
             // 
             // lblGlyphName
             // 
             resources.ApplyResources(this.lblGlyphName, "lblGlyphName");
             this.lblGlyphName.Name = "lblGlyphName";
             // 
-            // SciEditor
-            // 
-            this.SciEditor.AutoComplete.DropRestOfWord = true;
-            this.SciEditor.AutoComplete.ListString = "";
-            resources.ApplyResources(this.SciEditor, "SciEditor");
-            this.SciEditor.Name = "SciEditor";
-            this.SciEditor.Styles.BraceBad.FontName = "Verdana";
-            this.SciEditor.Styles.BraceLight.FontName = "Verdana";
-            this.SciEditor.Styles.ControlChar.FontName = "Verdana";
-            this.SciEditor.Styles.Default.FontName = "Verdana";
-            this.SciEditor.Styles.IndentGuide.FontName = "Verdana";
-            this.SciEditor.Styles.LastPredefined.FontName = "Verdana";
-            this.SciEditor.Styles.LineNumber.FontName = "Verdana";
-            this.SciEditor.Styles.Max.FontName = "Verdana";
-            this.SciEditor.TextChanged += new System.EventHandler<System.EventArgs>(this.SciEditor_TextChanged);
-            this.SciEditor.CharAdded += new System.EventHandler<ScintillaNet.CharAddedEventArgs>(this.SciEditor_CharAdded);
-            this.SciEditor.ModifiedChanged += new System.EventHandler(this.SciEditor_ModifiedChanged);
-            this.SciEditor.SelectionChanged += new System.EventHandler(this.SciEditor_SelectionChanged);
-            // 
             // mainFrame
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.splitContainer);
+            this.Controls.Add(this.SciEditor);
+            this.Controls.Add(this.GlyphMapTableLayout);
             this.Controls.Add(this.mainMenu);
+            this.IsMdiContainer = true;
             this.MainMenuStrip = this.mainMenu;
             this.Name = "mainFrame";
             this.Load += new System.EventHandler(this.mainForm_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.mainFrame_FormClosing);
             this.mainMenu.ResumeLayout(false);
             this.mainMenu.PerformLayout();
-            this.splitContainer.Panel1.ResumeLayout(false);
-            this.splitContainer.Panel2.ResumeLayout(false);
-            this.splitContainer.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SciEditor)).EndInit();
+            this.GlyphMapTableLayout.ResumeLayout(false);
+            this.GlyphMapTableLayout.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -504,7 +508,7 @@
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog openFileDlg;
         private System.Windows.Forms.SaveFileDialog saveFileDlg;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
@@ -517,7 +521,6 @@
         private System.Windows.Forms.ToolStripMenuItem goToToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findAndReplaceToolStripMenuItem;
         private System.Windows.Forms.FontDialog fontDlg;
-        private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hexadecimalToolStripMenuItem;
@@ -546,11 +549,15 @@
         private System.Windows.Forms.ToolStripMenuItem checkSyntaxToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
         private ScintillaNet.Scintilla SciEditor;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TableLayoutPanel GlyphMapTableLayout;
         private GlyphTable glyphTable;
         private FilterEditBox txtFilter;
         private System.Windows.Forms.Label lblGlyphName;
+        private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem6;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem7;
     }
 }
 

@@ -1,12 +1,12 @@
 [Files]
-Source: KeyMagic.exe; DestDir: {app}; Flags: uninsrestartdelete; 
+Source: ..\KeyMagic\Release\KeyMagic.exe; DestDir: {app}; Flags: uninsrestartdelete; 
 Source: KeyMagicMM3.ini; DestDir: {app}; DestName: KeyMagic.ini; 
-Source: KeyMagicDll.dll; DestDir: {app}; Flags: uninsrestartdelete; 
-Source: SetElevatedStartupTask.exe; DestDir: {app};
+Source: ..\KeyMagic\Release\KeyMagicDll.dll; DestDir: {app}; Flags: uninsrestartdelete; 
+Source: ..\KeyMagic\Release\SetElevatedStartupTask.exe; DestDir: {app};
 Source: "Keyboards\Myanmar3.km2"; DestDir: {app}\Keyboards; 
 Source: mm3.ttf; DestDir: {fonts}; FontInstall: Myanmar3; Flags: uninsneveruninstall onlyifdoesntexist;
-Source: Parabaik_UTN11-3.ttf; DestDir: {fonts}; FontInstall: Parabaik; Flags: uninsneveruninstall onlyifdoesntexist;
-Source: Yunghkio.ttf; DestDir: {fonts}; FontInstall: Yungkio; Flags: uninsneveruninstall onlyifdoesntexist;
+;Source: Parabaik_UTN11-3.ttf; DestDir: {fonts}; FontInstall: Parabaik; Flags: uninsneveruninstall onlyifdoesntexist;
+;Source: Yunghkio.ttf; DestDir: {fonts}; FontInstall: Yungkio; Flags: uninsneveruninstall onlyifdoesntexist;*/
 
 [Setup]
 AppCopyright=Thant Thet Khin Zaw

@@ -33,8 +33,12 @@ LRESULT CALLBACK HookKeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 		Debug(L"HookKeyProc::Key Down - lParam = 0x%.8x wParam = 0x%.8x\n", lParam, wParam);
 #endif
 		//If there is no focus
-		if (!GetFocus())
+		if (!GetFocus()) {
+#ifdef _DEBUG
+			Debug(L"No Focus\n");
+#endif
 			return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
+		}
 
 		index = ShortCutCheck(wParam);
 

@@ -7,7 +7,7 @@ Source: "Keyboards\Myanmar3.km2"; DestDir: {app}\Keyboards;
 Source: "Keyboards\myWin.km2"; DestDir: {app}\Keyboards; 
 Source: "Keyboards\Parabaik.km2"; DestDir: {app}\Keyboards; 
 Source: "Keyboards\Zawgyi L - Unicode.km2"; DestDir: {app}\Keyboards; 
-Source: "Keyboards\Zawgyi L.km2"; DestDir: {app}\Keyboards;
+;Source: "Keyboards\Zawgyi L.km2"; DestDir: {app}\Keyboards;
 Source: mm3.ttf; DestDir: {fonts}; FontInstall: Myanmar3; Flags: uninsneveruninstall onlyifdoesntexist;
 Source: Parabaik_UTN11-3.ttf; DestDir: {fonts}; FontInstall: Parabaik; Flags: uninsneveruninstall onlyifdoesntexist;
 Source: Yunghkio.ttf; DestDir: {fonts}; FontInstall: Yungkio; Flags: uninsneveruninstall onlyifdoesntexist;

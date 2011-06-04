@@ -292,7 +292,7 @@
             this.grupSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grupSettings.Location = new System.Drawing.Point(3, 3);
             this.grupSettings.Name = "grupSettings";
-            this.grupSettings.Size = new System.Drawing.Size(186, 65);
+            this.grupSettings.Size = new System.Drawing.Size(655, 354);
             this.grupSettings.TabIndex = 2;
             this.grupSettings.TabStop = false;
             this.grupSettings.Text = "Settings";
@@ -311,7 +311,7 @@
             this.tableSettings.RowCount = 2;
             this.tableSettings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.253732F));
             this.tableSettings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 90.74627F));
-            this.tableSettings.Size = new System.Drawing.Size(180, 46);
+            this.tableSettings.Size = new System.Drawing.Size(649, 335);
             this.tableSettings.TabIndex = 0;
             // 
             // chkRunAtLogon
@@ -320,7 +320,7 @@
             this.chkRunAtLogon.Checked = global::KeyMagic.Properties.Settings.Default.RunAtStartup;
             this.chkRunAtLogon.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkRunAtLogon.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::KeyMagic.Properties.Settings.Default, "RunAtStartup", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.chkRunAtLogon.Location = new System.Drawing.Point(34, 7);
+            this.chkRunAtLogon.Location = new System.Drawing.Point(118, 34);
             this.chkRunAtLogon.Name = "chkRunAtLogon";
             this.chkRunAtLogon.Size = new System.Drawing.Size(137, 17);
             this.chkRunAtLogon.TabIndex = 1;
@@ -331,9 +331,9 @@
             // hotkeyControl1
             // 
             this.hotkeyControl1.Hotkey = hotkey1;
-            this.hotkeyControl1.Location = new System.Drawing.Point(34, 3);
+            this.hotkeyControl1.Location = new System.Drawing.Point(118, 3);
             this.hotkeyControl1.Name = "hotkeyControl1";
-            this.hotkeyControl1.Size = new System.Drawing.Size(143, 1);
+            this.hotkeyControl1.Size = new System.Drawing.Size(199, 25);
             this.hotkeyControl1.TabIndex = 2;
             // 
             // lblOnOffKey
@@ -342,7 +342,7 @@
             this.lblOnOffKey.Location = new System.Drawing.Point(3, 10);
             this.lblOnOffKey.Margin = new System.Windows.Forms.Padding(3, 10, 3, 0);
             this.lblOnOffKey.Name = "lblOnOffKey";
-            this.lblOnOffKey.Size = new System.Drawing.Size(24, 1);
+            this.lblOnOffKey.Size = new System.Drawing.Size(105, 13);
             this.lblOnOffKey.TabIndex = 3;
             this.lblOnOffKey.Text = "Turn On/Off Hotkey:";
             // 
@@ -371,7 +371,7 @@
             this.tableAbout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
             this.tableAbout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableAbout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
-            this.tableAbout.Size = new System.Drawing.Size(186, 65);
+            this.tableAbout.Size = new System.Drawing.Size(655, 354);
             this.tableAbout.TabIndex = 0;
             // 
             // txtLicense
@@ -382,14 +382,14 @@
             this.txtLicense.Name = "txtLicense";
             this.txtLicense.ReadOnly = true;
             this.txtLicense.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtLicense.Size = new System.Drawing.Size(180, 1);
+            this.txtLicense.Size = new System.Drawing.Size(649, 283);
             this.txtLicense.TabIndex = 1;
             this.txtLicense.Text = resources.GetString("txtLicense.Text");
             // 
             // btnCheckUpdate
             // 
             this.btnCheckUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCheckUpdate.Location = new System.Drawing.Point(68, 37);
+            this.btnCheckUpdate.Location = new System.Drawing.Point(537, 326);
             this.btnCheckUpdate.Name = "btnCheckUpdate";
             this.btnCheckUpdate.Size = new System.Drawing.Size(115, 23);
             this.btnCheckUpdate.TabIndex = 2;

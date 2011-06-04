@@ -9,6 +9,8 @@ using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using Microsoft.Win32;
+using WeifenLuo.WinFormsUI.Docking;
+using Utils.MessageBoxExLib;
 
 namespace kEditor
 {
@@ -27,7 +29,7 @@ namespace kEditor
         private String toolTipString;
         private List<string> autoCompleteList = new List<string>();
 
-        private ConfigStyles frmColor;
+        private ConfigStyles frmStyleConfig;
         private string thisExe;
         private string thisDir;
 
@@ -45,6 +47,8 @@ namespace kEditor
         public mainFrame()
         {
             InitializeComponent();
+
+            DoDocking();
 
             thisExe = Environment.GetCommandLineArgs()[0];
             thisDir = System.IO.Path.GetDirectoryName(thisExe);
@@ -74,6 +78,36 @@ namespace kEditor
             {
                 Properties.Settings.Default.LastFilePath = args[1];
             }
+        }
+        DockPanel dockPanel;
+
+        private void DoDocking()
+        {
+            dockPanel = new DockPanel();
+            dockPanel.Dock = DockStyle.Fill;
+            dockPanel.BackColor = Color.Beige;
+            Controls.Add(dockPanel);
+            dockPanel.BringToFront();
+
+            DockContent GlyphDock = new DockContent();
+            GlyphDock.Name = "GlyphDock";
+            GlyphDock.Text = "Glyph Table";
+            GlyphDock.ShowHint = DockState.DockLeft;
+            GlyphDock.BackColor = Color.Black;
+            GlyphDock.DockAreas = DockAreas.DockBottom | DockAreas.DockLeft | DockAreas.DockRight | DockAreas.DockTop | DockAreas.Float;
+            GlyphDock.Controls.Add(GlyphMapTableLayout);
+            GlyphMapTableLayout.Dock = DockStyle.Fill;
+            GlyphDock.Show(dockPanel);
+
+            //DockContent content1 = new DockContent();
+            //content1.Name = "EditorDock";
+            //content1.TabText = "Untitled";
+            //content1.ShowHint = DockState.Document;
+            //content1.BackColor = Color.Black;
+            //content1.DockAreas = DockAreas.Document | DockAreas.Float;
+            //content1.Controls.Add(SciEditor);
+            //SciEditor.Dock = DockStyle.Fill;
+            //content1.Show(dockPanel);
         }
 
         private bool isDefaultEditor()
@@ -152,10 +186,18 @@ namespace kEditor
             }
             catch (UnauthorizedAccessException uax)
             {
-                DialogResult dr = MessageBox.Show(this,
-                    string.Format("{0}\n{1}",uax.Message, "Please run the KMS Editor as administrator for once?"),
-                    "Access denied",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (Properties.Settings.Default.DoNotAskForAdmin == true) return false;
+                MessageBoxEx msgBox = MessageBoxExManager.CreateMessageBox("access denied");
+                msgBox.Caption = "Access denied";
+                msgBox.Text = string.Format("{0}\n{1}", uax.Message, "Please run the KMS Editor as administrator for once?");
+                msgBox.Icon = MessageBoxExIcon.Exclamation;
+
+                msgBox.AddButton("OK", "OK");
+                msgBox.AddButton("Don't ask again", "DONTASK");
+                if (msgBox.Show(this) == "DONTASK")
+                {
+                    Properties.Settings.Default.DoNotAskForAdmin = true;
+                }
                 return false;
             }
             catch (Exception ex)
@@ -168,14 +210,8 @@ namespace kEditor
 
         private void mainForm_Load(object sender, EventArgs e)
         {
-            ScintillaNet.Style S = SciEditor.Styles[0x21];
-            S.ForeColor = Color.DimGray;
-            S.Italic = true;
-
-            SciEditor.Encoding = Encoding.UTF8;
-
             lex = new Styler(SciEditor);
-            frmColor = new ConfigStyles(SciEditor, lex.GetStyleNameIndex());
+            frmStyleConfig = new ConfigStyles(SciEditor, lex.GetStyleNameIndex());
 
             selectedFont = new Font(Properties.Settings.Default.DefaultFontName, Properties.Settings.Default.DefaultFontSize);
             glyphTable.Font = selectedFont;
@@ -202,7 +238,7 @@ namespace kEditor
                 "VK_RCONTROL","VK_RCTRL","VK_LCTRL","VK_LCONTROL"
             }
             );
-
+            
             Text = "Untitled" + titleSuffix;
 
             glyphTable.HexNotation = Properties.Settings.Default.HexNotation;
@@ -210,12 +246,7 @@ namespace kEditor
             lineNumbersToolStripMenuItem.Checked = Properties.Settings.Default.LineNumber;
 
             UpdateRecentFiles();
-            if (openFile(Properties.Settings.Default.LastFilePath) == false)
-            {
-                SciEditor.Text = newDocumentTemplate;
-                SciEditor.UndoRedo.EmptyUndoBuffer();
-                SciEditor.Modified = false;
-            }
+            openFile(Properties.Settings.Default.LastFilePath);
 
             glyphTable.Filter = Properties.Settings.Default.GlyphFilterText;
             txtFilter.Text = glyphTable.Filter;
@@ -237,7 +268,7 @@ namespace kEditor
             Properties.Settings.Default.GlyphFilterText = glyphTable.Filter;
             Properties.Settings.Default.LineNumber = lineNumbersToolStripMenuItem.Checked;
             Properties.Settings.Default.HexNotation = hexadecimalToolStripMenuItem.Checked;
-            lex.SaveStyles();
+            //lex.SaveStyles();
             Properties.Settings.Default.Save();
         }
 
@@ -398,7 +429,7 @@ namespace kEditor
             if (OpenFilePath == null)
             {
                 openFileDlg.CheckFileExists = true;
-                openFileDlg.CheckPathExists = true;
+
                 if (openFileDlg.ShowDialog(this) != System.Windows.Forms.DialogResult.OK)
                 {
                     return false;
@@ -412,24 +443,31 @@ namespace kEditor
             {
                 FilePath = OpenFilePath;
             }
-            else { return false; }
 
             FileName = System.IO.Path.GetFileName(FilePath);
 
-            System.IO.StreamReader sr = new System.IO.StreamReader(FilePath);
-            string str = sr.ReadToEnd();
-            sr.Close();
-            SciEditor.Text = str;
+            DockableDocument dockDoc = new DockableDocument(OpenFilePath, dockPanel);
+            bool success = dockDoc.DockContent != null;
+            lex.SetStyles(dockDoc.Editor);
 
-            SciEditor.Modified = false;
-            WorkingWithFile = true;
+            if (success)
+            {
+                setRecentFile();
+            }
+            return success;
 
-            Text = FileName;
-            SciEditor.UndoRedo.EmptyUndoBuffer();
+            //System.IO.StreamReader sr = new System.IO.StreamReader(FilePath);
+            //string str = sr.ReadToEnd();
+            //sr.Close();
+            //SciEditor.Text = str;
 
-            setRecentFile();
+            //SciEditor.Modified = false;
+            //WorkingWithFile = true;
 
-            return true;
+            //Text = FileName;
+            //SciEditor.UndoRedo.EmptyUndoBuffer();
+
+            //return true;
         }
 
         private bool saveFile()
@@ -500,7 +538,7 @@ namespace kEditor
             saveFile();
         }
 
-        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
         }
@@ -548,35 +586,23 @@ namespace kEditor
             }
         }
 
-        private string newDocumentTemplate =
-            "/*\n" +
-            "@NAME = 'Untitled Keyboard Layout'\n" + 
-            "@DESCRIPTION = 'Created using kEditor'\n" + 
-            "@ICON = ''\n" +
-            "@FONTFAMILY = ''\n" +
-            "@HOTKEY = ''\n" + 
-            "@EAT_ALL_UNUSED_KEYS = 'false'\n" + 
-            "@TRACK_CAPSLOCK = 'false'\n" +
-            "@SMART_BACKSPACE = 'true'\n" + 
-            "@US_LAYOUT_BASED = 'true'\n" + 
-            "*/\n\n";
-
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (askToSaveModifiedDocument() != System.Windows.Forms.DialogResult.Cancel)
-            {
-                SciEditor.Text = newDocumentTemplate;
-                SciEditor.UndoRedo.EmptyUndoBuffer();
-                SciEditor.Selection.Start = newDocumentTemplate.Length;
-                SciEditor.Selection.End = newDocumentTemplate.Length;
-                FileName = "Untitled" + titleSuffix;
-                FilePath = "";
+            openFile("");
+            //if (askToSaveModifiedDocument() != System.Windows.Forms.DialogResult.Cancel)
+            //{
+            //    SciEditor.Text = newDocumentTemplate;
+            //    SciEditor.UndoRedo.EmptyUndoBuffer();
+            //    SciEditor.Selection.Start = newDocumentTemplate.Length;
+            //    SciEditor.Selection.End = newDocumentTemplate.Length;
+            //    FileName = "Untitled" + titleSuffix;
+            //    FilePath = "";
 
-                Text = FileName;
+            //    Text = FileName;
 
-                SciEditor.Modified = false;
-                WorkingWithFile = false;
-            }
+            //    SciEditor.Modified = false;
+            //    WorkingWithFile = false;
+            //}
         }
 
         private void hexadecimalToolStripMenuItem_Click(object sender, EventArgs e)
@@ -706,14 +732,14 @@ namespace kEditor
 
         private void changeStylesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (frmColor.Visible == false)
+            if (frmStyleConfig.Visible == false)
             {
-                frmColor = new ConfigStyles(SciEditor, lex.GetStyleNameIndex());
-                frmColor.Show();
+                frmStyleConfig = new ConfigStyles(SciEditor, lex.GetStyleNameIndex());
+                frmStyleConfig.Show();
             }
             else
             {
-                frmColor.BringToFront();
+                frmStyleConfig.BringToFront();
             }
         }
 
@@ -872,6 +898,16 @@ namespace kEditor
             }
             int c = glyphTable.Characters[glyphTable.SelectedCell];
             lblGlyphName.Text = glyphTable.GetNameForChar(c);
+        }
+
+        private void testToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

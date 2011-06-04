@@ -1,9 +1,9 @@
 LIBRARY
 EXPORTS
 	SetWindowsHooks
-	GetKeyProcHook
+;	GetKeyProcHook
 	GetWndProcHook
-	GetGetMsgProcHook
+;	GetGetMsgProcHook
 	SetMainWindowsHandle
-	SetMainDir
-	fileNameToLoad DATA
+;	SetMainDir
+;	fileNameToLoad DATA

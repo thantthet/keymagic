@@ -10,6 +10,20 @@ namespace KeyMagic
 {
     public partial class frmMain
     {
+        public struct LayoutInfo
+        {
+            public uint index;
+            public KeyMagicDotNet.NetKeyMagicEngine engine;
+
+            public LayoutInfo(uint i, KeyMagicDotNet.NetKeyMagicEngine e)
+            {
+                index = i;
+                engine = e;
+            }
+        }
+
+        Dictionary<IntPtr, LayoutInfo> engines = new Dictionary<IntPtr, LayoutInfo>();
+
         protected override void WndProc(ref Message msg)
         {
             base.WndProc(ref msg);
@@ -20,17 +34,17 @@ namespace KeyMagic
 
             switch (msg.Msg)
             {
-                case (int)DLLMSG.KM_GETKBLNAME:
-                    try
-                    {
-                        String fileName = ActiveKeyboardList[msg.LParam.ToInt32()].file;
-                        SetFileToLoad(fileName);
-                    }
-                    catch (Exception)
-                    {
-                        //Marshal.WriteByte(DllPtrFileToLoad, 0);
-                    }
-                    break;
+                //case (int)DLLMSG.KM_GETKBLNAME:
+                //    try
+                //    {
+                //        String fileName = ActiveKeyboardList[msg.LParam.ToInt32()].file;
+                //        SetFileToLoad(fileName);
+                //    }
+                //    catch (Exception)
+                //    {
+                //        //Marshal.WriteByte(DllPtrFileToLoad, 0);
+                //    }
+                //    break;
                 case (int)DLLMSG.KM_GOTFOCUS:
 
                     if (msg.LParam == Handle)
@@ -41,17 +55,11 @@ namespace KeyMagic
                     Debug.WriteLine("KM_GOTFOCUS=" + msg.LParam.ToString("X"));
 
                     uint pid;
-                    NavtiveMethods.GetWindowThreadProcessId(msg.LParam, out pid);
+                    NativeMethods.GetWindowThreadProcessId(msg.LParam, out pid);
                     if (Process.GetCurrentProcess().Id == pid)
                     {
-                        Debug.WriteLine("Same process with me so ignoring.");
+                        Debug.WriteLine("Same process with main process so ignoring.");
                         break;
-                    }
-
-                    if (LastClientHandle == IntPtr.Zero)
-                    {
-                        LastClientHandle = msg.LParam;
-                        SendHotKeys();
                     }
 
                     LastClientHandle = msg.LParam;
@@ -59,18 +67,28 @@ namespace KeyMagic
 
                     try
                     {
-                        int index = (int)msg.WParam;
+                        int index = 0;
+                        if (engines.ContainsKey(msg.LParam))
+                        {
+                            handler.Engine = engines[msg.LParam].engine;
+                            index = (int)engines[msg.LParam].index;
+                        }
+                        else
+                        {
+                            engines[LastClientHandle] = new LayoutInfo(0, new KeyMagicDotNet.NetKeyMagicEngine());
+                        }
 
-                        if (index != -1 && cmsLeft.Items.Count > index)
+                        if (cmsLeft.Items.Count > index)
                         {
                             String ActiveFile = ActiveKeyboardList[index].file;
                             ToolStripMenuItem item = cmsLeft.Items[index] as ToolStripMenuItem;
                             item.Checked = true;
-
+                        
                             if (iconList.ContainsKey(ActiveFile))
                             {
                                 nIcon.Icon = iconList[ActiveFile];
                             }
+
                             else
                             {
                                 nIcon.Icon = mainIcon;

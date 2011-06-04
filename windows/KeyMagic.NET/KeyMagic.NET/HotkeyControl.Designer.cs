@@ -44,6 +44,7 @@
             this.flowHotkey.Controls.Add(this.cboKey);
             this.flowHotkey.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowHotkey.Location = new System.Drawing.Point(0, 0);
+            this.flowHotkey.Margin = new System.Windows.Forms.Padding(0);
             this.flowHotkey.Name = "flowHotkey";
             this.flowHotkey.Size = new System.Drawing.Size(202, 28);
             this.flowHotkey.TabIndex = 9;
@@ -52,8 +53,8 @@
             // chkCtrl
             // 
             this.chkCtrl.AutoSize = true;
-            this.chkCtrl.Location = new System.Drawing.Point(3, 6);
-            this.chkCtrl.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+            this.chkCtrl.Location = new System.Drawing.Point(0, 6);
+            this.chkCtrl.Margin = new System.Windows.Forms.Padding(0, 6, 3, 3);
             this.chkCtrl.Name = "chkCtrl";
             this.chkCtrl.Size = new System.Drawing.Size(41, 17);
             this.chkCtrl.TabIndex = 0;
@@ -63,7 +64,7 @@
             // chkShift
             // 
             this.chkShift.AutoSize = true;
-            this.chkShift.Location = new System.Drawing.Point(50, 6);
+            this.chkShift.Location = new System.Drawing.Point(47, 6);
             this.chkShift.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.chkShift.Name = "chkShift";
             this.chkShift.Size = new System.Drawing.Size(47, 17);
@@ -74,7 +75,7 @@
             // chkAlt
             // 
             this.chkAlt.AutoSize = true;
-            this.chkAlt.Location = new System.Drawing.Point(103, 6);
+            this.chkAlt.Location = new System.Drawing.Point(100, 6);
             this.chkAlt.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.chkAlt.Name = "chkAlt";
             this.chkAlt.Size = new System.Drawing.Size(38, 17);
@@ -147,7 +148,7 @@
             ",",
             ".",
             "/"});
-            this.cboKey.Location = new System.Drawing.Point(147, 3);
+            this.cboKey.Location = new System.Drawing.Point(144, 3);
             this.cboKey.Name = "cboKey";
             this.cboKey.Size = new System.Drawing.Size(44, 21);
             this.cboKey.TabIndex = 3;

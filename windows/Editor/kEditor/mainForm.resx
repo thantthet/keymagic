@@ -140,6 +140,18 @@
   <data name="openToolStripMenuItem.Text" xml:space="preserve">
     <value>&amp;Open</value>
   </data>
+  <data name="toolStripMenuItem6.Size" type="System.Drawing.Size, System.Drawing">
+    <value>183, 6</value>
+  </data>
+  <data name="closeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>186, 22</value>
+  </data>
+  <data name="closeToolStripMenuItem.Text" xml:space="preserve">
+    <value>&amp;Close</value>
+  </data>
+  <data name="toolStripMenuItem7.Size" type="System.Drawing.Size, System.Drawing">
+    <value>183, 6</value>
+  </data>
   <data name="saveToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+S</value>
   </data>
@@ -179,14 +191,14 @@
   <data name="toolStripMenuItem2.Size" type="System.Drawing.Size, System.Drawing">
     <value>183, 6</value>
   </data>
-  <data name="closeToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+  <data name="exitToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+Q</value>
   </data>
-  <data name="closeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="exitToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>186, 22</value>
   </data>
-  <data name="closeToolStripMenuItem.Text" xml:space="preserve">
-    <value>&amp;Close</value>
+  <data name="exitToolStripMenuItem.Text" xml:space="preserve">
+    <value>E&amp;xit</value>
   </data>
   <data name="fileToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>37, 20</value>
@@ -326,6 +338,12 @@
   <data name="formatToolStripMenuItem.Text" xml:space="preserve">
     <value>Format</value>
   </data>
+  <data name="testToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>168, 22</value>
+  </data>
+  <data name="testToolStripMenuItem.Text" xml:space="preserve">
+    <value>Test</value>
+  </data>
   <data name="checkSyntaxToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>168, 22</value>
   </data>
@@ -412,7 +430,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;mainMenu.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>2</value>
   </data>
   <metadata name="openFileDlg.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>127, 17</value>
@@ -429,20 +447,38 @@
   <metadata name="fontDlg.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>357, 17</value>
   </metadata>
-  <data name="splitContainer.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
+  <data name="SciEditor.Location" type="System.Drawing.Point, System.Drawing">
+    <value>236, 40</value>
   </data>
-  <data name="splitContainer.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 24</value>
+  <data name="SciEditor.Size" type="System.Drawing.Size, System.Drawing">
+    <value>218, 200</value>
   </data>
-  <data name="tableLayoutPanel1.ColumnCount" type="System.Int32, mscorlib">
+  <data name="SciEditor.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="SciEditor.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;SciEditor.Name" xml:space="preserve">
+    <value>SciEditor</value>
+  </data>
+  <data name="&gt;&gt;SciEditor.Type" xml:space="preserve">
+    <value>ScintillaNet.Scintilla, ScintillaNet, Version=2.2.3581.19319, Culture=neutral, PublicKeyToken=948d6c9751444115</value>
+  </data>
+  <data name="&gt;&gt;SciEditor.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;SciEditor.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="GlyphMapTableLayout.ColumnCount" type="System.Int32, mscorlib">
     <value>1</value>
   </data>
   <data name="glyphTable.AutoScroll" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="glyphTable.AutoScrollMinSize" type="System.Drawing.Size, System.Drawing">
-    <value>240, 40</value>
+    <value>200, 40</value>
   </data>
   <data name="glyphTable.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -451,7 +487,7 @@
     <value>3, 3</value>
   </data>
   <data name="glyphTable.Size" type="System.Drawing.Size, System.Drawing">
-    <value>273, 361</value>
+    <value>212, 283</value>
   </data>
   <data name="glyphTable.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -463,13 +499,13 @@
     <value>kEditor.GlyphTable, kEditor, Version=1.3.0.0, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;glyphTable.Parent" xml:space="preserve">
-    <value>tableLayoutPanel1</value>
+    <value>GlyphMapTableLayout</value>
   </data>
   <data name="&gt;&gt;glyphTable.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <data name="txtFilter.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 394</value>
+    <value>3, 316</value>
   </data>
   <data name="txtFilter.Size" type="System.Drawing.Size, System.Drawing">
     <value>100, 20</value>
@@ -487,7 +523,7 @@
     <value>kEditor.FilterEditBox, kEditor, Version=1.3.0.0, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;txtFilter.Parent" xml:space="preserve">
-    <value>tableLayoutPanel1</value>
+    <value>GlyphMapTableLayout</value>
   </data>
   <data name="&gt;&gt;txtFilter.ZOrder" xml:space="preserve">
     <value>1</value>
@@ -495,8 +531,11 @@
   <data name="lblGlyphName.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
+  <data name="lblGlyphName.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
   <data name="lblGlyphName.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 367</value>
+    <value>3, 289</value>
   </data>
   <data name="lblGlyphName.Size" type="System.Drawing.Size, System.Drawing">
     <value>0, 13</value>
@@ -511,109 +550,37 @@
     <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;lblGlyphName.Parent" xml:space="preserve">
-    <value>tableLayoutPanel1</value>
+    <value>GlyphMapTableLayout</value>
   </data>
   <data name="&gt;&gt;lblGlyphName.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
-  <data name="tableLayoutPanel1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
+  <data name="GlyphMapTableLayout.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 40</value>
   </data>
-  <data name="tableLayoutPanel1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="tableLayoutPanel1.RowCount" type="System.Int32, mscorlib">
+  <data name="GlyphMapTableLayout.RowCount" type="System.Int32, mscorlib">
     <value>3</value>
   </data>
-  <data name="tableLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>279, 420</value>
+  <data name="GlyphMapTableLayout.Size" type="System.Drawing.Size, System.Drawing">
+    <value>218, 342</value>
   </data>
-  <data name="tableLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
+  <data name="GlyphMapTableLayout.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
   </data>
-  <data name="&gt;&gt;tableLayoutPanel1.Name" xml:space="preserve">
-    <value>tableLayoutPanel1</value>
+  <data name="&gt;&gt;GlyphMapTableLayout.Name" xml:space="preserve">
+    <value>GlyphMapTableLayout</value>
   </data>
-  <data name="&gt;&gt;tableLayoutPanel1.Type" xml:space="preserve">
+  <data name="&gt;&gt;GlyphMapTableLayout.Type" xml:space="preserve">
     <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;tableLayoutPanel1.Parent" xml:space="preserve">
-    <value>splitContainer.Panel1</value>
-  </data>
-  <data name="&gt;&gt;tableLayoutPanel1.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="tableLayoutPanel1.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="glyphTable" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="txtFilter" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="lblGlyphName" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,100" /&gt;&lt;Rows Styles="Percent,100,Absolute,24,Absolute,29" /&gt;&lt;/TableLayoutSettings&gt;</value>
-  </data>
-  <data name="&gt;&gt;splitContainer.Panel1.Name" xml:space="preserve">
-    <value>splitContainer.Panel1</value>
-  </data>
-  <data name="&gt;&gt;splitContainer.Panel1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.SplitterPanel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;splitContainer.Panel1.Parent" xml:space="preserve">
-    <value>splitContainer</value>
-  </data>
-  <data name="&gt;&gt;splitContainer.Panel1.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="SciEditor.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <data name="SciEditor.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="SciEditor.Size" type="System.Drawing.Size, System.Drawing">
-    <value>622, 420</value>
-  </data>
-  <data name="SciEditor.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;SciEditor.Name" xml:space="preserve">
-    <value>SciEditor</value>
-  </data>
-  <data name="&gt;&gt;SciEditor.Type" xml:space="preserve">
-    <value>ScintillaNet.Scintilla, ScintillaNet, Version=2.2.3581.19319, Culture=neutral, PublicKeyToken=948d6c9751444115</value>
-  </data>
-  <data name="&gt;&gt;SciEditor.Parent" xml:space="preserve">
-    <value>splitContainer.Panel2</value>
-  </data>
-  <data name="&gt;&gt;SciEditor.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;splitContainer.Panel2.Name" xml:space="preserve">
-    <value>splitContainer.Panel2</value>
-  </data>
-  <data name="&gt;&gt;splitContainer.Panel2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.SplitterPanel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;splitContainer.Panel2.Parent" xml:space="preserve">
-    <value>splitContainer</value>
-  </data>
-  <data name="&gt;&gt;splitContainer.Panel2.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="splitContainer.Size" type="System.Drawing.Size, System.Drawing">
-    <value>905, 420</value>
-  </data>
-  <data name="splitContainer.SplitterDistance" type="System.Int32, mscorlib">
-    <value>279</value>
-  </data>
-  <data name="splitContainer.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
-  </data>
-  <data name="&gt;&gt;splitContainer.Name" xml:space="preserve">
-    <value>splitContainer</value>
-  </data>
-  <data name="&gt;&gt;splitContainer.Type" xml:space="preserve">
-    <value>System.Windows.Forms.SplitContainer, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;splitContainer.Parent" xml:space="preserve">
+  <data name="&gt;&gt;GlyphMapTableLayout.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
-  <data name="&gt;&gt;splitContainer.ZOrder" xml:space="preserve">
-    <value>0</value>
+  <data name="&gt;&gt;GlyphMapTableLayout.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="GlyphMapTableLayout.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="glyphTable" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="txtFilter" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="lblGlyphName" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,100" /&gt;&lt;Rows Styles="Percent,100,Absolute,24,Absolute,29" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -1025,6 +992,24 @@
   <data name="&gt;&gt;openToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;toolStripMenuItem6.Name" xml:space="preserve">
+    <value>toolStripMenuItem6</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem6.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;closeToolStripMenuItem.Name" xml:space="preserve">
+    <value>closeToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;closeToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem7.Name" xml:space="preserve">
+    <value>toolStripMenuItem7</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem7.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;saveToolStripMenuItem.Name" xml:space="preserve">
     <value>saveToolStripMenuItem</value>
   </data>
@@ -1067,10 +1052,10 @@
   <data name="&gt;&gt;toolStripMenuItem2.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;closeToolStripMenuItem.Name" xml:space="preserve">
-    <value>closeToolStripMenuItem</value>
+  <data name="&gt;&gt;exitToolStripMenuItem.Name" xml:space="preserve">
+    <value>exitToolStripMenuItem</value>
   </data>
-  <data name="&gt;&gt;closeToolStripMenuItem.Type" xml:space="preserve">
+  <data name="&gt;&gt;exitToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;editToolStripMenuItem.Name" xml:space="preserve">
@@ -1203,6 +1188,12 @@
     <value>toolsToolStripMenuItem</value>
   </data>
   <data name="&gt;&gt;toolsToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;testToolStripMenuItem.Name" xml:space="preserve">
+    <value>testToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;testToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;checkSyntaxToolStripMenuItem.Name" xml:space="preserve">

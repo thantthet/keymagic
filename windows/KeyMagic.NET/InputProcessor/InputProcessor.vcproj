@@ -64,7 +64,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/EXPORT:SetWindowsHooks /EXPORT:GetKeyProcHook"
 				AdditionalDependencies="$(SolutionDir)\..\..\cross-platform\libkeymagic\vs\bin\libkeymagic.dbg.x32.lib"
 				OutputFile="$(OutDir)\$(ProjectName).x32.dll"
 				LinkIncremental="2"

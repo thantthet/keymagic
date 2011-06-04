@@ -56,12 +56,12 @@ bool Hook(HWND hWnd)
 
 	GetModuleFileNameW(NULL, dirName, MAX_PATH);
 	PathRemoveFileSpecW(dirName);
-	SetMainDir(dirName);
+	//SetMainDir(dirName);
 
 	HMODULE hModule = GetModuleHandle(DllName);
 	SetWindowsHooks(hModule);
 
-	if (GetKeyProcHook() == 0 || GetWndProcHook() == 0 || GetGetMsgProcHook() == 0) {
+	if (GetWndProcHook() == 0) {
 		printf("Hooked Unsccessful.");
 		MessageBoxA(NULL, "Hooked Unsccessful.", "Error", MB_OK);
 		return false;

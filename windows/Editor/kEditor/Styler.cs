@@ -142,7 +142,7 @@ namespace kEditor
             STLControl = ScintillaCtrl;
 
             InitStyleIndex();
-            LoadStyle();
+            LoadStyle(STLControl);
 
             //ApplyStyle(@"(\$\w+)", styleIndex["Variable"], 1);
             //ApplyStyle(@"(\$\w+?)\s*=[^>]", styleIndex["Variable (declare)"], 1);
@@ -160,7 +160,7 @@ namespace kEditor
             //ApplyStyle(@"(['""])[^\1\n]*(\\[Uu][0-9a-fA-F]{4})[^\1\n]*?\1\B", styleIndex["In-string Hex Notation"], 2);
         }
 
-        private void LoadStyle()
+        private void LoadStyle(Scintilla control)
         {
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(Properties.Settings.Default.StyleConfig);
@@ -183,7 +183,7 @@ namespace kEditor
                 else
                 {
                     if (int.TryParse(index, out styleIndex) == false) continue;
-                    thisStyle = STLControl.Styles[styleIndex];
+                    thisStyle = control.Styles[styleIndex];
                 }
 
                 if (fontName != "") thisStyle.FontName = fontName;
@@ -557,6 +557,11 @@ namespace kEditor
         internal int getStyleIndex(string p)
         {
             return styleIndex[p];
+        }
+
+        internal void SetStyles(Scintilla editor)
+        {
+            LoadStyle(editor);
         }
     }
 }

@@ -70,7 +70,7 @@
 				AdditionalDependencies="$(OutDir)\KeyMagicDll.lib $(SolutionDir)\..\..\cross-platform\libkeymagic\vs\bin\libkeymagic.dbg.x32.lib msimg32.lib shlwapi.lib gdi32.lib Userenv.lib Advapi32.lib Comdlg32.lib shell32.lib kernel32.lib User32.lib psapi.lib gdiplus.lib Ole32.lib $(NOINHERIT)"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\boost_1_45_0\32\lib"
-				UACExecutionLevel="1"
+				UACExecutionLevel="0"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="LIBCMTD.lib"
 				GenerateDebugInformation="true"

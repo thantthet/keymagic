@@ -23,12 +23,12 @@ namespace KeyMagic
     {
         enum DLLMSG : int
         {
-            KM_SETKEYBOARD = 0x5401,
+            //KM_SETKEYBOARD = 0x5401,
             KM_LOSTFOCUS = 0x5402,
             KM_GOTFOCUS = 0x5403,
-            KM_LISTCHANGED = 0x5404,
+            //KM_LISTCHANGED = 0x5404,
             KM_ERROR = 0x5405,
-            KM_GETKBLNAME = 0x5406
+            //KM_GETKBLNAME = 0x5406
         }
 
         //store additional icon for tray, this looks better for images with alpha when drawn
@@ -64,10 +64,20 @@ namespace KeyMagic
             InitializeHook();
             InitializeLogonRun();
 
+            handler = new KeyEventHandler();
+            handler.HotkeyMatched += new EventHandler<KeyEventHandler.HotkeyMatchedEvent>(handler_HotkeyMatched);
+            handler.Install();
+
             CreateKeyboardDirectory();
             LoadKeyboardLayoutList();
-            this.reportViewer1.RefreshReport();
         }
+
+        void handler_HotkeyMatched(object sender, KeyEventHandler.HotkeyMatchedEvent e)
+        {
+            ChangeKeyboardLayout((int)e.index);
+        }
+
+        KeyEventHandler handler;
 
         private void ProcessCommandLineArgs()
         {
@@ -105,6 +115,7 @@ namespace KeyMagic
                 processX64.Kill();
             if (processX32 != null)
                 processX32.Kill();
+            handler.UnInstall();
         }
 
         private void SaveColumnWidths()
@@ -299,6 +310,34 @@ namespace KeyMagic
 
         #region Initialization Functions
 
+        private static bool InternalCheckIsWow64()
+        {
+            if ((Environment.OSVersion.Version.Major == 5 && Environment.OSVersion.Version.Minor >= 1) ||
+                Environment.OSVersion.Version.Major >= 6)
+            {
+                using (Process p = Process.GetCurrentProcess())
+                {
+                    bool retVal;
+                    try
+                    {
+                        if (!NativeMethods.IsWow64Process(p.Handle, out retVal))
+                        {
+                            return false;
+                        }
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                    return retVal;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         private void InitializeMisc()
         {
             ActiveKeyboardList.Add(DefaultLayout);
@@ -308,14 +347,7 @@ namespace KeyMagic
                 lblAboutTitle.Text = String.Format("About {0} {1}", aboutDlg.AssemblyTitle, aboutDlg.AssemblyVersion);
             }
 
-            if (IntPtr.Size == 4)
-            {
-                is64bit = false;
-            }
-            else if (IntPtr.Size == 8)
-            {
-                is64bit = true;
-            }
+            is64bit = InternalCheckIsWow64();
 
             if (Environment.OSVersion.Version.Major >= 6)
             {
@@ -363,23 +395,24 @@ namespace KeyMagic
         #region Hook/Messaging with hook dll
 
         Process processX64 = null;
-        Process processX32 = null;
+        Process processX32 = null;        
 
         private void InitializeHook()
         {
+
             try
             {
                 ProcessStartInfo psi;
 
                 psi = new ProcessStartInfo("HookInput.x32.exe", Handle.ToString("X"));
                 psi.WindowStyle = ProcessWindowStyle.Hidden;
-                //processX32 = Process.Start(psi);
+                processX32 = Process.Start(psi);
 
                 if (is64bit)
                 {
                     psi = new ProcessStartInfo("HookInput.x64.exe", Handle.ToString("X"));
                     psi.WindowStyle = ProcessWindowStyle.Hidden;
-                    //processX64 = Process.Start(psi);
+                    processX64 = Process.Start(psi);
                 }
             }
             catch (Win32Exception ex)
@@ -444,31 +477,31 @@ namespace KeyMagic
         //    RaiseWin32Exception(UnhookWindowsHookEx(GetGetMsgProcHook64()));
         //}
 
-        private void SetFileToLoad(string fileName)
-        {
-            UnicodeEncoding enc = new UnicodeEncoding();
-            int count = enc.GetByteCount(fileName);
-            IntPtr buffer = Marshal.AllocHGlobal(count);
-            Marshal.Copy(enc.GetBytes(fileName), 0, buffer, count);
+        //private void SetFileToLoad(string fileName)
+        //{
+        //    UnicodeEncoding enc = new UnicodeEncoding();
+        //    int count = enc.GetByteCount(fileName);
+        //    IntPtr buffer = Marshal.AllocHGlobal(count);
+        //    Marshal.Copy(enc.GetBytes(fileName), 0, buffer, count);
 
-            NavtiveMethods.COPYDATASTRUCT copyData = new NavtiveMethods.COPYDATASTRUCT();
-            copyData.dwData = 0xB0B0;
-            copyData.lpData = buffer;
-            copyData.cbData = count;
+        //    NativeMethods.COPYDATASTRUCT copyData = new NativeMethods.COPYDATASTRUCT();
+        //    copyData.dwData = 0xB0B0;
+        //    copyData.lpData = buffer;
+        //    copyData.cbData = count;
 
-            IntPtr copyDataBuff = NavtiveMethods.IntPtrAlloc(copyData);
+        //    IntPtr copyDataBuff = NativeMethods.IntPtrAlloc(copyData);
 
-            NavtiveMethods.SendMessage(LastClientHandle, (uint)NavtiveMethods.WM.COPYDATA, IntPtr.Zero, copyDataBuff);
+        //    NativeMethods.SendMessage(LastClientHandle, (uint)NativeMethods.WM.COPYDATA, IntPtr.Zero, copyDataBuff);
 
-            NavtiveMethods.IntPtrFree(copyDataBuff);
-            copyDataBuff = IntPtr.Zero;
+        //    NativeMethods.IntPtrFree(copyDataBuff);
+        //    copyDataBuff = IntPtr.Zero;
 
-            NavtiveMethods.IntPtrFree(buffer);
-            buffer = IntPtr.Zero;
-            //UnicodeEncoding enc = new UnicodeEncoding();
-            //Marshal.Copy(enc.GetBytes(fileName), 0, DllPtrFileToLoad, enc.GetByteCount(fileName));
-            //Marshal.WriteByte(DllPtrFileToLoad, enc.GetByteCount(fileName), 0);
-        }
+        //    NativeMethods.IntPtrFree(buffer);
+        //    buffer = IntPtr.Zero;
+        //    //UnicodeEncoding enc = new UnicodeEncoding();
+        //    //Marshal.Copy(enc.GetBytes(fileName), 0, DllPtrFileToLoad, enc.GetByteCount(fileName));
+        //    //Marshal.WriteByte(DllPtrFileToLoad, enc.GetByteCount(fileName), 0);
+        //}
 
         #endregion
 
@@ -701,11 +734,14 @@ namespace KeyMagic
             }
 
             //long lPtr = DllPtrHotkeys.ToInt64();
-
+            List<Hotkey> hotkeys = new List<Hotkey>();
             foreach (KeyboardLayout layout in keyboardList)
             {
                 InfoCollection infos = new InfoCollection(GetSaveKeyboardPath(layout.file));
                 ListViewItem lvItem = new ListViewItem(layout.file);
+
+                hotkeys.Add(new Hotkey(layout.hotkey));
+
                 lvItem.SubItems.Add(layout.display);
                 lvItem.SubItems.Add(layout.hotkey);
                 lvItem.SubItems.Add(infos.GetDescription());
@@ -743,36 +779,38 @@ namespace KeyMagic
                 lvLayouts.Items.Add(lvItem);
             }
 
-            SendHotKeys();
+            handler.Hotkeys = hotkeys.ToArray();
 
-            NavtiveMethods.PostMessage(new IntPtr(0xffff), (uint)DLLMSG.KM_LISTCHANGED, IntPtr.Zero, IntPtr.Zero);
+            //SendHotKeys();
+
+            //NativeMethods.PostMessage(new IntPtr(0xffff), (uint)DLLMSG.KM_LISTCHANGED, IntPtr.Zero, IntPtr.Zero);
         }
 
-        private void SendHotKeys()
-        {
-            IntPtr HotKeys = Marshal.AllocHGlobal(sizeof(short) * ActiveKeyboardList.Count);
-            int HotKeysPtr = HotKeys.ToInt32();
-            foreach (KeyboardLayout kbLayout in ActiveKeyboardList)
-            {
-                Marshal.WriteInt16(new IntPtr(HotKeysPtr), (short)new Hotkey(kbLayout.hotkey).ToInt());
-                HotKeysPtr += sizeof(short);
-            }
+        //private void SendHotKeys()
+        //{
+        //    IntPtr HotKeys = Marshal.AllocHGlobal(sizeof(short) * ActiveKeyboardList.Count);
+        //    int HotKeysPtr = HotKeys.ToInt32();
+        //    foreach (KeyboardLayout kbLayout in ActiveKeyboardList)
+        //    {
+        //        Marshal.WriteInt16(new IntPtr(HotKeysPtr), (short)new Hotkey(kbLayout.hotkey).ToInt());
+        //        HotKeysPtr += sizeof(short);
+        //    }
 
-            NavtiveMethods.COPYDATASTRUCT copyData = new NavtiveMethods.COPYDATASTRUCT();
-            copyData.cbData = sizeof(short) * ActiveKeyboardList.Count;
-            copyData.dwData = 0xBEEF;
-            copyData.lpData = HotKeys;
+        //    NativeMethods.COPYDATASTRUCT copyData = new NativeMethods.COPYDATASTRUCT();
+        //    copyData.cbData = sizeof(short) * ActiveKeyboardList.Count;
+        //    copyData.dwData = 0xBEEF;
+        //    copyData.lpData = HotKeys;
 
-            IntPtr copyDataBuff = NavtiveMethods.IntPtrAlloc(copyData);
+        //    IntPtr copyDataBuff = NativeMethods.IntPtrAlloc(copyData);
 
-            NavtiveMethods.SendMessage(LastClientHandle, (uint)NavtiveMethods.WM.COPYDATA, IntPtr.Zero, copyDataBuff);
+        //    NativeMethods.SendMessage(LastClientHandle, (uint)NativeMethods.WM.COPYDATA, IntPtr.Zero, copyDataBuff);
 
-            NavtiveMethods.IntPtrFree(copyDataBuff);
-            copyDataBuff = IntPtr.Zero;
+        //    NativeMethods.IntPtrFree(copyDataBuff);
+        //    copyDataBuff = IntPtr.Zero;
 
-            NavtiveMethods.IntPtrFree(HotKeys);
-            HotKeys = IntPtr.Zero;
-        }
+        //    NativeMethods.IntPtrFree(HotKeys);
+        //    HotKeys = IntPtr.Zero;
+        //}
 
         private void SaveKeyboardLayoutList()
         {
@@ -1020,28 +1058,41 @@ namespace KeyMagic
             thisItem.Checked = true;
 
             int index = cmsLeft.Items.IndexOf(thisItem);
-            if (index == 0)
-            {
-                SetFileToLoad("");
-                if (NavtiveMethods.SendMessage(LastClientHandle, (uint)DLLMSG.KM_SETKEYBOARD, IntPtr.Zero, IntPtr.Zero) == IntPtr.Zero)
-                {
-                    nIcon.Icon = mainIcon;
-                }
-                return;
-            }
+            if (index < 0) return;
+            ChangeKeyboardLayout(index);
+        }
+
+        private void ChangeKeyboardLayout(int index)
+        {
+            nIcon.Icon = mainIcon;
 
             try
             {
-                String fileName = ActiveKeyboardList[index].file;
-                SetFileToLoad(fileName);
-
-                if (NavtiveMethods.SendMessage(LastClientHandle, (uint)DLLMSG.KM_SETKEYBOARD, (IntPtr)index, IntPtr.Zero) == IntPtr.Zero)
+                if (!engines.ContainsKey(LastClientHandle))
                 {
+                    engines[LastClientHandle] = new LayoutInfo((uint)index, new KeyMagicDotNet.NetKeyMagicEngine());
+                }
+                else if (index == 0)
+                {
+                    engines[LastClientHandle] = new LayoutInfo(0, new KeyMagicDotNet.NetKeyMagicEngine());
+                }
+                else if (engines[LastClientHandle].index != index)
+                {
+                    engines[LastClientHandle] = new LayoutInfo((uint)index, new KeyMagicDotNet.NetKeyMagicEngine());
+                }
+                else if (engines[LastClientHandle].index == index)
+                {
+                    engines[LastClientHandle] = new LayoutInfo(0, new KeyMagicDotNet.NetKeyMagicEngine());
+                    index = 0;
+                }
+
+                if (index != 0)
+                {
+                    String fileName = ActiveKeyboardList[index].file;
+                    handler.Engine = engines[LastClientHandle].engine;
+                    handler.Engine.loadKeyboardFile(GetSaveKeyboardPath(fileName));
+
                     nIcon.Icon = iconList[fileName];
-                    //using (Bitmap bm = new Bitmap(imageList.Images[fileName]))
-                    //{
-                    //    nIcon.Icon = Icon.FromHandle(bm.GetHicon());
-                    //}
                 }
             }
             catch (Exception)
