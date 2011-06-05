@@ -16,6 +16,7 @@ using System.Security.Principal;
 using Microsoft.Win32.TaskScheduler;
 using System.Net;
 using Microsoft.Win32;
+using System.Configuration;
 
 namespace KeyMagic
 {
@@ -35,8 +36,6 @@ namespace KeyMagic
         Dictionary<String, Icon> iconList = new Dictionary<string, Icon>();
         DwmApi.MARGINS m_glassMargins;
 
-        string keyboardDir = "KeyboardLayouts";
-
         Icon mainIcon;
 
         bool isAdmin = false;
@@ -47,10 +46,18 @@ namespace KeyMagic
         //IntPtr DllPtrHotkeys = IntPtr.Zero;
         IntPtr LastClientHandle = IntPtr.Zero;
 
+        static string mainDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        static string keyboardDir = Path.Combine(mainDir, "KeyboardLayouts");
+        static string layoutXMLFile = Path.Combine(mainDir, "Layouts.xml");
+
         #region Main Form Events
 
         public frmMain()
         {
+            PortableSettingsProvider portableSettingsProvider = new PortableSettingsProvider();
+            Properties.Settings.Default.Providers.Add(portableSettingsProvider);
+            Properties.Settings.Default.Properties["RunAtStartup"].Provider = portableSettingsProvider;
+
             InitializeComponent();
         }
 
@@ -407,7 +414,6 @@ namespace KeyMagic
 
         private void InitializeHook()
         {
-            String mainDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             try
             {
                 ProcessStartInfo psi;
@@ -722,7 +728,7 @@ namespace KeyMagic
 
             try
             {
-                FileStream fs = new FileStream("Layouts.xml", FileMode.Open, FileAccess.Read);
+                FileStream fs = new FileStream(layoutXMLFile, FileMode.Open, FileAccess.Read);
                 System.Xml.XmlReader reader = System.Xml.XmlReader.Create(fs);
 
                 reader.MoveToContent();
@@ -838,7 +844,7 @@ namespace KeyMagic
 
             try
             {
-                FileStream fs = new FileStream("Layouts.xml", FileMode.Create);
+                FileStream fs = new FileStream(layoutXMLFile, FileMode.Create);
 
                 System.Xml.XmlWriterSettings settings = new System.Xml.XmlWriterSettings();
                 settings.Indent = true;
@@ -978,7 +984,7 @@ namespace KeyMagic
                         MessageBox.Show(this, failedMessage, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
-                    Close();
+                    this.Dispose();
                 }
                 catch (Exception)
                 {
@@ -1132,6 +1138,18 @@ namespace KeyMagic
         {
             SetLogonRun(chkRunAtLogon.Checked);
             Properties.Settings.Default.RunAtStartup = chkRunAtLogon.Checked = GetOnLogonRun();
+        }
+
+        private void mainTableLayoutPanel_Paint(object sender, PaintEventArgs e)
+        {
+            TableLayoutPanel t = mainTableLayoutPanel;
+            Rectangle r = Rectangle.FromLTRB(t.Left, t.Top, t.Right, t.Top + 27);
+            e.Graphics.FillRectangle(new SolidBrush(Color.Black), r);
+        }
+
+        private void fllBottom_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.FillRectangle(new SolidBrush(Color.Black), e.ClipRectangle);
         }
     }
 }

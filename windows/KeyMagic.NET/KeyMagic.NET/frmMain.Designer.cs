@@ -37,6 +37,10 @@
             this.cmsRight = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.cmsLeft = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.fllBottom = new System.Windows.Forms.FlowLayoutPanel();
+            this.btnExit = new System.Windows.Forms.Button();
+            this.btnOK = new System.Windows.Forms.Button();
+            this.mainTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.tabControl = new KeyMagic.KTabControl();
             this.tabLayouts = new System.Windows.Forms.TabPage();
             this.tblLayouts = new System.Windows.Forms.TableLayoutPanel();
@@ -49,9 +53,6 @@
             this.btnEdit = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
             this.btnRemove = new System.Windows.Forms.Button();
-            this.fllBottom = new System.Windows.Forms.FlowLayoutPanel();
-            this.btnExit = new System.Windows.Forms.Button();
-            this.btnOK = new System.Windows.Forms.Button();
             this.tabSettings = new System.Windows.Forms.TabPage();
             this.grupSettings = new System.Windows.Forms.GroupBox();
             this.tableSettings = new System.Windows.Forms.TableLayoutPanel();
@@ -67,11 +68,12 @@
             this.aboutToolStripMenuItem = new KeyMagic.KToolStripMenuItem();
             this.exitToolStripMenuItem = new KeyMagic.KToolStripMenuItem();
             this.cmsRight.SuspendLayout();
+            this.fllBottom.SuspendLayout();
+            this.mainTableLayoutPanel.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabLayouts.SuspendLayout();
             this.tblLayouts.SuspendLayout();
             this.fllRight.SuspendLayout();
-            this.fllBottom.SuspendLayout();
             this.tabSettings.SuspendLayout();
             this.grupSettings.SuspendLayout();
             this.tableSettings.SuspendLayout();
@@ -108,16 +110,66 @@
             this.cmsLeft.Name = "cmsLeft";
             this.cmsLeft.Size = new System.Drawing.Size(61, 4);
             // 
+            // fllBottom
+            // 
+            this.fllBottom.BackColor = System.Drawing.Color.White;
+            this.fllBottom.Controls.Add(this.btnExit);
+            this.fllBottom.Controls.Add(this.btnOK);
+            this.fllBottom.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fllBottom.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.fllBottom.Location = new System.Drawing.Point(3, 352);
+            this.fllBottom.Name = "fllBottom";
+            this.fllBottom.Size = new System.Drawing.Size(663, 34);
+            this.fllBottom.TabIndex = 3;
+            // 
+            // btnExit
+            // 
+            this.btnExit.Location = new System.Drawing.Point(585, 3);
+            this.btnExit.Name = "btnExit";
+            this.btnExit.Size = new System.Drawing.Size(75, 23);
+            this.btnExit.TabIndex = 0;
+            this.btnExit.Text = "E&xit";
+            this.btnExit.UseVisualStyleBackColor = true;
+            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
+            // 
+            // btnOK
+            // 
+            this.btnOK.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.btnOK.Location = new System.Drawing.Point(504, 3);
+            this.btnOK.Name = "btnOK";
+            this.btnOK.Size = new System.Drawing.Size(75, 23);
+            this.btnOK.TabIndex = 0;
+            this.btnOK.Text = "&OK";
+            this.btnOK.UseVisualStyleBackColor = true;
+            this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
+            // 
+            // mainTableLayoutPanel
+            // 
+            this.mainTableLayoutPanel.BackColor = System.Drawing.Color.White;
+            this.mainTableLayoutPanel.ColumnCount = 1;
+            this.mainTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.mainTableLayoutPanel.Controls.Add(this.tabControl, 0, 0);
+            this.mainTableLayoutPanel.Controls.Add(this.fllBottom, 0, 1);
+            this.mainTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mainTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
+            this.mainTableLayoutPanel.Name = "mainTableLayoutPanel";
+            this.mainTableLayoutPanel.RowCount = 2;
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.mainTableLayoutPanel.Size = new System.Drawing.Size(669, 389);
+            this.mainTableLayoutPanel.TabIndex = 4;
+            this.mainTableLayoutPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainTableLayoutPanel_Paint);
+            // 
             // tabControl
             // 
             this.tabControl.Controls.Add(this.tabLayouts);
             this.tabControl.Controls.Add(this.tabSettings);
             this.tabControl.Controls.Add(this.tabAbout);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl.Location = new System.Drawing.Point(0, 0);
+            this.tabControl.Location = new System.Drawing.Point(3, 3);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(669, 389);
+            this.tabControl.Size = new System.Drawing.Size(663, 343);
             this.tabControl.TabIndex = 0;
             // 
             // tabLayouts
@@ -126,7 +178,7 @@
             this.tabLayouts.Location = new System.Drawing.Point(4, 25);
             this.tabLayouts.Name = "tabLayouts";
             this.tabLayouts.Padding = new System.Windows.Forms.Padding(3);
-            this.tabLayouts.Size = new System.Drawing.Size(661, 360);
+            this.tabLayouts.Size = new System.Drawing.Size(655, 314);
             this.tabLayouts.TabIndex = 0;
             this.tabLayouts.Text = "Keyboard Layouts";
             this.tabLayouts.UseVisualStyleBackColor = true;
@@ -138,14 +190,13 @@
             this.tblLayouts.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 90F));
             this.tblLayouts.Controls.Add(this.lvLayouts, 0, 0);
             this.tblLayouts.Controls.Add(this.fllRight, 1, 0);
-            this.tblLayouts.Controls.Add(this.fllBottom, 0, 1);
             this.tblLayouts.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tblLayouts.Location = new System.Drawing.Point(3, 3);
             this.tblLayouts.Name = "tblLayouts";
-            this.tblLayouts.RowCount = 2;
+            this.tblLayouts.RowCount = 1;
             this.tblLayouts.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tblLayouts.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tblLayouts.Size = new System.Drawing.Size(655, 354);
+            this.tblLayouts.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 308F));
+            this.tblLayouts.Size = new System.Drawing.Size(649, 308);
             this.tblLayouts.TabIndex = 0;
             // 
             // lvLayouts
@@ -167,7 +218,7 @@
             listViewGroup2});
             this.lvLayouts.Location = new System.Drawing.Point(3, 3);
             this.lvLayouts.Name = "lvLayouts";
-            this.lvLayouts.Size = new System.Drawing.Size(559, 308);
+            this.lvLayouts.Size = new System.Drawing.Size(553, 302);
             this.lvLayouts.SmallImageList = this.imageList;
             this.lvLayouts.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lvLayouts.TabIndex = 0;
@@ -201,9 +252,9 @@
             this.fllRight.Controls.Add(this.btnAdd);
             this.fllRight.Controls.Add(this.btnRemove);
             this.fllRight.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fllRight.Location = new System.Drawing.Point(568, 3);
+            this.fllRight.Location = new System.Drawing.Point(562, 3);
             this.fllRight.Name = "fllRight";
-            this.fllRight.Size = new System.Drawing.Size(84, 308);
+            this.fllRight.Size = new System.Drawing.Size(84, 302);
             this.fllRight.TabIndex = 1;
             // 
             // btnEdit
@@ -242,46 +293,13 @@
             this.btnRemove.UseVisualStyleBackColor = true;
             this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
             // 
-            // fllBottom
-            // 
-            this.tblLayouts.SetColumnSpan(this.fllBottom, 2);
-            this.fllBottom.Controls.Add(this.btnExit);
-            this.fllBottom.Controls.Add(this.btnOK);
-            this.fllBottom.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fllBottom.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.fllBottom.Location = new System.Drawing.Point(3, 317);
-            this.fllBottom.Name = "fllBottom";
-            this.fllBottom.Size = new System.Drawing.Size(649, 34);
-            this.fllBottom.TabIndex = 2;
-            // 
-            // btnExit
-            // 
-            this.btnExit.Location = new System.Drawing.Point(571, 3);
-            this.btnExit.Name = "btnExit";
-            this.btnExit.Size = new System.Drawing.Size(75, 23);
-            this.btnExit.TabIndex = 0;
-            this.btnExit.Text = "E&xit";
-            this.btnExit.UseVisualStyleBackColor = true;
-            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
-            // 
-            // btnOK
-            // 
-            this.btnOK.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.btnOK.Location = new System.Drawing.Point(490, 3);
-            this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(75, 23);
-            this.btnOK.TabIndex = 0;
-            this.btnOK.Text = "&OK";
-            this.btnOK.UseVisualStyleBackColor = true;
-            this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
-            // 
             // tabSettings
             // 
             this.tabSettings.Controls.Add(this.grupSettings);
             this.tabSettings.Location = new System.Drawing.Point(4, 25);
             this.tabSettings.Name = "tabSettings";
             this.tabSettings.Padding = new System.Windows.Forms.Padding(3);
-            this.tabSettings.Size = new System.Drawing.Size(661, 360);
+            this.tabSettings.Size = new System.Drawing.Size(655, 314);
             this.tabSettings.TabIndex = 1;
             this.tabSettings.Text = "Settings";
             this.tabSettings.UseVisualStyleBackColor = true;
@@ -292,7 +310,7 @@
             this.grupSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grupSettings.Location = new System.Drawing.Point(3, 3);
             this.grupSettings.Name = "grupSettings";
-            this.grupSettings.Size = new System.Drawing.Size(655, 354);
+            this.grupSettings.Size = new System.Drawing.Size(649, 308);
             this.grupSettings.TabIndex = 2;
             this.grupSettings.TabStop = false;
             this.grupSettings.Text = "Settings";
@@ -300,8 +318,8 @@
             // tableSettings
             // 
             this.tableSettings.ColumnCount = 2;
-            this.tableSettings.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 17.71957F));
-            this.tableSettings.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 82.28043F));
+            this.tableSettings.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
+            this.tableSettings.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableSettings.Controls.Add(this.chkRunAtLogon, 1, 1);
             this.tableSettings.Controls.Add(this.hotkeyControl1, 1, 0);
             this.tableSettings.Controls.Add(this.lblOnOffKey, 0, 0);
@@ -309,9 +327,9 @@
             this.tableSettings.Location = new System.Drawing.Point(3, 16);
             this.tableSettings.Name = "tableSettings";
             this.tableSettings.RowCount = 2;
-            this.tableSettings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.253732F));
-            this.tableSettings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 90.74627F));
-            this.tableSettings.Size = new System.Drawing.Size(649, 335);
+            this.tableSettings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+            this.tableSettings.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableSettings.Size = new System.Drawing.Size(643, 289);
             this.tableSettings.TabIndex = 0;
             // 
             // chkRunAtLogon
@@ -320,7 +338,7 @@
             this.chkRunAtLogon.Checked = global::KeyMagic.Properties.Settings.Default.RunAtStartup;
             this.chkRunAtLogon.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkRunAtLogon.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::KeyMagic.Properties.Settings.Default, "RunAtStartup", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.chkRunAtLogon.Location = new System.Drawing.Point(118, 34);
+            this.chkRunAtLogon.Location = new System.Drawing.Point(123, 38);
             this.chkRunAtLogon.Name = "chkRunAtLogon";
             this.chkRunAtLogon.Size = new System.Drawing.Size(137, 17);
             this.chkRunAtLogon.TabIndex = 1;
@@ -331,9 +349,9 @@
             // hotkeyControl1
             // 
             this.hotkeyControl1.Hotkey = hotkey1;
-            this.hotkeyControl1.Location = new System.Drawing.Point(118, 3);
+            this.hotkeyControl1.Location = new System.Drawing.Point(123, 3);
             this.hotkeyControl1.Name = "hotkeyControl1";
-            this.hotkeyControl1.Size = new System.Drawing.Size(199, 25);
+            this.hotkeyControl1.Size = new System.Drawing.Size(211, 25);
             this.hotkeyControl1.TabIndex = 2;
             // 
             // lblOnOffKey
@@ -352,7 +370,7 @@
             this.tabAbout.Location = new System.Drawing.Point(4, 25);
             this.tabAbout.Name = "tabAbout";
             this.tabAbout.Padding = new System.Windows.Forms.Padding(3);
-            this.tabAbout.Size = new System.Drawing.Size(661, 360);
+            this.tabAbout.Size = new System.Drawing.Size(655, 314);
             this.tabAbout.TabIndex = 2;
             this.tabAbout.Text = "About";
             this.tabAbout.UseVisualStyleBackColor = true;
@@ -371,7 +389,7 @@
             this.tableAbout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
             this.tableAbout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableAbout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
-            this.tableAbout.Size = new System.Drawing.Size(655, 354);
+            this.tableAbout.Size = new System.Drawing.Size(186, 65);
             this.tableAbout.TabIndex = 0;
             // 
             // txtLicense
@@ -382,14 +400,14 @@
             this.txtLicense.Name = "txtLicense";
             this.txtLicense.ReadOnly = true;
             this.txtLicense.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtLicense.Size = new System.Drawing.Size(649, 283);
+            this.txtLicense.Size = new System.Drawing.Size(180, 1);
             this.txtLicense.TabIndex = 1;
             this.txtLicense.Text = resources.GetString("txtLicense.Text");
             // 
             // btnCheckUpdate
             // 
             this.btnCheckUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCheckUpdate.Location = new System.Drawing.Point(537, 326);
+            this.btnCheckUpdate.Location = new System.Drawing.Point(68, 37);
             this.btnCheckUpdate.Name = "btnCheckUpdate";
             this.btnCheckUpdate.Size = new System.Drawing.Size(115, 23);
             this.btnCheckUpdate.TabIndex = 2;
@@ -437,7 +455,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(669, 389);
-            this.Controls.Add(this.tabControl);
+            this.Controls.Add(this.mainTableLayoutPanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmMain";
             this.Text = "KeyMagic";
@@ -446,11 +464,12 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmMain_FormClosed);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.cmsRight.ResumeLayout(false);
+            this.fllBottom.ResumeLayout(false);
+            this.mainTableLayoutPanel.ResumeLayout(false);
             this.tabControl.ResumeLayout(false);
             this.tabLayouts.ResumeLayout(false);
             this.tblLayouts.ResumeLayout(false);
             this.fllRight.ResumeLayout(false);
-            this.fllBottom.ResumeLayout(false);
             this.tabSettings.ResumeLayout(false);
             this.grupSettings.ResumeLayout(false);
             this.tableSettings.ResumeLayout(false);
@@ -476,12 +495,9 @@
         private System.Windows.Forms.Button btnEdit;
         private System.Windows.Forms.Button btnAdd;
         private System.Windows.Forms.Button btnRemove;
-        private System.Windows.Forms.FlowLayoutPanel fllBottom;
-        private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.ContextMenuStrip cmsRight;
         private System.Windows.Forms.ColumnHeader colDisplayText;
         private System.Windows.Forms.ColumnHeader colDesc;
-        private System.Windows.Forms.Button btnExit;
         private System.Windows.Forms.ContextMenuStrip cmsLeft;
         private KTabControl tabControl;
         private KToolStripMenuItem aboutToolStripMenuItem;
@@ -497,6 +513,10 @@
         private System.Windows.Forms.GroupBox grupSettings;
         private HotkeyControl hotkeyControl1;
         private System.Windows.Forms.Label lblOnOffKey;
+        private System.Windows.Forms.FlowLayoutPanel fllBottom;
+        private System.Windows.Forms.Button btnExit;
+        private System.Windows.Forms.Button btnOK;
+        private System.Windows.Forms.TableLayoutPanel mainTableLayoutPanel;
 
     }
 }
