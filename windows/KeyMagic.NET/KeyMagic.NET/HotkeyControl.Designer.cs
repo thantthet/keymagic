@@ -60,6 +60,7 @@
             this.chkCtrl.TabIndex = 0;
             this.chkCtrl.Text = "Ctrl";
             this.chkCtrl.UseVisualStyleBackColor = true;
+            this.chkCtrl.CheckedChanged += new System.EventHandler(this.chkControl_CheckedChanged);
             // 
             // chkShift
             // 
@@ -71,6 +72,7 @@
             this.chkShift.TabIndex = 2;
             this.chkShift.Text = "Shift";
             this.chkShift.UseVisualStyleBackColor = true;
+            this.chkShift.CheckedChanged += new System.EventHandler(this.chkControl_CheckedChanged);
             // 
             // chkAlt
             // 
@@ -82,6 +84,7 @@
             this.chkAlt.TabIndex = 1;
             this.chkAlt.Text = "Alt";
             this.chkAlt.UseVisualStyleBackColor = true;
+            this.chkAlt.CheckedChanged += new System.EventHandler(this.chkControl_CheckedChanged);
             // 
             // cboKey
             // 
@@ -152,6 +155,7 @@
             this.cboKey.Name = "cboKey";
             this.cboKey.Size = new System.Drawing.Size(44, 21);
             this.cboKey.TabIndex = 3;
+            this.cboKey.SelectedIndexChanged += new System.EventHandler(this.cboKey_SelectedIndexChanged);
             // 
             // HotkeyControl
             // 

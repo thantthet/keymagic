@@ -49,6 +49,7 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
+				StructMemberAlignment="0"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				DebugInformationFormat="4"
@@ -141,7 +142,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(SolutionDir)\..\..\cross-platform\libkeymagic\vs\bin\libkeymagic.dbg.x64.lib"
 				OutputFile="$(OutDir)\$(ProjectName).x64.dll"
 				LinkIncremental="2"
 				ManifestFile="$(IntDir)\$(TargetFileName).intermediate.manifest"
@@ -298,7 +298,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(SolutionDir)\..\..\cross-platform\libkeymagic\vs\bin\libkeymagic.x64.lib"
 				OutputFile="$(OutDir)\$(ProjectName).x64.dll"
 				LinkIncremental="1"
 				IgnoreAllDefaultLibraries="false"

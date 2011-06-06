@@ -520,7 +520,7 @@ namespace kEditor
         //    HiliteSyntax(managedBytes, rangeText.Length, e.Range.Start, rangeText);
         //}
 
-        internal string[] findVariable(string p)
+        public string[] findVariable(string p)
         {
             curWord = p;
             List<string> matches = variables.FindAll(finder);
@@ -554,12 +554,12 @@ namespace kEditor
             return false;
         }
 
-        internal int getStyleIndex(string p)
+        public int getStyleIndex(string p)
         {
             return styleIndex[p];
         }
 
-        internal void SetStyles(Scintilla editor)
+        public void SetStyles(Scintilla editor)
         {
             LoadStyle(editor);
         }

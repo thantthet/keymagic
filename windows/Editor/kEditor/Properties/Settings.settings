@@ -14,7 +14,7 @@
     <Setting Name="DefaultFontSize" Type="System.Single" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
-    <Setting Name="forceDefaultEditor" Type="System.Boolean" Scope="User">
+    <Setting Name="ForceDefaultEditor" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="StyleConfig" Type="System.String" Scope="User">

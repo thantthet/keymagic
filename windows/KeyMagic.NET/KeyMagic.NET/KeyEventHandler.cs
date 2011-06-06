@@ -181,10 +181,10 @@ namespace KeyMagic
 
                 NativeMethods.GetKeyboardState(keys);
 
-                Trace.WriteLine(string.Format("{0} {1} {2}",
-                    keys[(int)NativeMethods.VirtualKey.VK_CONTROL],
-                    keys[(int)NativeMethods.VirtualKey.VK_MENU],
-                    keys[(int)NativeMethods.VirtualKey.VK_SHIFT]));
+                //Trace.WriteLine(string.Format("{0} {1} {2}",
+                //    keys[(int)NativeMethods.VirtualKey.VK_CONTROL],
+                //    keys[(int)NativeMethods.VirtualKey.VK_MENU],
+                //    keys[(int)NativeMethods.VirtualKey.VK_SHIFT]));
 
                 int modifier = 0;
                 bool CTRL, ALT, SHIFT;
@@ -205,6 +205,7 @@ namespace KeyMagic
 
                 if (engine == null)
                 {
+                    Debug.WriteLine("No Engine");
                     return NativeMethods.CallNextHookEx(hhk, code, wParam, lParam);
                 }
 
@@ -213,6 +214,7 @@ namespace KeyMagic
                 uint scanCode = NativeMethods.MapVirtualKeyEx(kbHooks.vkCode, NativeMethods.MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC, HKLCurrent);
                 if (scanCode == 0)
                 {
+                    Debug.WriteLine("No ScanCode");
                     return NativeMethods.CallNextHookEx(hhk, code, wParam, lParam);
                 }
 
@@ -222,12 +224,10 @@ namespace KeyMagic
                 int ret = NativeMethods.ToUnicodeEx(vkey, scanCode, keys, TranslatedChar, 1, 0, (IntPtr)0x04090409);
                 String contextBefore = engine.getContextText();
 
-                if (
-                    engine.processKeyEvent(
+                if (engine.processKeyEvent(
                         (int)(TranslatedChar.Length > 0 ? TranslatedChar[0] : 0),
                         (int)vkey, modifier
-                        )
-                    )
+                        ))
                 {
                     sendDifference(contextBefore, engine.getContextText());
                     return 1;
@@ -247,19 +247,32 @@ namespace KeyMagic
 
         private bool CheckHotkeys(uint key, bool CTRL, bool ALT, bool SHIFT)
         {
+            switch (key)
+            {
+                case 0xA0:
+                case 0xA1:
+                case 0xA2:
+                case 0xA3:
+                case 0xA4:
+                case 0xA5:
+                    key = 0; // assume keycode as 0 if they are modifiers
+                    break;
+            }
+
             try
             {
-                Debug.WriteLine(string.Format("CheckHotkeys:{0} {1} {2} {3}", key, CTRL, ALT, SHIFT));
+                Debug.WriteLine(string.Format("CheckHotkeys:{0} {1} {2} {3}", key.ToString("X"), CTRL, ALT, SHIFT));
                 uint index = 0;
                 foreach (Hotkey hk in hotkeys)
                 {
                     index++;
+
                     if (hk.keyChar != key) continue;
                     if (hk.ctrl != CTRL) continue;
                     if (hk.alt != ALT) continue;
                     if (hk.shift != SHIFT) continue;
 
-                    OnHotkeyMatched(index);
+                    OnHotkeyMatched(index - 1);
                     return true;
                 }
             }

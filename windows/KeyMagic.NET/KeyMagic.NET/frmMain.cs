@@ -57,6 +57,8 @@ namespace KeyMagic
             PortableSettingsProvider portableSettingsProvider = new PortableSettingsProvider();
             Properties.Settings.Default.Providers.Add(portableSettingsProvider);
             Properties.Settings.Default.Properties["RunAtStartup"].Provider = portableSettingsProvider;
+            Properties.Settings.Default.Properties["TurnOffHotkey"].Provider = portableSettingsProvider;
+            Properties.Settings.Default.Properties["LastKeyboardLayoutIndex"].Provider = portableSettingsProvider;
 
             InitializeComponent();
         }
@@ -71,12 +73,21 @@ namespace KeyMagic
             InitializeHook();
             InitializeLogonRun();
 
+            hotkeyControl1.ValueChanged += new EventHandler(hotkeyControl1_ValueChanged);
+
             handler = new KeyEventHandler();
             handler.HotkeyMatched += new EventHandler<KeyEventHandler.HotkeyMatchedEvent>(handler_HotkeyMatched);
             handler.Install();
 
             CreateKeyboardDirectory();
             LoadKeyboardLayoutList();
+        }
+
+        void hotkeyControl1_ValueChanged(object sender, EventArgs e)
+        {
+            KToolStripMenuItem item = cmsLeft.Items[0] as KToolStripMenuItem;
+            Properties.Settings.Default.TurnOffHotkey = item.ShortcutKeyDisplayString = hotkeyControl1.Hotkey.ToString();
+            handler.Hotkeys[0] = hotkeyControl1.Hotkey;
         }
 
         void handler_HotkeyMatched(object sender, KeyEventHandler.HotkeyMatchedEvent e)
@@ -218,9 +229,16 @@ namespace KeyMagic
             }
             catch (UnauthorizedAccessException)
             {
-                AskToRunAsAdministrator("Access is denied when setting KeyMagic to be run on startup! Do you want to restart KeyMagic as Administrator?", "-UnRegRun");
+                DialogResult dr = AskToRunAsAdministrator(cantUnReg, "-UnRegRun");
+                if (dr == DialogResult.No)
+                {
+                    Properties.Settings.Default.RunAtStartup = true;
+                }
             }
         }
+
+        private string cantUnReg = "Access is denied when setting KeyMagic to be removed on startup! Do you want to restart KeyMagic as Administrator?";
+        private string cantReg = "Access is denied when setting KeyMagic to be run on startup! Do you want to restart KeyMagic as Administrator?";
 
         private void UnregisterTask()
         {
@@ -237,7 +255,11 @@ namespace KeyMagic
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    AskToRunAsAdministrator("Access is denied when setting KeyMagic to be run on startup! Do you want to restart KeyMagic as Administrator?", "-UnRegRun");
+                    DialogResult dr = AskToRunAsAdministrator(cantUnReg, "-UnRegRun");
+                    if (dr == DialogResult.No)
+                    {
+                        Properties.Settings.Default.RunAtStartup = true;
+                    }
                 }
             }
         }
@@ -256,7 +278,11 @@ namespace KeyMagic
             }
             catch (UnauthorizedAccessException)
             {
-                AskToRunAsAdministrator("Access is denied when setting KeyMagic to be run on startup! Do you want to restart KeyMagic as Administrator?", "-RegRun");
+                DialogResult dr = AskToRunAsAdministrator(cantReg, "-RegRun");
+                if (dr == DialogResult.No)
+                {
+                    Properties.Settings.Default.RunAtStartup = false;
+                }
             }
         }
 
@@ -301,7 +327,11 @@ namespace KeyMagic
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    AskToRunAsAdministrator("Access is denied when setting KeyMagic to be run on startup! Do you want to restart KeyMagic as Administrator?", "-RegRun");
+                    DialogResult dr = AskToRunAsAdministrator(cantReg, "-RegRun");
+                    if (dr == DialogResult.No)
+                    {
+                        Properties.Settings.Default.RunAtStartup = false;
+                    }
                 }
             }
         }
@@ -382,12 +412,14 @@ namespace KeyMagic
 
         private void InitializeKeyboardLayoutMenu()
         {
+            hotkeyControl1.Hotkey = new Hotkey(Properties.Settings.Default.TurnOffHotkey);
             //Copy Image List
             cmsLeft.ImageList = imageList;
 
             //Create Turn Off Menu Item
             KToolStripMenuItem menuItem = new KToolStripMenuItem("Turn Off");
             menuItem.Checked = true;
+            menuItem.ShortcutKeyDisplayString = hotkeyControl1.Hotkey.ToString();
             menuItem.Click += new EventHandler(cmsLeftMenuItem_Click);
             cmsLeft.Items.Add(menuItem);
         }
@@ -749,6 +781,8 @@ namespace KeyMagic
 
             //long lPtr = DllPtrHotkeys.ToInt64();
             List<Hotkey> hotkeys = new List<Hotkey>();
+            hotkeys.Add(hotkeyControl1.Hotkey);
+
             foreach (KeyboardLayout layout in keyboardList)
             {
                 InfoCollection infos = new InfoCollection(GetSaveKeyboardPath(layout.file));
@@ -794,37 +828,7 @@ namespace KeyMagic
             }
 
             handler.Hotkeys = hotkeys.ToArray();
-
-            //SendHotKeys();
-
-            //NativeMethods.PostMessage(new IntPtr(0xffff), (uint)DLLMSG.KM_LISTCHANGED, IntPtr.Zero, IntPtr.Zero);
         }
-
-        //private void SendHotKeys()
-        //{
-        //    IntPtr HotKeys = Marshal.AllocHGlobal(sizeof(short) * ActiveKeyboardList.Count);
-        //    int HotKeysPtr = HotKeys.ToInt32();
-        //    foreach (KeyboardLayout kbLayout in ActiveKeyboardList)
-        //    {
-        //        Marshal.WriteInt16(new IntPtr(HotKeysPtr), (short)new Hotkey(kbLayout.hotkey).ToInt());
-        //        HotKeysPtr += sizeof(short);
-        //    }
-
-        //    NativeMethods.COPYDATASTRUCT copyData = new NativeMethods.COPYDATASTRUCT();
-        //    copyData.cbData = sizeof(short) * ActiveKeyboardList.Count;
-        //    copyData.dwData = 0xBEEF;
-        //    copyData.lpData = HotKeys;
-
-        //    IntPtr copyDataBuff = NativeMethods.IntPtrAlloc(copyData);
-
-        //    NativeMethods.SendMessage(LastClientHandle, (uint)NativeMethods.WM.COPYDATA, IntPtr.Zero, copyDataBuff);
-
-        //    NativeMethods.IntPtrFree(copyDataBuff);
-        //    copyDataBuff = IntPtr.Zero;
-
-        //    NativeMethods.IntPtrFree(HotKeys);
-        //    HotKeys = IntPtr.Zero;
-        //}
 
         private void SaveKeyboardLayoutList()
         {
@@ -963,15 +967,16 @@ namespace KeyMagic
 
         #region Misc Functions
 
-        private void AskToRunAsAdministrator(string msg)
+        private DialogResult AskToRunAsAdministrator(string msg)
         {
-            AskToRunAsAdministrator(msg, "");
+            return AskToRunAsAdministrator(msg, "");
         }
 
-        private void AskToRunAsAdministrator(string msg, string args)
+        private DialogResult AskToRunAsAdministrator(string msg, string args)
         {
             string failedMessage = "Failed to create process.";
-            if (MessageBox.Show(this, msg, "Error!", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+            DialogResult dr = MessageBox.Show(this, msg, "Error!", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Error);
+            if (dr == DialogResult.Yes)
             {
                 try
                 {
@@ -981,8 +986,7 @@ namespace KeyMagic
                     Process p = Process.Start(psi);
                     if (p == null)
                     {
-                        MessageBox.Show(this, failedMessage, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
+                        return MessageBox.Show(this, failedMessage, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     this.Dispose();
                 }
@@ -991,6 +995,7 @@ namespace KeyMagic
                     MessageBox.Show(this, failedMessage, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+            return dr;
         }
 
         private string GetSaveKeyboardPath(string fileTitle)
@@ -1076,6 +1081,8 @@ namespace KeyMagic
             ChangeKeyboardLayout(index);
         }
 
+        private int LastKeyboardLayoutIndex = Properties.Settings.Default.LastKeyboardLayoutIndex;
+
         private void ChangeKeyboardLayout(int index)
         {
             nIcon.Icon = mainIcon;
@@ -1084,33 +1091,41 @@ namespace KeyMagic
             {
                 if (!engines.ContainsKey(LastClientHandle))
                 {
-                    engines[LastClientHandle] = new LayoutInfo((uint)index, new KeyMagicDotNet.NetKeyMagicEngine());
+                    engines[LastClientHandle] = new LayoutInfo(index, new KeyMagicDotNet.NetKeyMagicEngine());
+                }
+                else if (index == 0 && engines[LastClientHandle].index == 0)
+                {
+                    index = LastKeyboardLayoutIndex;
+                    engines[LastClientHandle] = new LayoutInfo(index, new KeyMagicDotNet.NetKeyMagicEngine());
                 }
                 else if (index == 0)
                 {
-                    engines[LastClientHandle] = new LayoutInfo(0, new KeyMagicDotNet.NetKeyMagicEngine());
+                    Properties.Settings.Default.LastKeyboardLayoutIndex = LastKeyboardLayoutIndex = engines[LastClientHandle].index;
+                    engines[LastClientHandle] = new LayoutInfo(0, null);
                 }
                 else if (engines[LastClientHandle].index != index)
                 {
-                    engines[LastClientHandle] = new LayoutInfo((uint)index, new KeyMagicDotNet.NetKeyMagicEngine());
+                    engines[LastClientHandle] = new LayoutInfo(index, new KeyMagicDotNet.NetKeyMagicEngine());
                 }
                 else if (engines[LastClientHandle].index == index)
                 {
-                    engines[LastClientHandle] = new LayoutInfo(0, new KeyMagicDotNet.NetKeyMagicEngine());
+                    engines[LastClientHandle] = new LayoutInfo(0, null);
                     index = 0;
                 }
 
-                if (index != 0)
+                handler.Engine = engines[LastClientHandle].engine;
+
+                if (index != 0 && handler.Engine != null)
                 {
                     String fileName = ActiveKeyboardList[index].file;
-                    handler.Engine = engines[LastClientHandle].engine;
                     handler.Engine.loadKeyboardFile(GetSaveKeyboardPath(fileName));
 
                     nIcon.Icon = iconList[fileName];
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Debug.WriteLine(ex.StackTrace);
             }
         }
 

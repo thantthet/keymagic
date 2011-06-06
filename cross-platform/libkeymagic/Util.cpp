@@ -21,6 +21,8 @@
 #include "KeyMagicEngine.h"
 #include "Util.h"
 
+namespace libkm {
+
 #define CASE(a,b,c) case a:case b: *keycode = c;break
 
 bool GetKeyCodeAndModifier(int keyval, int * keycode, int * modifier)
@@ -78,6 +80,8 @@ bool GetKeyCodeAndModifier(int keyval, int * keycode, int * modifier)
 
 InfoList * GetInfosFromKeyboardFile(const char * file) {
 	return KeyMagicKeyboard::getInfosFromKeyboardFile(file);
+}
+
 }
 
 #endif

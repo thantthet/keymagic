@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace kEditor
 {
-    class DockableDocument : Document
+    public class DockableDocument : Document
     {
         private DockContent dockContent = null;
 
@@ -16,6 +16,11 @@ namespace kEditor
         {
             get { return dockContent; }
             set { dockContent = value; }
+        }
+
+        public string DocTitle
+        {
+            get { return (FileName != null ? FileName : "Untitled"); }
         }
 
         private string newDocumentTemplate =
@@ -33,6 +38,8 @@ namespace kEditor
 
         public DockableDocument(String filePath, DockPanel dockPanel)
         {
+            Editor.ModifiedChanged += new EventHandler(Editor_ModifiedChanged);
+
             try
             {
                 dockContent = new DockContent();
@@ -40,32 +47,99 @@ namespace kEditor
                 dockContent.BackColor = Color.Black;
                 dockContent.DockAreas = DockAreas.Document | DockAreas.Float;
                 dockContent.Controls.Add(this.Editor);
-                this.Editor.Dock = DockStyle.Fill;
+                Editor.Dock = DockStyle.Fill;
                 dockContent.Show(dockPanel);
                 dockContent.Tag = this;
 
                 if (String.IsNullOrEmpty(filePath))
                 {
-                    this.Editor.Text = newDocumentTemplate;
-                    this.Editor.UndoRedo.EmptyUndoBuffer();
-                    this.Editor.Modified = false;
+                    Editor.Text = newDocumentTemplate;
+                    Editor.UndoRedo.EmptyUndoBuffer();
+                    Editor.Modified = false;
 
                     dockContent.TabText = "Untitled";
                     return;
                 }
-                System.IO.StreamReader sr = new System.IO.StreamReader(filePath);
-                string str = sr.ReadToEnd();
-                sr.Close();
 
-                this.Editor.Text = str;
-                FilePath = filePath;
-
-                dockContent.Name = filePath;
-                dockContent.TabText = FileName;
+                if (OpenDoc(filePath))
+                {
+                    FilePath = filePath;
+                    dockContent.Name = filePath;
+                    dockContent.TabText = DocTitle;
+                }
             }
             catch
             {
             }
+        }
+
+        void Editor_ModifiedChanged(object sender, EventArgs e)
+        {
+            if (Editor.Modified)
+            {
+                dockContent.TabText = DocTitle + "*";
+            }
+            else
+            {
+                dockContent.TabText = DocTitle;
+            }
+        }
+
+        public DialogResult SaveAs()
+        {
+            SaveFileDialog saveFileDlg = new SaveFileDialog();
+            saveFileDlg.AddExtension = true;
+            saveFileDlg.DefaultExt = "kms";
+            saveFileDlg.Filter = "KeyMagic Layout Script|*kms";
+
+            DialogResult dr = saveFileDlg.ShowDialog();
+
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                FilePath = saveFileDlg.FileName;
+            }
+            else
+            {
+                return dr;
+            }
+
+            if (SaveAsDoc(FilePath))
+            {
+                dockContent.TabText = DocTitle;
+                return DialogResult.OK;
+            }
+
+            return DialogResult.None;
+        }
+
+        public DialogResult Save()
+        {
+            if (string.IsNullOrEmpty(FilePath))
+            {
+                SaveFileDialog saveFileDlg = new SaveFileDialog();
+                saveFileDlg.AddExtension = true;
+                saveFileDlg.DefaultExt = "kms";
+                saveFileDlg.Filter = "KeyMagic Layout Script|*kms";
+
+                DialogResult dr = saveFileDlg.ShowDialog();
+
+                if (dr == System.Windows.Forms.DialogResult.OK)
+                {
+                    FilePath = saveFileDlg.FileName;
+                }
+                else
+                {
+                    return dr;
+                }
+            }
+
+            if (SaveDoc())
+            {
+                dockContent.TabText = DocTitle;
+                return DialogResult.OK;
+            }
+
+            return DialogResult.None;
         }
     }
 }

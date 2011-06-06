@@ -188,7 +188,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\libkeymagic.net.cpp"
+				RelativePath=".\NetKeyMagicEngine.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\NetUtil.cpp"
 				>
 			</File>
 			<File
@@ -218,7 +222,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\libkeymagic.net.h"
+				RelativePath=".\NetKeyMagicEngine.h"
+				>
+			</File>
+			<File
+				RelativePath=".\NetUtil.h"
 				>
 			</File>
 			<File

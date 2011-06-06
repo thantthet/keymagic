@@ -11,14 +11,24 @@ using System.Diagnostics;
 using Microsoft.Win32;
 using WeifenLuo.WinFormsUI.Docking;
 using Utils.MessageBoxExLib;
+using System.IO;
+using System.Collections;
 
 namespace kEditor
 {
     public partial class mainFrame : Form
     {
-        private bool WorkingWithFile = false;
-        private string FileName;
-        private string FilePath;
+        //private bool WorkingWithFile = false;
+        //private string FileName;
+        //private string ActiveFilePath;
+        private DockableDocument activeDocument;
+
+        public DockableDocument ActiveDocument
+        {
+            get { return activeDocument; }
+            set { activeDocument = value; }
+        }
+
         Styler lex;
 
         private List<string> recentFiles;
@@ -56,21 +66,15 @@ namespace kEditor
             SciEditor.Lexing.Lexer = (ScintillaNet.Lexer)100;
 
             bool defaultEditor = isDefaultEditor();
+            defaultEditorToolStripMenuItem.Checked = defaultEditor;
 
-            if (Properties.Settings.Default.forceDefaultEditor)
+            if (Properties.Settings.Default.ForceDefaultEditor)
             {
-                if (defaultEditor == false)
-                {
-                    if (makeDefaultEditor())
-                    {
-                        defaultEditorToolStripMenuItem.Checked = true;
-                    }
-                }
                 forceAsDefaultEditorToolStripMenuItem.Checked = true;
-            }
-            else if (defaultEditor)
-            {
-                defaultEditorToolStripMenuItem.Checked = true;
+                if (defaultEditor == false && makeDefaultEditor())
+                {
+                    defaultEditorToolStripMenuItem.Checked = true;
+                }
             }
 
             string[] args = Environment.GetCommandLineArgs();
@@ -80,6 +84,7 @@ namespace kEditor
             }
         }
         DockPanel dockPanel;
+        DockContent GlyphDock;
 
         private void DoDocking()
         {
@@ -89,15 +94,17 @@ namespace kEditor
             Controls.Add(dockPanel);
             dockPanel.BringToFront();
 
-            DockContent GlyphDock = new DockContent();
+            GlyphDock = new DockContent();
             GlyphDock.Name = "GlyphDock";
             GlyphDock.Text = "Glyph Table";
             GlyphDock.ShowHint = DockState.DockLeft;
             GlyphDock.BackColor = Color.Black;
             GlyphDock.DockAreas = DockAreas.DockBottom | DockAreas.DockLeft | DockAreas.DockRight | DockAreas.DockTop | DockAreas.Float;
             GlyphDock.Controls.Add(GlyphMapTableLayout);
-            GlyphMapTableLayout.Dock = DockStyle.Fill;
+            GlyphDock.HideOnClose = true;
             GlyphDock.Show(dockPanel);
+
+            GlyphMapTableLayout.Dock = DockStyle.Fill;
 
             //DockContent content1 = new DockContent();
             //content1.Name = "EditorDock";
@@ -187,22 +194,58 @@ namespace kEditor
             catch (UnauthorizedAccessException uax)
             {
                 if (Properties.Settings.Default.DoNotAskForAdmin == true) return false;
-                MessageBoxEx msgBox = MessageBoxExManager.CreateMessageBox("access denied");
-                msgBox.Caption = "Access denied";
-                msgBox.Text = string.Format("{0}\n{1}", uax.Message, "Please run the KMS Editor as administrator for once?");
-                msgBox.Icon = MessageBoxExIcon.Exclamation;
 
-                msgBox.AddButton("OK", "OK");
-                msgBox.AddButton("Don't ask again", "DONTASK");
-                if (msgBox.Show(this) == "DONTASK")
+
+                MessageBoxEx msgBox = MessageBoxExManager.GetMessageBox("access denied");
+                if (msgBox == null)
                 {
-                    Properties.Settings.Default.DoNotAskForAdmin = true;
+                    msgBox = MessageBoxExManager.CreateMessageBox("access denied");
+                    msgBox.Caption = "Access denied";
+                    msgBox.Text = string.Format("{0}\n{1}", uax.Message, "Do you want to run the KMS Editor as administrator.");
+                    msgBox.Icon = MessageBoxExIcon.Exclamation;
+
+                    msgBox.AddButton("OK", "OK");
+                    msgBox.AddButton("Not Now", "NN");
+                    msgBox.AddButton("Don't ask again", "DONT");
+                }
+                switch (msgBox.Show(this))
+                {
+                    case "DONT":
+                        Properties.Settings.Default.ForceDefaultEditor = false;
+                        break;
+                    case "OK":
+                        RunAsAdmin(string.Empty);
+                        break;
                 }
                 return false;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                return false;
+            }
+            return true;
+        }
+
+        private bool RunAsAdmin(string args)
+        {
+            string failedMessage = "Failed to create process.";
+            try
+            {
+                ProcessStartInfo psi = new ProcessStartInfo(Environment.GetCommandLineArgs()[0]);
+                psi.Arguments = args;
+                psi.Verb = "runas";
+                Process p = Process.Start(psi);
+                if (p == null)
+                {
+                    MessageBox.Show(this, failedMessage, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+                this.Close();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show(this, failedMessage, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
             return true;
@@ -238,7 +281,7 @@ namespace kEditor
                 "VK_RCONTROL","VK_RCTRL","VK_LCTRL","VK_LCONTROL"
             }
             );
-            
+
             Text = "Untitled" + titleSuffix;
 
             glyphTable.HexNotation = Properties.Settings.Default.HexNotation;
@@ -246,18 +289,84 @@ namespace kEditor
             lineNumbersToolStripMenuItem.Checked = Properties.Settings.Default.LineNumber;
 
             UpdateRecentFiles();
-            openFile(Properties.Settings.Default.LastFilePath);
+            //openFile(Properties.Settings.Default.LastFilePath);
+            activeDocument = CreateNewDocument(Properties.Settings.Default.LastFilePath);
 
             glyphTable.Filter = Properties.Settings.Default.GlyphFilterText;
             txtFilter.Text = glyphTable.Filter;
         }
 
+        private DockableDocument CreateNewDocument(string filePath)
+        {
+            DockableDocument doc = new DockableDocument(filePath, dockPanel);
+            lex.SetStyles(doc.Editor);
+            doc.DockContent.Activated += new EventHandler(DockContent_Activated);
+            doc.DockContent.FormClosing += new FormClosingEventHandler(DockContent_FormClosing);
+            doc.Editor.CharAdded += new EventHandler<ScintillaNet.CharAddedEventArgs>(Editor_CharAdded);
+            doc.Editor.TextChanged += new EventHandler<EventArgs>(Editor_TextChanged);
+            doc.Editor.SelectionChanged += new EventHandler(Editor_SelectionChanged);
+
+            if (string.IsNullOrEmpty(doc.DocTitle))
+            {
+                doc.DockContent.Close();
+                return null;
+            }
+
+            activeDocument = doc;
+            Text = doc.DocTitle + titleSuffix;
+
+            return doc;
+        }
+
+        void DockContent_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            DockContent dc = sender as DockContent;
+            DockableDocument dd = dc.Tag as DockableDocument;
+
+            if (dd.Editor.Modified)
+            {
+                switch (MessageBox.Show(this, string.Format("Do you want to save '{0}'?", dc.TabText), "Saving?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1))
+                {
+                    case DialogResult.Cancel:
+                        e.Cancel = true;
+                        break;
+                    case DialogResult.Yes:
+                        if (dd.Save() == DialogResult.Cancel)
+                        {
+                            e.Cancel = true;
+                        }
+                        break;
+                    case DialogResult.No:
+                        break;
+                }
+                //MessageBoxEx msgBox = MessageBoxExManager.CreateMessageBox("ask for saving");
+                //msgBox.Caption = "Saving?";
+                //msgBox.Text = string.Format("Do you want to save '{0}'?", dd.FileName);
+                //msgBox.Icon = MessageBoxExIcon.Exclamation;
+
+                //msgBox.AddButton("Yes", "Y");
+                //msgBox.AddButton("No", "N");
+                //msgBox.AddButton("Cancel", "C");
+                //switch (msgBox.Show(this))
+                //{
+                //    case "C":
+                //        e.Cancel = true;
+                //        break;
+                //    case "Y":
+                //        if (dd.Save() == DialogResult.Cancel)
+                //        {
+                //            e.Cancel = true;
+                //        }
+                //        break;
+                //    case "N":
+                //        break;
+                //}
+            }
+        }
+
         private void mainFrame_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (askToSaveModifiedDocument() == System.Windows.Forms.DialogResult.Cancel)
-            {
-                e.Cancel = true;
-            }
+            e.Cancel = false;
             if (recentFiles.Count > 0)
             {
                 Properties.Settings.Default.LastFilePath = recentFiles[recentFiles.Count - 1];
@@ -294,36 +403,38 @@ namespace kEditor
             }
         }
 
-        private void SciEditor_TextChanged(object sender, EventArgs e)
+        private void Editor_TextChanged(object sender, EventArgs e)
         {
+            ScintillaNet.Scintilla Editor = sender as ScintillaNet.Scintilla;
             //sm.HiliteSyntax();
-            computeLineNumMargin();
+            computeLineNumMargin(Editor);
         }
 
-        private void computeLineNumMargin()
+        private void computeLineNumMargin(ScintillaNet.Scintilla Editor)
         {
             if (lineNumbersToolStripMenuItem.Checked)
             {
-                SciEditor.Margins[0].Width = SciEditor.Lines.Count.ToString().Length * 10;
+                Editor.Margins[0].Width = Editor.Lines.Count.ToString().Length * 10;
             }
         }
 
-        private void SciEditor_SelectionChanged(object sender, EventArgs e)
+        private void Editor_SelectionChanged(object sender, EventArgs e)
         {
+            ScintillaNet.Scintilla Editor = sender as ScintillaNet.Scintilla;
             string selText;
 
             if (editorToolTip != null && editorToolTip.Active)
             {
-                editorToolTip.Hide(SciEditor);
+                editorToolTip.Hide(Editor);
                 editorToolTip.Dispose();
             }
 
-            if (SciEditor.NativeInterface.GetSelectionStart() == SciEditor.NativeInterface.GetSelectionEnd())
+            if (Editor.NativeInterface.GetSelectionStart() == Editor.NativeInterface.GetSelectionEnd())
             {
                 return;
             }
 
-            SciEditor.NativeInterface.GetSelText(out selText);
+            Editor.NativeInterface.GetSelText(out selText);
             selText = selText.Trim();
 
             if (selText.Length > 0)
@@ -356,7 +467,7 @@ namespace kEditor
                         caretPoint.X += 5;
                         caretPoint.Y -= 30;
                         toolTipString = concated.ToString();
-                        editorToolTip.Show(toolTipString, SciEditor, caretPoint);
+                        editorToolTip.Show(toolTipString, Editor, caretPoint);
                     }
                 }
             }
@@ -380,7 +491,8 @@ namespace kEditor
             StringFormat sFormat = new StringFormat();
             sFormat.Alignment = StringAlignment.Center;
 
-            e.Graphics.DrawString(e.ToolTipText, selectedFont, Brushes.Blue, e.Bounds, sFormat);
+            TextRenderer.DrawText(e.Graphics, e.ToolTipText, selectedFont, e.Bounds, Color.Blue, TextFormatFlags.Default);
+            //e.Graphics.DrawString(e.ToolTipText, selectedFont, Brushes.Blue, e.Bounds, sFormat);
 
             sFormat.Dispose();
         }
@@ -398,7 +510,7 @@ namespace kEditor
             {
                 int state = GetAsyncKeyState(0x10);
                 string format = "U{0:X4}" + ((state & 0xf000) != 0 ? " + " : "");
-                SciEditor.InsertText(string.Format(format, (int)charValue));
+                ActiveDocument.Editor.InsertText(string.Format(format, (int)charValue));
             }
         }
 
@@ -407,117 +519,110 @@ namespace kEditor
             string wraningMessage = "Do you want to save changes?";
             string errorMessage = "File has not been saved successfully.";
 
-            if (SciEditor.Modified)
+            DialogResult dr = MessageBox.Show(this, wraningMessage, "Warnings", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
+            if (dr == System.Windows.Forms.DialogResult.Yes)
             {
-                DialogResult dr = MessageBox.Show(this, wraningMessage, "Warnings", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
-                if (dr == System.Windows.Forms.DialogResult.Yes)
+                if (ActiveDocument.Save() == DialogResult.OK)
                 {
-                    if (saveFile() == false)
-                    {
-                        MessageBox.Show(this, errorMessage, "Warnings", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                        return System.Windows.Forms.DialogResult.Cancel;
-                    }
-                    return System.Windows.Forms.DialogResult.OK;
+                    MessageBox.Show(this, errorMessage, "Warnings", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return System.Windows.Forms.DialogResult.Cancel;
                 }
-                return dr;
+                return System.Windows.Forms.DialogResult.OK;
             }
-            return System.Windows.Forms.DialogResult.OK;
+            return dr;
         }
 
-        private bool openFile(string OpenFilePath)
+        //private bool openFile(string OpenFilePath)
+        //{
+        //    String FileName;
+
+        //    if (OpenFilePath == null)
+        //    {
+        //        openFileDlg.CheckFileExists = true;
+
+        //        if (openFileDlg.ShowDialog(this) != System.Windows.Forms.DialogResult.OK)
+        //        {
+        //            return false;
+        //        }
+        //        else
+        //        {
+        //            OpenFilePath = openFileDlg.FileName;
+        //        }
+        //    }
+
+        //    FileName = System.IO.Path.GetFileName(OpenFilePath);
+
+        //    DockableDocument dockDoc = new DockableDocument(OpenFilePath, dockPanel);
+        //    dockDoc.DockContent.Activated += new EventHandler(DockContent_Activated);
+        //    bool success = dockDoc.DockContent != null;
+        //    lex.SetStyles(dockDoc.Editor);
+
+        //    if (success)
+        //    {
+        //        ActiveDocument = dockDoc;
+        //        setRecentFile(OpenFilePath);
+        //    }
+        //    return success;
+
+        //    //System.IO.StreamReader sr = new System.IO.StreamReader(FilePath);
+        //    //string str = sr.ReadToEnd();
+        //    //sr.Close();
+        //    //SciEditor.Text = str;
+
+        //    //SciEditor.Modified = false;
+        //    //WorkingWithFile = true;
+
+        //    //Text = FileName;
+        //    //SciEditor.UndoRedo.EmptyUndoBuffer();
+
+        //    //return true;
+        //}
+
+        void DockContent_Activated(object sender, EventArgs e)
         {
-            if (OpenFilePath == null)
-            {
-                openFileDlg.CheckFileExists = true;
-
-                if (openFileDlg.ShowDialog(this) != System.Windows.Forms.DialogResult.OK)
-                {
-                    return false;
-                }
-                else
-                {
-                    FilePath = openFileDlg.FileName;
-                }
-            }
-            else if (System.IO.File.Exists(OpenFilePath))
-            {
-                FilePath = OpenFilePath;
-            }
-
-            FileName = System.IO.Path.GetFileName(FilePath);
-
-            DockableDocument dockDoc = new DockableDocument(OpenFilePath, dockPanel);
-            bool success = dockDoc.DockContent != null;
-            lex.SetStyles(dockDoc.Editor);
-
-            if (success)
-            {
-                setRecentFile();
-            }
-            return success;
-
-            //System.IO.StreamReader sr = new System.IO.StreamReader(FilePath);
-            //string str = sr.ReadToEnd();
-            //sr.Close();
-            //SciEditor.Text = str;
-
-            //SciEditor.Modified = false;
-            //WorkingWithFile = true;
-
-            //Text = FileName;
-            //SciEditor.UndoRedo.EmptyUndoBuffer();
-
-            //return true;
+            DockContent docDock = sender as DockContent;
+            ActiveDocument = docDock.Tag as DockableDocument;
+            Text = ActiveDocument.DocTitle + titleSuffix;
         }
 
-        private bool saveFile()
-        {
-            if (WorkingWithFile == false)
-            {
-                saveFileDlg.FileName = FilePath;
-                if (saveFileDlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    FileName = System.IO.Path.GetFileName(saveFileDlg.FileName);
-                    FilePath = saveFileDlg.FileName;
-                }
-                else
-                {
-                    return false;
-                }
-            }
+        //private bool saveActiveDocument()
+        //{
+        //    if (string.IsNullOrEmpty(activeDocument.FilePath))
+        //    {
+        //        //saveFileDlg.FileName = FilePath;
+        //        if (saveFileDlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        //        {
+        //            ActiveDocument.FilePath = saveFileDlg.FileName;
+        //        }
+        //        else
+        //        {
+        //            return false;
+        //        }
+        //    }
 
-            if (FilePath != null && FilePath != "")
-            {
-                try
-                {
-                    System.IO.StreamWriter sw = new System.IO.StreamWriter(FilePath, false, Encoding.UTF8);
-                    sw.Write(SciEditor.Text);
-                    sw.Flush();
-                    sw.Close();
-                    sw.Dispose();
+        //    try
+        //    {
+        //        System.IO.StreamWriter sw = new System.IO.StreamWriter(ActiveDocument.FilePath, false, Encoding.UTF8);
+        //        sw.Write(SciEditor.Text);
+        //        sw.Flush();
+        //        sw.Close();
+        //        sw.Dispose();
 
-                    SciEditor.Modified = false;
-                    WorkingWithFile = true;
+        //        activeDocument.Editor.Modified = false;
 
-                    Text = FileName;
-                    setRecentFile();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                    return false;
-                }
+        //        Text = ActiveDocument.FileName;
+        //        setRecentFile(ActiveDocument.FilePath);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show(ex.Message);
+        //        return false;
+        //    }
 
-            }
-            else
-            {
-                return false;
-            }
+        //    return true;
+        //}
 
-            return true;
-        }
-
-        private void setRecentFile()
+        private void setRecentFile(String FilePath)
         {
             recentFiles.Remove(FilePath);
             recentFiles.Add(FilePath);
@@ -535,43 +640,14 @@ namespace kEditor
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            saveFile();
+            ActiveDocument.Save();
+            Text = ActiveDocument.DocTitle + titleSuffix;
+            setRecentFile(ActiveDocument.FilePath);
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SciEditor.UndoRedo.Undo();
-
-        }
-
-        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SciEditor.UndoRedo.Redo();
-        }
-
-        private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SciEditor.Selection.SelectAll();
-        }
-
-        private void findToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SciEditor.FindReplace.ShowFind();
-        }
-
-        private void goToToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SciEditor.GoTo.ShowGoToDialog();
-        }
-
-        private void findAndReplaceToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SciEditor.FindReplace.ShowReplace();
         }
 
         private void defaultFontToolStripMenuItem_Click(object sender, EventArgs e)
@@ -588,7 +664,7 @@ namespace kEditor
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            openFile("");
+            ActiveDocument = CreateNewDocument("");
             //if (askToSaveModifiedDocument() != System.Windows.Forms.DialogResult.Cancel)
             //{
             //    SciEditor.Text = newDocumentTemplate;
@@ -618,64 +694,49 @@ namespace kEditor
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            WorkingWithFile = false;
-            if (saveFile() == false)
-            {
-                WorkingWithFile = true;
-            }
-        }
-
-        private void setGlyphRangeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-            //TODO:
-            //glyphRangeForm glyphRange = new glyphRangeForm();
-            //glyphRange.GlyphRange = glyphTable.GlyphRange;
-            //if (glyphRange.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            //{
-            //    glyphTable.GlyphRange = glyphRange.GlyphRange;
-            //    string r = glyphTable.GlyphRange.First.ToString("X4") + " - " + (glyphTable.GlyphRange.First + glyphTable.GlyphRange.Length).ToString("X4");
-            //    cboGRanges.Items.Remove(r);
-            //    cboGRanges.Items.Add(r);
-            //    cboGRanges.SelectedIndex = cboGRanges.Items.Count - 1;
-            //}
+            ActiveDocument.SaveAs();
+            Text = ActiveDocument.DocTitle + titleSuffix;
+            setRecentFile(ActiveDocument.FilePath);
         }
 
         private void RecentFileMenuItem_Click(object sender, EventArgs e)
         {
             ToolStripMenuItem recentItem = (ToolStripMenuItem)sender;
-            if (askToSaveModifiedDocument() != System.Windows.Forms.DialogResult.Cancel)
-            {
-                openFile(recentItem.Text);
-            }
+            if (SwitchIfOpened(recentItem.Text)) return;
+            ActiveDocument = CreateNewDocument(recentItem.Text);
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (askToSaveModifiedDocument() != System.Windows.Forms.DialogResult.Cancel)
+            openFileDlg.CheckFileExists = true;
+
+            if (openFileDlg.ShowDialog(this) != System.Windows.Forms.DialogResult.OK)
             {
-                openFile(null);
+                return;
+            }
+            else
+            {
+                string OpenFilePath = openFileDlg.FileName;
+
+                if (SwitchIfOpened(OpenFilePath)) return;
+
+                ActiveDocument = CreateNewDocument(OpenFilePath);
+                setRecentFile(OpenFilePath);
             }
         }
 
-        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        private bool SwitchIfOpened(string OpenFilePath)
         {
-            SciEditor.NativeInterface.Copy();
-        }
-
-        private void cutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SciEditor.NativeInterface.Cut();
-        }
-
-        private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SciEditor.NativeInterface.Paste();
-        }
-
-        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SciEditor.NativeInterface.DeleteBack();
+            foreach (DockContent dc in dockPanel.Documents)
+            {
+                DockableDocument dd = dc.Tag as DockableDocument;
+                if (string.IsNullOrEmpty(dd.FilePath) == false && dd.FilePath.Equals(OpenFilePath))
+                {
+                    dc.Show();
+                    return true;
+                }
+            }
+            return false;
         }
 
         private void lineNumbersToolStripMenuItem_Click(object sender, EventArgs e)
@@ -693,9 +754,11 @@ namespace kEditor
 
         private string curWord;
 
-        private void SciEditor_CharAdded(object sender, ScintillaNet.CharAddedEventArgs e)
+        private void Editor_CharAdded(object sender, ScintillaNet.CharAddedEventArgs e)
         {
-            curWord = SciEditor.GetWordFromPosition(SciEditor.Selection.Start);
+            ScintillaNet.Scintilla Editor = sender as ScintillaNet.Scintilla;
+
+            curWord = Editor.GetWordFromPosition(Editor.Selection.Start);
             if (curWord.Length == 0)
             {
                 return;
@@ -705,7 +768,7 @@ namespace kEditor
 
             if (list.Count > 0)
             {
-                SciEditor.AutoComplete.Show(curWord.Length, string.Join(SciEditor.AutoComplete.ListSeparator.ToString(), list.ToArray()));
+                Editor.AutoComplete.Show(curWord.Length, string.Join(SciEditor.AutoComplete.ListSeparator.ToString(), list.ToArray()));
             }
         }
 
@@ -720,10 +783,10 @@ namespace kEditor
 
         private void forceAsDefaultEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.forceDefaultEditor = forceAsDefaultEditorToolStripMenuItem.Checked;
+            Properties.Settings.Default.ForceDefaultEditor = forceAsDefaultEditorToolStripMenuItem.Checked;
             if (forceAsDefaultEditorToolStripMenuItem.Checked)
             {
-                if (makeDefaultEditor())
+                if (isDefaultEditor() == false && makeDefaultEditor())
                 {
                     defaultEditorToolStripMenuItem.Checked = true;
                 }
@@ -745,16 +808,17 @@ namespace kEditor
 
         private void compileAndSaveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Compile(null);
+        }
+
+        private bool Compile(string saveFileName)
+        {
             if (SciEditor.Modified)
             {
                 if (askToSaveModifiedDocument() != System.Windows.Forms.DialogResult.OK)
                 {
-                    return;
+                    return false;
                 }
-            }
-            if (WorkingWithFile == false)
-            {
-                return;
             }
 
             SaveFileDialog saveFileDlg = new SaveFileDialog();
@@ -762,15 +826,18 @@ namespace kEditor
             saveFileDlg.DefaultExt = "km2";
             saveFileDlg.Filter = "KeyMagic Layout File|*km2";
 
-            if (saveFileDlg.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
-
-            string saveFileName = saveFileDlg.FileName;
-            CallParser(FilePath, saveFileName);
+            if (string.IsNullOrEmpty(saveFileName))
+            {
+                if (saveFileDlg.ShowDialog() != System.Windows.Forms.DialogResult.OK) return false;
+                saveFileName = saveFileDlg.FileName;
+            }
+            return CallParser(ActiveDocument.FilePath, saveFileName);
         }
 
         private bool CallParser(string FileIn, string FileOut)
         {
             bool ret = true;
+            if (string.IsNullOrEmpty(FileIn)) return false;
             try
             {
                 if (System.IO.File.Exists(thisDir + "\\parser.exe") == false)
@@ -829,40 +896,23 @@ namespace kEditor
 
         private void checkSyntaxToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (SciEditor.Modified)
+            CheckSyntax(ActiveDocument.FilePath);
+        }
+
+        private bool CheckSyntax(string filePath)
+        {
+            if (askToSaveModifiedDocument() != System.Windows.Forms.DialogResult.OK)
             {
-                if (askToSaveModifiedDocument() != System.Windows.Forms.DialogResult.OK)
-                {
-                    return;
-                }
-            }
-            if (WorkingWithFile == false)
-            {
-                return;
+                return false;
             }
 
-            CallParser(FilePath, "");
+            return CallParser(ActiveDocument.FilePath, "");
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             aboutForm aboutF = new aboutForm();
             aboutF.ShowDialog(this);
-        }
-
-        private void SciEditor_ModifiedChanged(object sender, EventArgs e)
-        {
-            if (WorkingWithFile)
-            {
-                if (SciEditor.Modified)
-                {
-                    this.Text = string.Format("*{0}", FileName);
-                }
-                else 
-                {
-                    this.Text = FileName;
-                }
-            }
         }
 
         private void txtFilter_TextChanged(object sender, EventArgs e)
@@ -902,12 +952,97 @@ namespace kEditor
 
         private void testToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            string tempFileName = Path.GetTempFileName();
+            if (Compile(tempFileName))
+            {
+                KeyMagicDotNet.NetKeyMagicEngine engine = new KeyMagicDotNet.NetKeyMagicEngine();
+                if (engine.loadKeyboardFile(tempFileName) == false)
+                {
+                    MessageBox.Show("Cannot load keyboard file to test");
+                    return;
+                }
+                TesterForm tester = new TesterForm(engine, selectedFont);
+                tester.Show();
+                tester.FormClosed += new FormClosedEventHandler(
+                    delegate(object xsender, FormClosedEventArgs xe)
+                    {
+                        File.Delete(tempFileName);
+                    }
+                    );
+            }
+            else
+            {
+                File.Delete(tempFileName);
+            }
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            activeDocument.DockContent.Close();
+        }
 
+        private void defaultEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            defaultEditorToolStripMenuItem.Checked = makeDefaultEditor();
+        }
+
+        #region Edit Menu
+
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            activeDocument.Editor.UndoRedo.Undo();
+        }
+
+        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            activeDocument.Editor.UndoRedo.Redo();
+        }
+
+        private void cutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            activeDocument.Editor.Clipboard.Cut();
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            activeDocument.Editor.Clipboard.Copy();
+        }
+
+        private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            activeDocument.Editor.Clipboard.Paste();
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            activeDocument.Editor.NativeInterface.DeleteBack();
+        }
+
+        private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            activeDocument.Editor.Selection.SelectAll();
+        }
+
+        private void findToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void findAndReplaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void goToToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        #endregion
+
+        private void glyphTableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GlyphDock.Show();
         }
     }
 }

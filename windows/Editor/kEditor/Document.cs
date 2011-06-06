@@ -8,7 +8,7 @@ using System.Drawing;
 
 namespace kEditor
 {
-    class Document
+    public class Document
     {
         private Scintilla editor = new Scintilla();
 
@@ -55,17 +55,55 @@ namespace kEditor
         public String FilePath
         {
             get { return filePath; }
-            set { filePath = value; }
+            set {
+                if (filePath != value)
+                {
+                    
+
+                    filePath = value;
+                }
+            }
+        }
+
+        public bool SaveAsDoc(String file)
+        {
+            try
+            {
+                StreamWriter sw = new StreamWriter(file);
+                sw.Write(Editor.Text);
+                sw.Close();
+
+                Editor.Modified = false;
+                filePath = file;
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
 
         public bool SaveDoc()
         {
-            return false;
+            return SaveAsDoc(filePath);
         }
 
-        public bool OpenDoc(String fileName)
+        public bool OpenDoc(String file)
         {
-            return false;
+            try
+            {
+                System.IO.StreamReader sr = new System.IO.StreamReader(file);
+                Editor.Text = sr.ReadToEnd();
+                sr.Close();
+
+                Editor.UndoRedo.EmptyUndoBuffer();
+                Editor.Modified = false;
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
 
         public void SetText(String text)

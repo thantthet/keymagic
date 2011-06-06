@@ -4,7 +4,7 @@ using System.Text;
 
 namespace KeyMagic
 {
-    // --------- code start -------------
+    // http://www.codeproject.com/KB/vb/CustomSettingsProvider.aspx
 
     using System;
     using System.Collections;

@@ -12,10 +12,10 @@ namespace KeyMagic
     {
         public struct LayoutInfo
         {
-            public uint index;
+            public int index;
             public KeyMagicDotNet.NetKeyMagicEngine engine;
 
-            public LayoutInfo(uint i, KeyMagicDotNet.NetKeyMagicEngine e)
+            public LayoutInfo(int i, KeyMagicDotNet.NetKeyMagicEngine e)
             {
                 index = i;
                 engine = e;
@@ -71,11 +71,11 @@ namespace KeyMagic
                         if (engines.ContainsKey(msg.LParam))
                         {
                             handler.Engine = engines[msg.LParam].engine;
-                            index = (int)engines[msg.LParam].index;
+                            index = engines[msg.LParam].index;
                         }
                         else
                         {
-                            engines[LastClientHandle] = new LayoutInfo(0, new KeyMagicDotNet.NetKeyMagicEngine());
+                            engines[LastClientHandle] = new LayoutInfo(0, null);
                         }
 
                         if (cmsLeft.Items.Count > index)

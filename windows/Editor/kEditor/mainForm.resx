@@ -143,6 +143,9 @@
   <data name="toolStripMenuItem6.Size" type="System.Drawing.Size, System.Drawing">
     <value>183, 6</value>
   </data>
+  <data name="closeToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+W</value>
+  </data>
   <data name="closeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>186, 22</value>
   </data>
@@ -206,7 +209,7 @@
   <data name="fileToolStripMenuItem.Text" xml:space="preserve">
     <value>&amp;File</value>
   </data>
-  <data name="undoToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+  <data name="undoToolStripMenuItem.ShortcutKeyDisplayString" xml:space="preserve">
     <value>Ctrl+Z</value>
   </data>
   <data name="undoToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
@@ -215,7 +218,7 @@
   <data name="undoToolStripMenuItem.Text" xml:space="preserve">
     <value>Undo</value>
   </data>
-  <data name="redoToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+  <data name="redoToolStripMenuItem.ShortcutKeyDisplayString" xml:space="preserve">
     <value>Ctrl+Shift+Z</value>
   </data>
   <data name="redoToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
@@ -227,11 +230,17 @@
   <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
     <value>233, 6</value>
   </data>
+  <data name="cutToolStripMenuItem.ShortcutKeyDisplayString" xml:space="preserve">
+    <value>Ctrl+X</value>
+  </data>
   <data name="cutToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>236, 22</value>
   </data>
   <data name="cutToolStripMenuItem.Text" xml:space="preserve">
     <value>Cut</value>
+  </data>
+  <data name="copyToolStripMenuItem.ShortcutKeyDisplayString" xml:space="preserve">
+    <value>Ctrl+C</value>
   </data>
   <data name="copyToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>236, 22</value>
@@ -239,11 +248,17 @@
   <data name="copyToolStripMenuItem.Text" xml:space="preserve">
     <value>Copy</value>
   </data>
+  <data name="pasteToolStripMenuItem.ShortcutKeyDisplayString" xml:space="preserve">
+    <value>Ctrl+V</value>
+  </data>
   <data name="pasteToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>236, 22</value>
   </data>
   <data name="pasteToolStripMenuItem.Text" xml:space="preserve">
     <value>Paste</value>
+  </data>
+  <data name="deleteToolStripMenuItem.ShortcutKeyDisplayString" xml:space="preserve">
+    <value>Del</value>
   </data>
   <data name="deleteToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>236, 22</value>
@@ -254,6 +269,9 @@
   <data name="toolStripMenuItem4.Size" type="System.Drawing.Size, System.Drawing">
     <value>233, 6</value>
   </data>
+  <data name="selectAllToolStripMenuItem.ShortcutKeyDisplayString" xml:space="preserve">
+    <value>Ctrl+A</value>
+  </data>
   <data name="selectAllToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>236, 22</value>
   </data>
@@ -263,7 +281,7 @@
   <data name="toolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
     <value>233, 6</value>
   </data>
-  <data name="findToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+  <data name="findToolStripMenuItem.ShortcutKeyDisplayString" xml:space="preserve">
     <value>Ctrl+F</value>
   </data>
   <data name="findToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
@@ -272,7 +290,7 @@
   <data name="findToolStripMenuItem.Text" xml:space="preserve">
     <value>Find</value>
   </data>
-  <data name="findAndReplaceToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+  <data name="findAndReplaceToolStripMenuItem.ShortcutKeyDisplayString" xml:space="preserve">
     <value>Ctrl+Shift+F</value>
   </data>
   <data name="findAndReplaceToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
@@ -281,7 +299,7 @@
   <data name="findAndReplaceToolStripMenuItem.Text" xml:space="preserve">
     <value>Find and Replace</value>
   </data>
-  <data name="goToToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+  <data name="goToToolStripMenuItem.ShortcutKeyDisplayString" xml:space="preserve">
     <value>Ctrl+G</value>
   </data>
   <data name="goToToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
@@ -296,14 +314,26 @@
   <data name="editToolStripMenuItem.Text" xml:space="preserve">
     <value>Edit</value>
   </data>
+  <data name="glyphTableToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>152, 22</value>
+  </data>
+  <data name="glyphTableToolStripMenuItem.Text" xml:space="preserve">
+    <value>Glyph Table</value>
+  </data>
+  <data name="showToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>217, 22</value>
+  </data>
+  <data name="showToolStripMenuItem.Text" xml:space="preserve">
+    <value>Show</value>
+  </data>
+  <data name="toolStripMenuItem5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>214, 6</value>
+  </data>
   <data name="lineNumbersToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>217, 22</value>
   </data>
   <data name="lineNumbersToolStripMenuItem.Text" xml:space="preserve">
     <value>Line Numbers</value>
-  </data>
-  <data name="toolStripMenuItem5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>214, 6</value>
   </data>
   <data name="hexadecimalToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+Shift+H</value>
@@ -313,12 +343,6 @@
   </data>
   <data name="hexadecimalToolStripMenuItem.Text" xml:space="preserve">
     <value>Hexadecimal</value>
-  </data>
-  <data name="setGlypeRangeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>217, 22</value>
-  </data>
-  <data name="setGlypeRangeToolStripMenuItem.Text" xml:space="preserve">
-    <value>Set Glyph Range</value>
   </data>
   <data name="viewToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>44, 20</value>
@@ -368,10 +392,6 @@
   <data name="changeColorsToolStripMenuItem.Text" xml:space="preserve">
     <value>Change Styles</value>
   </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="defaultEditorToolStripMenuItem.Enabled" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
   <data name="defaultEditorToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>191, 22</value>
   </data>
@@ -414,6 +434,7 @@
   <data name="mainMenu.Size" type="System.Drawing.Size, System.Drawing">
     <value>905, 24</value>
   </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="mainMenu.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
   </data>
@@ -1148,28 +1169,22 @@
   <data name="&gt;&gt;viewToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;lineNumbersToolStripMenuItem.Name" xml:space="preserve">
-    <value>lineNumbersToolStripMenuItem</value>
-  </data>
-  <data name="&gt;&gt;lineNumbersToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="&gt;&gt;toolStripMenuItem5.Name" xml:space="preserve">
     <value>toolStripMenuItem5</value>
   </data>
   <data name="&gt;&gt;toolStripMenuItem5.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;lineNumbersToolStripMenuItem.Name" xml:space="preserve">
+    <value>lineNumbersToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;lineNumbersToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;hexadecimalToolStripMenuItem.Name" xml:space="preserve">
     <value>hexadecimalToolStripMenuItem</value>
   </data>
   <data name="&gt;&gt;hexadecimalToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;setGlypeRangeToolStripMenuItem.Name" xml:space="preserve">
-    <value>setGlypeRangeToolStripMenuItem</value>
-  </data>
-  <data name="&gt;&gt;setGlypeRangeToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;formatToolStripMenuItem.Name" xml:space="preserve">
@@ -1267,6 +1282,18 @@
   </data>
   <data name="&gt;&gt;fontDlg.Type" xml:space="preserve">
     <value>System.Windows.Forms.FontDialog, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;showToolStripMenuItem.Name" xml:space="preserve">
+    <value>showToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;showToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;glyphTableToolStripMenuItem.Name" xml:space="preserve">
+    <value>glyphTableToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;glyphTableToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>mainFrame</value>

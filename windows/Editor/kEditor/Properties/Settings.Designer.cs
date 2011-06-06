@@ -74,12 +74,12 @@ namespace kEditor.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool forceDefaultEditor {
+        public bool ForceDefaultEditor {
             get {
-                return ((bool)(this["forceDefaultEditor"]));
+                return ((bool)(this["ForceDefaultEditor"]));
             }
             set {
-                this["forceDefaultEditor"] = value;
+                this["ForceDefaultEditor"] = value;
             }
         }
         

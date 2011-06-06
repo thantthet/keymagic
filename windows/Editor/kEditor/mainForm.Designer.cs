@@ -59,10 +59,9 @@
             this.findAndReplaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.goToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.lineNumbersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
+            this.lineNumbersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hexadecimalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.setGlypeRangeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.formatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.defaultFontToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -84,6 +83,8 @@
             this.glyphTable = new kEditor.GlyphTable();
             this.txtFilter = new kEditor.FilterEditBox();
             this.lblGlyphName = new System.Windows.Forms.Label();
+            this.showToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.glyphTableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SciEditor)).BeginInit();
             this.GlyphMapTableLayout.SuspendLayout();
@@ -291,12 +292,17 @@
             // viewToolStripMenuItem
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.lineNumbersToolStripMenuItem,
+            this.showToolStripMenuItem,
             this.toolStripMenuItem5,
-            this.hexadecimalToolStripMenuItem,
-            this.setGlypeRangeToolStripMenuItem});
+            this.lineNumbersToolStripMenuItem,
+            this.hexadecimalToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             resources.ApplyResources(this.viewToolStripMenuItem, "viewToolStripMenuItem");
+            // 
+            // toolStripMenuItem5
+            // 
+            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
+            resources.ApplyResources(this.toolStripMenuItem5, "toolStripMenuItem5");
             // 
             // lineNumbersToolStripMenuItem
             // 
@@ -305,23 +311,12 @@
             resources.ApplyResources(this.lineNumbersToolStripMenuItem, "lineNumbersToolStripMenuItem");
             this.lineNumbersToolStripMenuItem.Click += new System.EventHandler(this.lineNumbersToolStripMenuItem_Click);
             // 
-            // toolStripMenuItem5
-            // 
-            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            resources.ApplyResources(this.toolStripMenuItem5, "toolStripMenuItem5");
-            // 
             // hexadecimalToolStripMenuItem
             // 
             this.hexadecimalToolStripMenuItem.CheckOnClick = true;
             this.hexadecimalToolStripMenuItem.Name = "hexadecimalToolStripMenuItem";
             resources.ApplyResources(this.hexadecimalToolStripMenuItem, "hexadecimalToolStripMenuItem");
             this.hexadecimalToolStripMenuItem.Click += new System.EventHandler(this.hexadecimalToolStripMenuItem_Click);
-            // 
-            // setGlypeRangeToolStripMenuItem
-            // 
-            this.setGlypeRangeToolStripMenuItem.Name = "setGlypeRangeToolStripMenuItem";
-            resources.ApplyResources(this.setGlypeRangeToolStripMenuItem, "setGlypeRangeToolStripMenuItem");
-            this.setGlypeRangeToolStripMenuItem.Click += new System.EventHandler(this.setGlyphRangeToolStripMenuItem_Click);
             // 
             // formatToolStripMenuItem
             // 
@@ -388,8 +383,9 @@
             // 
             // defaultEditorToolStripMenuItem
             // 
-            resources.ApplyResources(this.defaultEditorToolStripMenuItem, "defaultEditorToolStripMenuItem");
             this.defaultEditorToolStripMenuItem.Name = "defaultEditorToolStripMenuItem";
+            resources.ApplyResources(this.defaultEditorToolStripMenuItem, "defaultEditorToolStripMenuItem");
+            this.defaultEditorToolStripMenuItem.Click += new System.EventHandler(this.defaultEditorToolStripMenuItem_Click);
             // 
             // forceAsDefaultEditorToolStripMenuItem
             // 
@@ -479,6 +475,19 @@
             resources.ApplyResources(this.lblGlyphName, "lblGlyphName");
             this.lblGlyphName.Name = "lblGlyphName";
             // 
+            // showToolStripMenuItem
+            // 
+            this.showToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.glyphTableToolStripMenuItem});
+            this.showToolStripMenuItem.Name = "showToolStripMenuItem";
+            resources.ApplyResources(this.showToolStripMenuItem, "showToolStripMenuItem");
+            // 
+            // glyphTableToolStripMenuItem
+            // 
+            this.glyphTableToolStripMenuItem.Name = "glyphTableToolStripMenuItem";
+            resources.ApplyResources(this.glyphTableToolStripMenuItem, "glyphTableToolStripMenuItem");
+            this.glyphTableToolStripMenuItem.Click += new System.EventHandler(this.glyphTableToolStripMenuItem_Click);
+            // 
             // mainFrame
             // 
             resources.ApplyResources(this, "$this");
@@ -529,7 +538,6 @@
         private System.Windows.Forms.ToolStripMenuItem clearRecentFileListToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem setGlypeRangeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pasteToolStripMenuItem;
@@ -558,6 +566,8 @@
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem6;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem7;
+        private System.Windows.Forms.ToolStripMenuItem showToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem glyphTableToolStripMenuItem;
     }
 }
 

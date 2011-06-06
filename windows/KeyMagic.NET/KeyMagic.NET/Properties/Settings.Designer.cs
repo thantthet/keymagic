@@ -82,5 +82,29 @@ namespace KeyMagic.Properties {
                 this["RunAtStartup"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TurnOffHotkey {
+            get {
+                return ((string)(this["TurnOffHotkey"]));
+            }
+            set {
+                this["TurnOffHotkey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int LastKeyboardLayoutIndex {
+            get {
+                return ((int)(this["LastKeyboardLayoutIndex"]));
+            }
+            set {
+                this["LastKeyboardLayoutIndex"] = value;
+            }
+        }
     }
 }

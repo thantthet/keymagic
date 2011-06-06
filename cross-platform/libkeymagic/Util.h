@@ -19,6 +19,7 @@
 #ifndef UTIL_H_
 #define UTIL_H_
 
+namespace libkm {
 
 enum {
 #ifndef VK_BACK
@@ -149,5 +150,7 @@ bool GetKeyCodeAndModifier(int keyval, int * keycode, int * modifier);
 #if defined(_WIN32)
 InfoList * GetInfosFromKeyboardFile(const char * file);
 #endif
+
+}
 
 #endif
