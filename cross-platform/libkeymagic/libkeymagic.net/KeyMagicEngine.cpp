@@ -1,16 +1,17 @@
 // This is the main DLL file.
 
 #include "stdafx.h"
-
-#include "KeyMagicEngine.h"
-#include "libkeymagic.net.h"
-
 #include <msclr/marshal.h>
+
+#include "keymagic.h"
+#include "KeyMagicKeyboard.h"
+#include "KeyMagicEngine.h"
+
 using namespace msclr::interop;
 
 namespace KeyMagicDotNet {
 
-	bool NetKeyMagicEngine::loadKeyboardFile(String ^ fileName)
+	bool KeyMagicEngine::loadKeyboardFile(String ^ fileName)
 	{
 		marshal_context ^ context = gcnew marshal_context();
 		const wchar_t* szfileName = context->marshal_as<const wchar_t*>(fileName);
@@ -21,32 +22,39 @@ namespace KeyMagicDotNet {
 		return ret;
 	}
 
-	bool NetKeyMagicEngine::processKeyEvent(int keyval, int keycode, int modifier)
+	bool KeyMagicEngine::processKeyEvent(int keyval, int keycode, int modifier)
 	{
 		return engine->processKeyEvent(keyval, keycode, modifier);
 	}
 
-	void NetKeyMagicEngine::reset()
+	void KeyMagicEngine::reset()
 	{
 		return engine->reset();
 	}
 
-	String ^ NetKeyMagicEngine::getContextText()
+	String ^ KeyMagicEngine::getContextText()
 	{
-		KeyMagicString * s = engine->getContextText();
+		libkm::KeyMagicString * s = engine->getContextText();
 		return gcnew String(s->c_str());
 	}
 
-	void NetKeyMagicEngine::setContextText(String ^ textContext)
+	void KeyMagicEngine::setContextText(String ^ textContext)
 	{
 		marshal_context ^ context = gcnew marshal_context();
 		const wchar_t* szTextContext = context->marshal_as<const wchar_t*>(textContext);
 
-		KeyMagicString * s = new KeyMagicString(szTextContext);
+		libkm::KeyMagicString * s = new libkm::KeyMagicString(szTextContext);
 		
 		engine->setContextText(s);
 
 		delete s;
 		delete context;
+	}
+
+	KeyMagicKeyboard ^ KeyMagicEngine::getKeyboard()
+	{
+		libkm::KeyMagicKeyboard * keyboard = engine->getKeyboard();
+		KeyMagicKeyboard ^ managedKeyboard = gcnew KeyMagicKeyboard(keyboard);
+		return managedKeyboard;
 	}
 }

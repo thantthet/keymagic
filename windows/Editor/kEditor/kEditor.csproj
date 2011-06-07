@@ -199,6 +199,8 @@
     <None Include="Logo.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\table.png" />
+    <None Include="Resources\report.png" />
     <Content Include="UnicodeData.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

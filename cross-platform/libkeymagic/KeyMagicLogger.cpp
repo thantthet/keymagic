@@ -17,6 +17,8 @@
 
 #include "KeyMagicLogger.h"
 
+namespace libkm {
+
 KeyMagicLogger* KeyMagicLogger::m_instance = NULL;
 
 KeyMagicLogger * KeyMagicLogger::getInstance() {
@@ -31,4 +33,5 @@ KeyMagicLogger::KeyMagicLogger() : LogFileWriter(stderr) {
 
 KeyMagicLogger::~KeyMagicLogger() {
 	m_instance = NULL;
+}
 }

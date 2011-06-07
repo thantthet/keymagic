@@ -11,8 +11,8 @@ namespace kEditor
 {
     public partial class TesterForm : Form
     {
-        KeyMagicDotNet.NetKeyMagicEngine Engine = null;
-        public TesterForm(KeyMagicDotNet.NetKeyMagicEngine engine, Font f)
+        KeyMagicDotNet.KeyMagicEngine Engine = null;
+        public TesterForm(KeyMagicDotNet.KeyMagicEngine engine, Font f)
         {
             InitializeComponent();
             Engine = engine;
@@ -39,7 +39,7 @@ namespace kEditor
                 keycode = 0,
                 modifier = 0;
 
-            if (KeyMagicDotNet.NetUtil.GetKeyCodeAndModifier(keyval, ref keycode, ref modifier) == false)
+            if (KeyMagicDotNet.Util.GetKeyCodeAndModifier(keyval, ref keycode, ref modifier) == false)
             {
                 keycode = keyval;
             }
@@ -51,17 +51,19 @@ namespace kEditor
             }
             string oldContext = txtInput.Text;
             Engine.setContextText(oldContext);
-            Engine.processKeyEvent(keyval, keycode, modifier);
-            string newContext = Engine.getContextText();
-
-            if (oldContext != newContext)
+            if (Engine.processKeyEvent(keyval, keycode, modifier))
             {
-                int fromEnd = oldContext.Length - txtInput.SelectionStart;
-                
-                txtInput.Text = newContext;
-                txtInput.SelectionStart = newContext.Length - fromEnd;
-                txtInput.ScrollToCaret();
-                e.Handled = true;
+                string newContext = Engine.getContextText();
+
+                if (oldContext != newContext)
+                {
+                    int fromEnd = oldContext.Length - txtInput.SelectionStart;
+
+                    txtInput.Text = newContext;
+                    txtInput.SelectionStart = newContext.Length - fromEnd;
+                    txtInput.ScrollToCaret();
+                    e.Handled = true;
+                }
             }
         }
     }

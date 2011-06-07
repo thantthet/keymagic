@@ -20,6 +20,8 @@
 
 #include <iostream>
 
+namespace libkm {
+
 /**
  * LogFileWriter
  */
@@ -47,5 +49,7 @@ public:
 private:
 	FILE * m_logFile;
 };
+
+}
 
 #endif

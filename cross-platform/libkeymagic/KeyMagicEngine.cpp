@@ -21,6 +21,8 @@
 #include "KeyMagicEngine.h"
 #include "KeyMagicLogger.h"
 
+namespace libkm {
+
 KeyMagicEngine::KeyMagicEngine() :
 	m_logger(KeyMagicLogger::getInstance()),
 	m_verbose(0),
@@ -552,4 +554,6 @@ void KeyMagicEngine::setContextText(KeyMagicString * textContext) {
 
 KeyMagicKeyboard * KeyMagicEngine::getKeyboard() {
 	return &m_keyboard;
+}
+
 }

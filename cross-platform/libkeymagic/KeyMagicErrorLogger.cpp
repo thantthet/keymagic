@@ -17,6 +17,8 @@
 
 #include "KeyMagicErrorLogger.h"
 
+namespace libkm {
+
 KeyMagicErrorLogger* KeyMagicErrorLogger::m_instance = NULL;
 
 KeyMagicErrorLogger * KeyMagicErrorLogger::getInstance() {
@@ -31,4 +33,6 @@ KeyMagicErrorLogger::KeyMagicErrorLogger() : LogFileWriter(stderr) {
 
 KeyMagicErrorLogger::~KeyMagicErrorLogger() {
 	m_instance = NULL;
+}
+
 }

@@ -19,6 +19,8 @@
 #include <fstream>
 #include <sstream>
 
+namespace libkm {
+
 RuleInfo::Item::Item(types t, const KeyMagicString * string) {
 	stringValue = new KeyMagicString();
 	stringValue->assign(string->c_str());
@@ -276,4 +278,5 @@ int RuleInfo::toRuleInfo(short * binRule, std::vector<Item*> * outRule, StringLi
 	}
 
 	return patLength;
+}
 }

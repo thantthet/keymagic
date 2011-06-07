@@ -229,8 +229,6 @@
 			<key>Layout</key>
 			<array>
 				<dict>
-					<key>BecomeActive</key>
-					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -312,12 +310,14 @@
 					<key>Dock</key>
 					<array>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>KeymagicIMEController.mm</string>
+								<string>KeyMagicUtil.mm</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -325,11 +325,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>KeymagicIMEController.mm</string>
+										<string>KeyMagicUtil.mm</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B5A47C8E138AAD7B001ECBE2</string>
+										<string>B51EE574139E8CAE006CE6F8</string>
 										<key>history</key>
 										<array>
 											<string>B5A848BB12FFB2D6005486CE</string>
@@ -402,13 +402,13 @@
 											<string>B5596A0413799DCE00690DE3</string>
 											<string>B5596A0613799DCE00690DE3</string>
 											<string>B5596A1F13799F2600690DE3</string>
-											<string>B5FE2F44137B008800659CB5</string>
 											<string>B5FE2F45137B008800659CB5</string>
 											<string>B523B2F6137BCAE700419288</string>
-											<string>B5A47C74138AA705001ECBE2</string>
 											<string>B5A47C8A138AA829001ECBE2</string>
 											<string>B5A47C8B138AA829001ECBE2</string>
-											<string>B5A47C8C138AA829001ECBE2</string>
+											<string>B51EE571139E8CAE006CE6F8</string>
+											<string>B51EE572139E8CAE006CE6F8</string>
+											<string>B51EE573139E8CAE006CE6F8</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -420,14 +420,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1232, 397}}</string>
+								<string>{{0, 0}, {1232, 501}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 132 1440 746 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>397pt</string>
+							<string>501pt</string>
 						</dict>
 						<dict>
 							<key>ContentConfiguration</key>
@@ -440,14 +440,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 402}, {1232, 303}}</string>
+								<string>{{0, 506}, {1232, 199}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 132 1440 746 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
 							<key>Proportion</key>
-							<string>303pt</string>
+							<string>199pt</string>
 						</dict>
 					</array>
 					<key>Proportion</key>
@@ -466,9 +466,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B5A47C77138AA705001ECBE2</string>
+				<string>B51EE575139E8CAE006CE6F8</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>B5A47C78138AA705001ECBE2</string>
+				<string>B51EE576139E8CAE006CE6F8</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -606,10 +606,6 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>B5A47C83138AA70E001ECBE2</string>
-		<string>B5A47C84138AA70E001ECBE2</string>
-		<string>1C78EAAD065D492600B07095</string>
-		<string>1CD10A99069EF8BA00B06720</string>
 		<string>B51D987712FFA506008E0A2F</string>
 		<string>/Users/thantthetkz/codes/Keymagic/OSX/IMKBased/KeyMagic.xcodeproj</string>
 	</array>
@@ -691,7 +687,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>B51D987712FFA506008E0A2F</string>
-				<string>B5A47C79138AA705001ECBE2</string>
+				<string>B51EE577139E8CAE006CE6F8</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>

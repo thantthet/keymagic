@@ -13,6 +13,7 @@ using WeifenLuo.WinFormsUI.Docking;
 using Utils.MessageBoxExLib;
 using System.IO;
 using System.Collections;
+using System.Resources;
 
 namespace kEditor
 {
@@ -78,13 +79,10 @@ namespace kEditor
             }
 
             string[] args = Environment.GetCommandLineArgs();
-            if (args.Length == 2)
-            {
-                Properties.Settings.Default.LastFilePath = args[1];
-            }
         }
         DockPanel dockPanel;
         DockContent GlyphDock;
+        DockContent OutputDock;
 
         private void DoDocking()
         {
@@ -94,11 +92,20 @@ namespace kEditor
             Controls.Add(dockPanel);
             dockPanel.BringToFront();
 
+            //string[] all = System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceNames();
+
+            //foreach (string one in all)
+            //{
+            //    MessageBox.Show(one);
+            //}
             GlyphDock = new DockContent();
+            using (Bitmap bm = Properties.Resources.GlyphMap)
+            {
+                GlyphDock.Icon = Icon.FromHandle(bm.GetHicon());
+            }
             GlyphDock.Name = "GlyphDock";
             GlyphDock.Text = "Glyph Table";
             GlyphDock.ShowHint = DockState.DockLeft;
-            GlyphDock.BackColor = Color.Black;
             GlyphDock.DockAreas = DockAreas.DockBottom | DockAreas.DockLeft | DockAreas.DockRight | DockAreas.DockTop | DockAreas.Float;
             GlyphDock.Controls.Add(GlyphMapTableLayout);
             GlyphDock.HideOnClose = true;
@@ -106,15 +113,21 @@ namespace kEditor
 
             GlyphMapTableLayout.Dock = DockStyle.Fill;
 
-            //DockContent content1 = new DockContent();
-            //content1.Name = "EditorDock";
-            //content1.TabText = "Untitled";
-            //content1.ShowHint = DockState.Document;
-            //content1.BackColor = Color.Black;
-            //content1.DockAreas = DockAreas.Document | DockAreas.Float;
-            //content1.Controls.Add(SciEditor);
-            //SciEditor.Dock = DockStyle.Fill;
-            //content1.Show(dockPanel);
+            OutputDock = new DockContent();
+            using (Bitmap bm = Properties.Resources.Report)
+            {
+                OutputDock.Icon = Icon.FromHandle(bm.GetHicon());
+            }
+            OutputDock.Text = "Output";
+            OutputDock.Name = "Output";
+            OutputDock.TabText = "Output";
+            OutputDock.DockAreas = DockAreas.DockBottom | DockAreas.DockLeft | DockAreas.DockRight | DockAreas.DockTop | DockAreas.Float;
+            OutputDock.ShowHint = DockState.DockBottom;
+            OutputDock.HideOnClose = true;
+            OutputDock.Controls.Add(txtOutput);
+            txtOutput.Dock = DockStyle.Fill;
+            OutputDock.Show(dockPanel);
+            OutputDock.DockTo(dockPanel, DockStyle.Bottom);
         }
 
         private bool isDefaultEditor()
@@ -289,8 +302,16 @@ namespace kEditor
             lineNumbersToolStripMenuItem.Checked = Properties.Settings.Default.LineNumber;
 
             UpdateRecentFiles();
-            //openFile(Properties.Settings.Default.LastFilePath);
-            activeDocument = CreateNewDocument(Properties.Settings.Default.LastFilePath);
+            string[] tabs = Properties.Settings.Default.LastTabs.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string tab in tabs)
+            {
+                CreateNewDocument(tab);
+            }
+
+            if (dockPanel.DocumentsCount == 0)
+            {
+                CreateNewDocument(string.Empty);
+            }
 
             glyphTable.Filter = Properties.Settings.Default.GlyphFilterText;
             txtFilter.Text = glyphTable.Filter;
@@ -366,11 +387,17 @@ namespace kEditor
 
         private void mainFrame_FormClosing(object sender, FormClosingEventArgs e)
         {
-            e.Cancel = false;
-            if (recentFiles.Count > 0)
+            List<string> tabs = new List<string>();
+            foreach (DockContent dc in dockPanel.Documents)
             {
-                Properties.Settings.Default.LastFilePath = recentFiles[recentFiles.Count - 1];
+                DockableDocument dd = dc.Tag as DockableDocument;
+                if (string.IsNullOrEmpty(dd.FilePath) == false)
+                {
+                    tabs.Add(dd.FilePath);
+                }
             }
+
+            Properties.Settings.Default.LastTabs = string.Join("|", tabs.ToArray());
             Properties.Settings.Default.RecentFiles = string.Join("|", recentFiles.ToArray());
             Properties.Settings.Default.DefaultFontName = selectedFont.Name;
             Properties.Settings.Default.DefaultFontSize = selectedFont.Size;
@@ -519,15 +546,20 @@ namespace kEditor
             string wraningMessage = "Do you want to save changes?";
             string errorMessage = "File has not been saved successfully.";
 
+            if (ActiveDocument.Modified == false)
+            {
+                return DialogResult.OK;
+            }
+
             DialogResult dr = MessageBox.Show(this, wraningMessage, "Warnings", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
             if (dr == System.Windows.Forms.DialogResult.Yes)
             {
-                if (ActiveDocument.Save() == DialogResult.OK)
+                if (ActiveDocument.Save() != DialogResult.OK)
                 {
                     MessageBox.Show(this, errorMessage, "Warnings", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return System.Windows.Forms.DialogResult.Cancel;
                 }
-                return System.Windows.Forms.DialogResult.OK;
+                return DialogResult.OK;
             }
             return dr;
         }
@@ -836,13 +868,16 @@ namespace kEditor
 
         private bool CallParser(string FileIn, string FileOut)
         {
+            string nl = Environment.NewLine;
             bool ret = true;
             if (string.IsNullOrEmpty(FileIn)) return false;
+
             try
             {
                 if (System.IO.File.Exists(thisDir + "\\parser.exe") == false)
                 {
-                    MessageBox.Show(this, "Parser program not found! You could download at http://keymagic.googlecode.com/", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtOutput.Text = "Parser program not found! You could download at http://keymagic.googlecode.com/" + nl;
+                    //MessageBox.Show(this, "Parser program not found! You could download at http://keymagic.googlecode.com/", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return false;
                 }
                 string commandLine;
@@ -854,6 +889,7 @@ namespace kEditor
                 {
                     commandLine = string.Format("\"{0}\"", FileIn);
                 }
+                txtOutput.Text = "Executing parser : parser.exe " + commandLine + nl;
                 ProcessStartInfo psi = new ProcessStartInfo(thisDir + "\\parser.exe", commandLine);
                 psi.WindowStyle = ProcessWindowStyle.Hidden;
                 psi.RedirectStandardOutput = true;
@@ -870,14 +906,16 @@ namespace kEditor
 
                 if (parserProcess.ExitCode == 1)
                 {
-                    MessageBox.Show(this, errText, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtOutput.Text += errText + nl;
+                    //MessageBox.Show(this, errText, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     ret = false;
                 }
                 else
                 {
                     string[] splitted = outText.Split('\n');
                     string lastLine = splitted[splitted.Length - 2];
-                    MessageBox.Show(this, lastLine + "~~\n" + errText, "Success", MessageBoxButtons.OK, errText != "" ? MessageBoxIcon.Warning : MessageBoxIcon.Information);
+                    txtOutput.Text += lastLine + nl + errText;
+                    //MessageBox.Show(this, lastLine + "~~\n" + errText, "Success", MessageBoxButtons.OK, errText != "" ? MessageBoxIcon.Warning : MessageBoxIcon.Information);
                 }
                 stdout.Close();
                 stderr.Close();
@@ -955,12 +993,17 @@ namespace kEditor
             string tempFileName = Path.GetTempFileName();
             if (Compile(tempFileName))
             {
-                KeyMagicDotNet.NetKeyMagicEngine engine = new KeyMagicDotNet.NetKeyMagicEngine();
+                KeyMagicDotNet.KeyMagicEngine engine = new KeyMagicDotNet.KeyMagicEngine();
                 if (engine.loadKeyboardFile(tempFileName) == false)
                 {
                     MessageBox.Show("Cannot load keyboard file to test");
                     return;
                 }
+
+                KeyMagicDotNet.KeyMagicKeyboard keyboard = engine.getKeyboard();
+                Byte[] font = keyboard.getInfo("font");
+                string f = new string(font);
+
                 TesterForm tester = new TesterForm(engine, selectedFont);
                 tester.Show();
                 tester.FormClosed += new FormClosedEventHandler(
@@ -1043,6 +1086,11 @@ namespace kEditor
         private void glyphTableToolStripMenuItem_Click(object sender, EventArgs e)
         {
             GlyphDock.Show();
+        }
+
+        private void outputToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OutputDock.Show();
         }
     }
 }

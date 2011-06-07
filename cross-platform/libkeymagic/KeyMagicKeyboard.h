@@ -25,6 +25,8 @@
 #include "KeyMagicLogger.h"
 #include "KeyMagicErrorLogger.h"
 
+namespace libkm {
+
 #define KML_INFO_NAME 'name'
 #define KML_INFO_DESC 'desc'
 #define KML_INFO_FONT 'font'
@@ -88,5 +90,7 @@ private:
 	void deleteRules();
 	void deleteInfos();
 };
+
+}
 
 #endif

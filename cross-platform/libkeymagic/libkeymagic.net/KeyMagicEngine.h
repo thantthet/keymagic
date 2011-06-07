@@ -1,21 +1,19 @@
-// libkeymagic.net.h
-
 #pragma once
 
 using namespace System;
 
 namespace KeyMagicDotNet {
 
-	public ref class NetKeyMagicEngine
+	public ref class KeyMagicEngine
 	{
 	public:
-		NetKeyMagicEngine() : engine ( new KeyMagicEngine() ) {}
-		~NetKeyMagicEngine() 
+		KeyMagicEngine() : engine ( new libkm::KeyMagicEngine() ) {}
+		~KeyMagicEngine() 
 		{
 			delete engine;
 		}
 	protected:
-		!NetKeyMagicEngine() {
+		!KeyMagicEngine() {
 			delete engine;
 		}
 	public:
@@ -31,7 +29,17 @@ namespace KeyMagicDotNet {
 		void reset();
 		String ^ getContextText();
 		void setContextText(String ^ textContext);
+		KeyMagicKeyboard ^ getKeyboard();
+
+		property bool Verbose {
+			bool get() {
+				return engine->m_verbose;
+			}
+			void set(bool value) {
+				engine->m_verbose = value;
+			}
+		}
 	private:
-		KeyMagicEngine * engine;
+		libkm::KeyMagicEngine * engine;
 	};
 }

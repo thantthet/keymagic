@@ -26,18 +26,6 @@ namespace kEditor.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string LastFilePath {
-            get {
-                return ((string)(this["LastFilePath"]));
-            }
-            set {
-                this["LastFilePath"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string RecentFiles {
             get {
                 return ((string)(this["RecentFiles"]));
@@ -170,6 +158,18 @@ namespace kEditor.Properties {
             }
             set {
                 this["DoNotAskForAdmin"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastTabs {
+            get {
+                return ((string)(this["LastTabs"]));
+            }
+            set {
+                this["LastTabs"] = value;
             }
         }
     }

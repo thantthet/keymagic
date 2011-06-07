@@ -17,6 +17,8 @@
 
 #include "KeyCodes.h"
 
+namespace libkm {
+
 KeyCodes::KeyCodes() {
 
 	idKeyCode[id_VK_BACK] = L"\x0008";
@@ -143,4 +145,6 @@ KeyCodes::KeyCodes() {
 
 const std::wstring& KeyCodes::getKeyValue(int id) {
 	return idKeyCode[id];
+}
+
 }

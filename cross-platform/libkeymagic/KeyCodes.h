@@ -21,6 +21,8 @@
 #include <map>
 #include <string>
 
+namespace libkm {
+
 /**
  * KeyCodes class can be used to translate between (so called) pre-defined into keycode values\n
  * @see getKeyValue()
@@ -66,5 +68,7 @@ public:
 private:
 	std::map<int, std::wstring> idKeyCode;
 };
+
+}
 
 #endif /* KEYCODES_H_ */

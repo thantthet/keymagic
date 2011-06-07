@@ -26,6 +26,8 @@
 
 #define KeyStateLen 256
 
+namespace libkm {
+
 typedef std::vector<KeyMagicString> TypeContextHistory;
 
 /**
@@ -132,5 +134,7 @@ private:
 	
 	KeyMagicLogger * m_logger;
 };
+
+}
 
 #endif

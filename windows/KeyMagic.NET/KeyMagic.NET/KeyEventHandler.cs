@@ -224,8 +224,16 @@ namespace KeyMagic
                 int ret = NativeMethods.ToUnicodeEx(vkey, scanCode, keys, TranslatedChar, 1, 0, (IntPtr)0x04090409);
                 String contextBefore = engine.getContextText();
 
+                int keyval = (int)(TranslatedChar.Length > 0 ? TranslatedChar[0] : 0);
+
+                int keycode = 0, mod = 0;
+                KeyMagicDotNet.NetUtil.GetKeyCodeAndModifier(keyval, ref keycode, ref mod);
+
+                Debug.WriteLine(string.Format("G:{0} {1} {2}", keyval, keycode, mod));
+                Debug.WriteLine(string.Format("M:{0} {1} {2}", keyval, vkey, modifier));
+
                 if (engine.processKeyEvent(
-                        (int)(TranslatedChar.Length > 0 ? TranslatedChar[0] : 0),
+                        (int)keyval,
                         (int)vkey, modifier
                         ))
                 {
@@ -234,8 +242,10 @@ namespace KeyMagic
                 }
                 else if (NativeMethods.GetKeyState(NativeMethods.VirtualKey.VK_CONTROL) != 0 || NativeMethods.GetKeyState(NativeMethods.VirtualKey.VK_MENU) != 0)
                 {
+                    Debug.WriteLine("Modifier key pressed. Engine reset");
                     engine.reset();
                 }
+                Debug.WriteLine("No Match");
             }
             catch (Exception e)
             {
@@ -267,6 +277,7 @@ namespace KeyMagic
                 {
                     index++;
 
+                    if (hk.ToInt() == 0) continue;
                     if (hk.keyChar != key) continue;
                     if (hk.ctrl != CTRL) continue;
                     if (hk.alt != ALT) continue;

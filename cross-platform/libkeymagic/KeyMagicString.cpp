@@ -18,6 +18,8 @@
 #include <sstream>
 #include "KeyMagicString.h"
 
+namespace libkm {
+
 std::string * getCharacterReferenceString(const KeyMagicString * text) {
 	std::ostringstream oss;
 	std::string * str;
@@ -26,4 +28,5 @@ std::string * getCharacterReferenceString(const KeyMagicString * text) {
 	}
 	str = new std::string(oss.str());
 	return str;
+}
 }

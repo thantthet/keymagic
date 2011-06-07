@@ -26,6 +26,8 @@
 #include <map>
 #include "KeyMagicString.h"
 
+namespace libkm {
+
 using namespace std;
 /**
  * BinaryRule is the array of bytes about rule patterns\n
@@ -134,5 +136,7 @@ typedef struct {
 	 */
 	LayoutOptions layoutOptions;
 } FileHeader;
+
+}
 
 #endif /* KEYMAGICTYPES_H_ */

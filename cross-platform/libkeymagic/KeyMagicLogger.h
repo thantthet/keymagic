@@ -20,6 +20,8 @@
 
 #include "LogFileWriter.h"
 
+namespace libkm {
+
 /**
  * Logger
  */
@@ -40,5 +42,7 @@ private:
 };
 
 #define LOG if (m_verbose) m_logger->log
+
+}
 
 #endif /* KEYMAGICLOGGER_H_ */

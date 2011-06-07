@@ -20,6 +20,8 @@
 
 #include "LogFileWriter.h"
 
+namespace libkm {
+
 LogFileWriter::LogFileWriter () {
 	m_logFile = stdout;
 }
@@ -48,4 +50,5 @@ FILE * LogFileWriter::getFile() {
 
 void LogFileWriter::setFile(FILE * file) {
 	m_logFile = file;
+}
 }

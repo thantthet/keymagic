@@ -23,6 +23,8 @@
 #include "KeyMagicTypes.h"
 #include "KeyMagicLogger.h"
 
+namespace libkm {
+
 /*
 #define opSTRING		0x00F0
 #define opVARIABLE		0x00F1
@@ -241,6 +243,8 @@ private:
 };
 
 typedef std::vector<RuleInfo*> RuleList;
+
+}
 
 #endif /* RULEINFO_H_ */
 

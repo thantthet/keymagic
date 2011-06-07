@@ -54,12 +54,6 @@ namespace KeyMagic
 
         public frmMain()
         {
-            PortableSettingsProvider portableSettingsProvider = new PortableSettingsProvider();
-            Properties.Settings.Default.Providers.Add(portableSettingsProvider);
-            Properties.Settings.Default.Properties["RunAtStartup"].Provider = portableSettingsProvider;
-            Properties.Settings.Default.Properties["TurnOffHotkey"].Provider = portableSettingsProvider;
-            Properties.Settings.Default.Properties["LastKeyboardLayoutIndex"].Provider = portableSettingsProvider;
-
             InitializeComponent();
         }
 
@@ -70,8 +64,15 @@ namespace KeyMagic
             InitializeKeyboardLayoutMenu();
             InitializeMisc();
             InitializeAeroGlass();
-            InitializeHook();
+            RunHelperExe();
             InitializeLogonRun();
+
+            KeyMagicDotNet.NetKeyMagicEngine engine = new KeyMagicDotNet.NetKeyMagicEngine();
+            engine.Verbose = true;
+            engine.loadKeyboardFile(GetSaveKeyboardPath("Ayar-Phonetic"));
+
+            Debug.Assert(engine.processKeyEvent(101, 69, 0));
+            Debug.Assert(engine.processKeyEvent(55, 55, 0));
 
             hotkeyControl1.ValueChanged += new EventHandler(hotkeyControl1_ValueChanged);
 
@@ -166,7 +167,8 @@ namespace KeyMagic
         #region LogonRun
         private void InitializeLogonRun()
         {
-            SetLogonRun(KeyMagic.Properties.Settings.Default.RunAtStartup);
+            Debug.Assert(Properties.Settings.Default.RunAtStartup == (bool)Properties.Settings.Default["RunAtStartup"]);
+            SetLogonRun(Properties.Settings.Default.RunAtStartup);
             Properties.Settings.Default.RunAtStartup = GetOnLogonRun();
         }
 
@@ -444,7 +446,7 @@ namespace KeyMagic
         Process processX64 = null;
         Process processX32 = null;        
 
-        private void InitializeHook()
+        private void RunHelperExe()
         {
             try
             {
@@ -452,13 +454,13 @@ namespace KeyMagic
 
                 psi = new ProcessStartInfo(Path.Combine(mainDir, "HookInput.x32.exe"), Handle.ToString("X"));
                 psi.WindowStyle = ProcessWindowStyle.Hidden;
-                processX32 = Process.Start(psi);
+                //processX32 = Process.Start(psi);
 
                 if (is64bit)
                 {
                     psi = new ProcessStartInfo(Path.Combine(mainDir, "HookInput.x64.exe"), Handle.ToString("X"));
                     psi.WindowStyle = ProcessWindowStyle.Hidden;
-                    processX64 = Process.Start(psi);
+                    //processX64 = Process.Start(psi);
                 }
             }
             catch (Win32Exception ex)
@@ -758,10 +760,13 @@ namespace KeyMagic
 
             KeyboardLayoutList keyboardList = new KeyboardLayoutList();
 
+            FileStream fs = null;
+            System.Xml.XmlReader reader = null;
+
             try
             {
-                FileStream fs = new FileStream(layoutXMLFile, FileMode.Open, FileAccess.Read);
-                System.Xml.XmlReader reader = System.Xml.XmlReader.Create(fs);
+                fs = new FileStream(layoutXMLFile, FileMode.Open, FileAccess.Read);
+                reader = System.Xml.XmlReader.Create(fs);
 
                 reader.MoveToContent();
                 if (reader.LocalName == "Layouts")
@@ -770,13 +775,15 @@ namespace KeyMagic
                     keyboardList.ReadXml(reader);
                     reader.ReadEndElement();
                 }
-
-                reader.Close();
-                fs.Close();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                if (reader != null) reader.Close();
+                if (fs != null) fs.Close();
             }
 
             //long lPtr = DllPtrHotkeys.ToInt64();
@@ -809,15 +816,15 @@ namespace KeyMagic
                         if (bmIcon != null)
                             using (Icon icon = Icon.FromHandle(bmIcon.GetHicon()))
                             {
-                                menuItem.Icon = icon;
+                                iconList[layout.file] = menuItem.Icon = icon;
                             }
+                        else iconList[layout.file] = null;
+
                         menuItem.ImageKey = lvItem.ImageKey;
                         menuItem.ShortcutKeyDisplayString = layout.hotkey;
                         String fontFamily = infos.GetFontFamily();
                         menuItem.Click += new EventHandler(cmsLeftMenuItem_Click);
                         cmsLeft.Items.Add(menuItem);
-
-                        iconList[layout.file] = Icon.FromHandle(bmIcon.GetHicon());
                     }
                     else
                     {
@@ -846,28 +853,34 @@ namespace KeyMagic
                     lvi.Group.Name == "Enabled"));
             }
 
+            FileStream fs = null;
+            System.Xml.XmlWriter writer = null;
+
             try
             {
-                FileStream fs = new FileStream(layoutXMLFile, FileMode.Create);
+                fs = new FileStream(layoutXMLFile, FileMode.Create);
 
                 System.Xml.XmlWriterSettings settings = new System.Xml.XmlWriterSettings();
                 settings.Indent = true;
                 settings.IndentChars = ("    ");
-                System.Xml.XmlWriter writer = System.Xml.XmlWriter.Create(fs, settings);
+                writer = System.Xml.XmlWriter.Create(fs, settings);
 
                 writer.WriteStartElement("Layouts");
                 keyboardList.WriteXml(writer);
                 writer.WriteEndElement();
-                writer.Close();
-
-                fs.Close();
             }
             catch (UnauthorizedAccessException)
             {
                 AskToRunAsAdministrator("Access is denied and failed to save keyboard layouts list. Do you want to run KeyMagic as administrator?");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex);
+            }
+            finally
+            {
+                if (writer != null) writer.Close();
+                if (fs != null) fs.Close();
             }
         }
 
@@ -1118,9 +1131,10 @@ namespace KeyMagic
                 if (index != 0 && handler.Engine != null)
                 {
                     String fileName = ActiveKeyboardList[index].file;
-                    handler.Engine.loadKeyboardFile(GetSaveKeyboardPath(fileName));
-
+                    bool success = handler.Engine.loadKeyboardFile(GetSaveKeyboardPath(fileName));
+                    Debug.Assert(success == true, "Failed to load keyboard layout.");
                     nIcon.Icon = iconList[fileName];
+                    nIcon.Icon = nIcon.Icon == null ? mainIcon : nIcon.Icon;
                 }
             }
             catch (Exception ex)

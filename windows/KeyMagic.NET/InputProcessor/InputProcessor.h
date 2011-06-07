@@ -23,9 +23,9 @@ INPUTPROCESSOR_API void SetWindowsHooks (HMODULE hMod);
 INPUTPROCESSOR_API HHOOK GetWndProcHook ();
 //INPUTPROCESSOR_API HHOOK GetGetMsgProcHook ();
 
-void sendSingleKey(WORD wVk, DWORD dwFlags);
-void sendKeyStrokes (const std::wstring& s);
-void sendDifference(const std::wstring& contextBefore, const std::wstring& contextAfter);
+//void sendSingleKey(WORD wVk, DWORD dwFlags);
+//void sendKeyStrokes (const std::wstring& s);
+//void sendDifference(const std::wstring& contextBefore, const std::wstring& contextAfter);
 
 #ifdef _M_IX86
 #pragma data_seg(".KMG32")

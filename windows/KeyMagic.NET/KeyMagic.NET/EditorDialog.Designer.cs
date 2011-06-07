@@ -37,8 +37,8 @@
             this.chkEnable = new System.Windows.Forms.CheckBox();
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.txtDesc = new System.Windows.Forms.TextBox();
             this.hkHotkey = new KeyMagic.HotkeyControl();
+            this.txtDesc = new System.Windows.Forms.TextBox();
             this.lblDesc = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -148,6 +148,16 @@
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
+            // hkHotkey
+            // 
+            this.tableLayoutPanel1.SetColumnSpan(this.hkHotkey, 2);
+            this.hkHotkey.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.hkHotkey.Hotkey = hotkey1;
+            this.hkHotkey.Location = new System.Drawing.Point(83, 28);
+            this.hkHotkey.Name = "hkHotkey";
+            this.hkHotkey.Size = new System.Drawing.Size(324, 29);
+            this.hkHotkey.TabIndex = 8;
+            // 
             // txtDesc
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.txtDesc, 2);
@@ -159,16 +169,6 @@
             this.txtDesc.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtDesc.Size = new System.Drawing.Size(324, 74);
             this.txtDesc.TabIndex = 9;
-            // 
-            // hkHotkey
-            // 
-            this.tableLayoutPanel1.SetColumnSpan(this.hkHotkey, 2);
-            this.hkHotkey.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.hkHotkey.Hotkey = hotkey1;
-            this.hkHotkey.Location = new System.Drawing.Point(83, 28);
-            this.hkHotkey.Name = "hkHotkey";
-            this.hkHotkey.Size = new System.Drawing.Size(324, 29);
-            this.hkHotkey.TabIndex = 8;
             // 
             // lblDesc
             // 

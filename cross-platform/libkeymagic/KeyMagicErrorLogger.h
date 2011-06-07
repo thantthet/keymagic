@@ -20,6 +20,8 @@
 
 #include "LogFileWriter.h"
 
+namespace libkm {
+
 /**
  * KeyMagicErrorLogger Class
  */
@@ -39,5 +41,7 @@ private:
 };
 
 #define PERROR KeyMagicErrorLogger::getInstance()->log
+
+}
 
 #endif

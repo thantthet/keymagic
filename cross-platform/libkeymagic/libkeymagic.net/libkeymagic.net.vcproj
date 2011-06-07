@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\vs\bin\libkeymagic.x32.lib $(NOINHERIT)"
+				AdditionalDependencies="..\vs\bin\libkeymagic.dbg.x32.lib $(NOINHERIT)"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
@@ -188,11 +188,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\NetKeyMagicEngine.cpp"
+				RelativePath=".\KeyMagicEngine.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\NetUtil.cpp"
+				RelativePath=".\KeyMagicKeyboard.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RuleInfo.cpp"
 				>
 			</File>
 			<File
@@ -215,6 +219,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\Util.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -222,11 +230,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\NetKeyMagicEngine.h"
+				RelativePath=".\KeyMagicEngine.h"
 				>
 			</File>
 			<File
-				RelativePath=".\NetUtil.h"
+				RelativePath=".\KeyMagicKeyboard.h"
 				>
 			</File>
 			<File
@@ -234,7 +242,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\RuleInfo.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Util.h"
 				>
 			</File>
 		</Filter>

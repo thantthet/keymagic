@@ -22,6 +22,8 @@
 
 #include "KeyMagicKeyboard.h"
 
+namespace libkm {
+
 bool sortRule (RuleInfo * r1, RuleInfo * r2) {
 
 	int s1 = r1->getLHSSwitchCount();
@@ -399,4 +401,6 @@ KeyMagicString KeyMagicKeyboard::getVariableValue(int index, BinaryStringList * 
 	}
 
 	return value;
+}
+
 }

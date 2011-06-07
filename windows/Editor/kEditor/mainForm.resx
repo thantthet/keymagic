@@ -320,6 +320,12 @@
   <data name="glyphTableToolStripMenuItem.Text" xml:space="preserve">
     <value>Glyph Table</value>
   </data>
+  <data name="outputToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>152, 22</value>
+  </data>
+  <data name="outputToolStripMenuItem.Text" xml:space="preserve">
+    <value>Output</value>
+  </data>
   <data name="showToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>217, 22</value>
   </data>
@@ -451,7 +457,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;mainMenu.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>3</value>
   </data>
   <metadata name="openFileDlg.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>127, 17</value>
@@ -490,7 +496,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;SciEditor.ZOrder" xml:space="preserve">
-    <value>0</value>
+    <value>1</value>
   </data>
   <data name="GlyphMapTableLayout.ColumnCount" type="System.Int32, mscorlib">
     <value>1</value>
@@ -517,7 +523,7 @@
     <value>glyphTable</value>
   </data>
   <data name="&gt;&gt;glyphTable.Type" xml:space="preserve">
-    <value>kEditor.GlyphTable, kEditor, Version=1.3.0.0, Culture=neutral, PublicKeyToken=null</value>
+    <value>kEditor.GlyphTable, kEditor, Version=1.4.0.0, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;glyphTable.Parent" xml:space="preserve">
     <value>GlyphMapTableLayout</value>
@@ -541,7 +547,7 @@
     <value>txtFilter</value>
   </data>
   <data name="&gt;&gt;txtFilter.Type" xml:space="preserve">
-    <value>kEditor.FilterEditBox, kEditor, Version=1.3.0.0, Culture=neutral, PublicKeyToken=null</value>
+    <value>kEditor.FilterEditBox, kEditor, Version=1.4.0.0, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;txtFilter.Parent" xml:space="preserve">
     <value>GlyphMapTableLayout</value>
@@ -598,10 +604,37 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;GlyphMapTableLayout.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>2</value>
   </data>
   <data name="GlyphMapTableLayout.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
     <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="glyphTable" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="txtFilter" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="lblGlyphName" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,100" /&gt;&lt;Rows Styles="Percent,100,Absolute,24,Absolute,29" /&gt;&lt;/TableLayoutSettings&gt;</value>
+  </data>
+  <data name="txtOutput.Location" type="System.Drawing.Point, System.Drawing">
+    <value>580, 163</value>
+  </data>
+  <data name="txtOutput.Multiline" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="txtOutput.ScrollBars" type="System.Windows.Forms.ScrollBars, System.Windows.Forms">
+    <value>Both</value>
+  </data>
+  <data name="txtOutput.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 20</value>
+  </data>
+  <data name="txtOutput.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;txtOutput.Name" xml:space="preserve">
+    <value>txtOutput</value>
+  </data>
+  <data name="&gt;&gt;txtOutput.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;txtOutput.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;txtOutput.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -1169,6 +1202,18 @@
   <data name="&gt;&gt;viewToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;showToolStripMenuItem.Name" xml:space="preserve">
+    <value>showToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;showToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;glyphTableToolStripMenuItem.Name" xml:space="preserve">
+    <value>glyphTableToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;glyphTableToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;toolStripMenuItem5.Name" xml:space="preserve">
     <value>toolStripMenuItem5</value>
   </data>
@@ -1283,16 +1328,10 @@
   <data name="&gt;&gt;fontDlg.Type" xml:space="preserve">
     <value>System.Windows.Forms.FontDialog, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;showToolStripMenuItem.Name" xml:space="preserve">
-    <value>showToolStripMenuItem</value>
+  <data name="&gt;&gt;outputToolStripMenuItem.Name" xml:space="preserve">
+    <value>outputToolStripMenuItem</value>
   </data>
-  <data name="&gt;&gt;showToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;glyphTableToolStripMenuItem.Name" xml:space="preserve">
-    <value>glyphTableToolStripMenuItem</value>
-  </data>
-  <data name="&gt;&gt;glyphTableToolStripMenuItem.Type" xml:space="preserve">
+  <data name="&gt;&gt;outputToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
