@@ -20,6 +20,8 @@
 #import <Cocoa/Cocoa.h>
 #include "KeyMagicTypes.h"
 
+using namespace libkm;
+
 @interface NSString (KeyMagicString_Addition)
 +(NSString*) stringWithKeyMagicString:(const KeyMagicString*)string;
 -(KeyMagicString) getKeyMagicString;

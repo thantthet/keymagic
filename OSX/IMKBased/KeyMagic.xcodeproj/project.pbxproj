@@ -54,6 +54,7 @@
 		B55969D713799A2100690DE3 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B55969D613799A2100690DE3 /* Growl.framework */; };
 		B55969D813799A2100690DE3 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B55969D613799A2100690DE3 /* Growl.framework */; };
 		B55969E413799A3400690DE3 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B55969D613799A2100690DE3 /* Growl.framework */; };
+		B59E0258139FE45B00F36391 /* Growl.m in Sources */ = {isa = PBXBuildFile; fileRef = B59E0257139FE45B00F36391 /* Growl.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -143,6 +144,8 @@
 		B51D988F12FFA5AC008E0A2F /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = main.mm; path = IMEController/main.mm; sourceTree = "<group>"; };
 		B52F5CAB1339D0DA00745A53 /* libkeymagic.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libkeymagic.a; path = "../../cross-platform/libkeymagic/build/Release/libkeymagic.a"; sourceTree = SOURCE_ROOT; };
 		B55969D613799A2100690DE3 /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Growl.framework; sourceTree = "<group>"; };
+		B59E0256139FE45B00F36391 /* Growl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Growl.h; sourceTree = "<group>"; };
+		B59E0257139FE45B00F36391 /* Growl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Growl.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -249,6 +252,8 @@
 		6AA6D1F20EAC641200DF1C2C /* KeyMagic (IMK-based) */ = {
 			isa = PBXGroup;
 			children = (
+				B59E0256139FE45B00F36391 /* Growl.h */,
+				B59E0257139FE45B00F36391 /* Growl.m */,
 				B511BF9D12009D950060A548 /* KeymagicIMEController.h */,
 				B51D988E12FFA5AC008E0A2F /* KeymagicIMEController.mm */,
 				B51D988F12FFA5AC008E0A2F /* main.mm */,
@@ -440,6 +445,7 @@
 				B51D989012FFA5AC008E0A2F /* KeymagicIMEController.mm in Sources */,
 				B51D989112FFA5AC008E0A2F /* main.mm in Sources */,
 				B510C5B513769F16008798E7 /* KeyMagicUtil.mm in Sources */,
+				B59E0258139FE45B00F36391 /* Growl.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

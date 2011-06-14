@@ -9,6 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #include "KeyMagicTypes.h"
 
+using namespace libkm;
+
 @interface KeyMagicUtil : NSObject {
 
 }

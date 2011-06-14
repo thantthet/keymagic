@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B507AC8113A6678D008F7F78 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B507AC7413A66734008F7F78 /* main.cpp */; };
+		B507ACB313A6686F008F7F78 /* KeyMagicErrorLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5D2600E13365ABE00BCEC22 /* KeyMagicErrorLogger.cpp */; };
+		B507ACB413A6686F008F7F78 /* LogFileWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5D2601013365ABE00BCEC22 /* LogFileWriter.cpp */; };
+		B507ACB513A6686F008F7F78 /* KeyMagicString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5C1EB9112FC49AE0061BF73 /* KeyMagicString.cpp */; };
+		B507ACB613A6686F008F7F78 /* RuleInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5C1EB9412FC49AE0061BF73 /* RuleInfo.cpp */; };
+		B507ACB713A6686F008F7F78 /* KeyMagicEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5C1EB8512FC49A00061BF73 /* KeyMagicEngine.cpp */; };
+		B507ACB813A6686F008F7F78 /* KeyMagicKeyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5C1EB8712FC49A00061BF73 /* KeyMagicKeyboard.cpp */; };
+		B507ACB913A6686F008F7F78 /* KeyMagicLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5C1EB8912FC49A00061BF73 /* KeyMagicLogger.cpp */; };
+		B507ACBA13A6686F008F7F78 /* KeyCodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5C1EB8112FC498C0061BF73 /* KeyCodes.cpp */; };
+		B507ACBB13A6686F008F7F78 /* Util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5E05C17131FC68F0050B283 /* Util.cpp */; };
 		B5761A201320E07B0095AADC /* keymagic.h in Headers */ = {isa = PBXBuildFile; fileRef = B5761A1F1320E07B0095AADC /* keymagic.h */; };
 		B5C1EB8312FC498C0061BF73 /* KeyCodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5C1EB8112FC498C0061BF73 /* KeyCodes.cpp */; };
 		B5C1EB8412FC498C0061BF73 /* KeyCodes.h in Headers */ = {isa = PBXBuildFile; fileRef = B5C1EB8212FC498C0061BF73 /* KeyCodes.h */; };
@@ -33,6 +43,8 @@
 /* Begin PBXFileReference section */
 		5073E0C609E734A800EC74B6 /* keymagicProj.xcconfig */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xcconfig; path = keymagicProj.xcconfig; sourceTree = "<group>"; };
 		5073E0C709E734A800EC74B6 /* keymagicTarget.xcconfig */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xcconfig; path = keymagicTarget.xcconfig; sourceTree = "<group>"; };
+		B507AC7413A66734008F7F78 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		B507AC7D13A66780008F7F78 /* test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5761A1F1320E07B0095AADC /* keymagic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keymagic.h; sourceTree = "<group>"; };
 		B5C1EB8112FC498C0061BF73 /* KeyCodes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyCodes.cpp; sourceTree = "<group>"; };
 		B5C1EB8212FC498C0061BF73 /* KeyCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyCodes.h; sourceTree = "<group>"; };
@@ -58,6 +70,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		B507AC7B13A66780008F7F78 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D2AAC09B05546B4700DB518D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -72,6 +91,7 @@
 			isa = PBXGroup;
 			children = (
 				D2AAC09D05546B4700DB518D /* libkeymagic.a */,
+				B507AC7D13A66780008F7F78 /* test */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -118,6 +138,7 @@
 				B5E05C16131FC68F0050B283 /* Util.h */,
 				B5E05C17131FC68F0050B283 /* Util.cpp */,
 				B5761A1F1320E07B0095AADC /* keymagic.h */,
+				B507AC7413A66734008F7F78 /* main.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -156,6 +177,22 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		B507AC7C13A66780008F7F78 /* test */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B507AC9613A667C3008F7F78 /* Build configuration list for PBXNativeTarget "test" */;
+			buildPhases = (
+				B507AC7A13A66780008F7F78 /* Sources */,
+				B507AC7B13A66780008F7F78 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = test;
+			productName = test;
+			productReference = B507AC7D13A66780008F7F78 /* test */;
+			productType = "com.apple.product-type.tool";
+		};
 		D2AAC09C05546B4700DB518D /* keymagic */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1DEB916008733D950010E9CD /* Build configuration list for PBXNativeTarget "keymagic" */;
@@ -194,11 +231,29 @@
 			projectRoot = "";
 			targets = (
 				D2AAC09C05546B4700DB518D /* keymagic */,
+				B507AC7C13A66780008F7F78 /* test */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		B507AC7A13A66780008F7F78 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B507AC8113A6678D008F7F78 /* main.cpp in Sources */,
+				B507ACB313A6686F008F7F78 /* KeyMagicErrorLogger.cpp in Sources */,
+				B507ACB413A6686F008F7F78 /* LogFileWriter.cpp in Sources */,
+				B507ACB513A6686F008F7F78 /* KeyMagicString.cpp in Sources */,
+				B507ACB613A6686F008F7F78 /* RuleInfo.cpp in Sources */,
+				B507ACB713A6686F008F7F78 /* KeyMagicEngine.cpp in Sources */,
+				B507ACB813A6686F008F7F78 /* KeyMagicKeyboard.cpp in Sources */,
+				B507ACB913A6686F008F7F78 /* KeyMagicLogger.cpp in Sources */,
+				B507ACBA13A6686F008F7F78 /* KeyCodes.cpp in Sources */,
+				B507ACBB13A6686F008F7F78 /* Util.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D2AAC09A05546B4700DB518D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -288,6 +343,36 @@
 			};
 			name = Release;
 		};
+		B507AC7F13A66781008F7F78 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = test;
+			};
+			name = Debug;
+		};
+		B507AC8013A66781008F7F78 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/bin;
+				PREBINDING = NO;
+				PRODUCT_NAME = test;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -305,6 +390,15 @@
 			buildConfigurations = (
 				1DEB916508733D950010E9CD /* Debug */,
 				1DEB916608733D950010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B507AC9613A667C3008F7F78 /* Build configuration list for PBXNativeTarget "test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B507AC7F13A66781008F7F78 /* Debug */,
+				B507AC8013A66781008F7F78 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

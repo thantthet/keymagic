@@ -1002,9 +1002,13 @@ namespace kEditor
 
                 KeyMagicDotNet.KeyMagicKeyboard keyboard = engine.getKeyboard();
                 Byte[] font = keyboard.getInfo("font");
-                string f = new string(font);
+                Font f = selectedFont;
+                if (font != null)
+                {
+                    f = new Font(Encoding.UTF8.GetString(font), selectedFont.Size);
+                }
 
-                TesterForm tester = new TesterForm(engine, selectedFont);
+                TesterForm tester = new TesterForm(engine, f);
                 tester.Show();
                 tester.FormClosed += new FormClosedEventHandler(
                     delegate(object xsender, FormClosedEventArgs xe)

@@ -18,12 +18,16 @@
 //Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #import <Cocoa/Cocoa.h>
+#import <Growl/Growl.h>
+
 #if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_5
 	#import <InputMethodKit/InputMethodKit.h>
 #else
 	#import "InputMethodKitTiger.h"
 #endif
 #import "KeyMagicIMEController.h"
+#import "Growl.h"
+
 #include "KeyMagicEngine.h"
 #include "KeyMagicLogger.h"
 #include "KeyMagicString.h"
@@ -33,6 +37,9 @@ IMKServer *KeyMagicInputMethodServer = nil;
 int main(int argc, char *argv[])
 {
     NSAutoreleasePool *pool = [NSAutoreleasePool new];
+	
+	Growl * growl = [[Growl alloc] init];
+	
 	KeyMagicInputMethodServer = [[IMKServer alloc] initWithName:@"KeyMagic_1_Connection" bundleIdentifier:[[NSBundle mainBundle] bundleIdentifier]];	
     if (!KeyMagicInputMethodServer) {
 		NSLog(@"input method server init failed!");

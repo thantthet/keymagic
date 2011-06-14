@@ -19,6 +19,7 @@
 
 #import <Carbon/Carbon.h>
 #import <Growl/Growl.h>
+#import "Growl.h"
 
 #import "KeymagicIMEController.h"
 #import	"keymagic.h"
@@ -154,26 +155,7 @@ bool mapVK(int virtualkey, int * winVK)
 		}
 	}
 	
-	NSBundle *myBundle = [NSBundle mainBundle];
-	NSString *growlPath = [[myBundle privateFrameworksPath] stringByAppendingPathComponent:@"Growl.framework"];
-	NSBundle *growlBundle = [NSBundle bundleWithPath:growlPath];
-	if (growlBundle && [growlBundle load]) { // Register ourselves as a Growl delegate 
-		[GrowlApplicationBridge setGrowlDelegate:self];
-	} else {
-		NSLog(@"Could not load Growl.framework");
-	}
-	
 	return self;
-}
-
-- (NSDictionary *) registrationDictionaryForGrowl
-{
-	NSArray *notifications = [NSArray arrayWithObject: @"Layout Switched"];
-	NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
-						  notifications, GROWL_NOTIFICATIONS_ALL,
-						  notifications, GROWL_NOTIFICATIONS_DEFAULT, nil];
-	
-	return dict;	
 }
 
 - (void)dealloc
