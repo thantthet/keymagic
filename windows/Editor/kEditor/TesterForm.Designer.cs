@@ -28,22 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.txtInput = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.txtInput = new KeyMagicDotNet.KeyMagicTextBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // txtInput
-            // 
-            this.txtInput.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtInput.Location = new System.Drawing.Point(3, 3);
-            this.txtInput.Multiline = true;
-            this.txtInput.Name = "txtInput";
-            this.txtInput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtInput.Size = new System.Drawing.Size(568, 296);
-            this.txtInput.TabIndex = 0;
-            this.txtInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtInput_KeyDown);
-            this.txtInput.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtInput_KeyPress);
             // 
             // tableLayoutPanel1
             // 
@@ -57,6 +45,18 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(574, 302);
             this.tableLayoutPanel1.TabIndex = 1;
+            // 
+            // txtInput
+            // 
+            this.txtInput.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtInput.Engine = null;
+            this.txtInput.Location = new System.Drawing.Point(3, 3);
+            this.txtInput.Multiline = true;
+            this.txtInput.Name = "txtInput";
+            this.txtInput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtInput.Size = new System.Drawing.Size(568, 296);
+            this.txtInput.TabIndex = 0;
+            this.txtInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtInput_KeyDown);
             // 
             // TesterForm
             // 
@@ -74,7 +74,7 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox txtInput;
+        private KeyMagicDotNet.KeyMagicTextBox txtInput;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     }
 }

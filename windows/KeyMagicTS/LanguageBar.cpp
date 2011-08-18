@@ -343,7 +343,7 @@ STDAPI CLangBarItemButton::GetIcon(HICON *phIcon)
 
 STDAPI CLangBarItemButton::GetText(BSTR *pbstrText)
 {
-	const wstring& keyboardName = _pTextService->_GetKeyboardName();
+	const wstring keyboardName = _pTextService->_GetKeyboardName();
 
 	*pbstrText = SysAllocString(keyboardName.length() ? keyboardName.c_str() : L"No Layout Selected");
 

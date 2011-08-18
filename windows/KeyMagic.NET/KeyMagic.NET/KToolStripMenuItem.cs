@@ -4,11 +4,13 @@ using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Text.RegularExpressions;
 
 namespace KeyMagic
 {
-    class KToolStripMenuItem : ToolStripMenuItem
+    public class KToolStripMenuItem : ToolStripMenuItem
     {
+        public static Font MyanmarFontFallback;
         //We store additional ICON to display better for icons with alpha
         private Icon _icon;
 
@@ -73,6 +75,7 @@ namespace KeyMagic
             Graphics g = e.Graphics;
             int leftPadding = 30;
             Brush textBrush = Brushes.Black;
+            Color textColor = ForeColor;
             Font textFont = new Font(Font, FontStyle.Bold);
             int imgLeft = (leftPadding / 2) - 8;
             int imgTop = (r.Height / 2) - 8;
@@ -82,6 +85,7 @@ namespace KeyMagic
             if (this.Checked)
             {
                 textBrush = Brushes.White;
+                textColor = Color.White;
                 LinearGradientBrush lgb = new LinearGradientBrush(r, ColorTranslator.FromWin32(0xf4a88b), ColorTranslator.FromWin32(0xf1895e), LinearGradientMode.Vertical);
                 g.FillRectangle(lgb, br);
                 g.DrawRectangle(new Pen(ColorTranslator.FromWin32(0xeda184)), br);
@@ -90,6 +94,7 @@ namespace KeyMagic
             if (this.Selected)
             {
                 textBrush = Brushes.White;
+                textColor = Color.White;
                 LinearGradientBrush lgb = new LinearGradientBrush(r, ColorTranslator.FromWin32(0xf08a65), ColorTranslator.FromWin32(0xed6228), LinearGradientMode.Vertical);
                 g.FillRectangle(lgb, br);
                 g.DrawRectangle(new Pen(ColorTranslator.FromWin32(0xe7815b)), br);
@@ -112,13 +117,22 @@ namespace KeyMagic
                 g.DrawImage(Parent.ImageList.Images[ImageKey], imgLeft, imgTop, 16, 16);
             }
 
-            g.DrawString(this.Text, textFont, textBrush, r.Left + leftPadding, r.Top + 2);
-            //TextRenderer.DrawText(e.Graphics, Text, textFont, new Point(r.Left + leftPadding, r.Top + 2), Color.Black);
+            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+            if (MyanmarFontFallback != null && Regex.Match(Text, "[\u1000-\u1021]", RegexOptions.Compiled).Success)
+            {
+                TextRenderer.DrawText(e.Graphics, Text, MyanmarFontFallback, new Point(r.Left + leftPadding, r.Top + 2), textColor);
+            }
+            else
+            {
+                TextRenderer.DrawText(e.Graphics, Text, textFont, new Point(r.Left + leftPadding, r.Top + 2), textColor);
+            }
 
             StringFormat sf = new StringFormat();
             sf.Alignment = StringAlignment.Far;
             Rectangle rect = Rectangle.FromLTRB(r.Left, r.Top + 2, r.Right - 10, r.Bottom);
             g.DrawString(this.ShortcutKeyDisplayString, textFont, textBrush, rect, sf);
+
+            textFont.Dispose();
         }
     }
 }

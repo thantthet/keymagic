@@ -34,7 +34,7 @@ namespace KeyMagic
 
             if (majorVersion == 1 && minorVersion > 4)
             {
-                throw new Exception("Cannot load newer keyboard file.");
+                throw new Exception("Cannot load this keyboard layout file because this is newer version of keyboard layout file.");
             }
 
             stringCount = br.ReadInt16();

@@ -58,8 +58,6 @@ namespace kEditor
             set {
                 if (filePath != value)
                 {
-                    
-
                     filePath = value;
                 }
             }

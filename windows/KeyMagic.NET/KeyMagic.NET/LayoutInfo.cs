@@ -23,38 +23,39 @@ namespace KeyMagic
     {
         public InfoCollection(string fileName) : base()
         {
-            FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            BinaryReader br = new BinaryReader(fs);
+            KeyMagicDotNet.InfoList infoList = KeyMagicDotNet.KeyMagicKeyboard.getInfosFromKeyboardFile(fileName);
+            //FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            //BinaryReader br = new BinaryReader(fs);
 
-            try
-            {
-                FileHeader fh = new FileHeader(br);
+            //try
+            //{
+            //    FileHeader fh = new FileHeader(br);
 
-                for (int i = 0; i < fh.stringCount; i++)
-                {
-                    int length = br.ReadInt16();
-                    br.ReadBytes(length * sizeof(short));
-                }
+            //    for (int i = 0; i < fh.stringCount; i++)
+            //    {
+            //        int length = br.ReadInt16();
+            //        br.ReadBytes(length * sizeof(short));
+            //    }
 
-                for (int i = 0; i < fh.infoCount; i++)
-                {
-                    int id = br.ReadInt32();
-                    int length = br.ReadInt16();
-                    byte[] b = br.ReadBytes(length);
+            //    for (int i = 0; i < fh.infoCount; i++)
+            //    {
+            //        int id = br.ReadInt32();
+            //        int length = br.ReadInt16();
+            //        byte[] b = br.ReadBytes(length);
 
-                    LayoutInfo info = new LayoutInfo(id, b);
-                    Add(info);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                br.Close();
-                fs.Close();
-            }
+            //        LayoutInfo info = new LayoutInfo(id, b);
+            //        Add(info);
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw ex;
+            //}
+            //finally
+            //{
+            //    br.Close();
+            //    fs.Close();
+            //}
         }
 
         public LayoutInfo FindById(string strId)
@@ -82,9 +83,11 @@ namespace KeyMagic
             LayoutInfo icon = FindById("icon");
             if (icon != null)
             {
-                MemoryStream ms = new MemoryStream(icon.data);
-                Bitmap bm = new Bitmap(ms);
-                ms.Dispose();
+                Bitmap bm;
+                using (MemoryStream ms = new MemoryStream(icon.data))
+                {
+                    bm = new Bitmap(ms);
+                }
                 return bm;
             }
             return null;

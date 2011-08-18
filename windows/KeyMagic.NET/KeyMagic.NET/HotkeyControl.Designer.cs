@@ -46,7 +46,7 @@
             this.flowHotkey.Location = new System.Drawing.Point(0, 0);
             this.flowHotkey.Margin = new System.Windows.Forms.Padding(0);
             this.flowHotkey.Name = "flowHotkey";
-            this.flowHotkey.Size = new System.Drawing.Size(202, 28);
+            this.flowHotkey.Size = new System.Drawing.Size(219, 28);
             this.flowHotkey.TabIndex = 9;
             this.flowHotkey.WrapContents = false;
             // 
@@ -92,6 +92,7 @@
             this.cboKey.FormattingEnabled = true;
             this.cboKey.Items.AddRange(new object[] {
             "",
+            "Space",
             "1",
             "2",
             "3",
@@ -153,7 +154,7 @@
             "/"});
             this.cboKey.Location = new System.Drawing.Point(144, 3);
             this.cboKey.Name = "cboKey";
-            this.cboKey.Size = new System.Drawing.Size(44, 21);
+            this.cboKey.Size = new System.Drawing.Size(61, 21);
             this.cboKey.TabIndex = 3;
             this.cboKey.SelectedIndexChanged += new System.EventHandler(this.cboKey_SelectedIndexChanged);
             // 
@@ -163,7 +164,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.flowHotkey);
             this.Name = "HotkeyControl";
-            this.Size = new System.Drawing.Size(202, 28);
+            this.Size = new System.Drawing.Size(219, 28);
             this.flowHotkey.ResumeLayout(false);
             this.flowHotkey.PerformLayout();
             this.ResumeLayout(false);

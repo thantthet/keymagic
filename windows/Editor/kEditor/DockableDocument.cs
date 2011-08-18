@@ -54,6 +54,7 @@ namespace kEditor
                 if (String.IsNullOrEmpty(filePath))
                 {
                     Editor.Text = newDocumentTemplate;
+                    Editor.Selection.Start = Editor.Selection.End = Editor.Text.Length;
                     Editor.UndoRedo.EmptyUndoBuffer();
                     Editor.Modified = false;
 

@@ -22,7 +22,7 @@ namespace KeyMagic
 
         #region Assembly Attribute Accessors
 
-        public string AssemblyTitle
+        public static string AssemblyTitle
         {
             get
             {
@@ -39,7 +39,7 @@ namespace KeyMagic
             }
         }
 
-        public string AssemblyVersion
+        public static string AssemblyVersion
         {
             get
             {
@@ -47,7 +47,7 @@ namespace KeyMagic
             }
         }
 
-        public string AssemblyDescription
+        public static string AssemblyDescription
         {
             get
             {
@@ -60,7 +60,7 @@ namespace KeyMagic
             }
         }
 
-        public string AssemblyProduct
+        public static string AssemblyProduct
         {
             get
             {
@@ -73,7 +73,7 @@ namespace KeyMagic
             }
         }
 
-        public string AssemblyCopyright
+        public static string AssemblyCopyright
         {
             get
             {
@@ -86,7 +86,7 @@ namespace KeyMagic
             }
         }
 
-        public string AssemblyCompany
+        public static string AssemblyCompany
         {
             get
             {

@@ -8,11 +8,62 @@ namespace KeyMagic
 {
     public class Hotkey
     {
-        public bool ctrl;
-        public bool alt;
-        public bool shift;
-        public string keyString;
-        public char keyChar;
+        private bool ctrl;
+
+        public bool Ctrl
+        {
+            get { return ctrl; }
+            set { ctrl = value; }
+        }
+        private bool alt;
+
+        public bool Alt
+        {
+            get { return alt; }
+            set { alt = value; }
+        }
+        private bool shift;
+
+        public bool Shift
+        {
+            get { return shift; }
+            set { shift = value; }
+        }
+        private string keyString;
+
+        public string KeyString
+        {
+            get { return keyString; }
+            set { keyString = value; }
+        }
+        private char keyChar;
+
+        public char KeyChar
+        {
+            get { return keyChar; }
+            set { keyChar = value; }
+        }
+
+        public uint WinModifiers
+        {
+            get
+            {
+                uint mod = 0;
+                if (Alt)
+                {
+                    mod |= 0x0001;
+                }
+                if (Ctrl)
+                {
+                    mod |= 0x0002;
+                }
+                if (Shift)
+                {
+                    mod |= 0x004;
+                }
+                return mod;
+            }
+        }
 
         public Hotkey()
         {
@@ -64,12 +115,20 @@ namespace KeyMagic
                 keyChar = mNormal.Value[0];
             }
 
-            Regex functionKey = new Regex(@"\bF[1-9][1-2]*\s*$");
+            Regex functionKey = new Regex(@"\b(F[1-9][0-2]*)\s*$", RegexOptions.Compiled);
             Match mfunction = functionKey.Match(s);
             if (mfunction.Success)
             {
-                keyString = mfunction.Value;
-                keyChar = (char)int.Parse(mfunction.Value.Substring(1));
+                keyString = mfunction.Groups[1].Value;
+                keyChar = (char)(int.Parse(mfunction.Value.Substring(1)) + 0x6F);
+            }
+
+            Regex spaceKey = new Regex(@"\bSPACE\s*$", RegexOptions.Compiled);
+            Match mSpace = spaceKey.Match(s);
+            if (mSpace.Success)
+            {
+                keyString = "Space";
+                keyChar = ' ';
             }
         }
 
@@ -91,7 +150,7 @@ namespace KeyMagic
                 normalizeHK.Append("Alt+");
             }
 
-            normalizeHK.Append(keyString);
+            normalizeHK.Append(KeyString);
 
             return normalizeHK.ToString().TrimEnd('+');
         }

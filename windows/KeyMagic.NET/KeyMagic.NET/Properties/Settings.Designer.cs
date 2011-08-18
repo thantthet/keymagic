@@ -25,49 +25,49 @@ namespace KeyMagic.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("80")]
-        public int colHotkeyWidth {
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int ColHotkeyWidth {
             get {
-                return ((int)(this["colHotkeyWidth"]));
+                return ((int)(this["ColHotkeyWidth"]));
             }
             set {
-                this["colHotkeyWidth"] = value;
+                this["ColHotkeyWidth"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("300")]
-        public int colDescWidth {
+        public int ColDescWidth {
             get {
-                return ((int)(this["colDescWidth"]));
+                return ((int)(this["ColDescWidth"]));
             }
             set {
-                this["colDescWidth"] = value;
+                this["ColDescWidth"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("80")]
-        public int colDisplayWidth {
+        public int ColDisplayWidth {
             get {
-                return ((int)(this["colDisplayWidth"]));
+                return ((int)(this["ColDisplayWidth"]));
             }
             set {
-                this["colDisplayWidth"] = value;
+                this["ColDisplayWidth"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("80")]
-        public int colFileNameWidth {
+        public int ColFileNameWidth {
             get {
-                return ((int)(this["colFileNameWidth"]));
+                return ((int)(this["ColFileNameWidth"]));
             }
             set {
-                this["colFileNameWidth"] = value;
+                this["ColFileNameWidth"] = value;
             }
         }
         
@@ -87,7 +87,7 @@ namespace KeyMagic.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Configuration.SettingsProviderAttribute(typeof(KeyMagic.PortableSettingsProvider))]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("CTRL+Space")]
         public string TurnOffHotkey {
             get {
                 return ((string)(this["TurnOffHotkey"]));
@@ -107,6 +107,53 @@ namespace KeyMagic.Properties {
             }
             set {
                 this["LastKeyboardLayoutIndex"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool BetaRelease {
+            get {
+                return ((bool)(this["BetaRelease"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("55")]
+        public int ColVersionWidth {
+            get {
+                return ((int)(this["ColVersionWidth"]));
+            }
+            set {
+                this["ColVersionWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.SettingsProviderAttribute(typeof(KeyMagic.PortableSettingsProvider))]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("620, 260")]
+        public global::System.Drawing.Size SoftKeyboardSize {
+            get {
+                return ((global::System.Drawing.Size)(this["SoftKeyboardSize"]));
+            }
+            set {
+                this["SoftKeyboardSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.SettingsProviderAttribute(typeof(KeyMagic.PortableSettingsProvider))]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("F10")]
+        public string SoftKeyboardHotkey {
+            get {
+                return ((string)(this["SoftKeyboardHotkey"]));
+            }
+            set {
+                this["SoftKeyboardHotkey"] = value;
             }
         }
     }

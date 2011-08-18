@@ -13,12 +13,17 @@ namespace KeyMagic
         public struct LayoutInfo
         {
             public int index;
-            public KeyMagicDotNet.NetKeyMagicEngine engine;
+            public KeyMagicDotNet.KeyMagicEngine engine;
 
-            public LayoutInfo(int i, KeyMagicDotNet.NetKeyMagicEngine e)
+            public LayoutInfo(int i, KeyMagicDotNet.KeyMagicEngine e)
             {
                 index = i;
                 engine = e;
+            }
+
+            public override string ToString()
+            {
+                return string.Format("index={0},engine={1}", index, engine);
             }
         }
 
@@ -31,9 +36,19 @@ namespace KeyMagic
             const int WM_DWMCOMPOSITIONCHANGED = 0x031E;
             const int WM_NCHITTEST = 0x84;
             const int HTCLIENT = 0x01;
+            const int WM_HOTKEY = 0x0312;
 
             switch (msg.Msg)
             {
+                case WM_HOTKEY:
+                    if (msg.WParam.ToInt32() == softKeyboardHtkyId)
+                    {
+                        softKeyboard.Visible = !softKeyboard.Visible; 
+                    }
+                    break;
+                case (int)DLLMSG.KM_INPUTLANGCHANGE:
+                    softKeyboard.Refresh(SoftKeyboard.RefreshFor.Label);
+                    break;
                 //case (int)DLLMSG.KM_GETKBLNAME:
                 //    try
                 //    {
@@ -46,24 +61,25 @@ namespace KeyMagic
                 //    }
                 //    break;
                 case (int)DLLMSG.KM_GOTFOCUS:
-
-                    if (msg.LParam == Handle)
+                    if (msg.LParam == Handle || msg.LParam == NativeMethods.GetParent(msg.LParam))
                     {
-                        break;
                     }
-
-                    Debug.WriteLine("KM_GOTFOCUS=" + msg.LParam.ToString("X"));
-
-                    uint pid;
-                    NativeMethods.GetWindowThreadProcessId(msg.LParam, out pid);
-                    if (Process.GetCurrentProcess().Id == pid)
+                    else
                     {
-                        Debug.WriteLine("Same process with main process so ignoring.");
-                        break;
+                        uint pid;
+                        NativeMethods.GetWindowThreadProcessId(msg.LParam, out pid);
+                        if (Process.GetCurrentProcess().Id == pid)
+                        {
+                            break;
+                        }
                     }
 
                     LastClientHandle = msg.LParam;
                     ClearCheck(cmsLeft.Items);
+
+                    uint dwProcessId;
+                    uint threadId = NativeMethods.GetWindowThreadProcessId(NativeMethods.GetForegroundWindow(), out dwProcessId);
+                    NativeMethods.AttachThreadInput(NativeMethods.GetCurrentThreadId(), threadId, true);
 
                     try
                     {
@@ -71,11 +87,17 @@ namespace KeyMagic
                         if (engines.ContainsKey(msg.LParam))
                         {
                             handler.Engine = engines[msg.LParam].engine;
+                            if (handler.Engine != null)
+                            {
+                                handler.Engine.Reset();
+                            }
+                            SoftKeyboardEngine = handler.Engine;
                             index = engines[msg.LParam].index;
                         }
                         else
                         {
                             engines[LastClientHandle] = new LayoutInfo(0, null);
+                            SoftKeyboardEngine = null;
                         }
 
                         if (cmsLeft.Items.Count > index)
@@ -83,16 +105,8 @@ namespace KeyMagic
                             String ActiveFile = ActiveKeyboardList[index].file;
                             ToolStripMenuItem item = cmsLeft.Items[index] as ToolStripMenuItem;
                             item.Checked = true;
-                        
-                            if (iconList.ContainsKey(ActiveFile))
-                            {
-                                nIcon.Icon = iconList[ActiveFile];
-                            }
 
-                            else
-                            {
-                                nIcon.Icon = mainIcon;
-                            }
+                            SetKeyboardIcon(ActiveFile);
                         }
                     }
                     catch (Exception ex)
@@ -122,7 +136,14 @@ namespace KeyMagic
                     break;
 
                 case WM_DWMCOMPOSITIONCHANGED:
-                    m_glassMargins = null;
+                    if (!DwmApi.DwmIsCompositionEnabled())
+                    {
+                        m_glassMargins = null;
+                    }
+                    else
+                    {
+                        InitializeAeroGlass();
+                    }
                     break;
             }
         }

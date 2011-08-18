@@ -23,6 +23,10 @@ namespace KeyMagic
 
         public static bool DwmIsCompositionEnabled()
         {
+            if (Environment.OSVersion.Version.Major < 6)
+            {
+                return false;
+            }
             try
             {
                 return NativeDwmIsCompositionEnabled();

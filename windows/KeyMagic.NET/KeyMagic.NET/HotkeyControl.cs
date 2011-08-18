@@ -26,10 +26,10 @@ namespace KeyMagic
         {
             InitializeComponent();
 
-            chkAlt.Checked = hk.alt;
-            chkCtrl.Checked = hk.ctrl;
-            chkShift.Checked = hk.shift;
-            cboKey.Text = hk.keyString;
+            chkAlt.Checked = hk.Alt;
+            chkCtrl.Checked = hk.Ctrl;
+            chkShift.Checked = hk.Shift;
+            cboKey.Text = hk.KeyString;
         }
 
         public Hotkey Hotkey
@@ -40,10 +40,10 @@ namespace KeyMagic
             }
             set
             {
-                chkAlt.Checked = value.alt;
-                chkCtrl.Checked = value.ctrl;
-                chkShift.Checked = value.shift;
-                cboKey.Text = value.keyString;
+                chkAlt.Checked = value.Alt;
+                chkCtrl.Checked = value.Ctrl;
+                chkShift.Checked = value.Shift;
+                cboKey.Text = value.KeyString;
             }
         }
 

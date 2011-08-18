@@ -404,9 +404,9 @@ BOOL CTextService::_SetConfig(const string& key, const string& value)
 	WCHAR *wcKey = new WCHAR[key.length() + 1];
 	WCHAR *wcValue = new WCHAR[value.length() + 1];
 
-	if (converted = MultiByteToWideChar(CP_ACP, 0, key.c_str(), key.length(), wcKey, key.length())) {
+	if (converted = MultiByteToWideChar(CP_UTF8, 0, key.c_str(), key.length(), wcKey, key.length())) {
 		wcKey[converted] = '\0';
-		if (converted = MultiByteToWideChar(CP_ACP, 0, value.c_str(), value.length(), wcValue, value.length())) {
+		if (converted = MultiByteToWideChar(CP_UTF8, 0, value.c_str(), value.length(), wcValue, value.length())) {
 			wcKey[converted] = '\0';
 			BOOL b = _SetConfig(key, value);
 			delete[] wcKey;
@@ -421,18 +421,22 @@ BOOL CTextService::_SetConfig(const string& key, const string& value)
 
 BOOL CTextService::_GetConfig(const wstring& key, wstring& value)
 {
-	DWORD dw, dwType;
-	HKEY hKey;
+	DWORD dw, type;
+	HKEY hKey, hKeyMagic;
 	BOOL fRet;
 
 	WCHAR szValue[1000];
 
 	if (fRet = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software", REG_OPTION_NON_VOLATILE, KEY_READ, &hKey) == ERROR_SUCCESS)
 	{
-		dw = sizeof(szValue);
-		if (fRet = RegGetValueW(hKey, L"KeyMagic", key.c_str(), RRF_RT_REG_SZ, &dwType, szValue, &dw) == ERROR_SUCCESS)
-		{
-			value = szValue;
+		if (fRet = RegOpenKeyExW(hKey, L"KeyMagic", REG_OPTION_NON_VOLATILE, KEY_READ, &hKeyMagic) == ERROR_SUCCESS) {
+			dw = sizeof(szValue);
+			type = REG_SZ;
+			if (fRet = RegQueryValueExW(hKeyMagic, key.c_str(), NULL, &type, (LPBYTE)szValue, &dw) == ERROR_SUCCESS)
+			{
+				value = szValue;
+			}
+			RegCloseKey(hKeyMagic);
 		}
 		RegCloseKey(hKey);
 	}
@@ -444,7 +448,7 @@ BOOL CTextService::_GetConfig(const string& key, string& value)
 	int converted = 0;
 	WCHAR *wcKey = new WCHAR[key.length() + 1];
 
-	if (converted = MultiByteToWideChar(CP_ACP, 0, key.c_str(), key.length(), wcKey, key.length()))
+	if (converted = MultiByteToWideChar(CP_UTF8, 0, key.c_str(), key.length(), wcKey, key.length()))
 	{
 		wcKey[converted] = '\0';
 		wstring wvalue;
@@ -454,7 +458,7 @@ BOOL CTextService::_GetConfig(const string& key, string& value)
 		{
 			int length = wvalue.length();
 			char *szValue = new char[length + 1];
-			converted = WideCharToMultiByte(CP_ACP, 0, wvalue.c_str(), length, szValue, length, 0, 0);
+			converted = WideCharToMultiByte(CP_UTF8, 0, wvalue.c_str(), length, szValue, length, 0, 0);
 			szValue[converted] = '\0';
 			value = szValue;
 			delete[] szValue;

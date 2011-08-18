@@ -176,7 +176,7 @@ HBITMAP LoadBitmapFromKeyboard(const InfoList& infos)
 wstring * FromMultiByteString(string str) {
 	int len = str.length();
 	WCHAR * wc = new WCHAR[len+1];
-	wc[MultiByteToWideChar(CP_ACP, 0, str.c_str(), len, wc, len)] = 0;
+	wc[MultiByteToWideChar(CP_UTF8, 0, str.c_str(), len, wc, len)] = 0;
 	wstring * wstr = new wstring(wc);
 	delete[] wc;
 	return wstr;

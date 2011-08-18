@@ -136,6 +136,73 @@ BOOL IsRangeCovered(TfEditCookie ec, ITfRange *pRangeTest, ITfRange *pRangeCover
     return TRUE;
 }
 
+void sendBackspace(int count)
+{
+	if (!GetFocus() || count < 1)
+		return ;
+
+	INPUT ip;
+	ip.type = INPUT_KEYBOARD;
+	ip.ki.dwExtraInfo = 0;
+	ip.ki.time = 0;
+
+	for(int i=0; i < count; i++){
+		
+		ip.ki.wScan = 255;
+		ip.ki.dwFlags = 0;
+		ip.ki.wVk = VK_BACK;
+		SendInput(1, &ip, sizeof(INPUT));
+
+		ip.ki.wScan = 0;
+		ip.ki.dwFlags = KEYEVENTF_KEYUP;
+		ip.ki.wVk = VK_BACK;
+		SendInput(1, &ip, sizeof(INPUT));
+	}
+}
+
+void sendSingleKey(WORD wVk, DWORD dwFlags)
+{
+	INPUT ip;
+
+	ip.type = INPUT_KEYBOARD;
+	ip.ki.wScan = 0;
+	ip.ki.dwExtraInfo = 0;
+	ip.ki.dwFlags = dwFlags;
+	ip.ki.time = 0;
+	ip.ki.wVk = wVk;
+
+	SendInput(1, &ip, sizeof(INPUT));
+}
+
+int sendKeyStrokes (const std::wstring& s)
+{
+	int cInputs = s.length() * 2; // need twice for up and down
+
+	INPUT * ip = new INPUT[cInputs];
+
+	for(int i=0, ii=0; i < s.length(); i++, ii++){
+		ip[ii].type = INPUT_KEYBOARD;
+		ip[ii].ki.dwExtraInfo = 255;
+		ip[ii].ki.dwFlags = KEYEVENTF_UNICODE;
+		ip[ii].ki.time = 0;
+		ip[ii].ki.wScan = s.at(i);
+		ip[ii].ki.wVk = 0;
+
+		ii++;
+
+		ip[ii].type = INPUT_KEYBOARD;
+		ip[ii].ki.dwExtraInfo = 0;
+		ip[ii].ki.dwFlags = KEYEVENTF_KEYUP | KEYEVENTF_UNICODE;
+		ip[ii].ki.time = 0;
+		ip[ii].ki.wScan = s.at(i);
+		ip[ii].ki.wVk = 0;
+	}
+
+	int cSent = SendInput(cInputs, ip, sizeof(INPUT));
+
+	return cSent;
+}
+
 HRESULT CTextService::_ProcessKeyEvent(TfEditCookie ec, ITfContext *pContext, UINT keyval, UINT keycode, UINT modifier)
 {
 	ITfRange *pRangeComposition;
@@ -147,6 +214,21 @@ HRESULT CTextService::_ProcessKeyEvent(TfEditCookie ec, ITfContext *pContext, UI
     // Start the new compositon if there is no composition.
     if (!_IsComposing())
         _StartComposition(pContext);
+
+	byte keyboardState[256] = {0};
+
+	_engine.setKeyStates(keyboardState);
+
+	GetKeyboardState(keyboardState);
+	
+	int modifierList[] = {VK_CONTROL, VK_MENU, VK_SHIFT, VK_LCONTROL, VK_RCONTROL, VK_LMENU, VK_RMENU, VK_LSHIFT, VK_RSHIFT, NULL};
+
+	for (int i = 0; modifierList[i] != NULL; i++) {
+		int key = modifierList[i];
+		_engine.setKeyState(key, keyboardState[key]);
+	}
+
+	KeyMagicString before = _engine.getContextText()->c_str();
 
 	fSuccess = _engine.processKeyEvent(keyval, keycode, modifier);
 
@@ -170,9 +252,9 @@ HRESULT CTextService::_ProcessKeyEvent(TfEditCookie ec, ITfContext *pContext, UI
     // insert the text
     // use SetText here instead of InsertTextAtSelection because a composition was already started
     //Don't allow to the app to adjust the insertion point inside the composition
-	KeyMagicString * kms = _engine.getContextText();
+	KeyMagicString * context = _engine.getContextText();
 
-    if (tfSelection.range->SetText(ec, 0, kms->c_str(), kms->length()) != S_OK)
+    if (tfSelection.range->SetText(ec, 0, context->c_str(), context->length()) != S_OK)
         goto Exit;
     //
     // set the display attribute to the composition range.

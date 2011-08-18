@@ -235,7 +235,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(SolutionDir)\bin\InputProcessor.x32.lib shlwapi.lib"
+				AdditionalDependencies="shlwapi.lib"
 				OutputFile="$(OutDir)\$(ProjectName).x32.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"

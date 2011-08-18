@@ -103,10 +103,10 @@ public:
 	HICON _GetIcon() {
 		return _hIcon;
 	}
-	const wstring& _GetKeyboardName() {
+	const wstring _GetKeyboardName() {
 		return _keyboardName;
 	}
-	const wstring& _GetKeyboardDescription() {
+	const wstring _GetKeyboardDescription() {
 		return _keyboardDescription;
 	}
 private:

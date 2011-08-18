@@ -54,7 +54,7 @@
       <Value Profile="(Default)">Myanmar</Value>
     </Setting>
     <Setting Name="HexNotation" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="DoNotAskForAdmin" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

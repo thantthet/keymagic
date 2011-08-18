@@ -9,6 +9,7 @@
 #include <keymagic.h>
 
 using namespace std;
+using namespace libkm;
 
 typedef vector<wstring> KEYBOARD_LIST;
 

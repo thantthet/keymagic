@@ -34,7 +34,7 @@ INPUTPROCESSOR_API HHOOK GetWndProcHook ();
 #endif
 //HHOOK hKeyHook = NULL;
 HHOOK hWndProcHook = NULL;
-//HHOOK hGetMsgProcHook = NULL;
+HHOOK hGetMsgProcHook = NULL;
 //short HotKeys[500] = {0};
 //UINT HotKeyCount = 0;
 HWND hWndMainWindows = NULL;

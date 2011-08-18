@@ -10,26 +10,32 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>KeyMagic</RootNamespace>
     <AssemblyName>KeyMagic</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <ApplicationIcon>
-    </ApplicationIcon>
+    <ApplicationIcon>KeyMagic.ico</ApplicationIcon>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
     <StartupObject>KeyMagic.Program</StartupObject>
-    <PublishUrl>publish\</PublishUrl>
+    <ManifestCertificateThumbprint>CD95E25E3A26F82A6E068A7D44E57D49A0DBE135</ManifestCertificateThumbprint>
+    <ManifestKeyFile>KeyMagic.NET_TemporaryKey.pfx</ManifestKeyFile>
+    <GenerateManifests>false</GenerateManifests>
+    <TargetZone>LocalIntranet</TargetZone>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+    <SignManifests>true</SignManifests>
+    <PublishUrl>c:\publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateEnabled>true</UpdateEnabled>
     <UpdateMode>Foreground</UpdateMode>
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
+    <UpdateUrl>http://localhost/KeyMagic/</UpdateUrl>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
@@ -63,6 +69,9 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>..\bin\</OutputPath>
@@ -86,6 +95,9 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
@@ -117,9 +129,8 @@
     </Compile>
     <Compile Include="Hotkey.cs" />
     <Compile Include="KeyEventHandler.cs" />
-    <Compile Include="LayoutInfo.cs" />
     <Compile Include="KeyboardLayout.cs" />
-    <Compile Include="KMenuItem.cs">
+    <Compile Include="KToolStripMenuItem.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="KTabControl.cs">
@@ -150,6 +161,10 @@
       <DependentUpon>HotkeyControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="SoftKeyboard.resx">
+      <DependentUpon>SoftKeyboard.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
@@ -172,6 +187,19 @@
     </Compile>
     <Compile Include="RoundedRectangles.cs" />
     <Compile Include="NativeMethods.cs">
+    </Compile>
+    <Compile Include="SendInput.cs" />
+    <Compile Include="SoftKey.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SoftKeyboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SoftKeyboard.Designer.cs">
+      <DependentUpon>SoftKeyboard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SoftKeyboardWithEngine.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="WndProc.cs">
       <SubType>Form</SubType>
@@ -198,7 +226,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resources\" />
+    <None Include="Properties\app.manifest" />
+    <None Include="Resources\16x16_mono.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

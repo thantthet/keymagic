@@ -77,8 +77,6 @@ namespace kEditor
                     defaultEditorToolStripMenuItem.Checked = true;
                 }
             }
-
-            string[] args = Environment.GetCommandLineArgs();
         }
         DockPanel dockPanel;
         DockContent GlyphDock;
@@ -291,7 +289,7 @@ namespace kEditor
                 "VK_OEM_MINUS","VK_OEM_PLUS",
 
                 "VK_RMENU","VK_RALT","VK_ALT_GR","VK_LMENU","VK_LALT",
-                "VK_RCONTROL","VK_RCTRL","VK_LCTRL","VK_LCONTROL"
+                "VK_RCONTROL","VK_RCTRL","VK_LCTRL","VK_LCONTROL","VK_LSHIFT","VK_RSHIFT"
             }
             );
 
@@ -306,6 +304,16 @@ namespace kEditor
             foreach (string tab in tabs)
             {
                 CreateNewDocument(tab);
+            }
+
+            string[] args = Environment.GetCommandLineArgs();
+
+            if (args.Length > 1)
+            {
+                if (!SwitchIfOpened(args[1]))
+                {
+                    CreateNewDocument(args[1]);
+                }
             }
 
             if (dockPanel.DocumentsCount == 0)
@@ -845,7 +853,7 @@ namespace kEditor
 
         private bool Compile(string saveFileName)
         {
-            if (SciEditor.Modified)
+            if (ActiveDocument.Modified)
             {
                 if (askToSaveModifiedDocument() != System.Windows.Forms.DialogResult.OK)
                 {
@@ -994,13 +1002,13 @@ namespace kEditor
             if (Compile(tempFileName))
             {
                 KeyMagicDotNet.KeyMagicEngine engine = new KeyMagicDotNet.KeyMagicEngine();
-                if (engine.loadKeyboardFile(tempFileName) == false)
+                if (engine.LoadKeyboardFile(tempFileName) == false)
                 {
                     MessageBox.Show("Cannot load keyboard file to test");
                     return;
                 }
 
-                KeyMagicDotNet.KeyMagicKeyboard keyboard = engine.getKeyboard();
+                KeyMagicDotNet.KeyMagicKeyboard keyboard = engine.GetKeyboard();
                 Byte[] font = keyboard.getInfo("font");
                 Font f = selectedFont;
                 if (font != null)

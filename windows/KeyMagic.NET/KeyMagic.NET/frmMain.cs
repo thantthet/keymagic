@@ -17,30 +17,36 @@ using Microsoft.Win32.TaskScheduler;
 using System.Net;
 using Microsoft.Win32;
 using System.Configuration;
+using System.Xml;
+using System.Threading;
+using KeyMagicDotNet;
 
 namespace KeyMagic
 {
     public partial class frmMain : Form
     {
+        string[] MyanmarUnicodeFontNames = new string[] { "Parabaik", "Yunghkio", "Myanmar3", "MyMyanmar Unicode", "WinUni Innwa", "Win Uni Innwa" };
+
         enum DLLMSG : int
         {
             //KM_SETKEYBOARD = 0x5401,
+            KM_ERROR = 0x5401,
             KM_LOSTFOCUS = 0x5402,
             KM_GOTFOCUS = 0x5403,
             //KM_LISTCHANGED = 0x5404,
-            KM_ERROR = 0x5405,
             //KM_GETKBLNAME = 0x5406
+            KM_INPUTLANGCHANGE = 0x5404
         }
 
         //store additional icon for tray, this looks better for images with alpha when drawn
         Dictionary<String, Icon> iconList = new Dictionary<string, Icon>();
-        DwmApi.MARGINS m_glassMargins;
 
         Icon mainIcon;
+        Icon defaultKeyboardIcon;
 
-        bool isAdmin = false;
-        bool is64bit = false;
-        bool isVistaOrLater = false;
+        static bool isAdmin = false;
+        static bool is64bit = false;
+        static bool isVistaOrLater = false;
 
         //IntPtr DllPtrFileToLoad = IntPtr.Zero;
         //IntPtr DllPtrHotkeys = IntPtr.Zero;
@@ -54,41 +60,91 @@ namespace KeyMagic
 
         public frmMain()
         {
+            KToolStripMenuItem.MyanmarFontFallback = GetFont(MyanmarUnicodeFontNames, SystemFonts.MenuFont);
             InitializeComponent();
         }
 
-        private void frmMain_Load(object sender, EventArgs e)
+        protected override void OnLoad(EventArgs e)
         {
+            base.OnLoad(e);
+
             ProcessCommandLineArgs();
-            InitializeTrayIcon();
+            InitializeIcon();
             InitializeKeyboardLayoutMenu();
             InitializeMisc();
             InitializeAeroGlass();
             RunHelperExe();
             InitializeLogonRun();
+            ChangeWindowMessageFilterToReceive();
 
-            KeyMagicDotNet.NetKeyMagicEngine engine = new KeyMagicDotNet.NetKeyMagicEngine();
-            engine.Verbose = true;
-            engine.loadKeyboardFile(GetSaveKeyboardPath("Ayar-Phonetic"));
-
-            Debug.Assert(engine.processKeyEvent(101, 69, 0));
-            Debug.Assert(engine.processKeyEvent(55, 55, 0));
-
-            hotkeyControl1.ValueChanged += new EventHandler(hotkeyControl1_ValueChanged);
+            htkyOnOff.ValueChanged += new EventHandler(htkyOnOff_ValueChanged);
 
             handler = new KeyEventHandler();
             handler.HotkeyMatched += new EventHandler<KeyEventHandler.HotkeyMatchedEvent>(handler_HotkeyMatched);
+            handler.MouseDown += new EventHandler<MouseEventArgs>(handler_MouseDown);
             handler.Install();
 
             CreateKeyboardDirectory();
             LoadKeyboardLayoutList();
+
+            lvLayouts.Font = GetFont(MyanmarUnicodeFontNames, lvLayouts.Font);
+
+            softKeyboard = new SoftKeyboardWithEngine(handler.Engine);
+            softKeyboard.FormClosing += new FormClosingEventHandler(delegate(object fc_sender, FormClosingEventArgs fc_e)
+            {
+                if (fc_e.CloseReason == CloseReason.UserClosing)
+                {
+                    fc_e.Cancel = true;
+                    softKeyboard.Hide();
+                }
+            });
+
+            htkySoftKeyboard.Hotkey = new Hotkey(Properties.Settings.Default.SoftKeyboardHotkey);
+            RegisterWindowsHotkey(softKeyboardHtkyId, htkySoftKeyboard.Hotkey);
         }
 
-        void hotkeyControl1_ValueChanged(object sender, EventArgs e)
+        private void ChangeWindowMessageFilterToReceive()
+        {
+            try
+            {
+                NativeMethods.ChangeWindowMessageFilter((uint)DLLMSG.KM_ERROR, NativeMethods.MessageFilterFlag.MSGFLT_ADD);
+                NativeMethods.ChangeWindowMessageFilter((uint)DLLMSG.KM_GOTFOCUS, NativeMethods.MessageFilterFlag.MSGFLT_ADD);
+                NativeMethods.ChangeWindowMessageFilter((uint)DLLMSG.KM_INPUTLANGCHANGE, NativeMethods.MessageFilterFlag.MSGFLT_ADD);
+                NativeMethods.ChangeWindowMessageFilter((uint)DLLMSG.KM_LOSTFOCUS, NativeMethods.MessageFilterFlag.MSGFLT_ADD);
+            }
+            catch
+            {
+            }
+        }
+
+        public static Font GetFont(String[] fontFamilies, Font prototype)
+        {
+            foreach (String fontFamily in fontFamilies)
+            {
+                Font f = GetFont(fontFamily, prototype);
+                if (f != null)
+                {
+                    return f;
+                }
+            }
+            return null;
+        }
+
+        public static Font GetFont(String fontFamily, Font prototype)
+        {
+            Font newFont = new Font(fontFamily, prototype.Size, prototype.Style); ;
+            if (newFont.Name != fontFamily)
+            {
+                return null;
+            }
+            return newFont;
+        }
+
+        void htkyOnOff_ValueChanged(object sender, EventArgs e)
         {
             KToolStripMenuItem item = cmsLeft.Items[0] as KToolStripMenuItem;
-            Properties.Settings.Default.TurnOffHotkey = item.ShortcutKeyDisplayString = hotkeyControl1.Hotkey.ToString();
-            handler.Hotkeys[0] = hotkeyControl1.Hotkey;
+            Properties.Settings.Default.TurnOffHotkey = item.ShortcutKeyDisplayString = htkyOnOff.Hotkey.ToString();
+            handler.Hotkeys[0] = htkyOnOff.Hotkey;
         }
 
         void handler_HotkeyMatched(object sender, KeyEventHandler.HotkeyMatchedEvent e)
@@ -101,6 +157,16 @@ namespace KeyMagic
             {
                 Debug.WriteLine(ex.Message);
                 Debug.WriteLine(ex.StackTrace);
+            }
+        }
+
+        void handler_MouseDown(object sender, MouseEventArgs e)
+        {
+            IntPtr wnd = NativeMethods.WindowFromPoint(new NativeMethods.POINT(e.X, e.Y));
+
+            if (wnd == NativeMethods.GetFocus())
+            {
+                handler.Engine.Reset();
             }
         }
 
@@ -137,29 +203,37 @@ namespace KeyMagic
         {
             //UnHookWindowsHooks();
             SaveColumnWidths();
+            SoftKeyboardSize = softKeyboard.Size;
             KeyMagic.Properties.Settings.Default.Save();
+
             if (processX64 != null)
                 processX64.Kill();
-            if (processX32 != null)
-                processX32.Kill();
+            if (processX86 != null)
+                processX86.Kill();
             handler.UnInstall();
         }
 
         private void SaveColumnWidths()
         {
-            KeyMagic.Properties.Settings.Default.colFileNameWidth = lvLayouts.Columns[0].Width;
-            KeyMagic.Properties.Settings.Default.colDisplayWidth = lvLayouts.Columns[1].Width;
-            KeyMagic.Properties.Settings.Default.colHotkeyWidth = lvLayouts.Columns[2].Width;
-            KeyMagic.Properties.Settings.Default.colDescWidth = lvLayouts.Columns[3].Width;
+            KeyMagic.Properties.Settings.Default.ColFileNameWidth = lvLayouts.Columns[0].Width;
+            KeyMagic.Properties.Settings.Default.ColDisplayWidth = lvLayouts.Columns[1].Width;
+            KeyMagic.Properties.Settings.Default.ColHotkeyWidth = lvLayouts.Columns[2].Width;
+            KeyMagic.Properties.Settings.Default.ColVersionWidth = lvLayouts.Columns[3].Width;
+            KeyMagic.Properties.Settings.Default.ColDescWidth = lvLayouts.Columns[4].Width;
         }
 
-        private void frmMain_Paint(object sender, PaintEventArgs e)
+        protected override void OnPaintBackground(PaintEventArgs e)
         {
             if (DwmApi.DwmIsCompositionEnabled())
             {
-                //e.Graphics.FillRectangle(Brushes.Black, Rectangle.FromLTRB(0, 0, this.ClientRectangle.Width, m_glassMargins.cyTopHeight));
-                e.Graphics.FillRectangle(Brushes.Black, this.ClientRectangle);
+                BackColor = Color.Black;
             }
+            else
+            {
+                BackColor = SystemColors.ControlLightLight;
+            }
+
+            base.OnPaintBackground(e);
         }
 
         #endregion
@@ -167,13 +241,13 @@ namespace KeyMagic
         #region LogonRun
         private void InitializeLogonRun()
         {
-            Debug.Assert(Properties.Settings.Default.RunAtStartup == (bool)Properties.Settings.Default["RunAtStartup"]);
             SetLogonRun(Properties.Settings.Default.RunAtStartup);
             Properties.Settings.Default.RunAtStartup = GetOnLogonRun();
         }
 
         private void SetLogonRun(bool reg)
         {
+
             if (reg)
             {
                 if (isVistaOrLater)
@@ -300,10 +374,14 @@ namespace KeyMagic
 
         private void RegisterTask()
         {
+            Debug.WriteLine("RegisterTask:: Checking if registered");
+
             if (isTaskRegistered())
             {
                 return;
             }
+
+            Debug.WriteLine("RegisterTask:: Trying to register");
 
             // Get the service on the local machine
             using (TaskService ts = new TaskService())
@@ -387,11 +465,15 @@ namespace KeyMagic
 
         private void InitializeMisc()
         {
+            bool beta = Properties.Settings.Default.BetaRelease;
+
+            if (beta) this.Text += " (beta)";
+
             ActiveKeyboardList.Add(DefaultLayout);
 
             using (AboutKeyMagic aboutDlg = new AboutKeyMagic())
             {
-                lblAboutTitle.Text = String.Format("About {0} {1}", aboutDlg.AssemblyTitle, aboutDlg.AssemblyVersion);
+                lblAboutTitle.Text = String.Format("About {0} {1} {2}", AboutKeyMagic.AssemblyTitle, AboutKeyMagic.AssemblyVersion, beta ? "(beta)" : "");
             }
 
             is64bit = InternalCheckIsWow64();
@@ -404,24 +486,29 @@ namespace KeyMagic
             isAdmin = IsUserAdministrator();
         }
 
-        private void InitializeTrayIcon()
+        private void InitializeIcon()
         {
             //Load default Icon
             mainIcon = new Icon(typeof(frmMain), "KeyMagic.ico");
-            imageList.Images.Add("DefaultIcon", mainIcon);
+            using (Bitmap bm = KeyMagic.Properties.Resources.DefaultIcon)
+            {
+                defaultKeyboardIcon = Icon.FromHandle(bm.GetHicon());
+            }
+            imageList.Images.Add("DefaultIcon", defaultKeyboardIcon);
+            iconList[""] = mainIcon;
             nIcon.Icon = mainIcon;
         }
 
         private void InitializeKeyboardLayoutMenu()
         {
-            hotkeyControl1.Hotkey = new Hotkey(Properties.Settings.Default.TurnOffHotkey);
+            htkyOnOff.Hotkey = new Hotkey(Properties.Settings.Default.TurnOffHotkey);
             //Copy Image List
             cmsLeft.ImageList = imageList;
 
             //Create Turn Off Menu Item
             KToolStripMenuItem menuItem = new KToolStripMenuItem("Turn Off");
             menuItem.Checked = true;
-            menuItem.ShortcutKeyDisplayString = hotkeyControl1.Hotkey.ToString();
+            menuItem.ShortcutKeyDisplayString = htkyOnOff.Hotkey.ToString();
             menuItem.Click += new EventHandler(cmsLeftMenuItem_Click);
             cmsLeft.Items.Add(menuItem);
         }
@@ -444,7 +531,7 @@ namespace KeyMagic
         #region Hook/Messaging with hook dll
 
         Process processX64 = null;
-        Process processX32 = null;        
+        Process processX86 = null;
 
         private void RunHelperExe()
         {
@@ -454,13 +541,13 @@ namespace KeyMagic
 
                 psi = new ProcessStartInfo(Path.Combine(mainDir, "HookInput.x32.exe"), Handle.ToString("X"));
                 psi.WindowStyle = ProcessWindowStyle.Hidden;
-                //processX32 = Process.Start(psi);
+                processX86 = Process.Start(psi);
 
                 if (is64bit)
                 {
                     psi = new ProcessStartInfo(Path.Combine(mainDir, "HookInput.x64.exe"), Handle.ToString("X"));
                     psi.WindowStyle = ProcessWindowStyle.Hidden;
-                    //processX64 = Process.Start(psi);
+                    processX64 = Process.Start(psi);
                 }
             }
             catch (Win32Exception ex)
@@ -559,12 +646,13 @@ namespace KeyMagic
         {
             try
             {
-                InfoCollection infoCollection = new InfoCollection(fileName);
+                KeyMagicDotNet.InfoList infoList = KeyMagicDotNet.KeyMagicKeyboard.GetInfosFromKeyboardFile(fileName);
+                //InfoCollection infoCollection = new InfoCollection(fileName);
                 string fileTitle = Path.GetFileNameWithoutExtension(fileName);
                 ListViewItem lvItem = new ListViewItem(fileTitle);
                 lvItem.Group = lvLayouts.Groups["Enabled"];
 
-                Bitmap icon = infoCollection.GetIcon();
+                Bitmap icon = infoList.GetIcon();
                 if (icon != null)
                 {
                     imageList.Images.Add(fileTitle, icon);
@@ -575,7 +663,7 @@ namespace KeyMagic
                     lvItem.ImageKey = "DefaultIcon";
                 }
 
-                String name = infoCollection.GetName();
+                String name = infoList.GetName();
                 if (name != null)
                 {
                     lvItem.SubItems.Add(name);
@@ -585,17 +673,19 @@ namespace KeyMagic
                     lvItem.SubItems.Add(fileTitle);
                 }
 
-                Hotkey hotkey = infoCollection.GetHotkey();
+                String hotkey = infoList.GetHotkey();
                 if (hotkey != null)
                 {
-                    lvItem.SubItems.Add(hotkey.ToString());
+                    lvItem.SubItems.Add(new Hotkey(hotkey).ToString());
                 }
                 else
                 {
                     lvItem.SubItems.Add("");
                 }
 
-                String desc = infoCollection.GetDescription();
+                lvItem.SubItems.Add(KeyMagicDotNet.KeyMagicKeyboard.GetVersion(fileName).ToString());
+
+                String desc = infoList.GetDescription();
                 if (desc != null)
                 {
                     lvItem.SubItems.Add(desc);
@@ -682,7 +772,7 @@ namespace KeyMagic
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine(ex.Message);
+                            MessageBox.Show(this, ex.Message, "Failed to delete!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                     SaveKeyboardLayoutList();
@@ -788,19 +878,20 @@ namespace KeyMagic
 
             //long lPtr = DllPtrHotkeys.ToInt64();
             List<Hotkey> hotkeys = new List<Hotkey>();
-            hotkeys.Add(hotkeyControl1.Hotkey);
+            hotkeys.Add(htkyOnOff.Hotkey);
 
             foreach (KeyboardLayout layout in keyboardList)
             {
-                InfoCollection infos = new InfoCollection(GetSaveKeyboardPath(layout.file));
+                KeyMagicDotNet.InfoList infoList = KeyMagicDotNet.KeyMagicKeyboard.GetInfosFromKeyboardFile(GetSaveKeyboardPath(layout.file));
                 ListViewItem lvItem = new ListViewItem(layout.file);
 
                 hotkeys.Add(new Hotkey(layout.hotkey));
 
                 lvItem.SubItems.Add(layout.display);
                 lvItem.SubItems.Add(layout.hotkey);
-                lvItem.SubItems.Add(infos.GetDescription());
-                using (Bitmap bmIcon = infos.GetIcon())
+                lvItem.SubItems.Add(KeyMagicDotNet.KeyMagicKeyboard.GetVersion(GetSaveKeyboardPath(layout.file)).ToString());
+                lvItem.SubItems.Add(infoList.GetDescription());
+                using (Bitmap bmIcon = infoList.GetIcon())
                 {
                     if (bmIcon != null)
                     {
@@ -818,11 +909,11 @@ namespace KeyMagic
                             {
                                 iconList[layout.file] = menuItem.Icon = icon;
                             }
-                        else iconList[layout.file] = null;
+                        else iconList[layout.file] = defaultKeyboardIcon;
 
                         menuItem.ImageKey = lvItem.ImageKey;
                         menuItem.ShortcutKeyDisplayString = layout.hotkey;
-                        String fontFamily = infos.GetFontFamily();
+                        String fontFamily = infoList.GetFontFamily();
                         menuItem.Click += new EventHandler(cmsLeftMenuItem_Click);
                         cmsLeft.Items.Add(menuItem);
                     }
@@ -891,6 +982,7 @@ namespace KeyMagic
         private void btnOK_Click(object sender, EventArgs e)
         {
             this.Hide();
+            Properties.Settings.Default.Save();
         }
 
         private void btnExit_Click(object sender, EventArgs e)
@@ -945,6 +1037,8 @@ namespace KeyMagic
         #endregion
 
         #region Aero Glass Functions
+
+        DwmApi.MARGINS m_glassMargins;
 
         private void ResetDwmBlurBehind()
         {
@@ -1104,12 +1198,12 @@ namespace KeyMagic
             {
                 if (!engines.ContainsKey(LastClientHandle))
                 {
-                    engines[LastClientHandle] = new LayoutInfo(index, new KeyMagicDotNet.NetKeyMagicEngine());
+                    engines[LastClientHandle] = new LayoutInfo(index, new KeyMagicDotNet.KeyMagicEngine());
                 }
                 else if (index == 0 && engines[LastClientHandle].index == 0)
                 {
                     index = LastKeyboardLayoutIndex;
-                    engines[LastClientHandle] = new LayoutInfo(index, new KeyMagicDotNet.NetKeyMagicEngine());
+                    engines[LastClientHandle] = new LayoutInfo(index, new KeyMagicDotNet.KeyMagicEngine());
                 }
                 else if (index == 0)
                 {
@@ -1118,24 +1212,29 @@ namespace KeyMagic
                 }
                 else if (engines[LastClientHandle].index != index)
                 {
-                    engines[LastClientHandle] = new LayoutInfo(index, new KeyMagicDotNet.NetKeyMagicEngine());
+                    engines[LastClientHandle] = new LayoutInfo(index, new KeyMagicDotNet.KeyMagicEngine());
                 }
                 else if (engines[LastClientHandle].index == index)
                 {
+                    Debug.WriteLine(string.Format("engines[LastClientHandle].index == index # {0} == {1}", engines[LastClientHandle].index, index));
                     engines[LastClientHandle] = new LayoutInfo(0, null);
                     index = 0;
                 }
 
                 handler.Engine = engines[LastClientHandle].engine;
 
+                Debug.WriteLine(engines[LastClientHandle]);
+
                 if (index != 0 && handler.Engine != null)
                 {
                     String fileName = ActiveKeyboardList[index].file;
-                    bool success = handler.Engine.loadKeyboardFile(GetSaveKeyboardPath(fileName));
+                    bool success = handler.Engine.LoadKeyboardFile(GetSaveKeyboardPath(fileName));
                     Debug.Assert(success == true, "Failed to load keyboard layout.");
-                    nIcon.Icon = iconList[fileName];
-                    nIcon.Icon = nIcon.Icon == null ? mainIcon : nIcon.Icon;
+
+                    SetKeyboardIcon(fileName);
                 }
+
+                SoftKeyboardEngine = handler.Engine;
             }
             catch (Exception ex)
             {
@@ -1143,30 +1242,165 @@ namespace KeyMagic
             }
         }
 
+        private void SetKeyboardIcon(string fileName)
+        {
+            if (iconList.ContainsKey(fileName))
+            {
+                nIcon.Icon = iconList[fileName];
+            }
+            else
+            {
+                nIcon.Icon = defaultKeyboardIcon;
+            }
+        }
+
         #endregion
+
+        class Download
+        {
+            public string Version;
+            public string DownloadURL;
+
+            public override string ToString()
+            {
+                return string.Format("Version={0}, DownloadURL={1}", Version, DownloadURL);
+            }
+        }
 
         private void btnCheckUpdate_Click(object sender, EventArgs e)
         {
-            try
+            ThreadStart ts = new ThreadStart(delegate()
             {
-                WebRequest httpReq = (HttpWebRequest)WebRequest.Create("http://ttkz-mbp/");
-                WebResponse webResponse = httpReq.GetResponse();
-                using (StreamReader sr = new StreamReader(webResponse.GetResponseStream()))
+                string oldBtnText = null;
+                if (btnCheckUpdate.InvokeRequired)
                 {
-                    string content = sr.ReadToEnd();
+                    btnCheckUpdate.Invoke(new MethodInvoker(delegate()
+                    {
+                        oldBtnText = btnCheckUpdate.Text;
+                        btnCheckUpdate.Text = "Stop Checking";
+                    }));
                 }
-                webResponse.Close();
+
+                try
+                {
+                    String URLString = "http://dl.dropbox.com/u/176693/keymagic.xml";
+                    //String URLString = "file://///psf/Home/Documents/keymagic.xml";
+
+                    WebRequest webReq = WebRequest.Create(URLString);
+                    webReq.Proxy = WebRequest.GetSystemWebProxy();
+                    webReq.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
+                    webReq.Proxy.Credentials = CredentialCache.DefaultCredentials;
+
+                    XmlTextReader reader = new XmlTextReader(webReq.GetResponse().GetResponseStream());
+                    
+                    Dictionary<string, Download> Downloads = new Dictionary<string, Download>();
+                    String CurrentKey = null;
+
+                    if (reader.Read() && !reader.Name.Equals("KeyMagic"))
+                    {
+                        throw new Exception("Invalid XML");
+                    }
+
+                    while (reader.Read())
+                    {
+                        switch (reader.NodeType)
+                        {
+                            case XmlNodeType.Element: // The node is an element.
+                                if (string.IsNullOrEmpty(CurrentKey))
+                                {
+                                    CurrentKey = reader.Name;
+                                    reader.Read();
+                                    Downloads[CurrentKey] = new Download();
+                                    Downloads[CurrentKey].Version = reader.Value;
+                                }
+                                else if (reader.Name.Equals("DownloadURL"))
+                                {
+                                    reader.Read();
+                                    Downloads[CurrentKey].DownloadURL = reader.Value;
+
+                                    CurrentKey = null;
+                                }
+                                break;
+                        }
+                    }
+
+                    string latestVersion;
+
+                    if (Properties.Settings.Default.BetaRelease)
+                    {
+                        latestVersion = "LatestBetaVersion";
+                    }
+                    else
+                    {
+                        latestVersion = "LatestStableVersion";
+                    }
+
+                    if (Downloads.ContainsKey(latestVersion))
+                    {
+                        while (Downloads[latestVersion].Version.StartsWith("="))
+                        {
+                            latestVersion = Downloads[latestVersion].Version.Substring(1);
+                            Debug.WriteLine("Redirect to " + latestVersion);
+                        }
+                        if (new Version(Downloads[latestVersion].Version) > new Version(AboutKeyMagic.AssemblyVersion))
+                        {
+                            if (MessageBox.Show(string.Format("There is new update ({0}) available. Do you want to open download page now?", Downloads[latestVersion].Version), "Update Available",
+                                MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                            {
+                                Process.Start(Downloads[latestVersion].DownloadURL);
+                            }
+                        }
+                        else if (new Version(Downloads[latestVersion].Version) < new Version(AboutKeyMagic.AssemblyVersion))
+                        {
+                            MessageBox.Show("You have the future release version of KeyMagic which is not even released yet. Seems like you are using private release, do you?", "Ooh!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        }
+                        else
+                        {
+                            MessageBox.Show("You have the latest version of KeyMagic", "No Update Available", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+
+                    foreach (string key in Downloads.Keys)
+                    {
+                        Console.WriteLine(key + "=>" + Downloads[key]);
+                    }
+                }
+                catch (ThreadAbortException)
+                {
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+
+                if (btnCheckUpdate.InvokeRequired)
+                {
+                    btnCheckUpdate.Invoke(new MethodInvoker(delegate() { btnCheckUpdate.Text = oldBtnText; }));
+                }
             }
-            catch (Exception ex)
+            );
+
+            if (updateThread != null)
             {
-                MessageBox.Show(this, ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                if (btnCheckUpdate.Text == "Stop Checking")
+                {
+                    updateThread.Abort();
+                    btnCheckUpdate.Text = "Check For Update";
+                    return;
+                }
             }
+
+            updateThread = new Thread(ts);
+            updateThread.Start();
         }
+
+        Thread updateThread = null;
 
         private void chkRunAtLogon_CheckedChanged(object sender, EventArgs e)
         {
             SetLogonRun(chkRunAtLogon.Checked);
-            Properties.Settings.Default.RunAtStartup = chkRunAtLogon.Checked = GetOnLogonRun();
+            chkRunAtLogon.Checked = GetOnLogonRun();
         }
 
         private void mainTableLayoutPanel_Paint(object sender, PaintEventArgs e)
@@ -1179,6 +1413,48 @@ namespace KeyMagic
         private void fllBottom_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.FillRectangle(new SolidBrush(Color.Black), e.ClipRectangle);
+        }
+
+        SoftKeyboardWithEngine softKeyboard;
+
+        public KeyMagicEngine SoftKeyboardEngine
+        {
+            get { return softKeyboard.Engine; }
+            set { softKeyboard.Engine = value; }
+        }
+
+        public Size SoftKeyboardSize
+        {
+            get
+            {
+                return Properties.Settings.Default.SoftKeyboardSize;
+            }
+            set
+            {
+                Properties.Settings.Default.SoftKeyboardSize = value;
+            }
+        }
+
+        private void softKeyboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            softKeyboard.Size = SoftKeyboardSize;
+            softKeyboard.Show();
+        }
+
+        private void htkySoftKeyboard_ValueChanged(object sender, EventArgs e)
+        {
+            KToolStripMenuItem item = cmsRight.Items[1] as KToolStripMenuItem;
+            Properties.Settings.Default.SoftKeyboardHotkey = item.ShortcutKeyDisplayString = htkySoftKeyboard.Hotkey.ToString();
+
+            RegisterWindowsHotkey(softKeyboardHtkyId, htkySoftKeyboard.Hotkey);
+        }
+
+        private const int softKeyboardHtkyId = 0x001;
+
+        private void RegisterWindowsHotkey(int id, Hotkey hotkey)
+        {
+            uint fsModifiers = hotkey.WinModifiers;
+            NativeMethods.RegisterHotKey(Handle, id, fsModifiers, hotkey.KeyChar);
         }
     }
 }
