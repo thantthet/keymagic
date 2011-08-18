@@ -169,6 +169,7 @@ include				{includeFile="";BEGIN(S_INCLUDE);}
 	US_LAYOUT_BASED	{return (token::OPT_US_LAYOUT); }
 	POSITIONAL_LAYOUT	{return (token::OPT_US_LAYOUT); }
 	SMART_BACKSPACE	{return (token::OPT_SMART_BACKSPACE); }
+	TREAT_CTRL_ALT_AS_RALT {return (token::OPT_RALT); }
 	\=						{BEGIN(S_GET_OPTION); }
 	['"]					{driver.warn(*yylloc, "Did you forget to add '=' ?"); BEGIN(lastState);}
 	[^\t ]				{driver.warn(*yylloc, "Unrecognized Option!"); BEGIN(lastState);}
@@ -178,19 +179,19 @@ include				{includeFile="";BEGIN(S_INCLUDE);}
 <S_GET_OPTION>{
 	[\t ]		;
 	\"			{BEGIN(S_DQSTRING);}
-	\'			{BEGIN(S_SQSTRING);}		
+	\'			{BEGIN(S_SQSTRING);}
 	\r*\n		{BEGIN(lastState); unput('\n'); }
 }
 
 <S_LINECOMMENT>{
 	\r*\n	{yylloc->lines (1); BEGIN(0);}
-	@		{lastState=S_LINECOMMENT; BEGIN(S_OPTIONS);}
+	^@		{lastState=S_LINECOMMENT; BEGIN(S_OPTIONS);}
 	.		;
 }
 
 <S_BLOCKCOMMENT>{
 	"*/"	{BEGIN(0);}
-	@		{lastState=S_BLOCKCOMMENT; BEGIN(S_OPTIONS);}
+	^@		{lastState=S_BLOCKCOMMENT; BEGIN(S_OPTIONS);}
 	\r*\n	{yylloc->lines (1);}
 	.		;
 }
@@ -212,12 +213,12 @@ include				{includeFile="";BEGIN(S_INCLUDE);}
 
 <S_SQSTRING>{
 	\'					{BEGIN(lastState);}
-	[^\\'\r\n]			{yylval->ival=yytext[0]; return(token::CHAR);}
+	[^\\'\r\n]		{yylval->ival=yytext[0]; return(token::CHAR);}
 }
 
 <S_DQSTRING>{
 	\"					{BEGIN(lastState);}
-	[^\\"\r\n]			{yylval->ival=yytext[0]; return(token::CHAR);}
+	[^\\"\r\n]		{yylval->ival=yytext[0]; return(token::CHAR);}
 }
 
 <S_SQSTRING,S_DQSTRING>{

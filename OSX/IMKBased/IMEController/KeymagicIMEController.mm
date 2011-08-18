@@ -31,6 +31,8 @@
 case b: \
 *winVK = c;\
 return TRUE
+
+// Map OS X Virtual Key to Windows Virtual Key
 bool mapVK(int virtualkey, int * winVK)
 {
 	switch (virtualkey) {
@@ -242,27 +244,36 @@ bool mapVK(int virtualkey, int * winVK)
 			return NO;
 	}
 	
+	unsigned char kbStates[256] = {0};
+	
 	int modifier = 0;
 	if (cocoaModifiers & NSCommandKeyMask) {
 		return NO;
 	}
 	if (cocoaModifiers & NSAlphaShiftKeyMask) {
 		modifier |= KeyMagicEngine::CAPS_MASK;
+		kbStates[VK_CAPITAL] = 0x81;
 	}
 	if (cocoaModifiers & NSShiftKeyMask) {
 		modifier |= KeyMagicEngine::SHIFT_MASK;
+		kbStates[VK_SHIFT] = 0x80;
 	}
 	if (cocoaModifiers & NSControlKeyMask) {
 		modifier |= KeyMagicEngine::CTRL_MASK;
+		kbStates[VK_CONTROL] = 0x80;
 	}
 	if (cocoaModifiers & NSAlternateKeyMask) {
 		modifier |= KeyMagicEngine::ALT_MASK;
+		kbStates[VK_MENU] = 0x80;
 	}
 	
 	int winVK;
 	if (mapVK(virtualKeyCode, &winVK) == NO) {
 		return NO;
 	}
+	
+	
+	kme.setKeyStates(kbStates);
 	
 	if (kme.processKeyEvent([chars characterAtIndex:0], winVK, modifier) == NO) {
 		switch (virtualKeyCode) {

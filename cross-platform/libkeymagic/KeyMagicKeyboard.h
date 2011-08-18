@@ -17,13 +17,17 @@
 #define KEYMAGICKEYBOARD_H_
 
 #define MAJOR_VERSION 1
-#define MINOR_VERSION 4
+#define MINOR_VERSION 5
 
 #include "KeyMagicTypes.h"
 #include "KeyMagicString.h"
 #include "RuleInfo.h"
 #include "KeyMagicLogger.h"
 #include "KeyMagicErrorLogger.h"
+
+#ifndef MAKELONG
+#define MAKELONG(a, b)      (a & 0xffff) | ((a & 0xffff) << 16)
+#endif
 
 namespace libkm {
 
@@ -37,9 +41,12 @@ namespace libkm {
  */
 class KeyMagicKeyboard {
 public:
+	/**
+	 * Constructor
+	 */
 	KeyMagicKeyboard();
 	/**
-	 *
+	 * Deconstructor
 	 */
 	~KeyMagicKeyboard();
 	/**
@@ -70,8 +77,10 @@ public:
 	static bool ReadHeader(FILE * hFile, FileHeader * fh);
 
 #if defined (_WIN32) || defined (_WIN64)
+	static unsigned long getVersion(const WCHAR * file);
 	static InfoList * getInfosFromKeyboardFile(const WCHAR * file);
 #endif
+	static unsigned long getVersion(const char * file);
 	static InfoList * getInfosFromKeyboardFile(const char * file);
 	
 	bool m_verbose;
@@ -88,7 +97,6 @@ private:
 	bool convertBinaryRuleToManagedRule(const BinaryRule * binRule, RuleInfo * managedMatchRule);
 	KeyMagicString getVariableValue(int index, BinaryStringList * binStrings);
 	void deleteRules();
-	void deleteInfos();
 };
 
 }

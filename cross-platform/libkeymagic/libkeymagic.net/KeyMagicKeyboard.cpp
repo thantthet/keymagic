@@ -4,7 +4,6 @@
 #include <msclr/marshal.h>
 
 #include "keymagic.h"
-#include "RuleInfo.h"
 #include "KeyMagicKeyboard.h"
 
 using namespace msclr::interop;
@@ -12,7 +11,7 @@ using namespace System::Runtime::InteropServices;
 
 namespace KeyMagicDotNet {
 
-	bool KeyMagicKeyboard::loadKeyboardFile(String ^ fileName)
+	bool KeyMagicKeyboard::LoadKeyboardFile(String ^ fileName)
 	{
 		marshal_context ^ context = gcnew marshal_context();
 		const wchar_t* szfileName = context->marshal_as<const wchar_t*>(fileName);
@@ -23,7 +22,7 @@ namespace KeyMagicDotNet {
 		return ret;
 	}
 
-	array<String^> ^ KeyMagicKeyboard::getStrings()
+	array<String^> ^ KeyMagicKeyboard::GetStrings()
 	{
 		libkm::StringList * strList = m_keyboard->getStrings();
 
@@ -40,28 +39,56 @@ namespace KeyMagicDotNet {
 		return strings->ToArray();
 	}
 
+	LayoutOptions ^ KeyMagicKeyboard::GetLayoutOptions()
+	{
+		libkm::LayoutOptions * options = m_keyboard->getLayoutOptions();
+
+		LayoutOptions ^ managedOptions = gcnew LayoutOptions();
+
+		managedOptions->trackCaps = options->trackCaps;
+		managedOptions->autoBksp = options->autoBksp;
+		managedOptions->eat = options->eat;
+		managedOptions->posBased = options->posBased;
+		managedOptions->rightAlt = options->rightAlt;
+
+		return managedOptions;
+	}
+
 	//array<RuleInfo^> ^ KeyMagicKeyboard::getRules()
 	//{
 	//}
 
-	array<Byte>^ KeyMagicKeyboard::getInfo(String ^ id)
+	InfoList ^ KeyMagicKeyboard::GetInfosFromKeyboardFile(String ^ fileName)
 	{
-		if (id->Length != 4) return nullptr;
+		marshal_context ^ context = gcnew marshal_context();
+		const wchar_t* szfileName = context->marshal_as<const wchar_t*>(fileName);
 
-		int intId = id[0] << 24 | id[1] << 16 | id[2] << 8 | id[3];
-		const libkm::InfoList list = m_keyboard->getInfoList();
+		libkm::InfoList * infos = libkm::KeyMagicKeyboard::getInfosFromKeyboardFile(szfileName);
 
-		if (list.find(intId) == list.end())
-		{
-			return nullptr;
-		}
+		InfoList ^ managedInfos = gcnew InfoList(*infos);
 
-		libkm::Info i = list.find(intId)->second;
+		infos->clear();
 
-		array<Byte>^ data = gcnew array<Byte>(i.size);
+		delete context;
+		return managedInfos;
+	}
 
-		Marshal::Copy((IntPtr)i.data, data, 0, (int)i.size);
+	InfoList ^ KeyMagicKeyboard::GetInfoList()
+	{
+		const libkm::InfoList infos = m_keyboard->getInfoList();
+		InfoList ^ managedInfos = gcnew InfoList(infos);
 
-		return data;
+		return managedInfos;
+	}
+
+	Version ^ KeyMagicKeyboard::GetVersion(String ^ fileName)
+	{
+		marshal_context ^ context = gcnew marshal_context();
+		const wchar_t* szfileName = context->marshal_as<const wchar_t*>(fileName);
+
+		DWORD dwVersion = libkm::KeyMagicKeyboard::getVersion(szfileName);
+
+		delete context;
+		return gcnew Version(LOWORD(dwVersion), HIWORD(dwVersion));
 	}
 }

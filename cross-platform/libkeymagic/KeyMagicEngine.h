@@ -73,13 +73,44 @@ public:
 	 */
 	void setContextText(KeyMagicString * textContext);
 	/**
+	 *
+	 */
+	int getDifference(const KeyMagicString& contextBefore, KeyMagicString * difference);
+	/**
 	 * Get keyboard object
 	 */
 	KeyMagicKeyboard * getKeyboard();
+
+	/**
+	 * Get the key state of `keycode`
+	 * @param keycode keycode to get
+	 */
+	short getKeyState(int keycode);
+	/**
+	 * Set keystate
+	 * @param keycode keycode to set
+	 * @param state state of keycode
+	 */
+	void setKeyState(int keycode, unsigned char state);
+	/**
+	 * Set all key states
+	 * @param keystates array of keystate
+	 */
+	void setKeyStates(unsigned char * keystates);
+
+	/**
+	 *
+	 */
+	std::map<int, bool> getSwitchMap();
+
+	/**
+	 *
+	 */
+	void setSwitchMap(const std::map<int, bool> & switchMap);
 	
 	bool m_verbose;
 private:
-	int matchKeyStates(int keycode, int modifier, std::vector<RuleInfo::Item*> * rule);
+	int matchKeyStates(int modifier, RuleInfo::ItemList* rule);
 	/**
 	 * private function to match input rule
 	 * @param ruleInfo rule to match with
@@ -97,11 +128,6 @@ private:
 	 * @param ruleInfo rule that was matched
 	 */
 	bool processOutput(RuleInfo *);
-	/**
-	 * Get the key state of `keycode`
-	 * @param keycode keycode to get
-	 */
-	int getKeyState(int keycode);
 	void prepareForMatching();
 	/**
 	 * update context history
@@ -110,7 +136,7 @@ private:
 	
 	KeyMagicString m_textContext;
 	
-	int m_keyStates[KeyStateLen];
+	unsigned char m_keyStates[KeyStateLen];
 	
 	TypeContextHistory m_contextHistory;
 	

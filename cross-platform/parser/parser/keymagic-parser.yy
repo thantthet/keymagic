@@ -38,6 +38,7 @@ typedef std::list<int> containerType;
 %token OPT_EAT
 %token OPT_US_LAYOUT
 %token OPT_SMART_BACKSPACE
+%token OPT_RALT
 
 %token IDENTIFIER "identifier"
 %token EQUAL "="
@@ -87,6 +88,7 @@ option : option_caps
 				| option_font
 				| option_desc
 				| option_bksp
+				| option_ralt
 
 option_name : OPT_NAME
 							| OPT_NAME char_array
@@ -114,6 +116,10 @@ option_pos : OPT_US_LAYOUT
 							
 option_bksp : OPT_SMART_BACKSPACE
 							| OPT_SMART_BACKSPACE char_array {driver.layoutOptions.smartBksp = driver.StringToBool(*$2); }
+							;
+							
+option_ralt : OPT_RALT
+              | OPT_RALT char_array {driver.layoutOptions.ralt = driver.StringToBool(*$2); }
 							;
 
 statement_list : statement_list statement

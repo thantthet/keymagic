@@ -119,7 +119,7 @@ bool keyboard::createJSKeyboard(const char * keyboardFileName, const char * jsKe
 		return false;
 	}
 	
-	char hotkey[20] = {0},
+	char * hotkey = 0,
 		*kbTitle = new char[strlen(keyboardFileName)];
 	
 	//get file title
@@ -132,24 +132,22 @@ bool keyboard::createJSKeyboard(const char * keyboardFileName, const char * jsKe
 	while (kbTitle[--i] != '.') kbTitle[i] = '\0';
 	kbTitle[i] = '\0';
 	
-	//create hotkey from first char of kb name
-	//TODO: remove when hotkey is supported by KeyMagic binary layout files
-	if (isalpha(kbTitle[0])) {
-		strcpy(hotkey, "Ctrl + Shift + ");
-		char key;
-		key = kbTitle[0];
-		key -= islower(kbTitle[0]) ? 0x20 : 0;
-		strncat(hotkey, &key, 1);
-	}
-	
 	LayoutOptions * options = KeyMagicKeyboard::getLayoutOptions();
+	InfoList infos = KeyMagicKeyboard::getInfoList();
+	
+	InfoList::iterator htky = infos.find('htky');
+	if (htky != infos.end()) {
+		hotkey = new char[htky->second.size + 1];
+		strncpy(hotkey, htky->second.data, htky->second.size);
+		hotkey[htky->second.size] = 0;
+	}
 	
 	fs << "var keyboard =" << "{\n";
 	fs << "'name':" << "'" << kbTitle << "',\n";
 	fs << "'autobksp':" << std::boolalpha << options->autoBksp << ",\n";
 	fs << "'trackcaps':" << std::boolalpha << options->trackCaps << ",\n";
 	fs << "'eat':" << std::boolalpha << options->eat << ",\n";
-	fs << "'hotkey': '" << hotkey << "',\n";
+	if (hotkey) fs << "'hotkey': '" << hotkey << "',\n";
 	fs << "'rules': [\n";
 	
 	RuleList * rules = KeyMagicKeyboard::getRules();
@@ -181,7 +179,8 @@ bool keyboard::createJSKeyboard(const char * keyboardFileName, const char * jsKe
 	
 	fs.close();
 	
-	delete kbTitle;
+	delete[] kbTitle;
+	if (hotkey) delete[] hotkey;
 	
 	return true;
 }

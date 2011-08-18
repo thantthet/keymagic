@@ -172,6 +172,7 @@ keymagic_driver::keymagic_driver ()
 	layoutOptions.eat = false;
 	layoutOptions.trackCaps = true;
 	layoutOptions.posBased = false;
+	layoutOptions.rightAlt = true;
 }
 
 keymagic_driver::~keymagic_driver ()

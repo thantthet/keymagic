@@ -108,19 +108,19 @@ public:
 		/**
 		 * Switch id when type is tSwitch
 		 */
-		int switchId;
+		unsigned int switchId;
 		/**
 		 * Reference index when type is tReference or tBackRefString
 		 */
-		int refIndex;
+		unsigned int refIndex;
 		/**
 		 * Keycode value when type is tVKey
 		 */
-		int keyCode;
+		unsigned int keyCode;
 		/**
 		 * String value when type is tString, tBackRefString, tAnyOfString, tNotAnyOfString
 		 */
-		KeyMagicString * stringValue;
+		KeyMagicString stringValue;
 		
 		/**
 		 * construct new Item for type tString, tBackRefString, tAnyOfString, tNotAnyOfString
@@ -133,45 +133,47 @@ public:
 		 * @param t type of this Item
 		 * @param i Could be switchId or Reference Index or VK code
 		 */
-		Item(types t, int i);
+		Item(types t, unsigned int i);
 		/**
 		 * construct new Item for tAny
 		 * @param t type of this Item
 		 */
 		Item (types t);
-		/**
-		 * deconstructor
-		 */
-		~Item();
 	};
+
+	typedef std::vector<Item> ItemList;
 
 	/**
 	 * @param in sequence of binary rule for input
 	 * @param out sequence of binary rule for output
 	 * @param vars strings list of variables
 	 */
-	RuleInfo(short * in, short * out, StringList * vars);
+	RuleInfo(const short * in, const short * out, StringList * vars);
 	/**
 	 *
 	 */
 	~RuleInfo();
+
+	bool operator < (RuleInfo& r2);
+	bool operator < (const RuleInfo& r2) const;
+
 	/**
 	 * @param binRule binary rule to convert
 	 * @param outRule output (result) managed rule
 	 * @param variable list of variables string for lookup
 	 */
-	int toRuleInfo(short * binRule, std::vector<Item*> * outRule, StringList * variable);
+	int toRuleInfo(const short * binRule, ItemList * outRule, StringList * variable);
 
 	/**
 	 * @return list of LHS rules
 	 */
-	std::vector<Item*> * getLHS() {
+	ItemList * getLHS() {
 		return &m_lhsRule;
 	}
 	/**
 	 * @return list of RHS rules
 	 */
-	std::vector<Item*> * getRHS() {
+	ItemList * getRHS() {
 		return &m_rhsRule;
 	}
 	/**
@@ -214,9 +216,9 @@ public:
 	std::string * description();
 
 private:
-	std::string * JSON(std::vector<Item*> * rule);
-	int getSwitchCount(std::vector<Item*> * rule);
-	int getVKCount(std::vector<Item*> * rule);
+	std::string * JSON(ItemList * rule);
+	int getSwitchCount(ItemList * rule);
+	int getVKCount(ItemList * rule);
 	
 	int m_index;
 	/**
@@ -226,11 +228,11 @@ private:
 	/**
 	 * array of left-hand-side rules
 	 */
-	std::vector<Item*> m_rhsRule;
+	ItemList m_rhsRule;
 	/**
 	 * array of right-hand-side rules
 	 */
-	std::vector<Item*> m_lhsRule;
+	ItemList m_lhsRule;
 	/**
 	 * LHS switch count
 	 */
@@ -242,7 +244,7 @@ private:
 	KeyMagicLogger * m_logger;
 };
 
-typedef std::vector<RuleInfo*> RuleList;
+typedef std::vector<RuleInfo> RuleList;
 
 }
 

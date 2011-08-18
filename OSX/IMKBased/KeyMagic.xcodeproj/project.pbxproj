@@ -54,6 +54,9 @@
 		B55969D713799A2100690DE3 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B55969D613799A2100690DE3 /* Growl.framework */; };
 		B55969D813799A2100690DE3 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B55969D613799A2100690DE3 /* Growl.framework */; };
 		B55969E413799A3400690DE3 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B55969D613799A2100690DE3 /* Growl.framework */; };
+		B595DA2513D39931005636D3 /* KeyMagic_black.icns in Resources */ = {isa = PBXBuildFile; fileRef = B595DA2413D39931005636D3 /* KeyMagic_black.icns */; };
+		B595DA2613D39931005636D3 /* KeyMagic_black.icns in Resources */ = {isa = PBXBuildFile; fileRef = B595DA2413D39931005636D3 /* KeyMagic_black.icns */; };
+		B595DA4113D3999D005636D3 /* KeyMagic_black.icns in Resources */ = {isa = PBXBuildFile; fileRef = B595DA2413D39931005636D3 /* KeyMagic_black.icns */; };
 		B59E0258139FE45B00F36391 /* Growl.m in Sources */ = {isa = PBXBuildFile; fileRef = B59E0257139FE45B00F36391 /* Growl.m */; };
 /* End PBXBuildFile section */
 
@@ -144,6 +147,7 @@
 		B51D988F12FFA5AC008E0A2F /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = main.mm; path = IMEController/main.mm; sourceTree = "<group>"; };
 		B52F5CAB1339D0DA00745A53 /* libkeymagic.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libkeymagic.a; path = "../../cross-platform/libkeymagic/build/Release/libkeymagic.a"; sourceTree = SOURCE_ROOT; };
 		B55969D613799A2100690DE3 /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Growl.framework; sourceTree = "<group>"; };
+		B595DA2413D39931005636D3 /* KeyMagic_black.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = KeyMagic_black.icns; sourceTree = "<group>"; };
 		B59E0256139FE45B00F36391 /* Growl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Growl.h; sourceTree = "<group>"; };
 		B59E0257139FE45B00F36391 /* Growl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Growl.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -258,6 +262,7 @@
 				B51D988E12FFA5AC008E0A2F /* KeymagicIMEController.mm */,
 				B51D988F12FFA5AC008E0A2F /* main.mm */,
 				6AAE6B220EAC6AA400E8EBBA /* KeyMagic.icns */,
+				B595DA2413D39931005636D3 /* KeyMagic_black.icns */,
 				6A31F77C0EAC69480045D7EE /* KeyMagic-TSM-Info.plist */,
 				6AA6D1EE0EAC640E00DF1C2C /* KeyMagic-Info.plist */,
 				6A31F7230EAC67580045D7EE /* KeyMagicServer-Info.plist */,
@@ -380,6 +385,7 @@
 			files = (
 				6AAE6B250EAC6AA400E8EBBA /* KeyMagic.icns in Resources */,
 				6AAE6B560EAC6BE900E8EBBA /* MainMenu.xib in Resources */,
+				B595DA2613D39931005636D3 /* KeyMagic_black.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -387,6 +393,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B595DA4113D3999D005636D3 /* KeyMagic_black.icns in Resources */,
 				6AAE6B240EAC6AA400E8EBBA /* KeyMagic.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -397,6 +404,7 @@
 			files = (
 				6AAE6B230EAC6AA400E8EBBA /* KeyMagic.icns in Resources */,
 				6AAE6B570EAC6BE900E8EBBA /* MainMenu.xib in Resources */,
+				B595DA2513D39931005636D3 /* KeyMagic_black.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

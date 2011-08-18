@@ -1,5 +1,8 @@
 #pragma once
 
+#include "KeyMagicKeyboard.h"
+#include "LayoutOptions.h"
+
 using namespace System;
 
 namespace KeyMagicDotNet {
@@ -7,14 +10,15 @@ namespace KeyMagicDotNet {
 	public ref class KeyMagicEngine
 	{
 	public:
-		KeyMagicEngine() : engine ( new libkm::KeyMagicEngine() ) {}
+		KeyMagicEngine() : m_engine ( new libkm::KeyMagicEngine() ) {}
+		KeyMagicEngine(KeyMagicEngine ^ engine) : m_engine ( new libkm::KeyMagicEngine(*engine->m_engine) ) {}
 		~KeyMagicEngine() 
 		{
-			delete engine;
+			delete m_engine;
 		}
 	protected:
 		!KeyMagicEngine() {
-			delete engine;
+			delete m_engine;
 		}
 	public:
 		enum class ModifierMask {
@@ -24,22 +28,41 @@ namespace KeyMagicDotNet {
 			CAPS_MASK = 1 << 3
 		};
 
-		bool loadKeyboardFile(String ^ filename);
-		bool processKeyEvent(int keyval, int keycode, int modifier);
-		void reset();
-		String ^ getContextText();
-		void setContextText(String ^ textContext);
-		KeyMagicKeyboard ^ getKeyboard();
+		bool LoadKeyboardFile(String ^ filename);
+		bool KeyMagicEngine::ProcessKeyDown(System::Windows::Forms::TextBoxBase^ txtInput, System::Windows::Forms::KeyEventArgs^ e);
+		bool ProcessKeyEvent(int keyval, int keycode, int modifier);
+		void Reset();
+		String ^ GetContextText();
+		void SetContextText(String ^ textContext);
+		KeyMagicKeyboard ^ GetKeyboard();
+		int GetDifference(String ^ contextBefore, String ^% difference);
+
+		short GetKeyState(int keycode);
+		void SetKeyState(int keycode, byte state);
+		void SetKeyStates(array<byte> ^ keystates);
+
+		Dictionary<int, bool> ^ GetSwitchMap();
+		void SetSwitchMap(Dictionary<int, bool> ^);
 
 		property bool Verbose {
 			bool get() {
-				return engine->m_verbose;
+				return m_engine->m_verbose;
 			}
 			void set(bool value) {
-				engine->m_verbose = value;
+				m_engine->m_verbose = value;
+			}
+		}
+
+		property LayoutOptions ^ Options {
+			LayoutOptions ^ get() {
+				if (m_layoutOptions == nullptr) {
+					m_layoutOptions = GetKeyboard()->GetLayoutOptions();
+				}
+				return m_layoutOptions;
 			}
 		}
 	private:
-		libkm::KeyMagicEngine * engine;
+		libkm::KeyMagicEngine * m_engine;
+		LayoutOptions ^ m_layoutOptions;
 	};
 }

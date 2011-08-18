@@ -1,8 +1,10 @@
-﻿/*
-@TRACK_CAPSLOCK = "false"
-@EAT_KEYS = "true"
-@US_LAYOUT_BASED = "true"
-@SMART_BACKSPACE = "true"
+/*
+@FONTFAMILY = "Zawgyi-One"
+// @ICON = "Zawgyi L.png"
+@TRACK_CAPSLOCK = "FALSE"
+@EAT_KEYS = "TRUE"
+@US_LAYOUT_BASED = "TRUE"
+@SMART_BACKSPACE = "TRUE"
 */
 
 ("RIGHT_SQUARE_BRACKET") + ANY => $1	

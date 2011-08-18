@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		8DD76F650486A84900D96B5E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.cpp */; settings = {ATTRIBUTES = (); }; };
 		8DD76F6A0486A84900D96B5E /* jkeymagickb.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6859E8B029090EE04C91782 /* jkeymagickb.1 */; };
-		B58EA749132588A700EDD937 /* libkeymagic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B58EA748132588A700EDD937 /* libkeymagic.a */; };
+		B55BCB3A13B353180058C60E /* libkeymagic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B55BCB3913B353180058C60E /* libkeymagic.a */; };
 		B58EA74C132588DD00EDD937 /* keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B58EA74B132588DD00EDD937 /* keyboard.cpp */; };
 		B58EA8D81325941400EDD937 /* ConvertUTF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B58EA8D61325941400EDD937 /* ConvertUTF.cpp */; };
 /* End PBXBuildFile section */
@@ -30,18 +30,9 @@
 /* Begin PBXFileReference section */
 		08FB7796FE84155DC02AAC07 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		8DD76F6C0486A84900D96B5E /* jkeymagickb */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = jkeymagickb; sourceTree = BUILT_PRODUCTS_DIR; };
-		B58EA748132588A700EDD937 /* libkeymagic.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libkeymagic.a; sourceTree = "<group>"; };
+		B55BCB3913B353180058C60E /* libkeymagic.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libkeymagic.a; path = ../libkeymagic/build/Release/libkeymagic.a; sourceTree = SOURCE_ROOT; };
 		B58EA74A132588DD00EDD937 /* keyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keyboard.h; sourceTree = "<group>"; };
 		B58EA74B132588DD00EDD937 /* keyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = keyboard.cpp; sourceTree = "<group>"; };
-		B58EA74E1325892200EDD937 /* KeyCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyCodes.h; sourceTree = "<group>"; };
-		B58EA74F1325892200EDD937 /* keymagic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keymagic.h; sourceTree = "<group>"; };
-		B58EA7501325892200EDD937 /* KeyMagicEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyMagicEngine.h; sourceTree = "<group>"; };
-		B58EA7511325892200EDD937 /* KeyMagicKeyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyMagicKeyboard.h; sourceTree = "<group>"; };
-		B58EA7521325892200EDD937 /* KeyMagicLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyMagicLogger.h; sourceTree = "<group>"; };
-		B58EA7531325892200EDD937 /* KeyMagicString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyMagicString.h; sourceTree = "<group>"; };
-		B58EA7541325892200EDD937 /* KeyMagicTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyMagicTypes.h; sourceTree = "<group>"; };
-		B58EA7551325892200EDD937 /* RuleInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RuleInfo.h; sourceTree = "<group>"; };
-		B58EA7561325892200EDD937 /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
 		B58EA8D61325941400EDD937 /* ConvertUTF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConvertUTF.cpp; sourceTree = "<group>"; };
 		B58EA8D71325941400EDD937 /* ConvertUTF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConvertUTF.h; sourceTree = "<group>"; };
 		C6859E8B029090EE04C91782 /* jkeymagickb.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = jkeymagickb.1; sourceTree = "<group>"; };
@@ -52,7 +43,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B58EA749132588A700EDD937 /* libkeymagic.a in Frameworks */,
+				B55BCB3A13B353180058C60E /* libkeymagic.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,7 +56,7 @@
 				08FB7795FE84155DC02AAC07 /* Source */,
 				C6859E8C029090F304C91782 /* Documentation */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
-				B58EA748132588A700EDD937 /* libkeymagic.a */,
+				B55BCB3913B353180058C60E /* libkeymagic.a */,
 			);
 			name = jkeymagickb;
 			sourceTree = "<group>";
@@ -75,7 +66,6 @@
 			children = (
 				B58EA8D61325941400EDD937 /* ConvertUTF.cpp */,
 				B58EA8D71325941400EDD937 /* ConvertUTF.h */,
-				B58EA74D1325892200EDD937 /* libkeymagic */,
 				08FB7796FE84155DC02AAC07 /* main.cpp */,
 				B58EA74A132588DD00EDD937 /* keyboard.h */,
 				B58EA74B132588DD00EDD937 /* keyboard.cpp */,
@@ -89,22 +79,6 @@
 				8DD76F6C0486A84900D96B5E /* jkeymagickb */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		B58EA74D1325892200EDD937 /* libkeymagic */ = {
-			isa = PBXGroup;
-			children = (
-				B58EA74E1325892200EDD937 /* KeyCodes.h */,
-				B58EA74F1325892200EDD937 /* keymagic.h */,
-				B58EA7501325892200EDD937 /* KeyMagicEngine.h */,
-				B58EA7511325892200EDD937 /* KeyMagicKeyboard.h */,
-				B58EA7521325892200EDD937 /* KeyMagicLogger.h */,
-				B58EA7531325892200EDD937 /* KeyMagicString.h */,
-				B58EA7541325892200EDD937 /* KeyMagicTypes.h */,
-				B58EA7551325892200EDD937 /* RuleInfo.h */,
-				B58EA7561325892200EDD937 /* Util.h */,
-			);
-			path = libkeymagic;
 			sourceTree = "<group>";
 		};
 		C6859E8C029090F304C91782 /* Documentation */ = {
@@ -187,6 +161,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../libkeymagic/build/Release\"",
 				);
 				PRODUCT_NAME = jkeymagickb;
 			};
@@ -202,6 +177,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../libkeymagic/build/Release\"",
 				);
 				PRODUCT_NAME = jkeymagickb;
 			};
@@ -215,6 +191,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../libkeymagic/;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
@@ -228,6 +205,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../libkeymagic/;
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
 			};

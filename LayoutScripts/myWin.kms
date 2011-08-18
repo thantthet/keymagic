@@ -1,4 +1,4 @@
-﻿// Burmese Keyboard for Unicode Encoding. 
+// Burmese Keyboard for Unicode Encoding. 
 // Derived from an original by MJP Hoskens (SIL)
 // 
 // This Layout has been designed to resemble that used by WinMyanmar Systems 
@@ -19,10 +19,11 @@
 @NAME = "my-Win 2.3.0 Unicode 5.2"
 @ICON = "myWin.png"
 @HOTKEY = "CTRL+ALT+W"
+@FONTFAMILY = "Myanmar3"
 Copyright = "? 2004-2009 SIL & ThanLwinSoft.org (License: LGPL)"
-@DESCRIPTION  = "Myanmar keyboard for typing Burmese with Unicode 5.2.0. "\
-"<http://www.unicode.org/versions/Unicode5.2.0/>. "\
-"This keyboard is freely redistributable under the terms of the GNU Lesser General Public License."
+@DESCRIPTION  = "Myanmar keyboard for typing Burmese with Unicode 5.2.0." + \
+<http://www.unicode.org/versions/Unicode5.2.0/>." + \
+This keyboard is freely redistributable under the terms of the GNU Lesser General Public License."
 */
 
 // qwertyuiop[ is same as Win

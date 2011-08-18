@@ -158,6 +158,7 @@ include			{includeFile="";BEGIN(S_INCLUDE);}
 	US_LAYOUT_BASED	{return (token::OPT_US_LAYOUT); }
 	POSITIONAL_LAYOUT	{return (token::OPT_US_LAYOUT); }
 	SMART_BACKSPACE	{return (token::OPT_SMART_BACKSPACE); }
+	TREAT_CTRL_ALT_AS_RALT {return (token::OPT_RALT); }
 	\"						{BEGIN(S_DQSTRING);}
 	\'						{BEGIN(S_SQSTRING);}
 	\=

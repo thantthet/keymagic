@@ -1,7 +1,11 @@
 /*
 @NAME = "Yunghkio SHAN"
-@BITMAP = "Yunghkio.bmp" 
-@HOTKEY = "^%Y"
+_ICON = "Yunghkio.bmp"
+@TRACK_CAPSLOCK = "false"
+@EAT_KEYS = "false"
+@US_LAYOUT_BASED = "true"
+@SMART_BACKSPACE = "true" 
+@HOTKEY = "CTRL + ALT + Y"
 */
 
 <VK_KEY_M> => U1062

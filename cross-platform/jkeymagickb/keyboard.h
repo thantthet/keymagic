@@ -9,6 +9,8 @@
 
 #include <KeyMagicKeyboard.h>
 
+using namespace libkm;
+
 class keyboard : public KeyMagicKeyboard {
 public:
 	keyboard();

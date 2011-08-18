@@ -20,6 +20,7 @@
 #include "KeyMagicKeyboard.h"
 #include "KeyMagicEngine.h"
 #include "KeyMagicLogger.h"
+#include "Util.h"
 
 namespace libkm {
 
@@ -31,7 +32,6 @@ namespace libkm {
 	}
 
 	KeyMagicEngine::~KeyMagicEngine() {
-		
 	}
 
 	bool KeyMagicEngine::loadKeyboardFile(const char * keyboardFile) {
@@ -79,8 +79,16 @@ namespace libkm {
 		m_haveKeyboard = true;
 	}
 
-	int KeyMagicEngine::getKeyState(int keycode) {
+	short KeyMagicEngine::getKeyState(int keycode) {
 		return m_keyStates[keycode];
+	}
+
+	void KeyMagicEngine::setKeyState(int keycode, unsigned char state) {
+		m_keyStates[keycode] = state;
+	}
+
+	void KeyMagicEngine::setKeyStates(unsigned char * states){
+		memcpy(m_keyStates, states, sizeof(unsigned char) * 256);
 	}
 
 	void KeyMagicEngine::updateHistory(KeyMagicString text) {
@@ -108,11 +116,11 @@ namespace libkm {
 		LOG("processInput: keycode=%x; modifier=%x; keyval=%c\n", keycode, modifier, keyval);
 
 		for (RuleList::iterator i = m_rules->begin(); i != m_rules->end(); i++) {
-			RuleInfo * rule = *i;
-			success = matchRule(rule, keyval, keycode, modifier);
+			RuleInfo rule = *i;
+			success = matchRule(&rule, keyval, keycode, modifier);
 			if (success) {
 				
-				LOG("rule matched: %d\n", rule->getRuleIndex());
+				LOG("rule matched: %d\n", rule.getRuleIndex());
 				
 				if (keycode) {
 					m_switch.clear();
@@ -124,7 +132,7 @@ namespace libkm {
 					m_textContext += keyval;
 				}
 				
-				success = processOutput(rule);
+				success = processOutput(&rule);
 				
 				//un-press
 				m_keyStates[keycode] = 0;
@@ -142,8 +150,12 @@ namespace libkm {
 		if (m_haveKeyboard == false) {
 			return false;
 		}
+
+		if (keycode > 255) {
+			return false;
+		}
 		
-		m_keyStates[keycode] = 1;
+		m_keyStates[keycode] = 0x80;
 		
 		KeyMagicString oldText = m_textContext;
 		
@@ -156,9 +168,11 @@ namespace libkm {
 		//un-press
 		m_keyStates[keycode] = 0;
 		
-		if (!success && keycode) {
+		//not success, no control key
+		if (!success && keycode >= 0x20) {
 			m_switch.clear();
 		}
+
 		int looped = 0;
 		if (success) {
 			while (success) {
@@ -230,50 +244,57 @@ namespace libkm {
 				return true;
 			} else {
 				m_textContext += keyval;
+				return true;
 			}
-
 		}
 		
 		return false;
 	}
 
-	int KeyMagicEngine::matchKeyStates(int keycode, int modifier, std::vector<RuleInfo::Item*> * rules) {
+	int KeyMagicEngine::matchKeyStates(int modifier, RuleInfo::ItemList* rules) {
 		
 		int matchedCount = 0;
 		int modStates = modifier;
 		
-		for (std::vector<RuleInfo::Item*>::iterator i = rules->begin(); i != rules->end(); i++) {
-			RuleInfo::Item * curRule = *i;
+		for (RuleInfo::ItemList::iterator i = rules->begin(); i != rules->end(); i++) {
+			RuleInfo::Item * curRule = &*i;
 			if (curRule->type == RuleInfo::tVKey) {
-				if (curRule->keyCode == 0x10 || curRule->keyCode == 0x11 || curRule->keyCode == 0x12) {
-					switch (curRule->keyCode) {
-						case 0x10:
-							if (modifier & SHIFT_MASK) {
-								modStates -= SHIFT_MASK;
-								continue;
-							} else {
-								return -1;
-							}
-							break;
-						case 0x11:
-							if (modifier & CTRL_MASK) {
-								modStates -= CTRL_MASK;
-								continue;
-							} else {
-								return -1;
-							}
-							break;
-						case 0x12:
-							if (modifier & ALT_MASK) {
-								modStates -= ALT_MASK;
-								continue;
-							} else {
-								return -1;
-							}
-							break;
-					}
-				} else {
-					if (keycode != curRule->keyCode) {
+				switch (curRule->keyCode) {
+					case VK_SHIFT:
+					case VK_RSHIFT:
+					case VK_LSHIFT:
+						if (modifier & SHIFT_MASK) {
+							modStates -= SHIFT_MASK;
+						} else {
+							return -1;
+						}
+						break;
+					case VK_CONTROL:
+					case VK_RCONTROL:
+					case VK_LCONTROL:
+						if (modifier & CTRL_MASK) {
+							modStates -= CTRL_MASK;
+						} else {
+							return -1;
+						}
+						break;
+					case VK_MENU:
+					case VK_RMENU:
+					case VK_LMENU:
+						if (modifier & ALT_MASK) {
+							modStates -= ALT_MASK;
+						} else {
+							return -1;
+						}
+						break;
+				}
+				if ((m_keyStates[curRule->keyCode] & 0x80) == false) {
+					if (curRule->keyCode == VK_RMENU && m_layoutOptions->rightAlt) {
+						if ((m_keyStates[VK_MENU] & 0x80) && (m_keyStates[VK_CONTROL] & 0x80)) {
+							modStates -= CTRL_MASK;
+						}
+						else return -1;
+					} else {
 						return -1;
 					}
 				}
@@ -292,10 +313,10 @@ namespace libkm {
 		LOG("==Matching rule=%d==\n", rule->getRuleIndex());
 		KeyMagicString appendedContext = m_textContext;
 		
-		std::vector<RuleInfo::Item*> * rules = rule->getLHS();
+		RuleInfo::ItemList * rules = rule->getLHS();
 		
 		m_matchedVK = false;
-		int kcode = matchKeyStates(keycode, modifier, rules);
+		int kcode = matchKeyStates(modifier, rules);
 		if (kcode == -1) {
 			LOG("Key-states do not matched\n");
 			return false;
@@ -319,22 +340,22 @@ namespace libkm {
 		
 		m_backRef.clear();
 		
-		for (std::vector<RuleInfo::Item*>::iterator i = rules->begin(); i != rules->end(); i++) {
-			RuleInfo::Item * curRule = *i, * nextRule;
+		for (RuleInfo::ItemList::iterator i = rules->begin(); i != rules->end(); i++) {
+			RuleInfo::Item * curRule = &*i, * nextRule;
 			KeyMagicString * strPattern;
 			//bool found;
 			
-			std::vector<RuleInfo::Item*>::iterator ii = i+1;
+			RuleInfo::ItemList::iterator ii = i+1;
 			if (ii == rules->end()) {
 				nextRule = NULL;
 			} else {
-				nextRule = *ii;
+				nextRule = &*ii;
 			}
 			
 			switch (curRule->type) {
 				case RuleInfo::tString:
 					LOG("tString\n");
-					strPattern = curRule->stringValue;
+					strPattern = &curRule->stringValue;
 					for (KeyMagicString::iterator ii = strPattern->begin(); ii != strPattern->end(); ii++) {
 						// if itMatch is at the end
 						if (itToMatch == stringToMatch.end()) {
@@ -351,7 +372,7 @@ namespace libkm {
 					break;
 				case RuleInfo::tAnyOfString:
 					LOG("tAnyOfString\n");
-					strPattern = curRule->stringValue;
+					strPattern = &curRule->stringValue;
 
 					/*for (KeyMagicString::iterator ii = strPattern->begin(); ii != strPattern->end(); ii++) {
 						if (*itToMatch == *ii) {
@@ -375,7 +396,7 @@ namespace libkm {
 					break;
 				case RuleInfo::tNotOfString:
 					LOG("tNotOfString\n");
-					strPattern = curRule->stringValue;
+					strPattern = &curRule->stringValue;
 
 					/*for (KeyMagicString::iterator ii = strPattern->begin(); ii != strPattern->end(); ii++) {
 						if (*itToMatch == *ii) {
@@ -450,27 +471,27 @@ namespace libkm {
 		
 		LOG("processOutput: %d\n", rule->getRuleIndex());
 		
-		std::vector<RuleInfo::Item*> * inRules = rule->getLHS();
-		std::vector<RuleInfo::Item*>::iterator iInRule = inRules->begin();
-		std::vector<RuleInfo::Item*> * rules = rule->getRHS();
+		RuleInfo::ItemList* inRules = rule->getLHS();
+		RuleInfo::ItemList::iterator iInRule = inRules->begin();
+		RuleInfo::ItemList* rules = rule->getRHS();
 		unsigned int length = rule->getMatchLength();
 		
-		for (std::vector<RuleInfo::Item*>::iterator i = rules->begin(); i != rules->end(); i++) {
-			RuleInfo::Item * curRule = *i, * nextRule, *Rule;
+		for (RuleInfo::ItemList::iterator i = rules->begin(); i != rules->end(); i++) {
+			RuleInfo::Item * curRule = &*i, * nextRule, *Rule;
 			KeyMagicString string;
 			int integer;
 			
-			std::vector<RuleInfo::Item*>::iterator ii = i+1;
+			RuleInfo::ItemList::iterator ii = i+1;
 			if (ii == rules->end()) {
 				nextRule = NULL;
 			} else {
-				nextRule = *ii;
+				nextRule = &*ii;
 			}
 			
 			switch (curRule->type) {
 				case RuleInfo::tString:
 					LOG("tString\n");
-					outputResult += *curRule->stringValue;
+					outputResult += curRule->stringValue;
 					break;
 				case RuleInfo::tReference:
 					LOG("tReference\n");
@@ -487,10 +508,10 @@ namespace libkm {
 						return false;
 					}
 					string = m_backRef.at(curRule->refIndex);
-					Rule = inRules->at(curRule->refIndex);
-					integer = Rule->stringValue->find(string);
+					Rule = &inRules->at(curRule->refIndex);
+					integer = Rule->stringValue.find(string);
 					if (integer != -1) {
-						outputResult += curRule->stringValue->at(integer);
+						outputResult += curRule->stringValue.at(integer);
 					}
 					break;
 				case RuleInfo::tVKey:
@@ -556,4 +577,53 @@ namespace libkm {
 		return &m_keyboard;
 	}
 
+	std::map<int, bool> KeyMagicEngine::getSwitchMap() {
+		return m_switch;
+	}
+
+	void KeyMagicEngine::setSwitchMap(const std::map<int, bool> & switchMap) {
+		m_switch = switchMap;
+	}
+
+	int KeyMagicEngine::getDifference(const KeyMagicString& contextBefore, KeyMagicString * difference) {
+		int deleteCount = 0;
+
+		difference->clear();
+
+		const KeyMagicString& contextAfter = m_textContext;
+
+		if (contextBefore == contextAfter) {
+			return deleteCount;
+		}
+
+		int lengthBefore = contextBefore.length();
+		int lengthAfter = contextAfter.length();
+
+		if (contextBefore.length() > contextAfter.length()) {
+			deleteCount = contextBefore.length() - contextAfter.length();
+			lengthBefore = lengthAfter;
+		}
+
+		KeyMagicString::const_iterator bit, ait;
+		int match = 0;
+		for (
+			bit = contextBefore.begin(), ait = contextAfter.begin();
+			bit != contextBefore.end() && ait != contextAfter.end();
+			bit++, ait++, match++)
+		{
+			if (*bit != *ait) {
+				break;
+			}
+		}
+
+		if (match < lengthBefore) {
+			deleteCount = lengthBefore - match;
+		}
+		
+		if (match < contextAfter.length()) {
+			difference->append(&(contextAfter.c_str()[match]));
+		}
+
+		return deleteCount;
+	}
 }

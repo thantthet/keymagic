@@ -146,7 +146,7 @@ enum predefinedID {
 };
 
 #define KMKL_VERSION 1
-#define KMKL_SUBVERSION 4
+#define KMKL_SUBVERSION 5
 
 // Conducting the whole scanning and parsing of Calc++.
 class keymagic_driver
@@ -229,6 +229,7 @@ public:
 		bool smartBksp;
 		bool eat;
 		bool posBased;
+		bool rightAlt;
 	} LAYOUTOPTIONS;
 	
 	typedef struct
