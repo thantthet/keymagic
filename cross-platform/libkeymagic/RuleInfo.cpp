@@ -162,7 +162,7 @@ namespace libkm {
 		
 		for (ItemList::iterator i = rule->begin(); i != rule->end(); i++) {
 			Item item = *i;
-			std::string * s;
+			std::string s;
 			
 			if (i != rule->begin()) {
 				ss << ",\n";
@@ -170,24 +170,20 @@ namespace libkm {
 			
 			switch (item.type) {
 				case tString:
-					s = getCharacterReferenceString(&item.stringValue);
-					ss << "{ type:'tString', 'value':'" << s->c_str() << "' }";
-					delete s;
+					s = getCharacterReferenceString(item.stringValue);
+					ss << "{ type:'tString', 'value':'" << s.c_str() << "' }";
 					break;
 				case tAnyOfString:
-					s = getCharacterReferenceString(&item.stringValue);
-					ss << "{ type:'tAnyOfString', 'value':'" << s->c_str() << "' }";
-					delete s;
+					s = getCharacterReferenceString(item.stringValue);
+					ss << "{ type:'tAnyOfString', 'value':'" << s.c_str() << "' }";
 					break;
 				case tNotOfString:
-					s = getCharacterReferenceString(&item.stringValue);
-					ss << "{ type:'tNotOfString', 'value':'" << s->c_str() << "' }";
-					delete s;
+					s = getCharacterReferenceString(item.stringValue);
+					ss << "{ type:'tNotOfString', 'value':'" << s.c_str() << "' }";
 					break;
 				case tBackRefString:
-					s = getCharacterReferenceString(&item.stringValue);
-					ss << "{ type:'tBackRefString', 'index':" << std::dec << item.refIndex << ", 'value':'" << s->c_str() << "' }";
-					delete s;
+					s = getCharacterReferenceString(item.stringValue);
+					ss << "{ type:'tBackRefString', 'index':" << std::dec << item.refIndex << ", 'value':'" << s.c_str() << "' }";
 					break;
 				case tReference:
 					ss << "{ type:'tReference', 'index':" << std::dec << item.refIndex << " }";

@@ -72,6 +72,7 @@
             this.txtLicense = new System.Windows.Forms.TextBox();
             this.btnCheckUpdate = new System.Windows.Forms.Button();
             this.lblAboutTitle = new System.Windows.Forms.Label();
+            this.keyEventHandler = new KeyMagic.KeyEventHandler();
             this.cmsRight.SuspendLayout();
             this.fllBottom.SuspendLayout();
             this.mainTableLayoutPanel.SuspendLayout();
@@ -393,6 +394,7 @@
             this.htkyOnOff.Name = "htkyOnOff";
             this.htkyOnOff.Size = new System.Drawing.Size(505, 29);
             this.htkyOnOff.TabIndex = 2;
+            this.htkyOnOff.ValueChanged += new System.EventHandler(this.htkyOnOff_ValueChanged);
             // 
             // lblOnOffKey
             // 
@@ -491,7 +493,7 @@
             this.btnCheckUpdate.Name = "btnCheckUpdate";
             this.btnCheckUpdate.Size = new System.Drawing.Size(115, 23);
             this.btnCheckUpdate.TabIndex = 2;
-            this.btnCheckUpdate.Text = "Check For Update";
+            this.btnCheckUpdate.Text = "Check For Updates";
             this.btnCheckUpdate.UseVisualStyleBackColor = true;
             this.btnCheckUpdate.Click += new System.EventHandler(this.btnCheckUpdate_Click);
             // 
@@ -505,6 +507,14 @@
             this.lblAboutTitle.Size = new System.Drawing.Size(162, 19);
             this.lblAboutTitle.TabIndex = 3;
             this.lblAboutTitle.Text = "KeyMagic {VERSION}";
+            // 
+            // keyEventHandler
+            // 
+            this.keyEventHandler.Engine = null;
+            this.keyEventHandler.Hotkeys = new KeyMagic.Hotkey[] {
+        null};
+            this.keyEventHandler.HotkeyMatched += new System.EventHandler<KeyMagic.KeyEventHandler.HotkeyMatchedEvent>(this.keyEventHandler_HotkeyMatched);
+            this.keyEventHandler.MouseDown += new System.EventHandler<System.Windows.Forms.MouseEventArgs>(this.keyEventHandler_MouseDown);
             // 
             // frmMain
             // 
@@ -576,6 +586,7 @@
         private KToolStripMenuItem softKeyboardToolStripMenuItem;
         private HotkeyControl htkySoftKeyboard;
         private System.Windows.Forms.Label lblSoftKeyboard;
+        private KeyEventHandler keyEventHandler;
 
     }
 }

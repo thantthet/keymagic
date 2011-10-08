@@ -11,7 +11,7 @@
 
 @implementation Growl
 
-- (void) init
+- (id) init
 {
 	[super init];
 	

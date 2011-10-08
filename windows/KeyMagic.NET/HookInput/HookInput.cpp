@@ -47,6 +47,14 @@ BEGIN_MESSAGE_MAP(CHookInputApp, CWinApp)
 	ON_COMMAND(ID_APP_ABOUT, &CHookInputApp::OnAppAbout)
 END_MESSAGE_MAP()
 
+DWORD WINAPI CheckForMainWindowsExistence(LPVOID lpParam)
+{
+	while (IsWindow((HWND)lpParam)) {
+		Sleep(1000);
+	}
+	ExitProcess(1);
+	return 0;
+}
 
 bool Hook(HWND hWnd)
 {
@@ -62,12 +70,20 @@ bool Hook(HWND hWnd)
 	SetWindowsHooks(hModule);
 
 	if (GetWndProcHook() == 0) {
-		printf("Hooked Unsccessful.");
-		MessageBoxA(NULL, "Hooked Unsccessful.", "Error", MB_OK);
+		TRACE0("Hooking Unsccessful.");
 		return false;
 	}
 
-	printf("Hooked Successfully.");
+	TRACE0("Hooked Successfully.");
+
+	DWORD dwThreadId;
+	HANDLE hThread = CreateThread( 
+            NULL,              // default security attributes
+            0,                 // use default stack size  
+            CheckForMainWindowsExistence,          // thread function 
+            hWnd,             // argument to thread function 
+            0,                 // use default creation flags 
+            &dwThreadId);   // returns the thread identifier 
 
 	return true;
 }

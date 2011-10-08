@@ -229,6 +229,8 @@
 			<key>Layout</key>
 			<array>
 				<dict>
+					<key>BecomeActive</key>
+					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -273,7 +275,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>26</integer>
+									<integer>14</integer>
 									<integer>4</integer>
 									<integer>0</integer>
 								</array>
@@ -309,14 +311,12 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>main.cpp</string>
+								<string>KeyMagicEngine.cpp</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -324,11 +324,15 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>main.cpp</string>
+										<string>KeyMagicEngine.cpp</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
+<<<<<<< .mine
+										<string>B5CC10C11440E6AC008AD708</string>
+=======
 										<string>B505073113F6A03500188FE2</string>
+>>>>>>> .r204
 										<key>history</key>
 										<array>
 											<string>B5A84A5A12FFD502005486CE</string>
@@ -351,13 +355,32 @@
 											<string>B55BAFD5134F0D5C00359D51</string>
 											<string>B55BAFD6134F0D5C00359D51</string>
 											<string>B55BAFD8134F0D5C00359D51</string>
+<<<<<<< .mine
+=======
 											<string>B55BAFDB134F0D5C00359D51</string>
+>>>>>>> .r204
 											<string>B55BAFDF134F0D5C00359D51</string>
 											<string>B55BAFE0134F0D5C00359D51</string>
 											<string>B55BAFE1134F0D5C00359D51</string>
 											<string>B55BAFE2134F0D5C00359D51</string>
 											<string>B507ACCB13A668A3008F7F78</string>
 											<string>B507ACCD13A668A3008F7F78</string>
+<<<<<<< .mine
+											<string>B5FE13AC13D6F3510003A5BE</string>
+											<string>B5969C2113D6F9F800A5F1A8</string>
+											<string>B522504313F6789300516B9D</string>
+											<string>B5CC0FCF1440DB64008AD708</string>
+											<string>B5CC0FD01440DB64008AD708</string>
+											<string>B5CC0FF31440DC63008AD708</string>
+											<string>B5CC0FF61440DC63008AD708</string>
+											<string>B5CC0FF71440DC63008AD708</string>
+											<string>B5CC0FF81440DC63008AD708</string>
+											<string>B5CC104D1440DE25008AD708</string>
+											<string>B5CC104E1440DE25008AD708</string>
+											<string>B5CC10BE1440E6AC008AD708</string>
+											<string>B5CC10BF1440E6AC008AD708</string>
+											<string>B5CC10C01440E6AC008AD708</string>
+=======
 											<string>B53FAE2013C4956E008421DD</string>
 											<string>B5FE13AC13D6F3510003A5BE</string>
 											<string>B5969C1F13D6F9F800A5F1A8</string>
@@ -377,6 +400,7 @@
 											<string>B505072E13F6A01B00188FE2</string>
 											<string>B505072F13F6A01B00188FE2</string>
 											<string>B50506EA13F69C4000188FE2</string>
+>>>>>>> .r204
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -388,14 +412,22 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
+<<<<<<< .mine
+								<string>{{0, 0}, {1232, 479}}</string>
+=======
 								<string>{{0, 0}, {1232, 498}}</string>
+>>>>>>> .r204
 								<key>RubberWindowFrame</key>
 								<string>0 125 1440 753 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
+<<<<<<< .mine
+							<string>479pt</string>
+=======
 							<string>498pt</string>
+>>>>>>> .r204
 						</dict>
 						<dict>
 							<key>ContentConfiguration</key>
@@ -408,14 +440,22 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
+<<<<<<< .mine
+								<string>{{0, 484}, {1232, 228}}</string>
+=======
 								<string>{{0, 503}, {1232, 209}}</string>
+>>>>>>> .r204
 								<key>RubberWindowFrame</key>
 								<string>0 125 1440 753 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
 							<key>Proportion</key>
+<<<<<<< .mine
+							<string>228pt</string>
+=======
 							<string>209pt</string>
+>>>>>>> .r204
 						</dict>
 					</array>
 					<key>Proportion</key>
@@ -434,9 +474,17 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
+<<<<<<< .mine
+				<string>B5CC10C21440E6AC008AD708</string>
+=======
 				<string>B505068713F6979E00188FE2</string>
+>>>>>>> .r204
 				<string>1CE0B1FE06471DED0097A5F4</string>
+<<<<<<< .mine
+				<string>B5CC10C31440E6AC008AD708</string>
+=======
 				<string>B505068813F6979E00188FE2</string>
+>>>>>>> .r204
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -574,7 +622,10 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
+<<<<<<< .mine
+=======
 		<string>1CD10A99069EF8BA00B06720</string>
+>>>>>>> .r204
 		<string>B5C1EB9D12FC4A270061BF73</string>
 		<string>/Users/thantthetkz/codes/Keymagic/cross-platform/libkeymagic/keymagic.xcodeproj</string>
 	</array>
@@ -658,7 +709,11 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>B5C1EB9D12FC4A270061BF73</string>
+<<<<<<< .mine
+				<string>B5CC10C41440E6AC008AD708</string>
+=======
 				<string>B505068913F6979E00188FE2</string>
+>>>>>>> .r204
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -745,11 +800,23 @@
 									<key>DebugVariablesTableConfiguration</key>
 									<array>
 										<string>Name</string>
+<<<<<<< .mine
+										<real>135</real>
+=======
 										<real>130</real>
+>>>>>>> .r204
 										<string>Value</string>
+<<<<<<< .mine
+										<real>100</real>
+=======
 										<real>95</real>
+>>>>>>> .r204
 										<string>Summary</string>
+<<<<<<< .mine
+										<real>118</real>
+=======
 										<real>128</real>
+>>>>>>> .r204
 									</array>
 									<key>Frame</key>
 									<string>{{316, 0}, {378, 203}}</string>
@@ -780,13 +847,25 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1CD10A99069EF8BA00B06720</string>
+<<<<<<< .mine
+				<string>B5CC10521440DE25008AD708</string>
+=======
 				<string>B50506B713F69B1B00188FE2</string>
+>>>>>>> .r204
 				<string>1C162984064C10D400B95A72</string>
+<<<<<<< .mine
+				<string>B5CC10531440DE25008AD708</string>
+				<string>B5CC10541440DE25008AD708</string>
+				<string>B5CC10551440DE25008AD708</string>
+				<string>B5CC10561440DE25008AD708</string>
+				<string>B5CC10571440DE25008AD708</string>
+=======
 				<string>B50506B813F69B1B00188FE2</string>
 				<string>B50506B913F69B1B00188FE2</string>
 				<string>B50506BA13F69B1B00188FE2</string>
 				<string>B50506BB13F69B1B00188FE2</string>
 				<string>B50506BC13F69B1B00188FE2</string>
+>>>>>>> .r204
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.debugV3</string>
@@ -818,7 +897,7 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CDD528C0622207200134675</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>RuleInfo.cpp</string>
+										<string>main.cpp</string>
 										<key>StatusBarVisibility</key>
 										<true/>
 									</dict>
@@ -876,8 +955,8 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C530D57069F1CE1000CFCEE</string>
-				<string>B5E373D413229F10005F3E9F</string>
-				<string>B5E373D513229F10005F3E9F</string>
+				<string>B5CC102A1440DD53008AD708</string>
+				<string>B5CC102B1440DD53008AD708</string>
 				<string>1CDD528C0622207200134675</string>
 				<string>1CD0528E0623707200166675</string>
 			</array>

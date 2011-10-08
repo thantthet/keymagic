@@ -15,9 +15,9 @@ using namespace libkm;
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
-	char keyboardFile[] = "\\\\psf\\home\\codes\\Keymagic\\LayoutScripts\\Zawgyi L.km2";
+	char keyboardFile[] = "\\\\psf\\home\\codes\\Keymagic\\LayoutScripts\\MyanSan.km2";
 #else
-	char keyboardFile[] = "./../../../../LayoutScripts/Zawgyi L.km2";
+	char keyboardFile[] = "~/codes/Keymagic/LayoutScripts/MyanSan.km2";
 #endif
 
 // Check leaks if there any when loading new keyboard over existing one
@@ -31,8 +31,9 @@ void leakCheck_reLoadKeyboardFile() {
 	}
 
 	delete engine;
-
+#ifdef _WIN32
 	_CrtDumpMemoryLeaks();
+#endif
 }
 
 // if leaks when processKeyEvent
@@ -49,12 +50,17 @@ void leakCheck_processKeyEvent() {
 	engine->setKeyStates(states);
 
 	for (int i = 0; i < 10; i++) {
-		engine->processKeyEvent('u', 'U', 0);
+		engine->processKeyEvent('*', '8', 1);
 	}
 
+    std::string s = getCharacterReferenceString(engine->getContextText());
+    
+    std::cout << s.c_str();
+    
 	delete engine;
-
+#ifdef _WIN32
 	_CrtDumpMemoryLeaks();
+#endif
 }
 
 int

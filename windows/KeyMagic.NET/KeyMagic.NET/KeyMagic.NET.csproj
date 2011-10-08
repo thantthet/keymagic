@@ -101,6 +101,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows.Forms" />
@@ -128,7 +129,9 @@
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
     <Compile Include="Hotkey.cs" />
-    <Compile Include="KeyEventHandler.cs" />
+    <Compile Include="KeyEventHandler.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="KeyboardLayout.cs" />
     <Compile Include="KToolStripMenuItem.cs">
       <SubType>Component</SubType>
@@ -189,6 +192,7 @@
     <Compile Include="NativeMethods.cs">
     </Compile>
     <Compile Include="SendInput.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="SoftKey.cs">
       <SubType>Component</SubType>
     </Compile>

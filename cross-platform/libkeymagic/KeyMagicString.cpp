@@ -19,14 +19,13 @@
 #include "KeyMagicString.h"
 
 namespace libkm {
+	std::string getCharacterReferenceString(const KeyMagicString& text) {
+		std::ostringstream oss;
 
-std::string * getCharacterReferenceString(const KeyMagicString * text) {
-	std::ostringstream oss;
-	std::string * str;
-	for (KeyMagicString::const_iterator i = text->begin(); i != text->end(); i++) {
-		oss << "\\u" << std::hex << (*i <= 0xfff ? "0" : "") << (*i <= 0xff ? "0" : "") << *i;
+		for (KeyMagicString::const_iterator i = text.begin(); i != text.end(); i++) {
+			oss << "\\u" << std::hex << (*i <= 0xfff ? "0" : "") << (*i <= 0xff ? "0" : "") << *i;
+		}
+
+		return oss.str();
 	}
-	str = new std::string(oss.str());
-	return str;
-}
 }

@@ -25,7 +25,7 @@ namespace KeyMagic.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        [global::System.Configuration.DefaultSettingValueAttribute("80")]
         public int ColHotkeyWidth {
             get {
                 return ((int)(this["ColHotkeyWidth"]));
@@ -87,7 +87,7 @@ namespace KeyMagic.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Configuration.SettingsProviderAttribute(typeof(KeyMagic.PortableSettingsProvider))]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("CTRL+Space")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Ctrl+Space")]
         public string TurnOffHotkey {
             get {
                 return ((string)(this["TurnOffHotkey"]));
@@ -112,7 +112,7 @@ namespace KeyMagic.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool BetaRelease {
             get {
                 return ((bool)(this["BetaRelease"]));
@@ -154,6 +154,43 @@ namespace KeyMagic.Properties {
             }
             set {
                 this["SoftKeyboardHotkey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.SettingsProviderAttribute(typeof(KeyMagic.PortableSettingsProvider))]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FirstRun {
+            get {
+                return ((bool)(this["FirstRun"]));
+            }
+            set {
+                this["FirstRun"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UserInfoReported {
+            get {
+                return ((bool)(this["UserInfoReported"]));
+            }
+            set {
+                this["UserInfoReported"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2011-09-01")]
+        public global::System.DateTime LastCheckUpdateDate {
+            get {
+                return ((global::System.DateTime)(this["LastCheckUpdateDate"]));
+            }
+            set {
+                this["LastCheckUpdateDate"] = value;
             }
         }
     }

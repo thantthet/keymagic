@@ -193,8 +193,17 @@ namespace KeyMagic
         [DllImport("user32.dll", SetLastError = true)]
         public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
+        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+        public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, EntryPoint = "FindWindowW")]
+        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern IntPtr SendMessage(IntPtr hWnd, UInt32 Msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr SendMessage(HandleRef hWnd, int msg, int wParam, int lParam);
 
         [return: MarshalAs(UnmanagedType.Bool)]
         [DllImport("user32.dll", SetLastError = true)]
@@ -589,6 +598,32 @@ namespace KeyMagic
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern int DrawTextExW(HandleRef hDC, string lpszString, int nCount, ref RECT lpRect, int nFormat, [In, Out] DRAWTEXTPARAMS lpDTParams);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MEMORYSTATUSEX
+        {
+            public UInt32 dwLength;
+            public UInt32 dwMemoryLoad;
+            public UInt64 ullTotalPhys;
+            public UInt64 ullAvailPhys;
+            public UInt64 ullTotalPageFile;
+            public UInt64 ullAvailPageFile;
+            public UInt64 ullTotalVirtual;
+            public UInt64 ullAvailVirtual;
+            public UInt64 ullAvailExtendedVirtual;
+
+            public override string ToString()
+            {
+                return string.Format("MemoryLoad={0}, TotalPhys={1}, AvailPhys={2}, TotalPageFile={3}, AvailPageFile={4}, TotalVirtual={5}, AvailVirtual={6}, AvailExtendedVirtual={7}", dwMemoryLoad,
+                    ullTotalPhys, ullAvailPhys,
+                    ullTotalPageFile, ullAvailPageFile,
+                    ullTotalVirtual, ullAvailVirtual,
+                    ullAvailExtendedVirtual);
+            }
+        }
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool GlobalMemoryStatusEx([In, Out] ref MEMORYSTATUSEX lpBuffer);
 
         #endregion
     }

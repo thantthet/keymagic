@@ -30,20 +30,38 @@ const NSStringEncoding kEncoding_KeyMagicString =
 CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF32LE);
 #endif
 
-+(NSString*) stringWithKeyMagicString:(const KeyMagicString*)ws
++ (NSString*)stringWithKeyMagicString:(const KeyMagicString&)kString
 {
-	char* data = (char*)ws->data();
-	unsigned size = ws->size() * sizeof(wchar_t);
+	return [self stringWithKeyMagicString:kString maximumLength:kString.length() fromEnd:NO];
+}
+
++ (NSString*)stringWithKeyMagicString:(const KeyMagicString&)kString maximumLength:(NSUInteger)length
+{
+	return [self stringWithKeyMagicString:kString maximumLength:kString.length() fromEnd:NO];
+}
+
++ (NSString*)stringWithKeyMagicString:(const KeyMagicString&)kString maximumLength:(NSUInteger)length fromEnd:(BOOL)fromEnd {
+	if (length > kString.length()) {
+		length = kString.length();
+	}
+	
+	NSUInteger beginFrom = 0;
+	if (fromEnd) {
+		beginFrom = kString.length() - length;
+	}
+	
+	char* data = (char*) (kString.data() + beginFrom);
+	unsigned size = length * sizeof(wchar_t);
 	
 	NSString* result = [[[NSString alloc] initWithBytes:data length:size
 											   encoding:kEncoding_KeyMagicString] autorelease];
 	return result;
 }
 
--(KeyMagicString) getKeyMagicString
+- (KeyMagicString)getKeyMagicString
 {
 	NSData* asData = [self dataUsingEncoding:kEncoding_KeyMagicString];
-	return std::wstring((wchar_t*)[asData bytes], [asData length] /
+	return KeyMagicString((wchar_t*)[asData bytes], [asData length] /
 						sizeof(wchar_t));
 }
 

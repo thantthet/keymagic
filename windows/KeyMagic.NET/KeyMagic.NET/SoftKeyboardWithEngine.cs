@@ -156,45 +156,45 @@ namespace KeyMagic
         /// <summary>
         ///  
         /// </summary>
-        protected override void SimulateKeyPress(SoftKey key)
-        {
-            base.SimulateKeyPress(key);
-            return;
-            if (Engine == null)
-            {
-                base.SimulateKeyPress(key);
-                return;
-            }
+        //protected override void SimulateKeyPress(SoftKey key)
+        //{
+        //    base.SimulateKeyPress(key);
+        //    return;
+        //    if (Engine == null)
+        //    {
+        //        base.SimulateKeyPress(key);
+        //        return;
+        //    }
 
-            byte[] keyboardState = GetVirtualizedKeyboardState();
+        //    byte[] keyboardState = GetVirtualizedKeyboardState();
 
-            IntPtr HKLCurrent = (IntPtr)0x04090409;
+        //    IntPtr HKLCurrent = (IntPtr)0x04090409;
 
-            if (!engine.Options.posBased)
-            {
-                uint dwProcessId;
-                uint threadId = NativeMethods.GetWindowThreadProcessId(NativeMethods.GetForegroundWindow(), out dwProcessId);
-                HKLCurrent = NativeMethods.GetKeyboardLayout(threadId);
-            }
+        //    if (!engine.Options.posBased)
+        //    {
+        //        uint dwProcessId;
+        //        uint threadId = NativeMethods.GetWindowThreadProcessId(NativeMethods.GetForegroundWindow(), out dwProcessId);
+        //        HKLCurrent = NativeMethods.GetKeyboardLayout(threadId);
+        //    }
 
-            int vkey = (int)GetVK(key.ScanCode, HKLCurrent);
+        //    int vkey = (int)GetVK(key.ScanCode, HKLCurrent);
 
-            int keyvalue = (int)base.GetKeyValue(key.ScanCode, keyboardState, HKLCurrent);
+        //    int keyvalue = (int)base.GetKeyValue(key.ScanCode, keyboardState, HKLCurrent);
 
-            String contextBefore = engine.GetContextText();
+        //    String contextBefore = engine.GetContextText();
 
-            engine.SetKeyStates(keyboardState);
+        //    engine.SetKeyStates(keyboardState);
 
-            if (engine.ProcessKeyEvent(keyvalue, vkey, GetKeyMagicEngineModifier()))
-            {
-                SendInput.SendDifference(contextBefore, engine.GetContextText());
-                ResetModifiersAsNeeded((int)key.ScanCode);
-            }
-            else
-            {
-                base.SimulateKeyPress(key);
-            }
-        }
+        //    if (engine.ProcessKeyEvent(keyvalue, vkey, GetKeyMagicEngineModifier()))
+        //    {
+        //        SendInput.SendDifference(contextBefore, engine.GetContextText());
+        //        ResetModifiersAsNeeded((int)key.ScanCode);
+        //    }
+        //    else
+        //    {
+        //        base.SimulateKeyPress(key);
+        //    }
+        //}
 
         Dictionary<int, bool> SwitchMap = new Dictionary<int,bool>();
 

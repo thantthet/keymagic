@@ -39,6 +39,7 @@
 	KeyMagicLogger * logger;
 	NSStatusItem * statusItem;
 	keyboard * activeKeyboard;
+	NSUInteger m_delCountGenerated;
 }
 
 -(void) selectionChanged:(id)sender;

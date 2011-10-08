@@ -67,11 +67,11 @@ public:
 	/**
 	 * Get current context
 	 */
-	KeyMagicString * getContextText();
+	KeyMagicString getContextText();
 	/**
 	 * Set current context
 	 */
-	void setContextText(KeyMagicString * textContext);
+	void setContextText(const KeyMagicString &textContext);
 	/**
 	 *
 	 */
@@ -132,7 +132,7 @@ private:
 	/**
 	 * update context history
 	 */
-	void updateHistory(KeyMagicString text);
+	void updateHistory(const KeyMagicString& text);
 	
 	KeyMagicString m_textContext;
 	

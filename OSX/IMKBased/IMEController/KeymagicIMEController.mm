@@ -139,7 +139,8 @@ bool mapVK(int virtualkey, int * winVK)
 		ActivePath = @"";
 		
 		[self LoadConfigurationFile];
-		m_success = FALSE;
+		m_success = NO;
+		m_delCountGenerated = 0;
 		NSString *path = [configDictionary objectForKey:@"DefaultKeyboardPath"];
 		
 		if (path) {
@@ -175,11 +176,11 @@ bool mapVK(int virtualkey, int * winVK)
 
 - (void)commitComposition:(id)sender 
 {
-	NSString * _composingBuffer = [NSString stringWithKeyMagicString:kme.getContextText()];
-	if ([_composingBuffer length]) {
-		[sender insertText:_composingBuffer replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
+//	NSString * _composingBuffer = [NSString stringWithKeyMagicString:kme.getContextText()];
+//	if ([_composingBuffer length]) {
+//		[sender insertText:_composingBuffer replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
 		kme.reset();
-	}
+//	}
 }
 
 - (void)switchKeyboardLayout:(BOOL)previous
@@ -209,10 +210,192 @@ bool mapVK(int virtualkey, int * winVK)
 	}
 }
 
+- (BOOL)handleEvent:(NSEvent*)event TSMDocumentAccessSupportedClient:(id)sender
+{
+    if ([event type] != NSKeyDown || m_success == NO) {
+		return NO;
+	}
+	
+	if (m_delCountGenerated && [event keyCode] == kVK_Delete) {
+		m_delCountGenerated--;
+		return NO;
+	}
+	
+	NSRange selRange = [self.client selectedRange];
+	NSUInteger lengthToRetrive = selRange.location;
+	
+	if (lengthToRetrive > 10) {
+		lengthToRetrive = 10;
+	}
+	
+	NSAttributedString *beforeCursorContext = [self.client attributedSubstringFromRange:NSMakeRange(selRange.location - lengthToRetrive, lengthToRetrive)];
+	if (!beforeCursorContext) {
+		beforeCursorContext = [[[NSAttributedString alloc] initWithString:@""] autorelease];
+	}
+	
+    BOOL handled = NO;
+	
+	NSString *chars = [event characters];
+	unsigned int cocoaModifiers = [event modifierFlags];
+	unsigned short virtualKeyCode = [event keyCode];
+	
+	if (virtualKeyCode == kVK_Space && (cocoaModifiers & NSControlKeyMask) && (cocoaModifiers & NSShiftKeyMask)) {
+		[self switchKeyboardLayout:YES]; // <-
+		return YES;
+	} else if (virtualKeyCode == kVK_Space && (cocoaModifiers & NSControlKeyMask)) {
+		[self switchKeyboardLayout:NO]; // ->
+		return YES;
+	}
+	
+	switch (virtualKeyCode) {
+		case kVK_LeftArrow:
+		case kVK_UpArrow:
+		case kVK_RightArrow:
+		case kVK_DownArrow:
+			
+		case kVK_Home:
+		case kVK_End:
+			
+		case kVK_PageUp:
+		case kVK_PageDown:
+			[self commitComposition:sender];
+			return NO;
+	}
+	
+	unsigned char kbStates[256] = {0};
+	
+	int modifier = 0;
+	if (cocoaModifiers & NSCommandKeyMask) {
+		return NO;
+	}
+	if (cocoaModifiers & NSAlphaShiftKeyMask) {
+		modifier |= KeyMagicEngine::CAPS_MASK;
+		kbStates[VK_CAPITAL] = 0x81;
+	}
+	if (cocoaModifiers & NSShiftKeyMask) {
+		modifier |= KeyMagicEngine::SHIFT_MASK;
+		kbStates[VK_SHIFT] = 0x80;
+	}
+	if (cocoaModifiers & NSControlKeyMask) {
+		modifier |= KeyMagicEngine::CTRL_MASK;
+		kbStates[VK_CONTROL] = 0x80;
+	}
+	if (cocoaModifiers & NSAlternateKeyMask) {
+		modifier |= KeyMagicEngine::ALT_MASK;
+		kbStates[VK_MENU] = 0x80;
+	}
+	
+	int winVK;
+	if (mapVK(virtualKeyCode, &winVK) == NO) {
+		return NO;
+	}
+	
+	NSString * memoryContext = [NSString stringWithKeyMagicString:kme.getContextText() maximumLength:beforeCursorContext.length fromEnd:YES];
+	
+    if (![beforeCursorContext.string isEqualToString:memoryContext]) {
+		NSLog(@"diff %@ != %@", beforeCursorContext, memoryContext);
+		kme.reset();
+		kme.setContextText([beforeCursorContext.string getKeyMagicString]);
+	} else {
+		NSLog(@"same %@", memoryContext);
+	}
+	
+	KeyMagicString beforeProcessed = kme.getContextText();
+	
+	kme.setKeyStates(kbStates);
+	
+	if (kme.processKeyEvent([chars characterAtIndex:0], winVK, modifier) == NO) {
+		switch (virtualKeyCode) {
+			case kVK_Space:
+			case kVK_Return:
+				[self commitComposition:sender];
+				break;
+		}
+		
+		if (cocoaModifiers & NSControlKeyMask) {
+			[self commitComposition:sender];
+		} else if (cocoaModifiers & NSAlternateKeyMask) {
+			[self commitComposition:sender];
+		} else if (cocoaModifiers & NSCommandKeyMask) {
+			[self commitComposition:sender];
+		}
+		return NO;
+	}
+	
+	KeyMagicString afterProcessed = kme.getContextText();
+	unsigned int delCount = 0;
+	
+	KeyMagicString *output = new KeyMagicString();
+	getDifference(beforeProcessed, afterProcessed, &delCount, output);
+	
+	m_delCountGenerated = 0;
+	
+	if (delCount || output->length()) {
+		NSString *textToInsert = [NSString stringWithKeyMagicString:output->c_str()];
+		NSRange replacementRange = NSMakeRange(selRange.location - delCount, selRange.length + delCount);
+		
+		if (textToInsert.length == 0 && delCount) {
+			CGEventRef down, up;
+			down = CGEventCreateKeyboardEvent (NULL, (CGKeyCode)51, true);
+			up = CGEventCreateKeyboardEvent (NULL, (CGKeyCode)51, false);
+			
+			m_delCountGenerated = delCount;
+			
+			while (delCount--) {
+				CGEventPost(kCGSessionEventTap, down);
+				CGEventPost(kCGSessionEventTap, up);
+			}
+		} else {
+			[sender insertText:textToInsert replacementRange:replacementRange];
+		}
+	}
+	delete output;
+	
+	
+	//	NSString * _composingBuffer = [NSString stringWithKeyMagicString:kme.getContextText()];
+	//	NSMutableAttributedString *attrString = [[[NSMutableAttributedString alloc] initWithString:_composingBuffer attributes:[NSDictionary dictionary]] autorelease];
+	//
+	//    #if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_5
+	//		NSDictionary *attrDict = [NSDictionary dictionaryWithObjectsAndKeys:
+	//								  [NSNumber numberWithInt:0], NSKernAttributeName,
+	//								  [NSNumber numberWithInt:NSUnderlineStyleSingle], NSUnderlineStyleAttributeName,
+	//								  [NSNumber numberWithInt:0], NSMarkedClauseSegmentAttributeName, nil];
+	//    #else
+	//		NSDictionary *attrDict = [NSDictionary dictionaryWithObjectsAndKeys:
+	//								  [NSNumber numberWithInt:NSUnderlineStyleSingle], @"UnderlineStyleAttribute",
+	//								  [NSNumber numberWithInt:0], @"MarkedClauseSegmentAttribute", nil];
+	//    #endif
+	//
+	//	[attrString setAttributes:attrDict range:NSMakeRange(0, [_composingBuffer length])];  
+	//	
+	//	// selectionRange means "cursor position index"
+	//	NSRange selectionRange = NSMakeRange([_composingBuffer length], 0); 
+	//	[sender setMarkedText:attrString selectionRange:selectionRange replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
+	
+    return YES;
+}
+
 - (BOOL)handleEvent:(NSEvent*)event client:(id)sender
 {
     if ([event type] != NSKeyDown || m_success == NO) {
 		return NO;
+	}
+	
+	if (m_delCountGenerated && [event keyCode] == kVK_Delete) {
+		m_delCountGenerated--;
+		return NO;
+	}
+	
+	NSRange selRange = [self.client selectedRange];
+	NSUInteger lengthToRetrive = selRange.location;
+	
+	if (lengthToRetrive > 10) {
+		lengthToRetrive = 10;
+	}
+	
+	NSAttributedString *beforeCursorContext = [self.client attributedSubstringFromRange:NSMakeRange(selRange.location - lengthToRetrive, lengthToRetrive)];
+	if (!beforeCursorContext) {
+		beforeCursorContext = [[[NSAttributedString alloc] initWithString:@""] autorelease];
 	}
 
     BOOL handled = NO;
@@ -272,6 +455,17 @@ bool mapVK(int virtualkey, int * winVK)
 		return NO;
 	}
 	
+	NSString * memoryContext = [NSString stringWithKeyMagicString:kme.getContextText() maximumLength:beforeCursorContext.length fromEnd:YES];
+	
+    if (![beforeCursorContext.string isEqualToString:memoryContext]) {
+		NSLog(@"diff %@ != %@", beforeCursorContext, memoryContext);
+		kme.reset();
+		kme.setContextText([beforeCursorContext.string getKeyMagicString]);
+	} else {
+		NSLog(@"same %@", memoryContext);
+	}
+	
+	KeyMagicString beforeProcessed = kme.getContextText();
 	
 	kme.setKeyStates(kbStates);
 	
@@ -293,25 +487,55 @@ bool mapVK(int virtualkey, int * winVK)
 		return NO;
 	}
 	
-	NSString * _composingBuffer = [NSString stringWithKeyMagicString:kme.getContextText()];
-	NSMutableAttributedString *attrString = [[[NSMutableAttributedString alloc] initWithString:_composingBuffer attributes:[NSDictionary dictionary]] autorelease];
-
-    #if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_5
-		NSDictionary *attrDict = [NSDictionary dictionaryWithObjectsAndKeys:
-								  [NSNumber numberWithInt:0], NSKernAttributeName,
-								  [NSNumber numberWithInt:NSUnderlineStyleSingle], NSUnderlineStyleAttributeName,
-								  [NSNumber numberWithInt:0], NSMarkedClauseSegmentAttributeName, nil];
-    #else
-		NSDictionary *attrDict = [NSDictionary dictionaryWithObjectsAndKeys:
-								  [NSNumber numberWithInt:NSUnderlineStyleSingle], @"UnderlineStyleAttribute",
-								  [NSNumber numberWithInt:0], @"MarkedClauseSegmentAttribute", nil];
-    #endif
-
-	[attrString setAttributes:attrDict range:NSMakeRange(0, [_composingBuffer length])];  
+	KeyMagicString afterProcessed = kme.getContextText();
+	unsigned int delCount = 0;
 	
-	// selectionRange means "cursor position index"
-	NSRange selectionRange = NSMakeRange([_composingBuffer length], 0); 
-	[sender setMarkedText:attrString selectionRange:selectionRange replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
+	KeyMagicString *output = new KeyMagicString();
+	getDifference(beforeProcessed, afterProcessed, &delCount, output);
+	
+	m_delCountGenerated = 0;
+	
+	if (delCount || output->length()) {
+		NSString *textToInsert = [NSString stringWithKeyMagicString:output->c_str()];
+		NSRange replacementRange = NSMakeRange(selRange.location - delCount, selRange.length + delCount);
+		
+		if (textToInsert.length == 0 && delCount) {
+			CGEventRef down, up;
+			down = CGEventCreateKeyboardEvent (NULL, (CGKeyCode)51, true);
+			up = CGEventCreateKeyboardEvent (NULL, (CGKeyCode)51, false);
+			
+			m_delCountGenerated = delCount;
+			
+			while (delCount--) {
+				CGEventPost(kCGSessionEventTap, down);
+				CGEventPost(kCGSessionEventTap, up);
+			}
+		} else {
+			[sender insertText:textToInsert replacementRange:replacementRange];
+		}
+	}
+	delete output;
+	
+	
+//	NSString * _composingBuffer = [NSString stringWithKeyMagicString:kme.getContextText()];
+//	NSMutableAttributedString *attrString = [[[NSMutableAttributedString alloc] initWithString:_composingBuffer attributes:[NSDictionary dictionary]] autorelease];
+//
+//    #if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_5
+//		NSDictionary *attrDict = [NSDictionary dictionaryWithObjectsAndKeys:
+//								  [NSNumber numberWithInt:0], NSKernAttributeName,
+//								  [NSNumber numberWithInt:NSUnderlineStyleSingle], NSUnderlineStyleAttributeName,
+//								  [NSNumber numberWithInt:0], NSMarkedClauseSegmentAttributeName, nil];
+//    #else
+//		NSDictionary *attrDict = [NSDictionary dictionaryWithObjectsAndKeys:
+//								  [NSNumber numberWithInt:NSUnderlineStyleSingle], @"UnderlineStyleAttribute",
+//								  [NSNumber numberWithInt:0], @"MarkedClauseSegmentAttribute", nil];
+//    #endif
+//
+//	[attrString setAttributes:attrDict range:NSMakeRange(0, [_composingBuffer length])];  
+//	
+//	// selectionRange means "cursor position index"
+//	NSRange selectionRange = NSMakeRange([_composingBuffer length], 0); 
+//	[sender setMarkedText:attrString selectionRange:selectionRange replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
 	
     return YES;
 }
@@ -324,7 +548,7 @@ bool mapVK(int virtualkey, int * winVK)
 -(BOOL) changeKeyboardLayout:(keyboard*) Keyboard
 {
 	if (Keyboard.path != nil) {
-		if (m_success = kme.loadKeyboardFile([Keyboard.path cStringUsingEncoding:NSUTF8StringEncoding])) {
+		if ((m_success = kme.loadKeyboardFile([Keyboard.path cStringUsingEncoding:NSUTF8StringEncoding]))) {
 			[configDictionary setObject:[Keyboard path] forKey:@"DefaultKeyboardPath"];
 			[activeKeyboard dealloc];
 			ActivePath = [Keyboard path];
@@ -393,9 +617,9 @@ bool mapVK(int virtualkey, int * winVK)
 		
 		[Keyboards addObject:Keyboard];
 		
-		for (InfoList::iterator i = infos->begin(); i != infos->end(); i++) {
-			delete[] i->second.data;
-		}
+//		for (InfoList::iterator i = infos->begin(); i != infos->end(); i++) {
+//			delete[] i->second.data;
+//		}
 		delete infos;
 	}
 }

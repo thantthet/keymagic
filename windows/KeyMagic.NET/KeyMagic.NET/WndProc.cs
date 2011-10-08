@@ -74,24 +74,34 @@ namespace KeyMagic
                         }
                     }
 
+                    //StringBuilder sb = new StringBuilder(255);
+                    //NativeMethods.GetClassName(msg.LParam, sb, 255);
+                    //Debug.WriteLine(sb.ToString());
+
+                    //if (sb.ToString().Equals("TaskSwitcherWnd"))
+                    //{
+                    //    Debug.WriteLine("Ignored");
+                    //    break;
+                    //}
+
                     LastClientHandle = msg.LParam;
                     ClearCheck(cmsLeft.Items);
 
                     uint dwProcessId;
                     uint threadId = NativeMethods.GetWindowThreadProcessId(NativeMethods.GetForegroundWindow(), out dwProcessId);
-                    NativeMethods.AttachThreadInput(NativeMethods.GetCurrentThreadId(), threadId, true);
+                    //NativeMethods.AttachThreadInput(NativeMethods.GetCurrentThreadId(), threadId, true);
 
                     try
                     {
                         int index = 0;
                         if (engines.ContainsKey(msg.LParam))
                         {
-                            handler.Engine = engines[msg.LParam].engine;
-                            if (handler.Engine != null)
+                            keyEventHandler.Engine = engines[msg.LParam].engine;
+                            if (keyEventHandler.Engine != null)
                             {
-                                handler.Engine.Reset();
+                                keyEventHandler.Engine.Reset();
                             }
-                            SoftKeyboardEngine = handler.Engine;
+                            SoftKeyboardEngine = keyEventHandler.Engine;
                             index = engines[msg.LParam].index;
                         }
                         else

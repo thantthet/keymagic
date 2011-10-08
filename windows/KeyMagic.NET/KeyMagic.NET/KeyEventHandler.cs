@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.ComponentModel;
 
 namespace KeyMagic
 {
-    class KeyEventHandler
+    class KeyEventHandler : Component
     {
         public class HotkeyMatchedEvent : EventArgs
         {
@@ -133,7 +134,11 @@ namespace KeyMagic
 
                 byte[] keys = new byte[256];
                 
-                NativeMethods.GetKeyboardState(keys);
+                //NativeMethods.GetKeyboardState(keys);
+                for (int i = 0; i < 256; i++)
+                {
+                    keys[i] = (byte)(NativeMethods.GetAsyncKeyState(i) >> 8);
+                }
 
                 int modifier = 0;
                 bool CTRL, ALT, SHIFT;

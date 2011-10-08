@@ -20,9 +20,9 @@
 
 namespace libkm {
 
-typedef std::basic_string<wchar_t> KeyMagicString;
+	typedef std::basic_string<wchar_t> KeyMagicString;
 
-std::string * getCharacterReferenceString(const KeyMagicString * text);
+	std::string getCharacterReferenceString(const KeyMagicString& text);
 
 }
 

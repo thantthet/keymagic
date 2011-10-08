@@ -65,9 +65,14 @@ namespace KeyMagicDotNet {
 
 		libkm::InfoList * infos = libkm::KeyMagicKeyboard::getInfosFromKeyboardFile(szfileName);
 
+		if (infos == NULL) {
+			delete context;
+			return nullptr;
+		}
+
 		InfoList ^ managedInfos = gcnew InfoList(*infos);
 
-		infos->clear();
+		delete infos;
 
 		delete context;
 		return managedInfos;

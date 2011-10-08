@@ -15,7 +15,14 @@
 	NSString * keyboardName;
 	if (infos.find('name') != infos.end()) {
 		Info name = infos.find('name')->second;
-		keyboardName = [NSString stringWithCString:name.data encoding:NSUTF8StringEncoding];
+        char * szName = new char[name.Size()+1];
+        memset(szName, 0, name.Size()+1);
+        
+        memcpy(szName, name.Data(), name.Size());
+        
+		keyboardName = [NSString stringWithCString:szName encoding:NSUTF8StringEncoding];
+        
+        delete[] szName;
 	} else {
 		NSString * fileName = [filePath lastPathComponent];
 		keyboardName = [fileName substringToIndex:[fileName length] - 4];
@@ -27,7 +34,7 @@
 {
 	if (infos.find('icon') != infos.end()) {
 		Info icon = infos.find('icon')->second;
-		NSData * data = [NSData dataWithBytes:icon.data length:icon.size];
+		NSData * data = [NSData dataWithBytes:icon.Data() length:icon.Size()];
 		NSImage * image = [[[NSImage new] autorelease] initWithData:data];
 		return image;
 	}

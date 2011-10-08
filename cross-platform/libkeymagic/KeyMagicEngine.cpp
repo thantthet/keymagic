@@ -91,21 +91,19 @@ namespace libkm {
 		memcpy(m_keyStates, states, sizeof(unsigned char) * 256);
 	}
 
-	void KeyMagicEngine::updateHistory(KeyMagicString text) {
-		std::string * str;
+	void KeyMagicEngine::updateHistory(const KeyMagicString& text) {
+		std::string str;
 		
-		str = getCharacterReferenceString(&text);
-		LOG("updateHistory=>text:%s ", str->c_str());
-		delete str;
+		str = getCharacterReferenceString(text);
+		LOG("updateHistory=>text:%s ", str.c_str());
 		
 		LOG("m_contextHistory.size=%d ", m_contextHistory.size());
 		if (m_contextHistory.size() == 0) {
 			m_contextHistory.push_back(text);
 			LOG("\n");
 		} else if (text.compare(m_contextHistory.back()) != 0) {
-			str = getCharacterReferenceString(&m_contextHistory.back()); 
-			LOG("m_contextHistory.back():%s\n", str->c_str());
-			delete str;
+			str = getCharacterReferenceString(m_contextHistory.back()); 
+			LOG("m_contextHistory.back():%s\n", str.c_str());
 			m_contextHistory.push_back(text);
 		}
 	}
@@ -195,7 +193,6 @@ namespace libkm {
 						} else {
 							m_contextHistory.clear();
 						}
-
 					}
 				} else if (keycode == 8 && m_contextHistory.size()) {
 					if (m_textContext == m_contextHistory.back()) { // if results are the same
@@ -213,9 +210,8 @@ namespace libkm {
 			return true;
 			
 		} else {
-			std::string * str = getCharacterReferenceString(&m_textContext); 
-			LOG("processInput:FAILED;%s\n", str->c_str());
-			delete str;
+			std::string str = getCharacterReferenceString(m_textContext); 
+			LOG("processInput:FAILED;%s\n", str.c_str());
 			
 			if ((modifier & CTRL_MASK) || (modifier & ALT_MASK)) {
 				return false;
@@ -531,21 +527,18 @@ namespace libkm {
 			}
 		}
 		
-		std::string * str;
-		str = getCharacterReferenceString(&m_textContext);
-		LOG("processOutput: m_textContext: %s\n", str->c_str());
-		delete str;
+		std::string str;
+		str = getCharacterReferenceString(m_textContext);
+		LOG("processOutput: m_textContext: %s\n", str.c_str());
 		
-		str = getCharacterReferenceString(&outputResult);
-		LOG("processOutput: outputResult: %s\n", str->c_str());
-		delete str;
+		str = getCharacterReferenceString(outputResult);
+		LOG("processOutput: outputResult: %s\n", str.c_str());
 		
 		m_textContext = m_textContext.substr(0, m_textContext.length() - length);
 		m_textContext += outputResult;
 		
-		str = getCharacterReferenceString(&m_textContext);
-		LOG("processOutput: m_textContext.length() - length + outputResult: %s\n", str->c_str());
-		delete str;
+		str = getCharacterReferenceString(m_textContext);
+		LOG("processOutput: m_textContext.length() - length + outputResult: %s\n", str.c_str());
 		
 		if (outputResult.length() == 0 || (outputResult.length() == 1 && outputResult.at(0) > 0x20 && outputResult.at(0) < 0x7F)) {
 			m_shouldMatchAgain = false;
@@ -565,12 +558,12 @@ namespace libkm {
 		m_contextHistory.clear();
 	}
 
-	KeyMagicString * KeyMagicEngine::getContextText() {
-		return &m_textContext;
+	KeyMagicString KeyMagicEngine::getContextText() {
+		return m_textContext;
 	}
 
-	void KeyMagicEngine::setContextText(KeyMagicString * textContext) {
-		m_textContext.assign(textContext->c_str());
+	void KeyMagicEngine::setContextText(const KeyMagicString& textContext) {
+		m_textContext.assign(textContext.c_str());
 	}
 
 	KeyMagicKeyboard * KeyMagicEngine::getKeyboard() {

@@ -23,6 +23,8 @@
 using namespace libkm;
 
 @interface NSString (KeyMagicString_Addition)
-+(NSString*) stringWithKeyMagicString:(const KeyMagicString*)string;
--(KeyMagicString) getKeyMagicString;
++ (NSString*)stringWithKeyMagicString:(const KeyMagicString&)kString;
++ (NSString*)stringWithKeyMagicString:(const KeyMagicString&)kString maximumLength:(NSUInteger)length;
++ (NSString*)stringWithKeyMagicString:(const KeyMagicString&)kString maximumLength:(NSUInteger)length fromEnd:(BOOL)fromEnd;
+- (KeyMagicString)getKeyMagicString;
 @end
