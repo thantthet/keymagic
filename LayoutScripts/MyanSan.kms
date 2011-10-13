@@ -150,12 +150,12 @@ $wDiaU[*] + $hDiaU[*] + u1031 + $rDiaK[*] => $rDiaU[$4] + $1 + $2 + $3
 
 $mediaK[*] => $mediaU[$1]
 
-/*u200B + u1031 + < VK_BACK > => NULL
+u200B + u1031 + < VK_BACK > => NULL
 $baseU[*] + u1031 + < VK_BACK > => $filler + u1031 
 $mediaU[*] + u1031 + < VK_BACK >=> u1031
 
 u1039 + $consU[*] + u1031 + < VK_BACK > => u1039 + $filler + u1031
-u1039 + $consU[*] + < VK_BACK > => NULL*/
+u1039 + $consU[*] + < VK_BACK > => NULL
 
 //out-ka-myin <-> a-thet
 U103A + U1037 => $2 + $1

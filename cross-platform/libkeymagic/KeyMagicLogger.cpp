@@ -18,20 +18,19 @@
 #include "KeyMagicLogger.h"
 
 namespace libkm {
+	KeyMagicLogger* KeyMagicLogger::m_instance = NULL;
 
-KeyMagicLogger* KeyMagicLogger::m_instance = NULL;
-
-KeyMagicLogger * KeyMagicLogger::getInstance() {
-	if (m_instance == NULL) {
-		m_instance = new KeyMagicLogger();
+	KeyMagicLogger * KeyMagicLogger::getInstance() {
+		if (m_instance == NULL) {
+			m_instance = new KeyMagicLogger();
+		}
+		return m_instance;
 	}
-	return m_instance;
-}
 
-KeyMagicLogger::KeyMagicLogger() : LogFileWriter(stderr) {
-}
+	KeyMagicLogger::KeyMagicLogger() : LogFileWriter(stderr) {
+	}
 
-KeyMagicLogger::~KeyMagicLogger() {
-	m_instance = NULL;
-}
+	KeyMagicLogger::~KeyMagicLogger() {
+		m_instance = NULL;
+	}
 }

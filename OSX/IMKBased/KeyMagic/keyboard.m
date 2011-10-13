@@ -16,23 +16,25 @@
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#import "keyboard.h"
+#import "Keyboard.h"
 
-@implementation keyboard
+@implementation Keyboard
+@synthesize title;
+@synthesize path;
 
--(NSString*) title {
-	return title;
-}
--(void) setTitle:(NSString*)_title {
-	title = _title;
-}
-
--(NSString*) path {
-	return path;
-}
--(void) setPath:(NSString *)_path {
-	path = _path;
-}
+//-(NSString*) title {
+//	return title;
+//}
+//-(void) setTitle:(NSString*)_title {
+//	title = _title;
+//}
+//
+//-(NSString*) path {
+//	return path;
+//}
+//-(void) setPath:(NSString *)_path {
+//	path = _path;
+//}
 
 //-(Hotkey) hotkey {
 //	return hotkey;

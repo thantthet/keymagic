@@ -25,19 +25,22 @@ struct Hotkey {
 
 typedef struct Hotkey Hotkey;
 
-@interface keyboard : NSObject {
+@interface Keyboard : NSObject {
 	@public
-	NSString * title;
-	NSString * path;
+	NSString *title;
+	NSString *path;
 	//Hotkey hotkey;
 	//NSImage * image;
 }
 
+@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) NSString *path;
+
 //@property(assign) NSString * title;
--(NSString*) title;
--(void) setTitle:(NSString*)_title;
--(NSString*) path;
--(void) setPath:(NSString*)_path;
+//-(NSString*)title;
+//-(void)setTitle:(NSString*)_title;
+//-(NSString*)path;
+//-(void)setPath:(NSString*)_path;
 //-(Hotkey) hotkey;
 //-(void) setHotkey:(Hotkey)_hotkey;
 //-(NSImage*) image;

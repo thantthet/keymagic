@@ -22,27 +22,38 @@
 
 namespace libkm {
 
-/**
- * Logger
- */
-class KeyMagicLogger : public LogFileWriter {
-public:
 	/**
-	 * Get instance of class
+	 * Logger
 	 */
-	static KeyMagicLogger* getInstance();
-	/**
-	 * Destructor
-	 */
-	~KeyMagicLogger();
-private:
-	KeyMagicLogger();
+	class KeyMagicLogger : public LogFileWriter {
+	public:
+		/**
+		 * Get instance of class
+		 */
+		static KeyMagicLogger* getInstance();
+		/**
+		 * Destructor
+		 */
+		~KeyMagicLogger();
+	private:
+		KeyMagicLogger();
+		
+		static KeyMagicLogger * m_instance;
+	};
 	
-	static KeyMagicLogger * m_instance;
-};
+	class Indentor {
+	public:
+		Indentor() {
+			KeyMagicLogger::getInstance()->indentation++;
+		}
+		
+		~Indentor() {
+			KeyMagicLogger::getInstance()->indentation--;
+		}
+	};
 
-#define LOG if (m_verbose) m_logger->log
-
+#define LOG(...) if (m_verbose) m_logger->log(__VA_ARGS__)
+#define LOG_FUNC() if (m_verbose) { m_logger->log("[%s]\n", __FUNCTION__); } Indentor __indentor;
 }
 
 #endif /* KEYMAGICLOGGER_H_ */

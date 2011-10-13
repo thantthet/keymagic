@@ -24,30 +24,39 @@
 	#import "InputMethodKitTiger.h"
 #endif
 #import "KeyMagicNSString.h"
-#import "keyboard.h"
+#import "Keyboard.h"
 
 #include "KeyMagicEngine.h"
 
+extern "C" {
+	extern NSString *NSTextInputReplacementRangeAttributeName;
+}
+
 @interface KeyMagicIMEController : IMKInputController
 {
-	NSMutableArray * Keyboards;
+	NSMutableArray * keyboards;
 	NSMutableDictionary * configDictionary;
-	NSString * ActivePath;
+	NSString *activePath;
 	KeyMagicEngine kme;
 	BOOL m_success;
 	FILE * m_logFile;
 	KeyMagicLogger * logger;
 	NSStatusItem * statusItem;
-	keyboard * activeKeyboard;
+	Keyboard * activeKeyboard;
 	NSUInteger m_delCountGenerated;
+	BOOL instantCommit;
 }
 
--(void) selectionChanged:(id)sender;
--(void) WriteConfigurationFile;
--(void) LoadConfigurationFile;
--(NSArray *) getKeyboardPathsFrom:(NSString*)directory;
--(BOOL) changeKeyboardLayout:(keyboard*) Keyboard;
--(void) switchKeyboardLayout:(BOOL)previous;
--(void) GetKeyboardLayouts;
+@property (nonatomic, retain) Keyboard *activeKeyboard;
+@property (nonatomic, copy) NSString *activePath;
+@property (nonatomic, assign) BOOL instantCommit;
+
+- (void)selectionChanged:(id)sender;
+- (void)WriteConfigurationFile;
+- (void)LoadConfigurationFile;
+- (NSArray *)getKeyboardPathsFrom:(NSString*)directory;
+- (BOOL)changeKeyboardLayout:(Keyboard*)Keyboard;
+- (void)switchKeyboardLayout:(BOOL)previous;
+- (void)GetKeyboardLayouts;
 
 @end

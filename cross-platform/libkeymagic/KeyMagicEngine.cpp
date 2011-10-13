@@ -27,7 +27,8 @@ namespace libkm {
 	KeyMagicEngine::KeyMagicEngine() :
 		m_logger(KeyMagicLogger::getInstance()),
 		m_verbose(0),
-		m_haveKeyboard(0)
+		m_haveKeyboard(0),
+		m_indent(0)
 	{
 	}
 
@@ -92,30 +93,39 @@ namespace libkm {
 	}
 
 	void KeyMagicEngine::updateHistory(const KeyMagicString& text) {
+		LOG_FUNC();
 		std::string str;
 		
 		str = getCharacterReferenceString(text);
-		LOG("updateHistory=>text:%s ", str.c_str());
+		LOG("updateHistory with text:%s\n", str.c_str());
 		
-		LOG("m_contextHistory.size=%d ", m_contextHistory.size());
+		LOG("m_contextHistory.size before updated = %d\n", m_contextHistory.size());
 		if (m_contextHistory.size() == 0) {
+			LOG("no preivous history\n");
 			m_contextHistory.push_back(text);
-			LOG("\n");
+			LOG("updated\n");
 		} else if (text.compare(m_contextHistory.back()) != 0) {
 			str = getCharacterReferenceString(m_contextHistory.back()); 
-			LOG("m_contextHistory.back():%s\n", str.c_str());
+			LOG("need updating. m_contextHistory.back() before update = %s\n", str.c_str());
 			m_contextHistory.push_back(text);
+			LOG("updated\n");
+		} else {
+			LOG("no need updating\n");
 		}
 	}
 
 	bool KeyMagicEngine::processInput(int keyval, int keycode, int modifier) {
-		bool success = false;
+		LOG_FUNC();
+		LOG("keycode=%x, modifier=%x, keyval=%c\n", keycode, modifier, keyval);
 		
-		LOG("processInput: keycode=%x; modifier=%x; keyval=%c\n", keycode, modifier, keyval);
+		bool success = false;
 
 		for (RuleList::iterator i = m_rules->begin(); i != m_rules->end(); i++) {
 			RuleInfo rule = *i;
+			bool v = m_verbose;
+			m_verbose = false;
 			success = matchRule(&rule, keyval, keycode, modifier);
+			m_verbose = v;
 			if (success) {
 				
 				LOG("rule matched: %d\n", rule.getRuleIndex());
@@ -134,14 +144,18 @@ namespace libkm {
 				
 				//un-press
 				m_keyStates[keycode] = 0;
-				
+				LOG("SUCCESS\n");
 				return success;
 			}
 		}
+		LOG("FAILED\n");
 		return false;
 	}
 
 	bool KeyMagicEngine::processKeyEvent(int keyval, int keycode, int modifier) {
+		LOG_FUNC();
+		LOG("keycode=%x, modifier=%x, keyval=%c\n", keycode, modifier, keyval);
+		LOG("current context = %s\n", getCharacterReferenceString(m_textContext).c_str());
 		bool success = false;
 		
 		//if there is no keyboard loaded
@@ -162,7 +176,6 @@ namespace libkm {
 		}
 		
 		success = processInput(keyval, keycode, modifier);
-		
 		//un-press
 		m_keyStates[keycode] = 0;
 		
@@ -175,8 +188,8 @@ namespace libkm {
 		if (success) {
 			while (success) {
 				if (m_shouldMatchAgain) {
+					LOG("matching again\n");
 					success = processInput(0, 0, 0);
-					LOG("processInput(0, 0, 0)=>%d\n", success);
 					
 					looped++;
 					if (looped == 20) {
@@ -184,20 +197,25 @@ namespace libkm {
 						return false;
 					}
 					
-					if (!success) {
-						updateHistory(oldText);
-						return true;
-					} else if (keycode == 8 && m_contextHistory.size()) {
+					if (keycode == 8 && m_contextHistory.size()) {
 						if (m_textContext == m_contextHistory.back()) { // if results are the same
+							LOG("Result and history stack are the same");
 							m_contextHistory.pop_back(); // sync with smartbackspace
 						} else {
+							LOG("Result and history stack are the diff");
 							m_contextHistory.clear();
 						}
+					} else if (!success) {
+						updateHistory(oldText);
+						return true;
 					}
+
 				} else if (keycode == 8 && m_contextHistory.size()) {
 					if (m_textContext == m_contextHistory.back()) { // if results are the same
+						LOG("Result and history stack are the same");
 						m_contextHistory.pop_back(); // sync with smartbackspace
 					} else {
+						LOG("Result and history stack are the diff");
 						m_contextHistory.clear();
 					}
 					return true;
@@ -211,14 +229,13 @@ namespace libkm {
 			
 		} else {
 			std::string str = getCharacterReferenceString(m_textContext); 
-			LOG("processInput:FAILED;%s\n", str.c_str());
 			
 			if ((modifier & CTRL_MASK) || (modifier & ALT_MASK)) {
 				return false;
 			}
 			
 			if (keycode == 8) {
-				LOG("autoBksp=%d;m_contextHistory.size=%d\n", m_layoutOptions->autoBksp, m_contextHistory.size());
+				LOG("autoBksp = %d, m_contextHistory.size = %d\n", m_layoutOptions->autoBksp, m_contextHistory.size());
 				if (m_layoutOptions->autoBksp == true && m_contextHistory.size() != 0) {
 					m_textContext = m_contextHistory.back();
 					m_contextHistory.pop_back();
@@ -248,6 +265,7 @@ namespace libkm {
 	}
 
 	int KeyMagicEngine::matchKeyStates(int modifier, RuleInfo::ItemList* rules) {
+		LOG_FUNC();
 		
 		int matchedCount = 0;
 		int modStates = modifier;
@@ -306,7 +324,8 @@ namespace libkm {
 	}
 
 	bool KeyMagicEngine::matchRule(RuleInfo * rule, int keyval, int keycode, int modifier) {
-		LOG("==Matching rule=%d==\n", rule->getRuleIndex());
+		LOG_FUNC();
+		LOG("rule = %d\n", rule->getRuleIndex());
 		KeyMagicString appendedContext = m_textContext;
 		
 		RuleInfo::ItemList * rules = rule->getLHS();
@@ -463,9 +482,10 @@ namespace libkm {
 	}
 
 	bool KeyMagicEngine::processOutput(RuleInfo * rule) {
+		LOG_FUNC();
 		KeyMagicString outputResult, backupResult;
 		
-		LOG("processOutput: %d\n", rule->getRuleIndex());
+		LOG("index = %d\n", rule->getRuleIndex());
 		
 		RuleInfo::ItemList* inRules = rule->getLHS();
 		RuleInfo::ItemList::iterator iInRule = inRules->begin();
@@ -520,7 +540,7 @@ namespace libkm {
 					} else {
 						m_switch[curRule->switchId] = true;
 					}
-					LOG("tSwitch:%d=%d\n", curRule->switchId, m_switch[curRule->switchId]);
+					LOG("tSwitch: %d = %d\n", curRule->switchId, m_switch[curRule->switchId]);
 					break;
 				default:
 					break;
@@ -529,16 +549,16 @@ namespace libkm {
 		
 		std::string str;
 		str = getCharacterReferenceString(m_textContext);
-		LOG("processOutput: m_textContext: %s\n", str.c_str());
+		LOG("m_textContext: %s\n", str.c_str());
 		
 		str = getCharacterReferenceString(outputResult);
-		LOG("processOutput: outputResult: %s\n", str.c_str());
+		LOG("outputResult: %s\n", str.c_str());
 		
 		m_textContext = m_textContext.substr(0, m_textContext.length() - length);
 		m_textContext += outputResult;
 		
 		str = getCharacterReferenceString(m_textContext);
-		LOG("processOutput: m_textContext.length() - length + outputResult: %s\n", str.c_str());
+		LOG("m_textContext.length() - length + outputResult: %s\n", str.c_str());
 		
 		if (outputResult.length() == 0 || (outputResult.length() == 1 && outputResult.at(0) > 0x20 && outputResult.at(0) < 0x7F)) {
 			m_shouldMatchAgain = false;
@@ -576,6 +596,14 @@ namespace libkm {
 
 	void KeyMagicEngine::setSwitchMap(const std::map<int, bool> & switchMap) {
 		m_switch = switchMap;
+	}
+	
+	TContextHistory KeyMagicEngine::getHistory() {
+		return m_contextHistory;
+	}
+	
+	void KeyMagicEngine::setHistory(const TContextHistory &history) {
+		m_contextHistory = history;
 	}
 
 	int KeyMagicEngine::getDifference(const KeyMagicString& contextBefore, KeyMagicString * difference) {

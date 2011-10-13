@@ -22,33 +22,39 @@
 
 namespace libkm {
 
-LogFileWriter::LogFileWriter () {
-	m_logFile = stdout;
-}
+	LogFileWriter::LogFileWriter() : m_logFile(stdout), indentation(0)  {
+	}
 
-LogFileWriter::LogFileWriter (FILE * file) {
-	m_logFile = file;
-}
+	LogFileWriter::LogFileWriter (FILE * file) {
+		m_logFile = file;
+	}
 
-void LogFileWriter::log(const char * fmt, ...) {
-	va_list vl;
-	
-	va_start (vl, fmt);
-	vfprintf(m_logFile, fmt, vl);
-	va_end(vl);
-	
-	flush();
-}
+	void LogFileWriter::log(const std::string &fmt, ...) {
+		va_list vl;
+		
+		if (indentation) {
+			int spaces = 3 * indentation;
+			char indent[spaces + 1];
+			memset(indent, 0x20, spaces);
+			indent[spaces] = '\0'; 
+			fprintf(m_logFile, "%s", indent);
+		}
 
-void LogFileWriter::flush() {
-	fflush(m_logFile);
-}
+		va_start(vl, fmt);
+		vfprintf(m_logFile, fmt.c_str(), vl);
+		flush();
+		va_end(vl);
+	}
 
-FILE * LogFileWriter::getFile() {
-	return m_logFile;
-}
+	void LogFileWriter::flush() {
+		fflush(m_logFile);
+	}
 
-void LogFileWriter::setFile(FILE * file) {
-	m_logFile = file;
-}
+	FILE * LogFileWriter::getFile() {
+		return m_logFile;
+	}
+
+	void LogFileWriter::setFile(FILE * file) {
+		m_logFile = file;
+	}
 }

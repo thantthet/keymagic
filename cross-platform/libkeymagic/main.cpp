@@ -11,13 +11,15 @@
 
 using namespace libkm;
 
+#define KEYBOARD_FILE_NAME "MyanSan.km2"
+
 #ifdef _WIN32
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
-	char keyboardFile[] = "\\\\psf\\home\\codes\\Keymagic\\LayoutScripts\\MyanSan.km2";
+	char keyboardFile[] = "\\\\psf\\home\\codes\\Keymagic\\LayoutScripts\\" KEYBOARD_FILE_NAME;
 #else
-	char keyboardFile[] = "~/codes/Keymagic/LayoutScripts/MyanSan.km2";
+	char keyboardFile[] = "/Users/thantthetkz/codes/Keymagic/LayoutScripts/" KEYBOARD_FILE_NAME;
 #endif
 
 // Check leaks if there any when loading new keyboard over existing one
@@ -63,8 +65,47 @@ void leakCheck_processKeyEvent() {
 #endif
 }
 
+void print_hisotry(const TContextHistory &history) {
+	std::string s;
+    
+	for (TContextHistory::const_iterator i = history.begin(); i != history.end(); i++) {
+		s = getCharacterReferenceString(*i);
+		std::cout << s.c_str();
+	}
+}
+
 int
 main (int argc, char *argv[]) {
-	leakCheck_processKeyEvent();
-	leakCheck_reLoadKeyboardFile();
+//	leakCheck_processKeyEvent();
+//	leakCheck_reLoadKeyboardFile();
+    
+    KeyMagicEngine * engine = new KeyMagicEngine();
+    engine->loadKeyboardFile(keyboardFile);
+    engine->m_verbose = true;
+	
+    unsigned char states[256] = {0};
+	engine->setKeyStates(states);
+    
+    engine->processKeyEvent('u', 'U', 0);
+    engine->processKeyEvent('f', 'F', 0);
+    engine->processKeyEvent('h', 'H', 0);
+    
+    std::string s;
+    
+    s = getCharacterReferenceString(engine->getContextText());
+    std::cout << s.c_str();
+	
+	print_hisotry(engine->getHistory());
+    
+    engine->processKeyEvent(8, 8, 0);
+    
+    s = getCharacterReferenceString(engine->getContextText());
+    std::cout << s.c_str();
+    
+    engine->processKeyEvent(8, 8, 0);
+    
+    s = getCharacterReferenceString(engine->getContextText());
+    std::cout << s.c_str();
+    
+    delete engine;
 }

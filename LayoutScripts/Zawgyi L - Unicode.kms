@@ -293,3 +293,28 @@ U102F + $U2D2E[*] => $2 + $1
 $U2D2E[*] + U103B => $2 + $1
 $U2D2E[*] + U103E => $2 + $1
 $U2D2E[*] + U103D => $2 + $1
+
+// These rules are needed to delete in-order of what user sees when instantCommit mode is 'ON' on MacOSX
+
+$baseU =    U1006 + U1010 + U1014 + U1019 + U1021 + U1015 + U1000 + U1004 + \
+                U101E + U1005 + U101F + U1012 + U1016 + U1011 + U1001 + \
+                U101C + U1018 + U100A + U101A + U002E + U104B + \
+                U1029 + U101D + U103F + U1023 + U1024 + U104C + \
+                U1009 + U104D + U1025 + U100F + U1027 + U1017 + U1013 + \
+                U1007 + U100C + U1003 + U1020 + U1026 + U1008 + U102A + U104A + \
+                U002D + U003D + U100D + U100E + U100B + U0025 + U002F + U101B + \
+                U1002 + U0028 + U0029 + U005F + U002B + \
+                U104F + U2018 + U2019 + U002C + U104E + U25CC + U2060
+                
+$mediaU = u103B + u103C + u103E + u103D 
+$filler = U200B
+$mDia = U103B + U103C + U103D + U103E 
+
+$filler + U1031 + < VK_BACK > => NULL
+$baseU[*] + U1031 + < VK_BACK > => $filler + U1031 
+$mDia[*] + U1031 + < VK_BACK > => U1031
+U1004 + U103A + U1039 + $consU[*] + < VK_BACK > => $4 
+U1004 + U103A + U1039 + $consU[*] + U1031 + < VK_BACK > => $4 + U1031 
+U1039 + $consU[*] + U1031 + < VK_BACK > => U1031 
+U1039 + $consU[*] + < VK_BACK > => NULL
+U1037 + U103A + < VK_BACK > => U103A

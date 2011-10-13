@@ -28,7 +28,7 @@
 
 namespace libkm {
 
-typedef std::vector<KeyMagicString> TypeContextHistory;
+typedef std::vector<KeyMagicString> TContextHistory;
 
 /**
  * IME-engine which processes matching and replacing patterns
@@ -70,12 +70,16 @@ public:
 	KeyMagicString getContextText();
 	/**
 	 * Set current context
+	 * @param textContext string to set as context
 	 */
 	void setContextText(const KeyMagicString &textContext);
 	/**
-	 *
+	 * Get difference between engine's context and given context
+	 * @param contextBefore string to compare againt engine's context
+	 * @param difference result string
+	 * @return count of delete that should be send before sending result conetxt
 	 */
-	int getDifference(const KeyMagicString& contextBefore, KeyMagicString * difference);
+	int getDifference(const KeyMagicString& contextBefore, KeyMagicString *difference);
 	/**
 	 * Get keyboard object
 	 */
@@ -99,14 +103,28 @@ public:
 	void setKeyStates(unsigned char * keystates);
 
 	/**
-	 *
+	 * Get switch map 
+	 * @return current switch map
 	 */
 	std::map<int, bool> getSwitchMap();
 
 	/**
-	 *
+	 * Set switch map 
+	 * @param switchMap switch map to set
 	 */
-	void setSwitchMap(const std::map<int, bool> & switchMap);
+	void setSwitchMap(const std::map<int, bool> &switchMap);
+	
+	/**
+	 * Get history
+	 * @return current TContextHistory
+	 */
+	TContextHistory getHistory();
+	
+	/**
+	 * Set history
+	 * @param history TContextHistory to set
+	 */
+	void setHistory(const TContextHistory &history);
 	
 	bool m_verbose;
 private:
@@ -138,7 +156,7 @@ private:
 	
 	unsigned char m_keyStates[KeyStateLen];
 	
-	TypeContextHistory m_contextHistory;
+	TContextHistory m_contextHistory;
 	
 	KeyMagicKeyboard m_keyboard;
 	
@@ -159,6 +177,7 @@ private:
 	bool m_haveKeyboard;
 	
 	KeyMagicLogger * m_logger;
+	unsigned int m_indent;
 };
 
 }

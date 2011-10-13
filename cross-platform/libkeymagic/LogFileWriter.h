@@ -22,33 +22,35 @@
 
 namespace libkm {
 
-/**
- * LogFileWriter
- */
-class LogFileWriter {
-public:
-	LogFileWriter();
-	LogFileWriter(FILE * file);
 	/**
-	 * Log to file
-	 * @param fmt Format
+	 * LogFileWriter
 	 */
-	void log(const char * fmt, ...);
-	/**
-	 * Get current destination file
-	 */
-	FILE * getFile();
-	/**
-	 * Set file to output
-	 */
-	void setFile(FILE * file);
-	/**
-	 * Flush
-	 */
-	void flush();
-private:
-	FILE * m_logFile;
-};
+	class LogFileWriter {
+	public:
+		LogFileWriter();
+		LogFileWriter(FILE * file);
+		/**
+		 * Log to file
+		 * @param fmt Format
+		 */
+		void log(const std::string &fmt, ...);
+		/**
+		 * Get current destination file
+		 */
+		FILE * getFile();
+		/**
+		 * Set file to output
+		 */
+		void setFile(FILE * file);
+		/**
+		 * Flush
+		 */
+		void flush();
+		
+		unsigned int indentation;
+	private:
+		FILE * m_logFile;
+	};
 
 }
 
