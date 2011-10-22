@@ -197,3 +197,6 @@ U103A + U1037 => $2 + $1
 <VK_DIVIDE > => '/'
 <VK_QUESTION> =>  U104B
 <VK_SHIFT & VK_QUESTION> => U104A
+
+$filler + U1031 + U103F => $3 + $2
+U103F + U1031 + <VK_BACK> => $filler + U1031

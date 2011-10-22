@@ -294,6 +294,9 @@ $U2D2E[*] + U103B => $2 + $1
 $U2D2E[*] + U103E => $2 + $1
 $U2D2E[*] + U103D => $2 + $1
 
+U200B + U1031 + U103F => $3 + $2
+U103F + U1031 + < VK_BACK > => U200B + U1031
+
 // These rules are needed to delete in-order of what user sees when instantCommit mode is 'ON' on MacOSX
 
 $baseU =    U1006 + U1010 + U1014 + U1019 + U1021 + U1015 + U1000 + U1004 + \
