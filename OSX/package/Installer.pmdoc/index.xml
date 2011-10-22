@@ -1,1 +1,42 @@
-<pkmkdoc spec="1.12"><properties><title>KeyMagic</title><build>/Users/thantthetkz/codes/Keymagic/OSX/package/KeyMagic.pkg</build><organization>org.keymagic</organization><userSees ui="both"/><min-target os="3"/><domain system="true"/></properties><distribution><versions min-spec="1.000000"/><scripts></scripts></distribution><contents><choice title="KeyMagic" id="choice0" starts_selected="true" starts_enabled="true" starts_hidden="false"><pkgref id="org.keymagic.keymagic.pkg"/></choice><choice title="Keyboard Layouts" id="choice1" starts_selected="true" starts_enabled="true" starts_hidden="false"><pkgref id="org.keymagic.keymagic.kbLayouts.pkg"/></choice></contents><resources bg-scale="none" bg-align="topleft"><locale lang="en"><resource type="license">/Users/thantthetkz/codes/Keymagic/OSX/package/gpl-2.0.txt</resource></locale></resources><flags/><extra-files/><item type="file">01keymagic.xml</item><item type="file">02kblayouts.xml</item><mod>properties.systemDomain</mod><mod>properties.title</mod><mod>properties.customizeOption</mod><mod>properties.userDomain</mod><mod>properties.anywhereDomain</mod><mod>extraFiles</mod></pkmkdoc>
+<pkmkdoc spec="1.12"><properties><title>KeyMagic</title><build>/Users/thantthetkz/codes/Keymagic/OSX/package/KeyMagic-1.5.pkg</build><organization>org.keymagic</organization><userSees ui="easy"/><min-target os="3"/><domain system="true"/></properties><distribution><versions min-spec="1.000000"/><scripts></scripts></distribution><contents><choice title="KeyMagic" id="choice0" starts_selected="true" starts_enabled="true" starts_hidden="false"><pkgref id="org.keymagic.keymagic.pkg"/></choice><choice title="kbLayouts" id="choice2" starts_selected="true" starts_enabled="true" starts_hidden="false"><pkgref id="org.keymagic.keymagic.kbLayouts.pkg"/></choice></contents><resources bg-scale="none" bg-align="topleft"><locale lang="en"><resource type="license">/Users/thantthetkz/codes/Keymagic/OSX/package/gpl-2.0.txt</resource><resource mime-type="text/rtf" kind="embedded" type="readme"><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf230
+{\fonttbl\f0\fnil\fcharset0 TharLon;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs26 \cf0 What's new in Version 1.5 -\
+1. "Instant Commit" Mode\
+2. Bug Fixes\
+\
+Included Keyboard Layouts -\
+1. MyanSan (Smart)\
+2. myWin 2.3.0\
+3. Zawgyi - Unicode\
+4. YunghkioSHAN\
+5. PanglongSHAN\
+6. Mon}]]></resource></locale><locale lang="my"><resource mod="true" type="license">/Users/thantthetkz/codes/Keymagic/OSX/package/gpl-2.0.txt</resource><resource mime-type="text/rtf" kind="embedded" type="readme"><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf230
+{\fonttbl\f0\fnil\fcharset0 TharLon;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs26 \cf0 Version 1.5 \uc0\u4121 \u4158  \u4129 \u4126 \u4101 \u4154  -\
+1. "Instant Commit" Mode\
+2. Bug Fixes\
+\
+\uc0\u4117 \u4139 \u4125 \u4100 \u4154 \u4126 \u4145 \u4140  \u4124 \u4096 \u4154 \u4096 \u4157 \u4096 \u4154 \u4121 \u4155 \u4140 \u4152  -\
+\uc0\u4161 \u4171  \u4121 \u4156 \u4116 \u4154 \u4101 \u4150  (Smart)\
+\uc0\u4162 \u4171  \u4121 \u4141 \u4143 \u4100 \u4154 \u4125 \u4100 \u4154 \u4152  \u4162 .\u4163 .\u4160 \
+\uc0\u4163 \u4171  \u4103 \u4145 \u4140 \u4154 \u4098 \u4155 \u4142  - \u4122 \u4144 \u4116 \u4142 \u4096 \u4143 \u4114 \u4154 \
+( \uc0\u4122 \u4144 \u4116 \u4142 \u4096 \u4143 \u4114 \u4154  \u4129 \u4140 \u4152  \u4103 \u4145 \u4140 \u4154 \u4098 \u4155 \u4142  \u4124 \u4096 \u4154 \u4096 \u4157 \u4096 \u4154 \u4129 \u4112 \u4141 \u4143 \u4100 \u4154 \u4152  \u4123 \u4141 \u4143 \u4096 \u4154 \u4116 \u4141 \u4143 \u4100 \u4154 \u4126 \u4145 \u4140  \u4124 \u4096 \u4154 \u4096 \u4157 \u4096 \u4154 )\
+\uc0\u4164 \u4171  \u4122 \u4157 \u4116 \u4154 \u4097 \u4155 \u4141 \u4143  - \u4123 \u4158 \u4121 \u4154 \u4152 \
+\uc0\u4165 \u4171  \u4117 \u4100 \u4154 \u4124 \u4143 \u4150  - \u4123 \u4158 \u4121 \u4154 \u4152 \
+\uc0\u4166 \u4171  \u4121 \u4157 \u4116 \u4154 }]]></resource><resource mime-type="text/rtf" kind="embedded" type="conclusion"><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf1138\cocoasubrtf230
+{\fonttbl\f0\fnil\fcharset0 TharLon;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs26 \cf0 Logout \uc0\u4124 \u4143 \u4117 \u4154 \u4117 \u4156 \u4142 \u4152 \u4124 \u4155 \u4158 \u4100 \u4154  -\
+\
+System Preferences -> Language & Text -> Input Sources \uc0\u4121 \u4158  KeyMagic \u4096 \u4141 \u4143  \u4129 \u4121 \u4158 \u4116 \u4154 \u4097 \u4156 \u4101 \u4154 \u4117 \u4139 \u4171 \
+\
+\
+COMMAND+SPACE (\uc0\u4126 \u4141 \u4143 \u4151 ) CONTROL+SPACE \u4096 \u4141 \u4143 \u4116 \u4158 \u4141 \u4117 \u4154 \u4117 \u4156 \u4142 \u4152  MenuBar \u4112 \u4157 \u4100 \u4154  KeyMagic Icon \u4117 \u4145 \u4139 \u4154 \u4124 \u4140 \u4124 \u4155 \u4158 \u4100 \u4154  \u4129 \u4126 \u4143 \u4150 \u4152 \u4117 \u4156 \u4143 \u4124 \u4141 \u4143 \u4151 \u4123 \u4117 \u4139 \u4117 \u4156 \u4142 \u4171 }]]></resource></locale></resources><flags/><preinstall><action id="com.apple.packagemaker.actions.getapplication"><item1-title>org.keymagic.inputmethod.KeyMagic</item1-title><item2-title>KeyMagic</item2-title></action><action id="com.apple.packagemaker.actions.killapplication"><value>9</value></action></preinstall><extra-files/><item type="file">01keymagic.xml</item><item type="file">02kblayouts.xml</item><mod>properties.anywhereDomain</mod><mod>properties.title</mod><mod>properties.userDomain</mod><mod>properties.customizeOption</mod><mod>preinstallActions.actions</mod><mod>properties.systemDomain</mod><mod>extraFiles</mod></pkmkdoc>

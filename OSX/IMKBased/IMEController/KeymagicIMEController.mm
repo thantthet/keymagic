@@ -518,7 +518,12 @@ bool mapVK(int virtualkey, int * winVK)
 			self.activeKeyboard = keyboard;
 			[self WriteConfigurationFile];
 			
-			[GrowlApplicationBridge notifyWithTitle:@"KeyMagic" description:keyboard.title notificationName:@"Layout Switched" iconData:nil priority:2 isSticky:NO clickContext:nil identifier:@"SWITCHED_KB"];
+			@try {
+				[GrowlApplicationBridge notifyWithTitle:@"KeyMagic" description:keyboard.title notificationName:@"Layout Switched" iconData:nil priority:2 isSticky:NO clickContext:nil identifier:@"SWITCHED_KB"];
+			}
+			@catch (NSException * e) {
+				NSLog(@"Failed to notify with Growl!");
+			}
 		}
 	}
 }

@@ -275,8 +275,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>8</integer>
-									<integer>7</integer>
+									<integer>28</integer>
+									<integer>27</integer>
 									<integer>0</integer>
 								</array>
 							</array>
@@ -316,7 +316,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>KeyMagicNSString.h</string>
+								<string>KeyMagic-TSM-Info.plist</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -324,11 +324,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>KeyMagicNSString.h</string>
+										<string>KeyMagic-TSM-Info.plist</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B504D0811447AEB800D27832</string>
+										<string>B5F80D1C1449B645008E2930</string>
 										<key>history</key>
 										<array>
 											<string>B5D67BC412FFF21D00FDB9DF</string>
@@ -347,9 +347,6 @@
 											<string>B595DA4A13D399A7005636D3</string>
 											<string>B595DA7E13D39AEF005636D3</string>
 											<string>B595DA8013D39AEF005636D3</string>
-											<string>B522731213DEEAA300BAA79F</string>
-											<string>B522731313DEEAA300BAA79F</string>
-											<string>B57B830313E87A1C004B26BA</string>
 											<string>B5B8EA6513F17A9B0018251C</string>
 											<string>B5B8EA6B13F17A9B0018251C</string>
 											<string>B5CC0F841440D489008AD708</string>
@@ -381,10 +378,13 @@
 											<string>B545A244144767CA00FD08B7</string>
 											<string>B545A26014476A9400FD08B7</string>
 											<string>B545A26114476A9400FD08B7</string>
-											<string>B545A26214476A9400FD08B7</string>
 											<string>B5A0B3191447856D0039AB11</string>
-											<string>B504D07F1447AEB800D27832</string>
-											<string>B504D0801447AEB800D27832</string>
+											<string>B5CB2CD11449A6E1002E0E81</string>
+											<string>B5CB2CD21449A6E1002E0E81</string>
+											<string>B5F80D181449B645008E2930</string>
+											<string>B5F80D191449B645008E2930</string>
+											<string>B5F80D1A1449B645008E2930</string>
+											<string>B5F80D1B1449B645008E2930</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -396,18 +396,16 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1193, 493}}</string>
+								<string>{{0, 0}, {1193, 480}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 123 1440 755 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>493pt</string>
+							<string>480pt</string>
 						</dict>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -418,14 +416,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 498}, {1193, 216}}</string>
+								<string>{{0, 485}, {1193, 229}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 123 1440 755 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
 							<key>Proportion</key>
-							<string>216pt</string>
+							<string>229pt</string>
 						</dict>
 					</array>
 					<key>Proportion</key>
@@ -444,9 +442,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>B504CFF81447A79E00D27832</string>
+				<string>B5F80D111449B613008E2930</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>B504CFF91447A79E00D27832</string>
+				<string>B5F80D121449B613008E2930</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -584,7 +582,6 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>1CD10A99069EF8BA00B06720</string>
 		<string>B51D987712FFA506008E0A2F</string>
 		<string>/Users/thantthetkz/codes/Keymagic/OSX/IMKBased/KeyMagic.xcodeproj</string>
 	</array>
@@ -666,7 +663,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>B51D987712FFA506008E0A2F</string>
-				<string>B504CFFA1447A79E00D27832</string>
+				<string>B5F80D131449B613008E2930</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
