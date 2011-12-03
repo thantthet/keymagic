@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2008  KeyMagic Project
+ * http://keymagic.googlecode.com
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 #ifndef KEYMAGICENGINE_H_
 #define KEYMAGICENGINE_H_
 
@@ -9,15 +24,16 @@
 #include "KeyMagicKeyboard.h"
 #include "KeyMagicLogger.h"
 
-/* The classes below are exported */
 #define KeyStateLen 256
 
-typedef std::vector<KeyMagicString> TypeContextHistory;
+namespace libkm {
+
+typedef std::vector<KeyMagicString> TContextHistory;
 
 /**
  * IME-engine which processes matching and replacing patterns
  */
-class KeyMagicEngine {
+class KeyMagicEngine  {
 public:
 	KeyMagicEngine();
 	~KeyMagicEngine();
@@ -51,19 +67,68 @@ public:
 	/**
 	 * Get current context
 	 */
-	KeyMagicString * getContextText();
+	KeyMagicString getContextText();
 	/**
 	 * Set current context
+	 * @param textContext string to set as context
 	 */
-	void setContextText(KeyMagicString * textContext);
+	void setContextText(const KeyMagicString &textContext);
+	/**
+	 * Get difference between engine's context and given context
+	 * @param contextBefore string to compare againt engine's context
+	 * @param difference result string
+	 * @return count of delete that should be send before sending result conetxt
+	 */
+	int getDifference(const KeyMagicString& contextBefore, KeyMagicString *difference);
 	/**
 	 * Get keyboard object
 	 */
 	KeyMagicKeyboard * getKeyboard();
+
+	/**
+	 * Get the key state of `keycode`
+	 * @param keycode keycode to get
+	 */
+	short getKeyState(int keycode);
+	/**
+	 * Set keystate
+	 * @param keycode keycode to set
+	 * @param state state of keycode
+	 */
+	void setKeyState(int keycode, unsigned char state);
+	/**
+	 * Set all key states
+	 * @param keystates array of keystate
+	 */
+	void setKeyStates(unsigned char * keystates);
+
+	/**
+	 * Get switch map 
+	 * @return current switch map
+	 */
+	std::map<int, bool> getSwitchMap();
+
+	/**
+	 * Set switch map 
+	 * @param switchMap switch map to set
+	 */
+	void setSwitchMap(const std::map<int, bool> &switchMap);
+	
+	/**
+	 * Get history
+	 * @return current TContextHistory
+	 */
+	TContextHistory getHistory();
+	
+	/**
+	 * Set history
+	 * @param history TContextHistory to set
+	 */
+	void setHistory(const TContextHistory &history);
 	
 	bool m_verbose;
 private:
-	int matchKeyStates(int keycode, int modifier, std::vector<RuleInfo::Item*> * rule);
+	int matchKeyStates(int modifier, RuleInfo::ItemList* rule);
 	/**
 	 * private function to match input rule
 	 * @param ruleInfo rule to match with
@@ -81,22 +146,17 @@ private:
 	 * @param ruleInfo rule that was matched
 	 */
 	bool processOutput(RuleInfo *);
-	/**
-	 * Get the key state of `keycode`
-	 * @param keycode keycode to get
-	 */
-	int getKeyState(int keycode);
 	void prepareForMatching();
 	/**
 	 * update context history
 	 */
-	void updateHistory(KeyMagicString text);
+	void updateHistory(const KeyMagicString& text);
 	
 	KeyMagicString m_textContext;
 	
-	int m_keyStates[KeyStateLen];
+	unsigned char m_keyStates[KeyStateLen];
 	
-	TypeContextHistory m_contextHistory;
+	TContextHistory m_contextHistory;
 	
 	KeyMagicKeyboard m_keyboard;
 	
@@ -117,6 +177,9 @@ private:
 	bool m_haveKeyboard;
 	
 	KeyMagicLogger * m_logger;
+	unsigned int m_indent;
 };
+
+}
 
 #endif

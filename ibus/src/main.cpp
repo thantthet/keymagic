@@ -6,7 +6,9 @@
 #include <dirent.h>
 
 #include "engine.h"
-#include "KeyMagicEngine.h"
+#include "keymagic.h"
+
+using namespace libkm;
 
 static IBusBus *bus = NULL;
 static IBusFactory *factory = NULL;
@@ -61,7 +63,8 @@ ibus_keymagic_engine_new (gchar*  lang,
                                    "",
                                    engine_icon ? engine_icon : "",
                                    "us");
-    engine->rank = 0;
+    //engine->rank = 0;
+    //g_object_set_property((GObject*)engine, "rank", 0);
 
     g_free (engine_name);
     g_free (engine_longname);
@@ -104,7 +107,7 @@ gchar * getKeyboardNameOrTitle (const InfoList& infos, const gchar * fileName)
 	gchar * keyboardName;
 	if (infos.find('name') != infos.end()) {
 		Info name = infos.find('name')->second;
-		keyboardName = g_strndup(name.data, name.size);
+		keyboardName = g_strndup(name.Data(), name.Size());
 	} else {
 		keyboardName = g_strdup(basename(fileName));
 		keyboardName[strlen(keyboardName) - 4] = '\0';
@@ -120,7 +123,7 @@ bool ExtractIcon(const InfoList& infos, const gchar * iconFile)
 		if (f == 0) {
 			return false;
 		}
-		fwrite(icon.data, icon.size, 1, f);
+		fwrite(icon.Data(), icon.Size(), 1, f);
 		fclose(f);
 		return true;
 	}
@@ -133,14 +136,12 @@ gchar * getDescription(const InfoList& infos)
 	gchar * description;
 	if (infos.find('desc') != infos.end()) {
 		Info desc = infos.find('desc')->second;
-		description = g_strndup(desc.data, desc.size);
+		description = g_strndup(desc.Data(), desc.Size());
 	} else {
 		description = g_strdup("");
 	}
 	return description;
 }
-
-//#define PKGDATADIR ""
 
 gchar * dirname (const char * dir)
 {
@@ -189,7 +190,7 @@ ibus_keymagic_list_engines (void)
     GList *keyboard_list;
     gchar *local_keyboard_path;
 
-    keyboard_list = keymagic_get_keyboard_list("/usr/share/ibus-keymagic");
+    keyboard_list = keymagic_get_keyboard_list("/usr/share/keymagic");
 
     engines = ibus_keymagic_add_engines(engines, keyboard_list);
 
@@ -272,22 +273,22 @@ init (void)
                                                      "us",
                                                      "GPL",
                                                      "Peng Huang <shawn.p.huang@gmail.com>",
-                                                     PKGDATADIR"/icons/ibus-keymagic.png",
+                                                     //PKGDATADIR"/icons/ibus-keymagic.png",
+                                                     "/icons/ibus-keymagic.png",
                                                      "us"));
 	*/
     engines = ibus_component_get_engines (component);
 
 	for (p = engines; p != NULL; p = p->next) {
 		IBusEngineDesc *engine = (IBusEngineDesc *)p->data;
-		ibus_factory_add_engine (factory, engine->name, IBUS_TYPE_KEYMAGIC_ENGINE);
+		ibus_factory_add_engine (factory, ibus_engine_desc_get_name(engine), IBUS_TYPE_KEYMAGIC_ENGINE);
 	}
 
 	if (ibus) {
 		ibus_bus_request_name (bus, "org.freedesktop.IBus.KeyMagic", 0);
 	}
 	else {
-		bool success = ibus_bus_register_component (bus, component);
-		g_assert(success != false);
+		ibus_bus_register_component (bus, component);
 	}
 
 	g_object_unref (component);
@@ -335,3 +336,4 @@ int main(gint argc, gchar **argv)
     ibus_main ();
     return 0;
 }
+

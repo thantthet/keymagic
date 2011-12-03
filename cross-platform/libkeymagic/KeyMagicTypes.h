@@ -23,6 +23,7 @@
 #endif
 
 #include <vector>
+#include <string.h>
 #include <map>
 #include "KeyMagicString.h"
 

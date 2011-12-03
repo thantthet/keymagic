@@ -2,17 +2,27 @@
  *  Util.h
  *  keymagic
  *
- *  Created by Thant Thet Khin Zaw on 3/3/11.
- *  Copyright 2011 N/A. All rights reserved.
- *
+ * Copyright (C) 2008  KeyMagic Project
+ * http://keymagic.googlecode.com
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 #ifndef UTIL_H_
 #define UTIL_H_
 
-#ifndef VK_BACK
+namespace libkm {
 
 enum {
+#ifndef VK_BACK
 	VK_BACK = 0x0008,
 	VK_TAB = 0x0009,
 	VK_RETURN = 0x000D,
@@ -27,7 +37,7 @@ enum {
 	VK_PRIOR = 0x0021,
 	VK_NEXT = 0x0022,
 	VK_DELETE = 0x002E,
-	
+#endif
 	VK_KEY_0 = '0',
 	VK_KEY_1 = '1',
 	VK_KEY_2 = '2',
@@ -65,7 +75,7 @@ enum {
 	VK_KEY_X = 'X',
 	VK_KEY_Y = 'Y',
 	VK_KEY_Z = 'Z',
-	
+#ifndef VK_NUMPAD0
 	VK_NUMPAD0 = 0x0060,
 	VK_NUMPAD1 = 0x0061,
 	VK_NUMPAD2 = 0x0062,
@@ -125,9 +135,8 @@ enum {
 	
 	VK_ICO_HELP = 0x00E3,
 	VK_ICO_00 = 0x00E4
-};
-
 #endif
+};
 
 /**
  * Convert keycode and modifier value from keyval. eg. A[keyval] = A[keycode] SHIFT_MASK[modifier]
@@ -136,6 +145,14 @@ enum {
  * @param modifier pointer to receive modifier value
  * @return true if keyval was converted else false
  */
-bool getKeyCodeAndModifier(int keyval, int * keycode, int * modifier);
+bool GetKeyCodeAndModifier(int keyval, int * keycode, int * modifier);
+	
+void getDifference(const KeyMagicString& contextBefore, const KeyMagicString& contextAfter, unsigned int * del, KeyMagicString * str);
+
+#if defined(_WIN32)
+InfoList * GetInfosFromKeyboardFile(const char * file);
+#endif
+
+}
 
 #endif

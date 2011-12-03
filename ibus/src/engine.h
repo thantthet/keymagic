@@ -4,7 +4,9 @@
 
 #include <ibus.h>
 #include <string.h>
-#include "KeyMagicEngine.h"
+#include "keymagic.h"
+
+using namespace libkm;
 
 #define IBUS_TYPE_KEYMAGIC_ENGINE	\
 	(ibus_keymagic_engine_get_type ())
@@ -35,10 +37,10 @@ inline int ucs2_to_utf8 (int ucs2, unsigned char * utf8)
     return -1;
 }
 
-inline void ucs2_to_utf8_string (gchar * output, KeyMagicString * input) {
+inline void ucs2_to_utf8_string (gchar * output, const KeyMagicString& input) {
 	*output = '\0';
 
-	for (KeyMagicString::iterator i = input->begin(); i != input->end(); i++) {
+	for (KeyMagicString::const_iterator i = input.begin(); i != input.end(); i++) {
 		int usc2 = *i;
 		char utf8[4];
 		ucs2_to_utf8(usc2, (unsigned char*)&utf8);

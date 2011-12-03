@@ -1,7 +1,6 @@
 /* vim:set et sts=4: */
 
 #include "engine.h"
-#include "KeyMagicEngine.h"
 #include <errno.h>
 #include <stdio.h>
 #include <iostream>
@@ -257,9 +256,9 @@ static void
 ibus_keymagic_engine_commit_from_engine(IBusKeymagicEngine *ibusKeymagic) {
 	ibus_engine_hide_preedit_text((IBusEngine*)ibusKeymagic);
 
-	KeyMagicString * context = ibusKeymagic->kme->getContextText();
-	if (context->length()) {
-		gchar * utf8str = new gchar[context->length() * 4];
+	KeyMagicString context = ibusKeymagic->kme->getContextText();
+	if (context.length()) {
+		gchar * utf8str = new gchar[context.length() * 4];
 		ucs2_to_utf8_string(utf8str, context);
 		ibus_keymagic_engine_commit_string((IBusEngine*)ibusKeymagic, utf8str);
 		delete[] utf8str;
@@ -272,19 +271,21 @@ ibus_keymagic_engine_update (IBusKeymagicEngine *ibusKeymagic)
 {
 	IBusText *text;
 
-	KeyMagicString * context = ibusKeymagic->kme->getContextText();
-	gchar * utf8str = new gchar[context->length() * 4];
+	KeyMagicString context = ibusKeymagic->kme->getContextText();
+	gchar * utf8str = new gchar[context.length() * 4];
 	ucs2_to_utf8_string(utf8str, context);
 
 	text = ibus_text_new_from_string (utf8str);
 	text->attrs = ibus_attr_list_new ();
 
+        unsigned int context_length = ibusKeymagic->kme->getContextText().length();
+
 	ibus_attr_list_append (text->attrs,
-			ibus_attr_underline_new (IBUS_ATTR_UNDERLINE_SINGLE, 0, ibusKeymagic->kme->getContextText()->length()));
+			ibus_attr_underline_new (IBUS_ATTR_UNDERLINE_SINGLE, 0, context_length));
 
 	ibus_engine_update_preedit_text ((IBusEngine *)ibusKeymagic,
 									 text,
-									 ibusKeymagic->kme->getContextText()->length(),
+									 context_length,
 									 TRUE);
 	delete[] utf8str;
 }
@@ -384,49 +385,54 @@ ibus_keymagic_engine_process_key_event (IBusEngine *engine,
     if (modifiers & IBUS_RELEASE_MASK)
         return FALSE;
 
-#ifdef _DEBUG
     std::cout << std::hex << "keyval=" << keyval << '(' << (char)keyval << ')' << ";";
     std::cout << "keycode=" << keycode << std::endl;
-#endif
 
     int km_modifier = 0;
-    if (modifiers & IBUS_CONTROL_MASK) {
+
+    unsigned char kbStates[256] = {0};
+ 
+   if (modifiers & IBUS_CONTROL_MASK) {
     	km_modifier |= KeyMagicEngine::CTRL_MASK;
+        kbStates[VK_CONTROL] = 0x80;
     }
+
     if (modifiers & IBUS_SHIFT_MASK) {
     	km_modifier |= KeyMagicEngine::SHIFT_MASK;
+        kbStates[VK_SHIFT] = 0x80;
     }
+
     if (modifiers & IBUS_MOD1_MASK) {
-		km_modifier |= KeyMagicEngine::ALT_MASK;
-	}
+        km_modifier |= KeyMagicEngine::ALT_MASK;
+        kbStates[VK_MENU] = 0x80;
+    }
 
     int kx_code;
     if (!iBusKeycodeToKeyMagic(keycode, &kx_code)) {
-#ifdef _DEBUG
     	std::cerr << "Key won't be handled-" << keycode << std::endl;
-#endif
+        ibus_keymagic_engine_commit_from_engine(ibusKeymagic);
     	return false;
     }
 
-    switch (kx_code) {
-		case 0x10:
-		case 0x11:
-		case 0x12:
-#ifdef _DEBUG
-		std::cout << "Key seems to be modifier key. Won't handle" << std::endl;
-#endif
-		return false;
-	}
+	ibusKeymagic->kme->setKeyStates(kbStates);
 
-	bool y = ibusKeymagic->kme->processKeyEvent(keyval, kx_code, km_modifier);
+        IBusText *text;
+        guint pos = 0;
+        ibus_engine_get_surrounding_text((IBusEngine*)ibusKeymagic, &text, &pos);
 
-	if (y) {
+        std::cout << "text=" << ibus_text_get_text(text) << "pos=" << pos << std::endl;
+
+        g_object_unref(text);
+        
+	bool success = ibusKeymagic->kme->processKeyEvent(keyval, kx_code, km_modifier);
+
+	if (success) {
 		ibus_keymagic_engine_update(ibusKeymagic);
 		return true;
 	} else if (kx_code == 0x20 || kx_code == 0x0D) {
 		ibus_keymagic_engine_commit_from_engine(ibusKeymagic);
 	} else if ((modifiers & IBUS_CONTROL_MASK) || (modifiers & IBUS_MOD1_MASK)) {
-		//ibus_keymagic_engine_commit_from_engine(ibusKeymagic);
+		ibus_keymagic_engine_commit_from_engine(ibusKeymagic);
 	}
 
     return false;

@@ -18,7 +18,7 @@ IBus KeyMagic project.
 %setup -q
 
 %build
-%configure --disable-static
+%configure
 # make -C po update-gmo
 make %{?_smp_mflags}
 
