@@ -1,7 +1,7 @@
 /*
-@NAME = "Zawgyi - Unicode"
+@NAME = "ဇော်ဂျီ - ယူနီကုဒ်"
 @FONTFAMILY = "Yunghkio"
-@DESCRIPTION = "A Unicode Keyboard Layout that can be type the same as normal Zawgyi Layout but outs Unicode. | Thant Thet Khin Zaw"
+@DESCRIPTION = "A Unicode Keyboard Layout that can be type the same sequence just like normal ZawgyiL Layout but its output is Unicode. | Thant Thet Khin Zaw"
 @ICON = "Zawgyi L - Unicode.png"
 @HOTKEY = "CTRL + SHIFT + Z"
 @TRACK_CAPSLOCK = "false"

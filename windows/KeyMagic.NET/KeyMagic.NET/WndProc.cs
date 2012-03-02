@@ -37,9 +37,18 @@ namespace KeyMagic
             const int WM_NCHITTEST = 0x84;
             const int HTCLIENT = 0x01;
             const int WM_HOTKEY = 0x0312;
+            const int WM_COPYDATA = 0x004A;
 
             switch (msg.Msg)
             {
+                case WM_COPYDATA:
+                    NativeMethods.COPYDATASTRUCT cds = Marshal.PtrToStructure(msg.LParam, typeof(NativeMethods.COPYDATASTRUCT)) as NativeMethods.COPYDATASTRUCT;
+                    if (cds.dwData.ToInt32() == 0x8855) {
+                        Byte[] states = new Byte[cds.cbData];
+                        Marshal.Copy(cds.lpData, states, 0, cds.cbData);
+                        keyEventHandler.SetKeyboardState(states);
+                    }
+                    break;
                 case WM_HOTKEY:
                     if (msg.WParam.ToInt32() == softKeyboardHtkyId)
                     {
@@ -94,19 +103,21 @@ namespace KeyMagic
                     try
                     {
                         int index = 0;
-                        if (engines.ContainsKey(msg.LParam))
+                        if (engines.ContainsKey(LastClientHandle))
                         {
-                            keyEventHandler.Engine = engines[msg.LParam].engine;
+                            LayoutInfo layoutInfo = engines[LastClientHandle];
+                            keyEventHandler.Engine = layoutInfo.engine;
                             if (keyEventHandler.Engine != null)
                             {
                                 keyEventHandler.Engine.Reset();
                             }
                             SoftKeyboardEngine = keyEventHandler.Engine;
-                            index = engines[msg.LParam].index;
+                            index = layoutInfo.index;
                         }
                         else
                         {
                             engines[LastClientHandle] = new LayoutInfo(0, null);
+                            keyEventHandler.Engine = null;
                             SoftKeyboardEngine = null;
                         }
 

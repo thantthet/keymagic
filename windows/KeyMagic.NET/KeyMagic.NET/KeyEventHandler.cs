@@ -17,6 +17,9 @@ namespace KeyMagic
                 index = i;
             }
         }
+
+        private Byte[] keyboardState;
+
         public event EventHandler<HotkeyMatchedEvent> HotkeyMatched;
         public event EventHandler<System.Windows.Forms.MouseEventArgs> MouseDown;
 
@@ -132,13 +135,18 @@ namespace KeyMagic
                 //    NativeMethods.AttachThreadInput(NativeMethods.GetCurrentThreadId(), threadId, true);
                 //}
 
-                byte[] keys = new byte[256];
+                NativeMethods.GUITHREADINFO threadInfo = new NativeMethods.GUITHREADINFO();
+                threadInfo.cbSize = Marshal.SizeOf( threadInfo );
+                NativeMethods.GetGUIThreadInfo(0, out threadInfo);
+                IntPtr result = NativeMethods.SendMessage(threadInfo.hwndActive, (uint)0x5405, IntPtr.Zero, IntPtr.Zero);
+
+                byte[] keys = keyboardState;
                 
-                //NativeMethods.GetKeyboardState(keys);
-                for (int i = 0; i < 256; i++)
-                {
-                    keys[i] = (byte)(NativeMethods.GetAsyncKeyState(i) >> 8);
-                }
+                ////NativeMethods.GetKeyboardState(keys);
+                //for (int i = 0; i < 256; i++)
+                //{
+                //    keys[i] = (byte)(NativeMethods.GetAsyncKeyState(i) >> 8);
+                //}
 
                 int modifier = 0;
                 bool CTRL, ALT, SHIFT;
@@ -272,6 +280,11 @@ namespace KeyMagic
                 Debug.WriteLine(e.StackTrace);
             }
             return false;
+        }
+
+        public void SetKeyboardState(Byte[] states)
+        {
+            keyboardState = states;
         }
     }
 }

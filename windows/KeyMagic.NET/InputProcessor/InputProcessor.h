@@ -42,6 +42,8 @@ HWND hWndMainWindows = NULL;
 //WCHAR fileNameToLoad[MAX_PATH] = {0};
 #pragma data_seg()
 
+//#ifndef INPUTPROCESSOR_EXPORTS
+
 //Make sure that section can READ WRITE and SHARE
 #ifdef _M_IX86
 #pragma comment(linker, "/SECTION:.KMG32,RWS")
@@ -49,3 +51,5 @@ HWND hWndMainWindows = NULL;
 #pragma comment(linker, "/SECTION:.KMG64,RWS")
 #endif
 #endif
+
+//#endif // INPUTPROCESSOR_EXPORTS

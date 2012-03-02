@@ -1,6 +1,6 @@
 ﻿/*
-@Name = "PangLong SHAN"
-@Description = "Developed by Sai Sai | Converted into KeyMagic Layout by Thant Thet Khin Zaw"
+@Name = "ပင်လုံရှမ်း"
+@Description = "A Shan Keyboard Layout to use with Unicode | Sai Sai & Thant Thet Khin Zaw"
 @TRACK_CAPSLOCK = "false"
 @EAT_KEYS = "false"
 @US_LAYOUT_BASED = "true"

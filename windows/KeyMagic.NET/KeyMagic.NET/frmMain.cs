@@ -35,7 +35,8 @@ namespace KeyMagic
             KM_GOTFOCUS = 0x5403,
             //KM_LISTCHANGED = 0x5404,
             //KM_GETKBLNAME = 0x5406
-            KM_INPUTLANGCHANGE = 0x5404
+            KM_INPUTLANGCHANGE = 0x5404,
+            KM_SENDKEYSTATES = 0x5405
         }
 
         //store additional icon for tray, this looks better for images with alpha when drawn
@@ -179,6 +180,7 @@ namespace KeyMagic
                 NativeMethods.ChangeWindowMessageFilter((uint)DLLMSG.KM_GOTFOCUS, NativeMethods.MessageFilterFlag.MSGFLT_ADD);
                 NativeMethods.ChangeWindowMessageFilter((uint)DLLMSG.KM_INPUTLANGCHANGE, NativeMethods.MessageFilterFlag.MSGFLT_ADD);
                 NativeMethods.ChangeWindowMessageFilter((uint)DLLMSG.KM_LOSTFOCUS, NativeMethods.MessageFilterFlag.MSGFLT_ADD);
+                NativeMethods.ChangeWindowMessageFilter((uint)NativeMethods.WM.COPYDATA, NativeMethods.MessageFilterFlag.MSGFLT_ADD);
             }
             catch
             {

@@ -20,7 +20,8 @@ enum DLLMSG : int {
     KM_GOTFOCUS = 0x5403,
     //KM_LISTCHANGED = 0x5404,
 	//KM_GETKBLNAME = 0x5406
-	KM_INPUTLANGCHANGE = 0x5404
+	KM_INPUTLANGCHANGE = 0x5404,
+	KM_SENDKEYSTATES = 0x5405
 };
 
 void DebugPrint(LPCWSTR fmt, ...)
@@ -67,6 +68,15 @@ LRESULT CALLBACK HookWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 
 	switch (cwp->message)
 	{
+	case KM_SENDKEYSTATES:
+		BYTE states[256];
+		COPYDATASTRUCT cds;
+		cds.dwData = 0x8855;
+		cds.cbData = sizeof(states);
+		cds.lpData = states;
+		GetKeyboardState(states);
+		SendMessage(hWndMainWindows, WM_COPYDATA, (WPARAM)cwp->hwnd, (LPARAM)&cds);
+		break;
 	case WM_INPUTLANGCHANGE:
 		SendMessage(hWndMainWindows, KM_INPUTLANGCHANGE, cwp->wParam, cwp->lParam);
 		break;

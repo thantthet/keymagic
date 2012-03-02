@@ -310,9 +310,9 @@ namespace KeyMagic
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct COPYDATASTRUCT
+        public class COPYDATASTRUCT
         {
-            public long dwData;
+            public IntPtr dwData;
             public int cbData;
             public IntPtr lpData;
         }
@@ -346,8 +346,6 @@ namespace KeyMagic
             /// </summary>
             COPYDATA = 0x004A
         }
-
-
 
         /// <summary>
         /// An uncompressed format.
@@ -620,6 +618,22 @@ namespace KeyMagic
                     ullTotalVirtual, ullAvailVirtual,
                     ullAvailExtendedVirtual);
             }
+        }
+
+        [DllImport("user32.dll")]
+        public static extern bool GetGUIThreadInfo(uint idThread, out GUITHREADINFO lpgui);
+
+        public struct GUITHREADINFO
+        {
+            public int cbSize;
+            public int flags;
+            public IntPtr hwndActive;
+            public IntPtr hwndFocus;
+            public IntPtr hwndCapture;
+            public IntPtr hwndMenuOwner;
+            public IntPtr hwndMoveSize;
+            public IntPtr hwndCaret;
+            public System.Drawing.Rectangle rcCaret;
         }
 
         [DllImport("kernel32.dll", SetLastError = true)]
