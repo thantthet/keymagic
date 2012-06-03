@@ -13,6 +13,7 @@
 			buildPhases = (
 			);
 			dependencies = (
+				B5ABF9A21555A04700B74A27 /* PBXTargetDependency */,
 				6A31F78B0EAC69F10045D7EE /* PBXTargetDependency */,
 				6A31F7890EAC69EE0045D7EE /* PBXTargetDependency */,
 			);
@@ -56,8 +57,6 @@
 		B595DA2613D39931005636D3 /* KeyMagic_black.icns in Resources */ = {isa = PBXBuildFile; fileRef = B595DA2413D39931005636D3 /* KeyMagic_black.icns */; };
 		B595DA4113D3999D005636D3 /* KeyMagic_black.icns in Resources */ = {isa = PBXBuildFile; fileRef = B595DA2413D39931005636D3 /* KeyMagic_black.icns */; };
 		B59E0258139FE45B00F36391 /* Growl.m in Sources */ = {isa = PBXBuildFile; fileRef = B59E0257139FE45B00F36391 /* Growl.m */; };
-		B5A0B2A014477D020039AB11 /* libkeymagic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B5A0B29F14477D020039AB11 /* libkeymagic.a */; };
-		B5A0B2A114477D020039AB11 /* libkeymagic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B5A0B29F14477D020039AB11 /* libkeymagic.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,6 +80,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 6A31F7510EAC689A0045D7EE;
 			remoteInfo = "SimpleIME (TSM component)";
+		};
+		B5ABF9A11555A04700B74A27 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B5F13C9C1440D124002E52E2 /* keymagic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC09C05546B4700DB518D;
+			remoteInfo = keymagic;
 		};
 		B5CC0F781440D2EE008AD708 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -177,7 +183,6 @@
 		B595DA2413D39931005636D3 /* KeyMagic_black.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = KeyMagic_black.icns; sourceTree = "<group>"; };
 		B59E0256139FE45B00F36391 /* Growl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Growl.h; sourceTree = "<group>"; };
 		B59E0257139FE45B00F36391 /* Growl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Growl.m; sourceTree = "<group>"; };
-		B5A0B29F14477D020039AB11 /* libkeymagic.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libkeymagic.a; path = "../../cross-platform/libkeymagic/build/Release/libkeymagic.a"; sourceTree = SOURCE_ROOT; };
 		B5F13C9C1440D124002E52E2 /* keymagic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = keymagic.xcodeproj; path = "../../cross-platform/libkeymagic/keymagic.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -189,7 +194,6 @@
 				6A31F7470EAC68880045D7EE /* Carbon.framework in Frameworks */,
 				6A31F7480EAC68880045D7EE /* Cocoa.framework in Frameworks */,
 				B55969D713799A2100690DE3 /* Growl.framework in Frameworks */,
-				B5A0B2A114477D020039AB11 /* libkeymagic.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -210,7 +214,6 @@
 				6AA6D2100EAC655B00DF1C2C /* InputMethodKit.framework in Frameworks */,
 				B511C1BC1200A6CA0060A548 /* Carbon.framework in Frameworks */,
 				B55969D813799A2100690DE3 /* Growl.framework in Frameworks */,
-				B5A0B2A014477D020039AB11 /* libkeymagic.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,7 +272,6 @@
 				6AA6D20D0EAC655B00DF1C2C /* Cocoa.framework */,
 				6AA6D20F0EAC655B00DF1C2C /* InputMethodKit.framework */,
 				6A31F7460EAC68880045D7EE /* Carbon.framework */,
-				B5A0B29F14477D020039AB11 /* libkeymagic.a */,
 			);
 			sourceTree = "<group>";
 		};
@@ -548,6 +550,11 @@
 			isa = PBXTargetDependency;
 			target = 6A31F7510EAC689A0045D7EE /* KeyMagic (TSM component) */;
 			targetProxy = 6A31F78A0EAC69F10045D7EE /* PBXContainerItemProxy */;
+		};
+		B5ABF9A21555A04700B74A27 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = keymagic;
+			targetProxy = B5ABF9A11555A04700B74A27 /* PBXContainerItemProxy */;
 		};
 		B5CC0F791440D2EE008AD708 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

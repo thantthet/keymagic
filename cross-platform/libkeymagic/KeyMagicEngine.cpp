@@ -638,12 +638,15 @@ namespace libkm {
 		}
 
 		if (match < lengthBefore) {
-			deleteCount = lengthBefore - match;
+			deleteCount += lengthBefore - match;
 		}
 		
 		if (match < contextAfter.length()) {
-			difference->append(&(contextAfter.c_str()[match]));
+			difference->assign(&(contextAfter.c_str()[match]));
+		} else {
+			difference->assign(L"");
 		}
+
 
 		return deleteCount;
 	}
