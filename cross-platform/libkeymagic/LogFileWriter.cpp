@@ -26,7 +26,7 @@ namespace libkm {
 	LogFileWriter::LogFileWriter() : m_logFile(stdout), indentation(0)  {
 	}
 
-	LogFileWriter::LogFileWriter (FILE * file) {
+	LogFileWriter::LogFileWriter (FILE * file) : indentation(0) {
 		m_logFile = file;
 	}
 
@@ -35,10 +35,11 @@ namespace libkm {
 		
 		if (indentation) {
 			int spaces = 3 * indentation;
-			char indent[spaces + 1];
+			char *indent = new char[spaces + 1];
 			memset(indent, 0x20, spaces);
 			indent[spaces] = '\0'; 
 			fprintf(m_logFile, "%s", indent);
+            delete [] indent;
 		}
 
 		va_start(vl, fmt);

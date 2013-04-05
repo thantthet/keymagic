@@ -72,14 +72,14 @@ public:
 	 * Set current context
 	 * @param textContext string to set as context
 	 */
-	void setContextText(const KeyMagicString &textContext);
+	void setContextText(KeyMagicString const &textContext);
 	/**
 	 * Get difference between engine's context and given context
 	 * @param contextBefore string to compare againt engine's context
 	 * @param difference result string
 	 * @return count of delete that should be send before sending result conetxt
 	 */
-	int getDifference(const KeyMagicString& contextBefore, KeyMagicString *difference);
+	int getDifference(KeyMagicString const &contextBefore, KeyMagicString *difference);
 	/**
 	 * Get keyboard object
 	 */
@@ -150,7 +150,7 @@ private:
 	/**
 	 * update context history
 	 */
-	void updateHistory(const KeyMagicString& text);
+	void updateHistory(const KeyMagicString &text);
 	
 	KeyMagicString m_textContext;
 	

@@ -92,7 +92,7 @@ namespace libkm {
 		memcpy(m_keyStates, states, sizeof(unsigned char) * 256);
 	}
 
-	void KeyMagicEngine::updateHistory(const KeyMagicString& text) {
+	void KeyMagicEngine::updateHistory(const KeyMagicString &text) {
 		LOG_FUNC();
 		std::string str;
 		
@@ -488,7 +488,7 @@ namespace libkm {
 		LOG("index = %d\n", rule->getRuleIndex());
 		
 		RuleInfo::ItemList* inRules = rule->getLHS();
-		RuleInfo::ItemList::iterator iInRule = inRules->begin();
+//		RuleInfo::ItemList::iterator iInRule = inRules->begin();
 		RuleInfo::ItemList* rules = rule->getRHS();
 		unsigned int length = rule->getMatchLength();
 		
@@ -582,7 +582,7 @@ namespace libkm {
 		return m_textContext;
 	}
 
-	void KeyMagicEngine::setContextText(const KeyMagicString& textContext) {
+	void KeyMagicEngine::setContextText(const KeyMagicString &textContext) {
 		m_textContext.assign(textContext.c_str());
 	}
 
@@ -606,7 +606,7 @@ namespace libkm {
 		m_contextHistory = history;
 	}
 
-	int KeyMagicEngine::getDifference(const KeyMagicString& contextBefore, KeyMagicString * difference) {
+	int KeyMagicEngine::getDifference(KeyMagicString const &contextBefore, KeyMagicString *difference) {
 		int deleteCount = 0;
 
 		difference->clear();

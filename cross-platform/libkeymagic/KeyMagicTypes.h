@@ -134,41 +134,12 @@ using namespace std;
 		short size;
 		char * data;
 	public:
-		Info () {
-			size = 0;
-			data = 0;
-		}
-
-		Info (const Info& info) {
-			size = 0;
-			data = 0;
-
-			SetData(info.data, info.size);
-		}
-
-		void SetData(char * d, short s) {
-			if (data != 0) {
-				delete[] data;
-			}
-			
-			data = new char[s];
-			memcpy(data, d, sizeof(char) * s);
-			size = s;
-		}
-
-		short Size () {
-			return size;
-		}
-
-		const char * Data () {
-			return data;
-		}
-
-		~Info () {
-			if (data != 0) {
-				delete[] data;
-			}
-		}
+		Info ();
+		Info (const Info& info);
+		void SetData(char * d, short s);
+		short Size ();
+		const char * Data ();
+		~Info ();
 	};
 	typedef map<int, Info> InfoList;
 		

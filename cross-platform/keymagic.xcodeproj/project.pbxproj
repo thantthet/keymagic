@@ -146,18 +146,10 @@
 			children = (
 				5073E0CA09E734BC00EC74B6 /* Configuration Files */,
 				08FB77ACFE841707C02AAC07 /* Source */,
-				0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */,
 				B5408F4E141609FB00CD7734 /* Frameworks */,
 				034768DDFF38A45A11DB9C8B /* Products */,
 			);
 			name = keymagic;
-			sourceTree = "<group>";
-		};
-		0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "External Frameworks and Libraries";
 			sourceTree = "<group>";
 		};
 		08FB77ACFE841707C02AAC07 /* Source */ = {
@@ -306,7 +298,7 @@
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0410;
+				LastUpgradeCheck = 0450;
 			};
 			buildConfigurationList = 1DEB916408733D950010E9CD /* Build configuration list for PBXProject "keymagic" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -344,7 +336,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export PG_VER=`head -1 ${PROJECT_DIR}/VERSION`\n\n# Config\n\nUFW_TARGET=iKeyMagic\n\n\n\n# Defaults\n\n# Default build dir\nUFW_BUILD_DIR=\"./build\"\n\n\n\n# Global vars\n\n#if [ ! -z ${BUILD_DIR} ]; then\n## Use the build dir specified by XCode\n#    UFW_BUILD_DIR=\"${BUILD_DIR}\"\n#fi\n\nif [ -z ${SDK_NAME} ]; then\n# Use the latest iphoneos SDK available\nUFW_GREP_RESULT=$(xcodebuild -showsdks | grep -o \"iphoneos.*$\")\nwhile read -r line; do\nUFW_SDK_VERSION=\"${line}\"\ndone <<< \"${UFW_GREP_RESULT}\"\nelse\n# Use the SDK specified by XCode\nUFW_SDK_VERSION=\"${SDK_NAME}\"\nfi\n\nUFW_SDK_VERSION=$(echo \"${UFW_SDK_VERSION}\" | grep -o \"[0-9].*$\")\nUFW_EXE_FOLDER_PATH=\"${UFW_TARGET}.framework\"\nUFW_EXE_PATH=\"${UFW_EXE_FOLDER_PATH}/${UFW_TARGET}\"\nUFW_IPHONE_DIR=\"${UFW_BUILD_DIR}/Release-iphoneos\"\nUFW_SIMULATOR_DIR=\"${UFW_BUILD_DIR}/Release-iphonesimulator\"\nUFW_UNIVERSAL_DIR=\"${UFW_BUILD_DIR}/Release-universal\"\n\n\n# Build Framework\n\nrm -rf \"${UFW_UNIVERSAL_DIR}\"\n\nxcodebuild ARCHS=\"armv6 armv7\" -target \"${UFW_TARGET}\" -configuration Release -sdk iphoneos${UFW_SDK_VERSION} GCC_PREPROCESSOR_DEFINITIONS=\"PG_VERSION=${PG_VER}\" clean build\nif [ \"$?\" != \"0\" ]; then echo >&2 \"Error: xcodebuild failed\"; exit 1; fi\nxcodebuild -target \"${UFW_TARGET}\" -configuration Release -sdk iphonesimulator${UFW_SDK_VERSION} GCC_PREPROCESSOR_DEFINITIONS=\"PG_VERSION=${PG_VER}\" clean build\nif [ \"$?\" != \"0\" ]; then echo >&2 \"Error: xcodebuild failed\"; exit 1; fi\n\nif [ ! -f \"${UFW_IPHONE_DIR}/${UFW_EXE_PATH}\" ]; then\necho \"Framework target \\\"${UFW_TARGET}\\\" had no source files to build from. Make sure your source files have the correct target membership\"\nexit 1\nfi\n\nmkdir -p \"${UFW_UNIVERSAL_DIR}\"\nif [ \"$?\" != \"0\" ]; then echo >&2 \"Error: mkdir failed\"; exit 1; fi\n\ncp -a \"${UFW_IPHONE_DIR}/${UFW_EXE_FOLDER_PATH}\" \"${UFW_UNIVERSAL_DIR}/${UFW_EXE_FOLDER_PATH}\"\nif [ \"$?\" != \"0\" ]; then echo >&2 \"Error: cp failed\"; exit 1; fi\n\nlipo \"${UFW_IPHONE_DIR}/${UFW_EXE_PATH}\" -thin armv6 -o \"${UFW_IPHONE_DIR}/${UFW_EXE_PATH}6\"\nlipo \"${UFW_IPHONE_DIR}/${UFW_EXE_PATH}\" -thin armv7 -o \"${UFW_IPHONE_DIR}/${UFW_EXE_PATH}7\"\n\nlipo -create -output \"${UFW_UNIVERSAL_DIR}/${UFW_EXE_PATH}\" -arch armv6 \"${UFW_IPHONE_DIR}/${UFW_EXE_PATH}6\" -arch armv7 \"${UFW_IPHONE_DIR}/${UFW_EXE_PATH}7\" -arch i386 \"${UFW_SIMULATOR_DIR}/${UFW_EXE_PATH}\"\nif [ \"$?\" != \"0\" ]; then echo >&2 \"Error: lipo failed\"; exit 1; fi\n\nrm -f \"${UFW_IPHONE_DIR}/${UFW_EXE_PATH}6\"\nrm -f \"${UFW_IPHONE_DIR}/${UFW_EXE_PATH}7\"\n";
+			shellScript = "export PG_VER=`head -1 ${PROJECT_DIR}/VERSION`\n\n# Config\n\nUFW_TARGET=iKeyMagic\n\n\n\n# Defaults\n\n# Default build dir\nUFW_BUILD_DIR=\"./build\"\n\n\n\n# Global vars\n\n#if [ ! -z ${BUILD_DIR} ]; then\n## Use the build dir specified by XCode\n#    UFW_BUILD_DIR=\"${BUILD_DIR}\"\n#fi\n\nif [ -z ${SDK_NAME} ]; then\n# Use the latest iphoneos SDK available\nUFW_GREP_RESULT=$(xcodebuild -showsdks | grep -o \"iphoneos.*$\")\nwhile read -r line; do\nUFW_SDK_VERSION=\"${line}\"\ndone <<< \"${UFW_GREP_RESULT}\"\nelse\n# Use the SDK specified by XCode\nUFW_SDK_VERSION=\"${SDK_NAME}\"\nfi\n\nUFW_SDK_VERSION=$(echo \"${UFW_SDK_VERSION}\" | grep -o \"[0-9].*$\")\nUFW_EXE_FOLDER_PATH=\"${UFW_TARGET}.framework\"\nUFW_EXE_PATH=\"${UFW_EXE_FOLDER_PATH}/${UFW_TARGET}\"\nUFW_IPHONE_DIR=\"${UFW_BUILD_DIR}/Release-iphoneos\"\nUFW_SIMULATOR_DIR=\"${UFW_BUILD_DIR}/Release-iphonesimulator\"\nUFW_UNIVERSAL_DIR=\"${UFW_BUILD_DIR}/Release-universal\"\n\n\n# Build Framework\n\nrm -rf \"${UFW_UNIVERSAL_DIR}\"\n\nxcodebuild -target \"${UFW_TARGET}\" -configuration Release -sdk iphoneos${UFW_SDK_VERSION} GCC_PREPROCESSOR_DEFINITIONS=\"PG_VERSION=${PG_VER}\" clean build\nif [ \"$?\" != \"0\" ]; then echo >&2 \"Error: xcodebuild failed\"; exit 1; fi\nxcodebuild -target \"${UFW_TARGET}\" -configuration Release -sdk iphonesimulator${UFW_SDK_VERSION} GCC_PREPROCESSOR_DEFINITIONS=\"PG_VERSION=${PG_VER}\" clean build\nif [ \"$?\" != \"0\" ]; then echo >&2 \"Error: xcodebuild failed\"; exit 1; fi\n\nif [ ! -f \"${UFW_IPHONE_DIR}/${UFW_EXE_PATH}\" ]; then\necho \"Framework target \\\"${UFW_TARGET}\\\" had no source files to build from. Make sure your source files have the correct target membership\"\nexit 1\nfi\n\nmkdir -p \"${UFW_UNIVERSAL_DIR}\"\nif [ \"$?\" != \"0\" ]; then echo >&2 \"Error: mkdir failed\"; exit 1; fi\n\ncp -a \"${UFW_IPHONE_DIR}/${UFW_EXE_FOLDER_PATH}\" \"${UFW_UNIVERSAL_DIR}/${UFW_EXE_FOLDER_PATH}\"\nif [ \"$?\" != \"0\" ]; then echo >&2 \"Error: cp failed\"; exit 1; fi\n\nlipo \"${UFW_IPHONE_DIR}/${UFW_EXE_PATH}\" -thin armv7 -o \"${UFW_IPHONE_DIR}/${UFW_EXE_PATH}7\"\nlipo \"${UFW_IPHONE_DIR}/${UFW_EXE_PATH}\" -thin armv7s -o \"${UFW_IPHONE_DIR}/${UFW_EXE_PATH}7s\"\n\n\n\n# Smash the two static libraries into one fat binary and store it in the .framework\nlipo -create \"${UFW_IPHONE_DIR}/${UFW_EXE_PATH}\" \"${UFW_SIMULATOR_DIR}/${UFW_EXE_PATH}\" -output \"${UFW_UNIVERSAL_DIR}/${UFW_EXE_PATH}\"\n\nif [ \"$?\" != \"0\" ]; then echo >&2 \"Error: lipo failed\"; exit 1; fi\n\nrm -f \"${UFW_IPHONE_DIR}/${UFW_EXE_PATH}7\"\nrm -f \"${UFW_IPHONE_DIR}/${UFW_EXE_PATH}7s\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -406,6 +398,7 @@
 			baseConfigurationReference = 5073E0C709E734A800EC74B6 /* keymagicTarget.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				EXECUTABLE_EXTENSION = a;
 				EXECUTABLE_PREFIX = lib;
@@ -430,6 +423,7 @@
 			baseConfigurationReference = 5073E0C709E734A800EC74B6 /* keymagicTarget.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				EXECUTABLE_EXTENSION = a;
 				EXECUTABLE_PREFIX = lib;
@@ -460,7 +454,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACH_O_TYPE = staticlib;
 				ONLY_ACTIVE_ARCH = NO;
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -473,7 +467,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
@@ -521,7 +515,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = "";
 				GENERATE_MASTER_OBJECT_FILE = NO;
 				LINKER_DISPLAYS_MANGLED_NAMES = NO;
 				LINK_WITH_STANDARD_LIBRARIES = NO;
@@ -530,9 +524,10 @@
 				PRIVATE_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/PrivateHeaders";
 				PRODUCT_NAME = iKeyMagic;
 				PUBLIC_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/Headers";
-				SDKROOT = iphoneos4.3;
+				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = Dynamic;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Debug;
@@ -553,7 +548,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = "";
 				GENERATE_MASTER_OBJECT_FILE = NO;
 				LINK_WITH_STANDARD_LIBRARIES = NO;
 				MACH_O_TYPE = mh_object;
@@ -561,11 +556,12 @@
 				PRIVATE_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/PrivateHeaders";
 				PRODUCT_NAME = iKeyMagic;
 				PUBLIC_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/Headers";
-				SDKROOT = iphoneos4.3;
+				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = Dynamic;
 				STRIP_INSTALLED_PRODUCT = YES;
 				STRIP_STYLE = "non-global";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
@@ -573,26 +569,22 @@
 		B5408FD614161C3100CD7734 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv6,
-					armv7,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				VALID_ARCHS = "armv7 armv7s";
 			};
 			name = Debug;
 		};
 		B5408FD714161C3100CD7734 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv6,
-					armv7,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				VALID_ARCHS = "armv7 armv7s";
 			};
 			name = Release;
 		};
