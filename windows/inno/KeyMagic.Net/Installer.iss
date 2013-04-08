@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppID={{BCE87558-3D35-4BF0-A8A8-E86C3B0BA8EF}
 AppName=KeyMagic
-AppVersion=1.5.1
+AppVersion=1.5.2
 ;AppVerName=KeyMagic 1.5
 AppPublisher=Thant Thet Khin Zaw
 AppPublisherURL=http://keymagic.googlecode.com
@@ -27,7 +27,7 @@ VersionInfoCompany=Thant Thet Khin Zaw
 VersionInfoDescription=KeyMagic Installer
 VersionInfoCopyright=KeyMagic Project
 VersionInfoProductName=KeyMagic Smart IME
-VersionInfoProductVersion=1.5.1
+VersionInfoProductVersion=1.5.2
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -48,10 +48,13 @@ Source: ".\..\..\KeyMagic.NET\bin\Layouts.xml"; DestDir: "{app}"; Flags: ignorev
 Source: "AUTHORS"; DestDir: "{app}"; 
 Source: "LICENSE"; DestDir: "{app}"; 
 Source: ".\..\..\KeyMagic.NET\bin\KeyboardLayouts\MyanSan.km2"; DestDir: "{app}\KeyboardLayouts\"; 
-Source: ".\..\..\KeyMagic.NET\bin\KeyboardLayouts\myWin.km2"; DestDir: "{app}\KeyboardLayouts\";
-Source: ".\..\..\KeyMagic.NET\bin\KeyboardLayouts\PangLongShan.km2"; DestDir: "{app}\KeyboardLayouts\";
-Source: ".\..\..\KeyMagic.NET\bin\KeyboardLayouts\Parabaik.km2"; DestDir: "{app}\KeyboardLayouts\";
+;Source: ".\..\..\KeyMagic.NET\bin\KeyboardLayouts\myWin.km2"; DestDir: "{app}\KeyboardLayouts\";
+;Source: ".\..\..\KeyMagic.NET\bin\KeyboardLayouts\PangLongShan.km2"; DestDir: "{app}\KeyboardLayouts\";
+;Source: ".\..\..\KeyMagic.NET\bin\KeyboardLayouts\Parabaik.km2"; DestDir: "{app}\KeyboardLayouts\";
 Source: ".\..\..\KeyMagic.NET\bin\KeyboardLayouts\Zawgyi L - Unicode.km2"; DestDir: "{app}\KeyboardLayouts\";
+Source: ".\..\..\KeyMagic.NET\bin\KeyboardLayouts\Zawgyi L.km2"; DestDir: "{app}\KeyboardLayouts\";
+Source: .\vendor/vcredist_x86.exe; DestDir: {tmp}
+Source: .\vendor/vcredist_x64.exe; DestDir: {tmp}
 
 [Icons]
 Name: {group}\KeyMagic; Filename: {app}\KeyMagic.exe; IconFilename: {app}\KeyMagic.exe; 
@@ -60,4 +63,6 @@ Name: "{group}\{cm:UninstallProgram, KeyMagic}"; Filename: {uninstallexe};
 Name: {group}\License; Filename: notepad.exe; Parameters: {app}\LICENSE; 
 
 [Run]
+Filename: {tmp}\vcredist_x86.exe; Parameters: "/passive /Q:a /c:""msiexec /qb /i vcredist.msi"" "; StatusMsg: Installing 2010 32bit RunTime...
+Filename: {tmp}\vcredist_x64.exe; Flags: 64bit; Check: IsWin64; Parameters: "/passive /Q:a /c:""msiexec /qb /i vcredist.msi"" "; StatusMsg: Installing 2010 64bit RunTime...
 Filename: {app}\KeyMagic.exe; Description: {cm:LaunchProgram,KeyMagic}; Flags: nowait postinstall skipifsilent RunAsCurrentUser;
