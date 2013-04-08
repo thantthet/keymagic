@@ -1534,7 +1534,7 @@ namespace KeyMagic
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    if (!autoCheck) MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
 
                 if (btnCheckUpdate.InvokeRequired)

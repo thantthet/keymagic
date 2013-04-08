@@ -61,3 +61,8 @@ KeyMagic-1.5.pkg
 OSX/IMKBased/KeyMagic.xcodeproj/project.xcworkspace/xcuserdata
 libkeymagic.a
 *.sdf
+/windows/KeyMagic.NET/ipch
+/cross-platform/libkeymagic/libkeymagic.net/*.filters
+/cross-platform/libkeymagic/vs/ipch
+/windows/KeyMagic.NET/HookInput/Debug
+/windows/KeyMagic.NET/HookInput/x64
