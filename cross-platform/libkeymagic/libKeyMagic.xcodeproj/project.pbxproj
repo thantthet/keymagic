@@ -7,28 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		908C0A8616E3AC7300F37979 /* KeyCodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 908C0A7616E3AC7300F37979 /* KeyCodes.cpp */; };
-		908C0A8716E3AC7300F37979 /* KeyCodes.h in Headers */ = {isa = PBXBuildFile; fileRef = 908C0A7716E3AC7300F37979 /* KeyCodes.h */; };
-		908C0A8816E3AC7300F37979 /* keymagic_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 908C0A7816E3AC7300F37979 /* keymagic_Prefix.pch */; };
-		908C0A8916E3AC7300F37979 /* keymagic.h in Headers */ = {isa = PBXBuildFile; fileRef = 908C0A7916E3AC7300F37979 /* keymagic.h */; };
-		908C0A8A16E3AC7300F37979 /* KeyMagicEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 908C0A7A16E3AC7300F37979 /* KeyMagicEngine.cpp */; };
-		908C0A8B16E3AC7300F37979 /* KeyMagicEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 908C0A7B16E3AC7300F37979 /* KeyMagicEngine.h */; };
-		908C0A8C16E3AC7300F37979 /* KeyMagicErrorLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 908C0A7C16E3AC7300F37979 /* KeyMagicErrorLogger.cpp */; };
-		908C0A8D16E3AC7300F37979 /* KeyMagicErrorLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 908C0A7D16E3AC7300F37979 /* KeyMagicErrorLogger.h */; };
-		908C0A8E16E3AC7300F37979 /* KeyMagicKeyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 908C0A7E16E3AC7300F37979 /* KeyMagicKeyboard.cpp */; };
-		908C0A8F16E3AC7300F37979 /* KeyMagicKeyboard.h in Headers */ = {isa = PBXBuildFile; fileRef = 908C0A7F16E3AC7300F37979 /* KeyMagicKeyboard.h */; };
-		908C0A9016E3AC7300F37979 /* KeyMagicLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 908C0A8016E3AC7300F37979 /* KeyMagicLogger.cpp */; };
-		908C0A9116E3AC7300F37979 /* KeyMagicLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 908C0A8116E3AC7300F37979 /* KeyMagicLogger.h */; };
-		908C0A9216E3AC7300F37979 /* KeyMagicString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 908C0A8216E3AC7300F37979 /* KeyMagicString.cpp */; };
-		908C0A9316E3AC7300F37979 /* KeyMagicString.h in Headers */ = {isa = PBXBuildFile; fileRef = 908C0A8316E3AC7300F37979 /* KeyMagicString.h */; };
-		908C0A9416E3AC7300F37979 /* KeyMagicTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 908C0A8416E3AC7300F37979 /* KeyMagicTypes.cpp */; };
-		908C0A9516E3AC7300F37979 /* KeyMagicTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 908C0A8516E3AC7300F37979 /* KeyMagicTypes.h */; };
-		908C0A9C16E3AC9E00F37979 /* LogFileWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 908C0A9616E3AC9E00F37979 /* LogFileWriter.cpp */; };
-		908C0A9D16E3AC9E00F37979 /* LogFileWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 908C0A9716E3AC9E00F37979 /* LogFileWriter.h */; };
-		908C0A9E16E3AC9E00F37979 /* RuleInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 908C0A9816E3AC9E00F37979 /* RuleInfo.cpp */; };
-		908C0A9F16E3AC9E00F37979 /* RuleInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 908C0A9916E3AC9E00F37979 /* RuleInfo.h */; };
-		908C0AA016E3AC9E00F37979 /* Util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 908C0A9A16E3AC9E00F37979 /* Util.cpp */; };
-		908C0AA116E3AC9E00F37979 /* Util.h in Headers */ = {isa = PBXBuildFile; fileRef = 908C0A9B16E3AC9E00F37979 /* Util.h */; };
+		90FF59A2171626E40013858A /* KeyCodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90FF59A0171626E40013858A /* KeyCodes.cpp */; };
+		90FF59A3171626E40013858A /* KeyCodes.h in Headers */ = {isa = PBXBuildFile; fileRef = 90FF59A1171626E40013858A /* KeyCodes.h */; };
+		90FF59B1171626ED0013858A /* keymagic.h in Headers */ = {isa = PBXBuildFile; fileRef = 90FF59A4171626ED0013858A /* keymagic.h */; };
+		90FF59B2171626ED0013858A /* KeyMagicEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90FF59A5171626ED0013858A /* KeyMagicEngine.cpp */; };
+		90FF59B3171626ED0013858A /* KeyMagicEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 90FF59A6171626ED0013858A /* KeyMagicEngine.h */; };
+		90FF59B4171626ED0013858A /* KeyMagicErrorLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90FF59A7171626ED0013858A /* KeyMagicErrorLogger.cpp */; };
+		90FF59B5171626ED0013858A /* KeyMagicErrorLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 90FF59A8171626ED0013858A /* KeyMagicErrorLogger.h */; };
+		90FF59B6171626ED0013858A /* KeyMagicKeyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90FF59A9171626ED0013858A /* KeyMagicKeyboard.cpp */; };
+		90FF59B7171626ED0013858A /* KeyMagicKeyboard.h in Headers */ = {isa = PBXBuildFile; fileRef = 90FF59AA171626ED0013858A /* KeyMagicKeyboard.h */; };
+		90FF59B8171626ED0013858A /* KeyMagicLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90FF59AB171626ED0013858A /* KeyMagicLogger.cpp */; };
+		90FF59B9171626ED0013858A /* KeyMagicLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 90FF59AC171626ED0013858A /* KeyMagicLogger.h */; };
+		90FF59BA171626ED0013858A /* KeyMagicString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90FF59AD171626ED0013858A /* KeyMagicString.cpp */; };
+		90FF59BB171626ED0013858A /* KeyMagicString.h in Headers */ = {isa = PBXBuildFile; fileRef = 90FF59AE171626ED0013858A /* KeyMagicString.h */; };
+		90FF59BC171626ED0013858A /* KeyMagicTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90FF59AF171626ED0013858A /* KeyMagicTypes.cpp */; };
+		90FF59BD171626ED0013858A /* KeyMagicTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 90FF59B0171626ED0013858A /* KeyMagicTypes.h */; };
+		90FF59C4171626F70013858A /* LogFileWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90FF59BE171626F70013858A /* LogFileWriter.cpp */; };
+		90FF59C5171626F70013858A /* LogFileWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 90FF59BF171626F70013858A /* LogFileWriter.h */; };
+		90FF59C6171626F70013858A /* RuleInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90FF59C0171626F70013858A /* RuleInfo.cpp */; };
+		90FF59C7171626F70013858A /* RuleInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 90FF59C1171626F70013858A /* RuleInfo.h */; };
+		90FF59C8171626F70013858A /* Util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90FF59C2171626F70013858A /* Util.cpp */; };
+		90FF59C9171626F70013858A /* Util.h in Headers */ = {isa = PBXBuildFile; fileRef = 90FF59C3171626F70013858A /* Util.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,28 +35,27 @@
 		908C0A6A16E3AC3800F37979 /* libKeyMagic-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "libKeyMagic-Prefix.pch"; sourceTree = "<group>"; };
 		908C0A6B16E3AC3800F37979 /* libKeyMagicProj.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = libKeyMagicProj.xcconfig; sourceTree = "<group>"; };
 		908C0A6C16E3AC3800F37979 /* libKeyMagicTarget.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = libKeyMagicTarget.xcconfig; sourceTree = "<group>"; };
-		908C0A7616E3AC7300F37979 /* KeyCodes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyCodes.cpp; sourceTree = "<group>"; };
-		908C0A7716E3AC7300F37979 /* KeyCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyCodes.h; sourceTree = "<group>"; };
-		908C0A7816E3AC7300F37979 /* keymagic_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keymagic_Prefix.pch; sourceTree = "<group>"; };
-		908C0A7916E3AC7300F37979 /* keymagic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keymagic.h; sourceTree = "<group>"; };
-		908C0A7A16E3AC7300F37979 /* KeyMagicEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyMagicEngine.cpp; sourceTree = "<group>"; };
-		908C0A7B16E3AC7300F37979 /* KeyMagicEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyMagicEngine.h; sourceTree = "<group>"; };
-		908C0A7C16E3AC7300F37979 /* KeyMagicErrorLogger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyMagicErrorLogger.cpp; sourceTree = "<group>"; };
-		908C0A7D16E3AC7300F37979 /* KeyMagicErrorLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyMagicErrorLogger.h; sourceTree = "<group>"; };
-		908C0A7E16E3AC7300F37979 /* KeyMagicKeyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyMagicKeyboard.cpp; sourceTree = "<group>"; };
-		908C0A7F16E3AC7300F37979 /* KeyMagicKeyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyMagicKeyboard.h; sourceTree = "<group>"; };
-		908C0A8016E3AC7300F37979 /* KeyMagicLogger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyMagicLogger.cpp; sourceTree = "<group>"; };
-		908C0A8116E3AC7300F37979 /* KeyMagicLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyMagicLogger.h; sourceTree = "<group>"; };
-		908C0A8216E3AC7300F37979 /* KeyMagicString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyMagicString.cpp; sourceTree = "<group>"; };
-		908C0A8316E3AC7300F37979 /* KeyMagicString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyMagicString.h; sourceTree = "<group>"; };
-		908C0A8416E3AC7300F37979 /* KeyMagicTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyMagicTypes.cpp; sourceTree = "<group>"; };
-		908C0A8516E3AC7300F37979 /* KeyMagicTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyMagicTypes.h; sourceTree = "<group>"; };
-		908C0A9616E3AC9E00F37979 /* LogFileWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LogFileWriter.cpp; sourceTree = "<group>"; };
-		908C0A9716E3AC9E00F37979 /* LogFileWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogFileWriter.h; sourceTree = "<group>"; };
-		908C0A9816E3AC9E00F37979 /* RuleInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RuleInfo.cpp; sourceTree = "<group>"; };
-		908C0A9916E3AC9E00F37979 /* RuleInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RuleInfo.h; sourceTree = "<group>"; };
-		908C0A9A16E3AC9E00F37979 /* Util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Util.cpp; sourceTree = "<group>"; };
-		908C0A9B16E3AC9E00F37979 /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
+		90FF59A0171626E40013858A /* KeyCodes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyCodes.cpp; sourceTree = SOURCE_ROOT; };
+		90FF59A1171626E40013858A /* KeyCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyCodes.h; sourceTree = SOURCE_ROOT; };
+		90FF59A4171626ED0013858A /* keymagic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keymagic.h; sourceTree = SOURCE_ROOT; };
+		90FF59A5171626ED0013858A /* KeyMagicEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyMagicEngine.cpp; sourceTree = SOURCE_ROOT; };
+		90FF59A6171626ED0013858A /* KeyMagicEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyMagicEngine.h; sourceTree = SOURCE_ROOT; };
+		90FF59A7171626ED0013858A /* KeyMagicErrorLogger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyMagicErrorLogger.cpp; sourceTree = SOURCE_ROOT; };
+		90FF59A8171626ED0013858A /* KeyMagicErrorLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyMagicErrorLogger.h; sourceTree = SOURCE_ROOT; };
+		90FF59A9171626ED0013858A /* KeyMagicKeyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyMagicKeyboard.cpp; sourceTree = SOURCE_ROOT; };
+		90FF59AA171626ED0013858A /* KeyMagicKeyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyMagicKeyboard.h; sourceTree = SOURCE_ROOT; };
+		90FF59AB171626ED0013858A /* KeyMagicLogger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyMagicLogger.cpp; sourceTree = SOURCE_ROOT; };
+		90FF59AC171626ED0013858A /* KeyMagicLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyMagicLogger.h; sourceTree = SOURCE_ROOT; };
+		90FF59AD171626ED0013858A /* KeyMagicString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyMagicString.cpp; sourceTree = SOURCE_ROOT; };
+		90FF59AE171626ED0013858A /* KeyMagicString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyMagicString.h; sourceTree = SOURCE_ROOT; };
+		90FF59AF171626ED0013858A /* KeyMagicTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyMagicTypes.cpp; sourceTree = SOURCE_ROOT; };
+		90FF59B0171626ED0013858A /* KeyMagicTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyMagicTypes.h; sourceTree = SOURCE_ROOT; };
+		90FF59BE171626F70013858A /* LogFileWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LogFileWriter.cpp; sourceTree = SOURCE_ROOT; };
+		90FF59BF171626F70013858A /* LogFileWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogFileWriter.h; sourceTree = SOURCE_ROOT; };
+		90FF59C0171626F70013858A /* RuleInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RuleInfo.cpp; sourceTree = SOURCE_ROOT; };
+		90FF59C1171626F70013858A /* RuleInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RuleInfo.h; sourceTree = SOURCE_ROOT; };
+		90FF59C2171626F70013858A /* Util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Util.cpp; sourceTree = SOURCE_ROOT; };
+		90FF59C3171626F70013858A /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,28 +88,27 @@
 		908C0A6816E3AC3800F37979 /* libKeyMagic */ = {
 			isa = PBXGroup;
 			children = (
-				908C0A7916E3AC7300F37979 /* keymagic.h */,
-				908C0A7616E3AC7300F37979 /* KeyCodes.cpp */,
-				908C0A7716E3AC7300F37979 /* KeyCodes.h */,
-				908C0A7816E3AC7300F37979 /* keymagic_Prefix.pch */,
-				908C0A7A16E3AC7300F37979 /* KeyMagicEngine.cpp */,
-				908C0A7B16E3AC7300F37979 /* KeyMagicEngine.h */,
-				908C0A7C16E3AC7300F37979 /* KeyMagicErrorLogger.cpp */,
-				908C0A7D16E3AC7300F37979 /* KeyMagicErrorLogger.h */,
-				908C0A7E16E3AC7300F37979 /* KeyMagicKeyboard.cpp */,
-				908C0A7F16E3AC7300F37979 /* KeyMagicKeyboard.h */,
-				908C0A8016E3AC7300F37979 /* KeyMagicLogger.cpp */,
-				908C0A8116E3AC7300F37979 /* KeyMagicLogger.h */,
-				908C0A8216E3AC7300F37979 /* KeyMagicString.cpp */,
-				908C0A8316E3AC7300F37979 /* KeyMagicString.h */,
-				908C0A8416E3AC7300F37979 /* KeyMagicTypes.cpp */,
-				908C0A8516E3AC7300F37979 /* KeyMagicTypes.h */,
-				908C0A9616E3AC9E00F37979 /* LogFileWriter.cpp */,
-				908C0A9716E3AC9E00F37979 /* LogFileWriter.h */,
-				908C0A9816E3AC9E00F37979 /* RuleInfo.cpp */,
-				908C0A9916E3AC9E00F37979 /* RuleInfo.h */,
-				908C0A9A16E3AC9E00F37979 /* Util.cpp */,
-				908C0A9B16E3AC9E00F37979 /* Util.h */,
+				90FF59A4171626ED0013858A /* keymagic.h */,
+				90FF59A0171626E40013858A /* KeyCodes.cpp */,
+				90FF59A1171626E40013858A /* KeyCodes.h */,
+				90FF59A5171626ED0013858A /* KeyMagicEngine.cpp */,
+				90FF59A6171626ED0013858A /* KeyMagicEngine.h */,
+				90FF59A7171626ED0013858A /* KeyMagicErrorLogger.cpp */,
+				90FF59A8171626ED0013858A /* KeyMagicErrorLogger.h */,
+				90FF59A9171626ED0013858A /* KeyMagicKeyboard.cpp */,
+				90FF59AA171626ED0013858A /* KeyMagicKeyboard.h */,
+				90FF59AB171626ED0013858A /* KeyMagicLogger.cpp */,
+				90FF59AC171626ED0013858A /* KeyMagicLogger.h */,
+				90FF59AD171626ED0013858A /* KeyMagicString.cpp */,
+				90FF59AE171626ED0013858A /* KeyMagicString.h */,
+				90FF59AF171626ED0013858A /* KeyMagicTypes.cpp */,
+				90FF59B0171626ED0013858A /* KeyMagicTypes.h */,
+				90FF59BE171626F70013858A /* LogFileWriter.cpp */,
+				90FF59BF171626F70013858A /* LogFileWriter.h */,
+				90FF59C0171626F70013858A /* RuleInfo.cpp */,
+				90FF59C1171626F70013858A /* RuleInfo.h */,
+				90FF59C2171626F70013858A /* Util.cpp */,
+				90FF59C3171626F70013858A /* Util.h */,
 				908C0A6B16E3AC3800F37979 /* libKeyMagicProj.xcconfig */,
 				908C0A6C16E3AC3800F37979 /* libKeyMagicTarget.xcconfig */,
 				908C0A6916E3AC3800F37979 /* Supporting Files */,
@@ -134,18 +131,17 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				908C0A8716E3AC7300F37979 /* KeyCodes.h in Headers */,
-				908C0A8816E3AC7300F37979 /* keymagic_Prefix.pch in Headers */,
-				908C0A8916E3AC7300F37979 /* keymagic.h in Headers */,
-				908C0A8B16E3AC7300F37979 /* KeyMagicEngine.h in Headers */,
-				908C0A8D16E3AC7300F37979 /* KeyMagicErrorLogger.h in Headers */,
-				908C0A8F16E3AC7300F37979 /* KeyMagicKeyboard.h in Headers */,
-				908C0A9116E3AC7300F37979 /* KeyMagicLogger.h in Headers */,
-				908C0A9316E3AC7300F37979 /* KeyMagicString.h in Headers */,
-				908C0A9516E3AC7300F37979 /* KeyMagicTypes.h in Headers */,
-				908C0A9D16E3AC9E00F37979 /* LogFileWriter.h in Headers */,
-				908C0A9F16E3AC9E00F37979 /* RuleInfo.h in Headers */,
-				908C0AA116E3AC9E00F37979 /* Util.h in Headers */,
+				90FF59A3171626E40013858A /* KeyCodes.h in Headers */,
+				90FF59B1171626ED0013858A /* keymagic.h in Headers */,
+				90FF59B3171626ED0013858A /* KeyMagicEngine.h in Headers */,
+				90FF59B5171626ED0013858A /* KeyMagicErrorLogger.h in Headers */,
+				90FF59B7171626ED0013858A /* KeyMagicKeyboard.h in Headers */,
+				90FF59B9171626ED0013858A /* KeyMagicLogger.h in Headers */,
+				90FF59BB171626ED0013858A /* KeyMagicString.h in Headers */,
+				90FF59BD171626ED0013858A /* KeyMagicTypes.h in Headers */,
+				90FF59C5171626F70013858A /* LogFileWriter.h in Headers */,
+				90FF59C7171626F70013858A /* RuleInfo.h in Headers */,
+				90FF59C9171626F70013858A /* Util.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -200,16 +196,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				908C0A8616E3AC7300F37979 /* KeyCodes.cpp in Sources */,
-				908C0A8A16E3AC7300F37979 /* KeyMagicEngine.cpp in Sources */,
-				908C0A8C16E3AC7300F37979 /* KeyMagicErrorLogger.cpp in Sources */,
-				908C0A8E16E3AC7300F37979 /* KeyMagicKeyboard.cpp in Sources */,
-				908C0A9016E3AC7300F37979 /* KeyMagicLogger.cpp in Sources */,
-				908C0A9216E3AC7300F37979 /* KeyMagicString.cpp in Sources */,
-				908C0A9416E3AC7300F37979 /* KeyMagicTypes.cpp in Sources */,
-				908C0A9C16E3AC9E00F37979 /* LogFileWriter.cpp in Sources */,
-				908C0A9E16E3AC9E00F37979 /* RuleInfo.cpp in Sources */,
-				908C0AA016E3AC9E00F37979 /* Util.cpp in Sources */,
+				90FF59A2171626E40013858A /* KeyCodes.cpp in Sources */,
+				90FF59B2171626ED0013858A /* KeyMagicEngine.cpp in Sources */,
+				90FF59B4171626ED0013858A /* KeyMagicErrorLogger.cpp in Sources */,
+				90FF59B6171626ED0013858A /* KeyMagicKeyboard.cpp in Sources */,
+				90FF59B8171626ED0013858A /* KeyMagicLogger.cpp in Sources */,
+				90FF59BA171626ED0013858A /* KeyMagicString.cpp in Sources */,
+				90FF59BC171626ED0013858A /* KeyMagicTypes.cpp in Sources */,
+				90FF59C4171626F70013858A /* LogFileWriter.cpp in Sources */,
+				90FF59C6171626F70013858A /* RuleInfo.cpp in Sources */,
+				90FF59C8171626F70013858A /* Util.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,6 +275,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 			};
@@ -288,6 +285,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 			};
@@ -312,6 +310,7 @@
 				908C0A7516E3AC3800F37979 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

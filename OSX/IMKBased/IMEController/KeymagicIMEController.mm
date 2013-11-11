@@ -18,8 +18,7 @@
 //Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #import <Carbon/Carbon.h>
-#import <Growl/Growl.h>
-#import "Growl.h"
+#import <Foundation/Foundation.h>
 
 #import "KeymagicIMEController.h"
 #import	"keymagic.h"
@@ -28,7 +27,7 @@
 #define kLastKeyboardPathKey @"DefaultKeyboardPath"
 #define kInstantCommit @"InstantCommit"
 
-@interface KeyMagicIMEController ()
+@interface KeyMagicIMEController () <NSUserNotificationCenterDelegate>
 
 @property (nonatomic, strong) NSMutableArray *keyboards;
 
@@ -138,6 +137,8 @@ bool mapVK(int virtualkey, int * winVK)
     self = [super initWithServer:server delegate:delegate client:inputClient];
     
     if (self) {
+        [[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:self];
+        
         self.activeKeyboard = [[Keyboard alloc] init];
         self.keyboards = [[NSMutableArray alloc] init];
         
@@ -174,7 +175,11 @@ bool mapVK(int virtualkey, int * winVK)
                     [activeKeyboard setTitle:title];
                     [activeKeyboard setPath:path];
                     
-//                    [GrowlApplicationBridge notifyWithTitle:@"KeyMagic" description:activeKeyboard.title notificationName:@"Layout Switched" iconData:nil priority:2 isSticky:NO clickContext:nil identifier:@"SWITCHED_KB"];
+                    NSUserNotification *notification = [[NSUserNotification alloc] init];
+                    notification.title = @"KeyMagic";
+                    notification.informativeText = activeKeyboard.title;
+                    notification.hasActionButton = NO;
+                    [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];;
                 }
             }
         }
@@ -518,14 +523,12 @@ bool mapVK(int virtualkey, int * winVK)
 			[self writeConfigurationFile];
 			
 			@try {
-//				[GrowlApplicationBridge notifyWithTitle:@"KeyMagic"
-//                                            description:keyboard.title
-//                                       notificationName:@"Layout Switched"
-//                                               iconData:nil
-//                                               priority:2
-//                                               isSticky:NO
-//                                           clickContext:nil
-//                                             identifier:@"SWITCHED_KB"];
+                NSUserNotification *notification = [[NSUserNotification alloc] init];
+                notification.title = @"KeyMagic";
+                notification.informativeText = keyboard.title;
+                notification.hasActionButton = NO;
+                [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];;
+
 			}
 			@catch (NSException * e) {
 				NSLog(@"Failed to notify with Growl!");
@@ -663,6 +666,16 @@ bool mapVK(int virtualkey, int * winVK)
 			[configDictionary addEntriesFromDictionary:plist];
 		}		
 	}
+}
+
+- (void)userNotificationCenter:(NSUserNotificationCenter *)center didDeliverNotification:(NSUserNotification *)notification
+{
+    [center performSelector:@selector(removeDeliveredNotification:) withObject:notification afterDelay:1.5];
+}
+
+- (BOOL)userNotificationCenter:(NSUserNotificationCenter *)center shouldPresentNotification:(NSUserNotification *)notification
+{
+    return YES;
 }
 
 @end
