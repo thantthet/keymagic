@@ -17,6 +17,6 @@
 	<key>CFBundleVersion</key>
 	<string>1.5</string>
 	<key>tsInputMethodIconFileKey</key>
-	<string>KeyMagic_black.icns</string>
+	<string>KeyMagic.icns</string>
 </dict>
 </plist>

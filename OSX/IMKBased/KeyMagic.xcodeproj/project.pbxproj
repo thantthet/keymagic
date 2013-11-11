@@ -39,7 +39,6 @@
 		6AAE6B250EAC6AA400E8EBBA /* KeyMagic.icns in Resources */ = {isa = PBXBuildFile; fileRef = 6AAE6B220EAC6AA400E8EBBA /* KeyMagic.icns */; };
 		6AAE6B560EAC6BE900E8EBBA /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6AAE6B550EAC6BE900E8EBBA /* MainMenu.xib */; };
 		6AAE6B570EAC6BE900E8EBBA /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6AAE6B550EAC6BE900E8EBBA /* MainMenu.xib */; };
-		90FF59CB171628C70013858A /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90FF59CA171628C70013858A /* Growl.framework */; };
 		90FF59CC171628C70013858A /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90FF59CA171628C70013858A /* Growl.framework */; };
 		90FF59FA17162A180013858A /* libkeymagic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90FF59F917162A180013858A /* libkeymagic.a */; };
 		90FF59FB17162A180013858A /* libkeymagic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90FF59F917162A180013858A /* libkeymagic.a */; };
@@ -56,7 +55,6 @@
 		B595DA2513D39931005636D3 /* KeyMagic_black.icns in Resources */ = {isa = PBXBuildFile; fileRef = B595DA2413D39931005636D3 /* KeyMagic_black.icns */; };
 		B595DA2613D39931005636D3 /* KeyMagic_black.icns in Resources */ = {isa = PBXBuildFile; fileRef = B595DA2413D39931005636D3 /* KeyMagic_black.icns */; };
 		B595DA4113D3999D005636D3 /* KeyMagic_black.icns in Resources */ = {isa = PBXBuildFile; fileRef = B595DA2413D39931005636D3 /* KeyMagic_black.icns */; };
-		B59E0258139FE45B00F36391 /* Growl.m in Sources */ = {isa = PBXBuildFile; fileRef = B59E0257139FE45B00F36391 /* Growl.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -178,7 +176,6 @@
 				6AA6D20E0EAC655B00DF1C2C /* Cocoa.framework in Frameworks */,
 				6AA6D2100EAC655B00DF1C2C /* InputMethodKit.framework in Frameworks */,
 				B511C1BC1200A6CA0060A548 /* Carbon.framework in Frameworks */,
-				90FF59CB171628C70013858A /* Growl.framework in Frameworks */,
 				90FF59FA17162A180013858A /* libkeymagic.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -454,7 +451,6 @@
 				B51D989012FFA5AC008E0A2F /* KeymagicIMEController.mm in Sources */,
 				B51D989112FFA5AC008E0A2F /* main.mm in Sources */,
 				B510C5B513769F16008798E7 /* KeyMagicUtil.mm in Sources */,
-				B59E0258139FE45B00F36391 /* Growl.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

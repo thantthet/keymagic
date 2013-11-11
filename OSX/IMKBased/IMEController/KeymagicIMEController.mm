@@ -174,7 +174,7 @@ bool mapVK(int virtualkey, int * winVK)
                     [activeKeyboard setTitle:title];
                     [activeKeyboard setPath:path];
                     
-                    [GrowlApplicationBridge notifyWithTitle:@"KeyMagic" description:activeKeyboard.title notificationName:@"Layout Switched" iconData:nil priority:2 isSticky:NO clickContext:nil identifier:@"SWITCHED_KB"];
+//                    [GrowlApplicationBridge notifyWithTitle:@"KeyMagic" description:activeKeyboard.title notificationName:@"Layout Switched" iconData:nil priority:2 isSticky:NO clickContext:nil identifier:@"SWITCHED_KB"];
                 }
             }
         }
@@ -518,14 +518,14 @@ bool mapVK(int virtualkey, int * winVK)
 			[self writeConfigurationFile];
 			
 			@try {
-				[GrowlApplicationBridge notifyWithTitle:@"KeyMagic"
-                                            description:keyboard.title
-                                       notificationName:@"Layout Switched"
-                                               iconData:nil
-                                               priority:2
-                                               isSticky:NO
-                                           clickContext:nil
-                                             identifier:@"SWITCHED_KB"];
+//				[GrowlApplicationBridge notifyWithTitle:@"KeyMagic"
+//                                            description:keyboard.title
+//                                       notificationName:@"Layout Switched"
+//                                               iconData:nil
+//                                               priority:2
+//                                               isSticky:NO
+//                                           clickContext:nil
+//                                             identifier:@"SWITCHED_KB"];
 			}
 			@catch (NSException * e) {
 				NSLog(@"Failed to notify with Growl!");

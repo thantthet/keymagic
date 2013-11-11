@@ -33,7 +33,7 @@
 	<key>TISInputSourceID</key>
 	<string>org.keymagic.inputmethod.KeyMagic</string>
 	<key>tsInputMethodIconFileKey</key>
-	<string>KeyMagic_black.icns</string>
+	<string>KeyMagic.icns</string>
 	<key>LSUIElement</key>
 	<true/>
 </dict>
