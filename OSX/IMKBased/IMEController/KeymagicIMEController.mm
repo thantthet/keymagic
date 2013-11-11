@@ -513,7 +513,6 @@ bool mapVK(int virtualkey, int * winVK)
 	if (keyboard.path != nil) {
 		if ((m_success = kme.loadKeyboardFile([keyboard.path cStringUsingEncoding:NSUTF8StringEncoding]))) {
 			[configDictionary setObject:[keyboard path] forKey:kLastKeyboardPathKey];
-//			[activeKeyboard dealloc];
 			self.activePath = [keyboard path];
 			self.activeKeyboard = keyboard;
 			[self writeConfigurationFile];
