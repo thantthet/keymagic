@@ -134,47 +134,51 @@ bool mapVK(int virtualkey, int * winVK)
 #undef RETURNVAL
 
 - (id)initWithServer:(IMKServer*)server delegate:(id)delegate client:(id)inputClient
-{	
-	self.activeKeyboard = [[Keyboard alloc] init];
-	self.keyboards = [[NSMutableArray alloc] init];
-	
-	char logPath[300];
-	char * home = getenv("HOME");
-	sprintf(logPath, "%s%s", home, "/Library/Logs/KeyMagic.log");
-	m_logFile = fopen(logPath, "w");
-	
-	logger = KeyMagicLogger::getInstance();
-	if (m_logFile != 0) logger->setFile(m_logFile);
-	kme.m_verbose = true;
-	
-	[self getKeyboardLayouts];
-	
-	if ([super initWithServer:server delegate:delegate client:inputClient] == self) {	
-		configDictionary = [NSMutableDictionary new];
-		self.activePath = @"";
-		
-		[self loadConfigurationFile];
-		
-		instantCommit = [[configDictionary objectForKey:kInstantCommit] boolValue];
-		
-		m_success = NO;
-		m_delCountGenerated = 0;
-		NSString *path = [configDictionary objectForKey:kLastKeyboardPathKey];
-		
-		if (path) {
-			self.activePath = path;
-			m_success = kme.loadKeyboardFile([activePath cStringUsingEncoding:NSUTF8StringEncoding]);
-			if (m_success) {
-				const InfoList infos = kme.getKeyboard()->getInfoList();
-				NSString *title = [KeyMagicUtil getKeyboardNameOrTitle:infos pathName:path];
-							
-				[activeKeyboard setTitle:title];
-				[activeKeyboard setPath:path];
-				
-				[GrowlApplicationBridge notifyWithTitle:@"KeyMagic" description:activeKeyboard.title notificationName:@"Layout Switched" iconData:nil priority:2 isSticky:NO clickContext:nil identifier:@"SWITCHED_KB"];
-			}
-		}
-	}
+{
+    self = [super initWithServer:server delegate:delegate client:inputClient];
+    
+    if (self) {
+        self.activeKeyboard = [[Keyboard alloc] init];
+        self.keyboards = [[NSMutableArray alloc] init];
+        
+        char logPath[300];
+        char * home = getenv("HOME");
+        sprintf(logPath, "%s%s", home, "/Library/Logs/KeyMagic.log");
+        m_logFile = fopen(logPath, "w");
+        
+        logger = KeyMagicLogger::getInstance();
+        if (m_logFile != 0) logger->setFile(m_logFile);
+        kme.m_verbose = true;
+        
+        [self getKeyboardLayouts];
+        
+        if ([super initWithServer:server delegate:delegate client:inputClient] == self) {	
+            configDictionary = [NSMutableDictionary new];
+            self.activePath = @"";
+            
+            [self loadConfigurationFile];
+            
+            instantCommit = [[configDictionary objectForKey:kInstantCommit] boolValue];
+            
+            m_success = NO;
+            m_delCountGenerated = 0;
+            NSString *path = [configDictionary objectForKey:kLastKeyboardPathKey];
+            
+            if (path) {
+                self.activePath = path;
+                m_success = kme.loadKeyboardFile([activePath cStringUsingEncoding:NSUTF8StringEncoding]);
+                if (m_success) {
+                    const InfoList infos = kme.getKeyboard()->getInfoList();
+                    NSString *title = [KeyMagicUtil getKeyboardNameOrTitle:infos pathName:path];
+                                
+                    [activeKeyboard setTitle:title];
+                    [activeKeyboard setPath:path];
+                    
+                    [GrowlApplicationBridge notifyWithTitle:@"KeyMagic" description:activeKeyboard.title notificationName:@"Layout Switched" iconData:nil priority:2 isSticky:NO clickContext:nil identifier:@"SWITCHED_KB"];
+                }
+            }
+        }
+    }
 	
 	return self;
 }
@@ -284,7 +288,7 @@ bool mapVK(int virtualkey, int * winVK)
 - (void)printEngineHistory:(const TContextHistory &)history {
 	TContextHistory::const_iterator begin = history.begin();
 	for (TContextHistory::const_iterator i = begin; i != history.end(); i++) {
-		NSLog(@"%d- %@", i - begin, [NSString stringWithKeyMagicString:*i]);
+		NSLog(@"%ld- %@", i - begin, [NSString stringWithKeyMagicString:*i]);
 	}
 }
 
@@ -431,9 +435,9 @@ bool mapVK(int virtualkey, int * winVK)
 				CGEventPost(kCGSessionEventTap, down);
 				CGEventPost(kCGSessionEventTap, up);
 			}
-		
-//		CGEventKeyboardSetUnicodeString(uni, textToInsert.length, (UniCharPtr) [textToInsert cStringUsingEncoding:NSUnicodeStringEncoding]);
-//		CGEventPost(kCGSessionEventTap, uni);
+            
+            CFRelease(down);
+            CFRelease(up);
 		
 		} else {
 			[sender insertText:attributedTextToInsert replacementRange:replacementRange];
@@ -578,7 +582,7 @@ bool mapVK(int virtualkey, int * winVK)
 			continue;
 		}
 		
-		NSMenuItem * menuItem = [NSMenuItem new];
+//		NSMenuItem * menuItem = [NSMenuItem new];
 		NSString * keyboardName = [KeyMagicUtil getKeyboardNameOrTitle:*infos pathName:path];
 
 		Keyboard * keyboard = [Keyboard new];

@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 {
     @autoreleasepool {
 	
-		Growl * growl = [[Growl alloc] init];
+//		Growl * growl = [[Growl alloc] init];
 		
 		KeyMagicInputMethodServer = [[IMKServer alloc] initWithName:@"KeyMagic_1_Connection" bundleIdentifier:[[NSBundle mainBundle] bundleIdentifier]];	
     if (!KeyMagicInputMethodServer) {

@@ -35,7 +35,7 @@
 	if (infos.find('icon') != infos.end()) {
 		Info icon = infos.find('icon')->second;
 		NSData * data = [NSData dataWithBytes:icon.Data() length:icon.Size()];
-		NSImage * image = [[NSImage new] initWithData:data];
+		NSImage * image = [[NSImage alloc] initWithData:data];
 		return image;
 	}
 	return nil;
