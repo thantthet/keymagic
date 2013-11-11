@@ -8,12 +8,11 @@
 
 #import "Growl.h"
 
-
 @implementation Growl
 
 - (id) init
 {
-	[super init];
+	if (!(self = [super init])) return nil;
 	
 	NSBundle *myBundle = [NSBundle mainBundle];
 	NSString *growlPath = [[myBundle privateFrameworksPath] stringByAppendingPathComponent:@"Growl.framework"];

@@ -30,7 +30,7 @@
 
 @interface KeyMagicIMEController ()
 
-@property (nonatomic, retain) NSMutableArray *keyboards;
+@property (nonatomic, strong) NSMutableArray *keyboards;
 
 @end
 
@@ -135,8 +135,8 @@ bool mapVK(int virtualkey, int * winVK)
 
 - (id)initWithServer:(IMKServer*)server delegate:(id)delegate client:(id)inputClient
 {	
-	self.activeKeyboard = [[[Keyboard alloc] init] autorelease];
-	self.keyboards = [[[NSMutableArray alloc] init] autorelease];
+	self.activeKeyboard = [[Keyboard alloc] init];
+	self.keyboards = [[NSMutableArray alloc] init];
 	
 	char logPath[300];
 	char * home = getenv("HOME");
@@ -147,13 +147,13 @@ bool mapVK(int virtualkey, int * winVK)
 	if (m_logFile != 0) logger->setFile(m_logFile);
 	kme.m_verbose = true;
 	
-	[self GetKeyboardLayouts];
+	[self getKeyboardLayouts];
 	
 	if ([super initWithServer:server delegate:delegate client:inputClient] == self) {	
 		configDictionary = [NSMutableDictionary new];
 		self.activePath = @"";
 		
-		[self LoadConfigurationFile];
+		[self loadConfigurationFile];
 		
 		instantCommit = [[configDictionary objectForKey:kInstantCommit] boolValue];
 		
@@ -179,10 +179,6 @@ bool mapVK(int virtualkey, int * winVK)
 	return self;
 }
 
-- (void)dealloc
-{
-    [super dealloc];
-}
 
 - (void)activateServer:(id)sender
 {
@@ -375,7 +371,7 @@ bool mapVK(int virtualkey, int * winVK)
 	
 	NSAttributedString *beforeCursorContext = [self.client attributedSubstringFromRange:NSMakeRange(selRange.location - lengthToRetrive, lengthToRetrive)];
 	if (!beforeCursorContext) {
-		beforeCursorContext = [[[NSAttributedString alloc] initWithString:@""] autorelease];
+		beforeCursorContext = [[NSAttributedString alloc] initWithString:@""];
 	}
 	
 	BOOL exit, result;
@@ -415,10 +411,10 @@ bool mapVK(int virtualkey, int * winVK)
 		
 		NSRange replacementRange = NSMakeRange(replacementLocation, selRange.length + delCount);
 		
-		NSAttributedString *attributedTextToInsert = [[[NSAttributedString alloc] initWithString:textToInsert
+		NSAttributedString *attributedTextToInsert = [[NSAttributedString alloc] initWithString:textToInsert
 																		   attributes:[NSDictionary
 																					   dictionaryWithObject:NSStringFromRange(replacementRange)
-																					   forKey:NSTextInputReplacementRangeAttributeName]] autorelease];
+																					   forKey:NSTextInputReplacementRangeAttributeName]];
 		
 		NSLog(@"text = %@, delCount = %d, replacementRange = %@", textToInsert, delCount, NSStringFromRange(replacementRange));
 		
@@ -462,7 +458,7 @@ bool mapVK(int virtualkey, int * winVK)
 	if (exit) return result;
 	
 	NSString * _composingBuffer = [NSString stringWithKeyMagicString:kme.getContextText()];
-	NSMutableAttributedString *attrString = [[[NSMutableAttributedString alloc] initWithString:_composingBuffer attributes:[NSDictionary dictionary]] autorelease];
+	NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:_composingBuffer attributes:[NSDictionary dictionary]];
 
     #if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_5
 		NSDictionary *attrDict = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -505,7 +501,7 @@ bool mapVK(int virtualkey, int * winVK)
 	instantCommit = instant;
 	kme.reset();
 	
-	[self WriteConfigurationFile];
+	[self writeConfigurationFile];
 }
 
 - (BOOL)changeKeyboardLayout:(Keyboard*)keyboard
@@ -516,10 +512,17 @@ bool mapVK(int virtualkey, int * winVK)
 //			[activeKeyboard dealloc];
 			self.activePath = [keyboard path];
 			self.activeKeyboard = keyboard;
-			[self WriteConfigurationFile];
+			[self writeConfigurationFile];
 			
 			@try {
-				[GrowlApplicationBridge notifyWithTitle:@"KeyMagic" description:keyboard.title notificationName:@"Layout Switched" iconData:nil priority:2 isSticky:NO clickContext:nil identifier:@"SWITCHED_KB"];
+				[GrowlApplicationBridge notifyWithTitle:@"KeyMagic"
+                                            description:keyboard.title
+                                       notificationName:@"Layout Switched"
+                                               iconData:nil
+                                               priority:2
+                                               isSticky:NO
+                                           clickContext:nil
+                                             identifier:@"SWITCHED_KB"];
 			}
 			@catch (NSException * e) {
 				NSLog(@"Failed to notify with Growl!");
@@ -536,7 +539,7 @@ bool mapVK(int virtualkey, int * winVK)
 
 - (NSArray *)getKeyboardPathsFrom:(NSString*)directory
 {
-	NSMutableArray * paths = [[NSMutableArray new] autorelease];
+	NSMutableArray * paths = [NSMutableArray new];
 	NSFileManager *localFileManager = [[NSFileManager alloc] init];
 	NSDirectoryEnumerator *dirEnum = [localFileManager enumeratorAtPath:directory];
 	
@@ -546,16 +549,15 @@ bool mapVK(int virtualkey, int * winVK)
 			[paths addObject:[directory stringByAppendingPathComponent:file]];
 		}
 	}
-	[localFileManager release];
 	
 	return paths;
 }
 
-- (void)GetKeyboardLayouts
+- (void)getKeyboardLayouts
 {
 	[keyboards removeAllObjects];
 	
-	NSMutableArray * allPaths = [[NSMutableArray new] autorelease];
+	NSMutableArray * allPaths = [NSMutableArray new];
 	NSArray * paths;
 	
 	NSString *layoutDir = [NSHomeDirectory() stringByAppendingPathComponent:@".keymagic"];
@@ -579,7 +581,7 @@ bool mapVK(int virtualkey, int * winVK)
 		NSMenuItem * menuItem = [NSMenuItem new];
 		NSString * keyboardName = [KeyMagicUtil getKeyboardNameOrTitle:*infos pathName:path];
 
-		Keyboard * keyboard = [[Keyboard new] autorelease];
+		Keyboard * keyboard = [Keyboard new];
 		[keyboard setTitle:keyboardName];
 		[keyboard setPath:path];
 		
@@ -594,9 +596,9 @@ bool mapVK(int virtualkey, int * winVK)
 
 - (NSMenu *)menu
 {
-	NSMenu *menu = [[NSMenu new] autorelease];
+	NSMenu *menu = [NSMenu new];
 	
-	[self GetKeyboardLayouts];
+	[self getKeyboardLayouts];
 	NSEnumerator * e = [keyboards objectEnumerator];
 	while (Keyboard * kb = [e nextObject]) {
 		NSMenuItem * menuItem = [[NSMenuItem alloc] init];
@@ -611,13 +613,12 @@ bool mapVK(int virtualkey, int * winVK)
 		}
 		
 		[menu addItem:menuItem];
-        [menu release];
 	}
 	
 	[menu addItem:[NSMenuItem separatorItem]];
 	
 	NSMenuItem *menuItem;
-    menuItem = [[NSMenuItem new] autorelease];
+    menuItem = [NSMenuItem new];
     [menuItem setTarget:self];
     [menuItem setAction:@selector(instantCommitMenuClicked:)];
     [menuItem setTitle:@"Instant Commit"];
@@ -628,7 +629,7 @@ bool mapVK(int virtualkey, int * winVK)
     
     [menu addItem:[NSMenuItem separatorItem]];
     
-    menuItem = [[NSMenuItem new] autorelease];
+    menuItem = [NSMenuItem new];
 	[menuItem setTarget:self];
 	[menuItem setAction:@selector(_aboutAction:)];
 	[menuItem setTitle:@"About KeyMagic"];
@@ -642,14 +643,14 @@ bool mapVK(int virtualkey, int * winVK)
 	return [prefPath stringByAppendingPathComponent:@"org.keymagic.plist"];
 }
 
-- (void)WriteConfigurationFile {
+- (void)writeConfigurationFile {
 	NSData *data = [NSPropertyListSerialization dataFromPropertyList:configDictionary format:NSPropertyListXMLFormat_v1_0 errorDescription:nil];
 	if (data) {
 		[data writeToFile:[self configFilePath] atomically:YES];
 	}
 }
 
-- (void)LoadConfigurationFile {
+- (void)loadConfigurationFile {
 	NSData *data = [NSData dataWithContentsOfFile:[self configFilePath]];
 	if (data) {
 		NSPropertyListFormat format;
