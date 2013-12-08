@@ -1,0 +1,16 @@
+/*
+@NAME = 'Untitled Keyboard Layout'
+@DESCRIPTION = 'Created using kEditor'
+@ICON = ''
+@FONTFAMILY = ''
+@HOTKEY = ''
+@EAT_ALL_UNUSED_KEYS = 'true'
+@TRACK_CAPSLOCK = 'false'
+@SMART_BACKSPACE = 'true'
+@US_LAYOUT_BASED = 'true'
+@TREAT_CTRL_ALT_AS_RALT = 'true'
+*/
+
+<VK_CAPITAL > => '`a'
+<VK_SHIFT> => '`b'
+//<VK_LSHIFT & VK_KEY_A > => '\'a'
