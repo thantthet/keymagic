@@ -291,10 +291,12 @@ bool mapVK(int virtualkey, int * winVK)
 }
 
 - (void)printEngineHistory:(const TContextHistory &)history {
+#ifdef DEBUG
 	TContextHistory::const_iterator begin = history.begin();
 	for (TContextHistory::const_iterator i = begin; i != history.end(); i++) {
 		NSLog(@"%ld- %@", i - begin, [NSString stringWithKeyMagicString:*i]);
 	}
+#endif
 }
 
 - (BOOL)engineProcessWithEvent:(NSEvent *)event client:(id)sender exit:(BOOL *)exit {
