@@ -2,7 +2,6 @@
 @NAME = "ေဇာ္ဂ်ီ"
 @FONTFAMILY = "Zawgyi-Tai"
 @DESCRIPTION = "ZawgyiL Layout | Thant Thet Khin Zaw"
-@ICON = "Zawgyi L.png"
 @TRACK_CAPSLOCK = "FALSE"
 @EAT_KEYS = "TRUE"
 @US_LAYOUT_BASED = "TRUE"
