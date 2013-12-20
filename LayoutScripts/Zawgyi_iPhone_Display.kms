@@ -8,8 +8,6 @@
 @SMART_BACKSPACE = "TRUE"
 */
 
-("RIGHT_SQUARE_BRACKET") + ANY => $1	
-
 <VK_KEY_1> => U1041
 <VK_KEY_1 & VK_SHIFT> => U100d
 <VK_KEY_2> => U1042
@@ -56,9 +54,9 @@
 <VK_KEY_P & VK_SHIFT> => U100f
 <VK_OEM_4> => U101f
 <VK_OEM_4 & VK_SHIFT> => U1027
-<VK_OEM_6> => ("RIGHT_SQUARE_BRACKET")
+<VK_OEM_6> => ']'
 <VK_OEM_6 & VK_SHIFT> => U007d
-<VK_KEY_A> => U1031
+<VK_KEY_A> => U1031 + u25cc
 <VK_KEY_A & VK_SHIFT> => U1017
 <VK_KEY_S> => u25cc + U103a
 <VK_KEY_S & VK_SHIFT> => u25cc + U103d

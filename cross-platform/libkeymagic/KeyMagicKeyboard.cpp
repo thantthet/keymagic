@@ -232,36 +232,6 @@ namespace libkm {
 			return false;
 		}
 
-		/*fread(&fh, sizeof(FileHeader), 1, hFile);
-
-		if (fh.magicCode[0] != 'K' || fh.magicCode[1] != 'M' || fh.magicCode[2] != 'K' || fh.magicCode[3] != 'L') {
-			LOG("Not KeyMagic keyboard file;%s", szPath);
-			return false;
-		}
-
-		if (fh.majorVersion > MAJOR_VERSION) {
-			LOG("Can't load newer version of keyboard file;%s", szPath);
-			return false;
-		}
-
-		if (fh.minorVersion > MINOR_VERSION) {
-			LOG("Can't load newer version of keyboard file;%s", szPath);
-			return false;
-		}
-
-		// if older version
-		if (fh.majorVersion == 1 && fh.minorVersion == 3) {
-			FileHeader_1_3 fh13;
-			fseek(hFile, 0, SEEK_SET);
-			// read the header back
-			fread(&fh13, sizeof(FileHeader_1_3), 1, hFile);
-			// backward compability
-			fh.stringCount = fh13.stringCount;
-			fh.ruleCount = fh13.ruleCount;
-			fh.layoutOptions = fh13.layoutOptions;
-			fh.infoCount = 0; // 1.3 don't have infos, so set it to 0
-		}*/
-
 		m_layoutOptions = fh.layoutOptions;
 		
 		if (m_verbose) {
@@ -360,11 +330,7 @@ namespace libkm {
 		for (BinaryStringList::iterator i = strings.begin(); i != strings.end(); i++) {
 			delete[] *i;
 		}
-		
-		/*for (BinaryRuleList::iterator i = rules.begin(); i != rules.end(); i++) {
-			delete[] i->strInRule;
-			delete[] i->strOutRule;
-		}*/
+        
 		rules.clear();
 
 		return true;
