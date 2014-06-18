@@ -250,9 +250,9 @@ namespace libkm {
 			short sLength;
 			fread(&sLength, sizeof(short), 1, hFile);
 
-			short * local_buf = new short[sLength+1];
+			unsigned short * local_buf = new unsigned short[sLength+1];
 			local_buf[sLength]='\0';
-			fread(local_buf, sLength * sizeof(short), 1, hFile);
+			fread(local_buf, sLength * sizeof(unsigned short), 1, hFile);
 
 			strings.push_back(local_buf);
 		}
@@ -280,12 +280,12 @@ namespace libkm {
 			short sLength;
 
 			fread(&sLength, sizeof(short), 1, hFile);
-			short * ruleBinaryIn = new short[sLength+1];
+			unsigned short * ruleBinaryIn = new unsigned short[sLength+1];
 			ruleBinaryIn[sLength]='\0';
 			fread(ruleBinaryIn, sLength * sizeof(short), 1, hFile);
 
 			fread(&sLength, sizeof(short), 1, hFile);
-			short * ruleBinaryOut = new short[sLength+1];
+			unsigned short * ruleBinaryOut = new unsigned short[sLength+1];
 			ruleBinaryOut[sLength]='\0';
 			fread(ruleBinaryOut, sLength * sizeof(short), 1, hFile);
 
@@ -356,7 +356,7 @@ namespace libkm {
 
 		for (BinaryStringList::iterator i = variables->begin(); i != variables->end(); i++) {
 
-			const short * binString = *i;
+			const unsigned short * binString = *i;
 			KeyMagicString value;
 
 			while(*binString) {
@@ -391,7 +391,7 @@ namespace libkm {
 			return KeyMagicString();
 		}
 
-		const short * binRule = binStrings->at(index);
+		const unsigned short * binRule = binStrings->at(index);
 
 		while (*binRule) {
 			if (*binRule == opVARIABLE) {

@@ -11,7 +11,7 @@
 
 using namespace libkm;
 
-#define KEYBOARD_FILE_NAME "MyanSan.km2"
+#define KEYBOARD_FILE_NAME "ZawGyi Tai.km2"
 
 #ifdef _WIN32
 #define _CRTDBG_MAP_ALLOC
@@ -19,7 +19,7 @@ using namespace libkm;
 #include <crtdbg.h>
 	char keyboardFile[] = "\\\\psf\\home\\codes\\Keymagic\\LayoutScripts\\" KEYBOARD_FILE_NAME;
 #else
-	char keyboardFile[] = "/Users/thantthetkz/codes/Keymagic/LayoutScripts/" KEYBOARD_FILE_NAME;
+	char keyboardFile[] = "/Users/thantthet/codes/keymagic-git/LayoutScripts/" KEYBOARD_FILE_NAME;
 #endif
 
 // Check leaks if there any when loading new keyboard over existing one
@@ -86,9 +86,9 @@ main (int argc, char *argv[]) {
     unsigned char states[256] = {0};
 	engine->setKeyStates(states);
     
-    engine->processKeyEvent('u', 'U', 0);
-    engine->processKeyEvent('f', 'F', 0);
-    engine->processKeyEvent('h', 'H', 0);
+    engine->processKeyEvent('q', 'Q', 0);
+//    engine->processKeyEvent('f', 'F', 0);
+//    engine->processKeyEvent('h', 'H', 0);
     
     std::string s;
     
@@ -97,15 +97,15 @@ main (int argc, char *argv[]) {
 	
 	print_hisotry(engine->getHistory());
     
-    engine->processKeyEvent(8, 8, 0);
-    
-    s = getCharacterReferenceString(engine->getContextText());
-    std::cout << s.c_str();
-    
-    engine->processKeyEvent(8, 8, 0);
-    
-    s = getCharacterReferenceString(engine->getContextText());
-    std::cout << s.c_str();
+//    engine->processKeyEvent(8, 8, 0);
+//    
+//    s = getCharacterReferenceString(engine->getContextText());
+//    std::cout << s.c_str();
+//    
+//    engine->processKeyEvent(8, 8, 0);
+//    
+//    s = getCharacterReferenceString(engine->getContextText());
+//    std::cout << s.c_str();
     
     delete engine;
 }

@@ -43,7 +43,7 @@ namespace libkm {
 		type = t;
 	}
 
-	RuleInfo::RuleInfo(const short * in, const short * out, StringList * variable)
+	RuleInfo::RuleInfo(const unsigned short * in, const unsigned short * out, StringList * variable)
 	: m_index(0), m_countSwitch(0), m_countVkey(0), m_matchLength(0), m_logger(KeyMagicLogger::getInstance()) {
 		
 		int length;
@@ -206,7 +206,7 @@ namespace libkm {
 		return str;
 	}
 
-	int RuleInfo::toRuleInfo(const short * binRule, ItemList * outRule, StringList * variable) {
+	int RuleInfo::toRuleInfo(const unsigned short * binRule, ItemList * outRule, StringList * variable) {
 		int size = 0, index = 0, mode = 0, patLength = 0;
 		KeyCodes keyCodes;
 

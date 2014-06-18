@@ -39,11 +39,11 @@ using namespace std;
 		/**
 		 * array of binary opcodes for input rule
 		 */
-		short * strInRule;
+		unsigned short * strInRule;
 		/**
 		 * array of binary opcodes for output rule
 		 */
-		short * strOutRule;
+		unsigned short * strOutRule;
 	public:
 		BinaryRule () {
 			strInRule = 0;
@@ -58,20 +58,20 @@ using namespace std;
 			SetOutRule(rule.strOutRule);
 		}
 
-		BinaryRule (short * in, short * out) {
-			SetInRule(in);
-			SetOutRule(out);
+		BinaryRule (unsigned short * in_r, unsigned short * out_r) {
+			SetInRule(in_r);
+			SetOutRule(out_r);
 		}
 
-		const short * GetInRule() {
+		const unsigned short * GetInRule() {
 			return strInRule;
 		}
 
-		const short * GetOutRule() {
+		const unsigned short * GetOutRule() {
 			return strOutRule;
 		}
 
-		void SetInRule(const short * data) {
+		void SetInRule(const unsigned short * data) {
 			if (strInRule != 0) {
 				delete[] strInRule;
 				strInRule = 0;
@@ -79,13 +79,13 @@ using namespace std;
 
 			int length = GetLength(data);
 
-			strInRule = new short [length + 1];
+			strInRule = new unsigned short [length + 1];
 
 			copy(strInRule, data);
 			strInRule[length] = 0;
 		}
 
-		void SetOutRule(const short * data) {
+		void SetOutRule(const unsigned short * data) {
 			if (strOutRule != 0) {
 				delete[] strOutRule;
 				strOutRule = 0;
@@ -93,19 +93,19 @@ using namespace std;
 
 			int length = GetLength(data);
 
-			strOutRule = new short [length+ 1];
+			strOutRule = new unsigned short [length+ 1];
 
 			copy(strOutRule, data);
 			strOutRule[length] = 0;
 		}
 
-		void copy(short * dest, const short * src) {
+		void copy(unsigned short * dest, const unsigned short * src) {
 			int count = GetLength(src);
 
-			memcpy(dest, src, count * sizeof(short));
+			memcpy(dest, src, count * sizeof(unsigned short));
 		}
 
-		int GetLength(const short * data) {
+		int GetLength(const unsigned short * data) {
 			int count = 0;
 			while (*data++) {
 				count ++;
@@ -126,7 +126,7 @@ using namespace std;
 	} ;
 
 	typedef vector<BinaryRule> BinaryRuleList;
-	typedef vector<const short * > BinaryStringList;
+	typedef vector<const unsigned short * > BinaryStringList;
 	typedef vector<KeyMagicString> StringList;
 
 	class Info {
@@ -136,8 +136,8 @@ using namespace std;
 	public:
 		Info ();
 		Info (const Info& info);
-		void SetData(char * d, short s);
-		short Size ();
+		void SetData(char * d, unsigned short s);
+		unsigned short Size ();
 		const char * Data ();
 		~Info ();
 	};

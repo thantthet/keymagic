@@ -148,7 +148,7 @@ public:
 	 * @param out sequence of binary rule for output
 	 * @param vars strings list of variables
 	 */
-	RuleInfo(const short * in, const short * out, StringList * vars);
+	RuleInfo(const unsigned short * in, const unsigned short * out, StringList * vars);
 	/**
 	 *
 	 */
@@ -162,7 +162,7 @@ public:
 	 * @param outRule output (result) managed rule
 	 * @param variable list of variables string for lookup
 	 */
-	int toRuleInfo(const short * binRule, ItemList * outRule, StringList * variable);
+	int toRuleInfo(const unsigned short * binRule, ItemList * outRule, StringList * variable);
 
 	/**
 	 * @return list of LHS rules

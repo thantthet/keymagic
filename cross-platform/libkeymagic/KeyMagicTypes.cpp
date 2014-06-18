@@ -33,7 +33,7 @@ using namespace std;
         SetData(info.data, info.size);
     }
 
-    void Info::SetData(char * d, short s) {
+    void Info::SetData(char * d, unsigned short s) {
         if (data != 0) {
             delete[] data;
         }
@@ -43,7 +43,7 @@ using namespace std;
         size = s;
     }
 
-    short Info::Size () {
+    unsigned short Info::Size () {
         return size;
     }
 
