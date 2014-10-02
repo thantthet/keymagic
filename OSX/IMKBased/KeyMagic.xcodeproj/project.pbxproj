@@ -39,9 +39,9 @@
 		6AAE6B250EAC6AA400E8EBBA /* KeyMagic.icns in Resources */ = {isa = PBXBuildFile; fileRef = 6AAE6B220EAC6AA400E8EBBA /* KeyMagic.icns */; };
 		6AAE6B560EAC6BE900E8EBBA /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6AAE6B550EAC6BE900E8EBBA /* MainMenu.xib */; };
 		6AAE6B570EAC6BE900E8EBBA /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6AAE6B550EAC6BE900E8EBBA /* MainMenu.xib */; };
+		900E5E7C1955F573006962A7 /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 900E5E771955F16E006962A7 /* libstdc++.dylib */; };
+		90BFC4451955EF3C007F5136 /* libkeymagic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90BFC4441955EF3C007F5136 /* libkeymagic.a */; };
 		90FF59CC171628C70013858A /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90FF59CA171628C70013858A /* Growl.framework */; };
-		90FF59FA17162A180013858A /* libkeymagic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90FF59F917162A180013858A /* libkeymagic.a */; };
-		90FF59FB17162A180013858A /* libkeymagic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90FF59F917162A180013858A /* libkeymagic.a */; };
 		B510C5B413769F16008798E7 /* KeyMagicUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = B510C5B313769F16008798E7 /* KeyMagicUtil.mm */; };
 		B510C5B513769F16008798E7 /* KeyMagicUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = B510C5B313769F16008798E7 /* KeyMagicUtil.mm */; };
 		B511BFC412009E270060A548 /* Keyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = B511BFB612009E270060A548 /* Keyboard.m */; };
@@ -132,8 +132,9 @@
 		6AA6D20F0EAC655B00DF1C2C /* InputMethodKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = InputMethodKit.framework; path = /System/Library/Frameworks/InputMethodKit.framework; sourceTree = "<absolute>"; };
 		6AAE6B220EAC6AA400E8EBBA /* KeyMagic.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = KeyMagic.icns; sourceTree = "<group>"; };
 		6AAE6B550EAC6BE900E8EBBA /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		900E5E771955F16E006962A7 /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/libstdc++.dylib"; sourceTree = DEVELOPER_DIR; };
+		90BFC4441955EF3C007F5136 /* libkeymagic.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libkeymagic.a; sourceTree = "<group>"; };
 		90FF59CA171628C70013858A /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Growl.framework; sourceTree = "<group>"; };
-		90FF59F917162A180013858A /* libkeymagic.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libkeymagic.a; sourceTree = "<group>"; };
 		B510C5B213769F16008798E7 /* KeyMagicUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyMagicUtil.h; path = KeyMagic/KeyMagicUtil.h; sourceTree = "<group>"; };
 		B510C5B313769F16008798E7 /* KeyMagicUtil.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = KeyMagicUtil.mm; path = KeyMagic/KeyMagicUtil.mm; sourceTree = "<group>"; };
 		B511BF9D12009D950060A548 /* KeymagicIMEController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeymagicIMEController.h; path = IMEController/KeymagicIMEController.h; sourceTree = "<group>"; };
@@ -156,7 +157,6 @@
 				6A31F7470EAC68880045D7EE /* Carbon.framework in Frameworks */,
 				6A31F7480EAC68880045D7EE /* Cocoa.framework in Frameworks */,
 				90FF59CC171628C70013858A /* Growl.framework in Frameworks */,
-				90FF59FB17162A180013858A /* libkeymagic.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -174,9 +174,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				6AA6D20E0EAC655B00DF1C2C /* Cocoa.framework in Frameworks */,
+				90BFC4451955EF3C007F5136 /* libkeymagic.a in Frameworks */,
+				900E5E7C1955F573006962A7 /* libstdc++.dylib in Frameworks */,
 				6AA6D2100EAC655B00DF1C2C /* InputMethodKit.framework in Frameworks */,
 				B511C1BC1200A6CA0060A548 /* Carbon.framework in Frameworks */,
-				90FF59FA17162A180013858A /* libkeymagic.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -225,12 +226,13 @@
 		6AA6D1D40EAC63E100DF1C2C = {
 			isa = PBXGroup;
 			children = (
+				900E5E771955F16E006962A7 /* libstdc++.dylib */,
+				90BFC4441955EF3C007F5136 /* libkeymagic.a */,
 				B511C3EF1200CA880060A548 /* Keyboards */,
 				B511BFAC12009E1A0060A548 /* KeyMagic */,
 				6A31F71C0EAC67450045D7EE /* IMK-Tiger */,
 				6AA6D1F20EAC641200DF1C2C /* KeyMagic (IMK-based) */,
 				6AA6D1EC0EAC640E00DF1C2C /* Products */,
-				90FF59F917162A180013858A /* libkeymagic.a */,
 				90FF59CA171628C70013858A /* Growl.framework */,
 				6AA6D20D0EAC655B00DF1C2C /* Cocoa.framework */,
 				6AA6D20F0EAC655B00DF1C2C /* InputMethodKit.framework */,
@@ -567,7 +569,7 @@
 				INFOPLIST_FILE = "KeyMagic-TSM-Info.plist";
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
 				LIBKEYMAGIC = "../../cross-platform/libkeymagic";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)";
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -596,7 +598,7 @@
 				INFOPLIST_FILE = "KeyMagic-TSM-Info.plist";
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
 				LIBKEYMAGIC = "../../cross-platform/libkeymagic";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)";
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -636,9 +638,8 @@
 		6AA6D1D70EAC63E100DF1C2C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LIBRARY = "libstdc++";
 				COPY_PHASE_STRIP = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_VERSION = 4.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 			};
@@ -647,10 +648,8 @@
 		6AA6D1D80EAC63E100DF1C2C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LIBRARY = "libstdc++";
 				COPY_PHASE_STRIP = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_VERSION = 4.0;
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 			};
 			name = Release;
@@ -666,21 +665,19 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
-				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "$(LIBKEYMAGIC)";
 				INFOPLIST_FILE = "KeyMagic-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBKEYMAGIC = "../../cross-platform/libkeymagic";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)\"",
+					"$(SRCROOT)",
+					"$(PROJECT_DIR)",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -704,21 +701,18 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
-				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_DYNAMIC_NO_PIC = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "$(LIBKEYMAGIC)";
 				INFOPLIST_FILE = "KeyMagic-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBKEYMAGIC = "../../cross-platform/libkeymagic";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)\"",
+					"$(SRCROOT)",
+					"$(PROJECT_DIR)",
 				);
-				LINK_WITH_STANDARD_LIBRARIES = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,

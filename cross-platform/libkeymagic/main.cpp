@@ -97,11 +97,11 @@ main (int argc, char *argv[]) {
 	
 	print_hisotry(engine->getHistory());
     
-//    engine->processKeyEvent(8, 8, 0);
-//    
-//    s = getCharacterReferenceString(engine->getContextText());
-//    std::cout << s.c_str();
-//    
+    engine->processKeyEvent(8, 8, 0);
+
+    s = getCharacterReferenceString(engine->getContextText());
+    std::cout << s.c_str();
+//
 //    engine->processKeyEvent(8, 8, 0);
 //    
 //    s = getCharacterReferenceString(engine->getContextText());

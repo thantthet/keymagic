@@ -274,7 +274,6 @@
 			buildSettings = {
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -283,7 +282,6 @@
 			buildSettings = {
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
 			};
 			name = Release;
 		};
