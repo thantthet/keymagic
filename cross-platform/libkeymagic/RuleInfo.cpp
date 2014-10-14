@@ -208,7 +208,7 @@ namespace libkm {
 
 	int RuleInfo::toRuleInfo(const unsigned short * binRule, ItemList * outRule, StringList * variable) {
 		int size = 0, index = 0, mode = 0, patLength = 0;
-		KeyCodes keyCodes;
+		KeyCodes keyCodes; // TODO: optmize this, use static
 
 		while (*binRule) {
 			Item * item;
