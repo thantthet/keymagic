@@ -59,14 +59,16 @@ public:
 	};
 
 	KeyCodes();
-    
+private:
     static std::map<int, std::wstring> idKeyCode;
-    
+public:
 	/**
 	 * Get the value of id
 	 * @param id id
 	 */
-	static const std::wstring& getKeyValue(int id);
+    static const std::wstring& getKeyValue(int id) {
+        return idKeyCode[id];
+    }
 };
 
 }
