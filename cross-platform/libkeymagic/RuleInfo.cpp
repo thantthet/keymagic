@@ -208,8 +208,7 @@ namespace libkm {
 
 	int RuleInfo::toRuleInfo(const unsigned short * binRule, ItemList * outRule, StringList * variable) {
 		int size = 0, index = 0, mode = 0, patLength = 0;
-		KeyCodes keyCodes; // TODO: optmize this, use static
-
+        
 		while (*binRule) {
 			Item * item;
 			KeyMagicString string;
@@ -245,7 +244,7 @@ namespace libkm {
 				delete item;
 				break;
 			case opPREDEFINED:
-				item = new Item(tString, &keyCodes.getKeyValue(*binRule++));
+                item = new Item(tString, &KeyCodes::getKeyValue(*binRule++));
 				outRule->push_back(*item);
 				delete item;
 				patLength++;
@@ -273,11 +272,11 @@ namespace libkm {
 			case opAND:
 				if (*binRule++ == opPREDEFINED) {
 					m_countVkey++;
-					item = new Item(tVKey, keyCodes.getKeyValue(*binRule++).at(0));
+					item = new Item(tVKey, KeyCodes::getKeyValue(*binRule++).at(0));
 					outRule->push_back(*item);
 					delete item;
 					while(*binRule++ == opPREDEFINED) {
-						item = new Item(tVKey, keyCodes.getKeyValue(*binRule++).at(0));
+						item = new Item(tVKey, KeyCodes::getKeyValue(*binRule++).at(0));
 						outRule->push_back(*item);
 						delete item;
 					}
