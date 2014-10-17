@@ -341,8 +341,8 @@ namespace libkm {
 			m_matchedVK = true;
 		}
 		
-		unsigned int lenToMatch = rule->getMatchLength();
-		unsigned int lenAppended = appendedContext.length();
+		unsigned long lenToMatch = rule->getMatchLength();
+		unsigned long lenAppended = appendedContext.length();
 		
 		if (lenToMatch > lenAppended) {
 			LOG("Not enough length to match\n");
@@ -495,7 +495,7 @@ namespace libkm {
 		for (RuleInfo::ItemList::iterator i = rules->begin(); i != rules->end(); i++) {
 			RuleInfo::Item * curRule = &*i, * nextRule, *Rule;
 			KeyMagicString string;
-			int integer;
+			long integer;
 			
 			RuleInfo::ItemList::iterator ii = i+1;
 			if (ii == rules->end()) {
@@ -606,8 +606,8 @@ namespace libkm {
 		m_contextHistory = history;
 	}
 
-	int KeyMagicEngine::getDifference(KeyMagicString const &contextBefore, KeyMagicString *difference) {
-		int deleteCount = 0;
+	unsigned long KeyMagicEngine::getDifference(KeyMagicString const &contextBefore, KeyMagicString *difference) {
+		unsigned long deleteCount = 0;
 
 		difference->clear();
 
@@ -617,8 +617,8 @@ namespace libkm {
 			return deleteCount;
 		}
 
-		int lengthBefore = contextBefore.length();
-		int lengthAfter = contextAfter.length();
+		unsigned long lengthBefore = contextBefore.length();
+		unsigned long lengthAfter = contextAfter.length();
 
 		if (contextBefore.length() > contextAfter.length()) {
 			deleteCount = contextBefore.length() - contextAfter.length();

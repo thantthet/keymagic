@@ -147,7 +147,7 @@ enum {
  */
 bool GetKeyCodeAndModifier(int keyval, int * keycode, int * modifier);
 	
-void getDifference(const KeyMagicString& contextBefore, const KeyMagicString& contextAfter, unsigned int * del, KeyMagicString * str);
+void getDifference(const KeyMagicString& contextBefore, const KeyMagicString& contextAfter, unsigned long * del, KeyMagicString * str);
 
 #if defined(_WIN32)
 InfoList * GetInfosFromKeyboardFile(const char * file);

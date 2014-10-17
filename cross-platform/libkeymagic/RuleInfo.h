@@ -199,14 +199,14 @@ public:
 	/**
 	 * @return orginal index of rule
 	 */
-	int getRuleIndex() {
+	unsigned long getRuleIndex() {
 		return m_index;
 	}
 	/**
 	 * Set the index of rule
 	 * @param index index of rule
 	 */
-	void setIndex(int index) {
+	void setIndex(unsigned long index) {
 		m_index = index;
 	}
 	/**
@@ -220,7 +220,7 @@ private:
 	int getSwitchCount(ItemList * rule);
 	int getVKCount(ItemList * rule);
 	
-	int m_index;
+	unsigned long m_index;
 	/**
 	 * context length to be matched
 	 */

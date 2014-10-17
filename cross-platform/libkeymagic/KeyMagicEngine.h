@@ -79,7 +79,7 @@ public:
 	 * @param difference result string
 	 * @return count of delete that should be send before sending result conetxt
 	 */
-	int getDifference(KeyMagicString const &contextBefore, KeyMagicString *difference);
+	unsigned long getDifference(KeyMagicString const &contextBefore, KeyMagicString *difference);
 	/**
 	 * Get keyboard object
 	 */
