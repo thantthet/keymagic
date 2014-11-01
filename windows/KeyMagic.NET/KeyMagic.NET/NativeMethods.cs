@@ -227,23 +227,23 @@ namespace KeyMagic
         [DllImport("user32.dll")]
         public static extern bool ChangeWindowMessageFilter(uint message, MessageFilterFlag dwFlag);
 
-        [DllImport("InputProcessor.x64.dll", EntryPoint = "GetKeyProcHook")]
-        public static extern IntPtr GetKeyProcHook64();
+        //[DllImport("InputProcessor.x64.dll", EntryPoint = "GetKeyProcHook")]
+        //public static extern IntPtr GetKeyProcHook64();
 
-        [DllImport("InputProcessor.x64.dll", EntryPoint = "GetWndProcHook")]
-        public static extern IntPtr GetWndProcHook64();
+        //[DllImport("InputProcessor.x64.dll", EntryPoint = "GetWndProcHook")]
+        //public static extern IntPtr GetWndProcHook64();
 
-        [DllImport("InputProcessor.x64.dll", EntryPoint = "GetGetMsgProcHook")]
-        public static extern IntPtr GetGetMsgProcHook64();
+        //[DllImport("InputProcessor.x64.dll", EntryPoint = "GetGetMsgProcHook")]
+        //public static extern IntPtr GetGetMsgProcHook64();
 
-        [DllImport("InputProcessor.x64.dll", EntryPoint = "SetWindowsHooks", SetLastError = true)]
-        public static extern void SetWindowsHooks64(IntPtr hModule);
+        //[DllImport("InputProcessor.x64.dll", EntryPoint = "SetWindowsHooks", SetLastError = true)]
+        //public static extern void SetWindowsHooks64(IntPtr hModule);
 
-        [DllImport("InputProcessor.x64.dll", EntryPoint = "SetMainWindowsHandle")]
-        public static extern void SetMainWindowsHandle64(IntPtr data);
+        //[DllImport("InputProcessor.x64.dll", EntryPoint = "SetMainWindowsHandle")]
+        //public static extern void SetMainWindowsHandle64(IntPtr data);
 
-        [DllImport("InputProcessor.x64.dll", EntryPoint = "SetMainDir", CharSet = CharSet.Unicode)]
-        public static extern void SetMainDir64(String dir);
+        //[DllImport("InputProcessor.x64.dll", EntryPoint = "SetMainDir", CharSet = CharSet.Unicode)]
+        //public static extern void SetMainDir64(String dir);
 
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]

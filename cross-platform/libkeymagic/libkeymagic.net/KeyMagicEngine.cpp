@@ -67,7 +67,7 @@ namespace KeyMagicDotNet {
 
         UINT vkey = MapVirtualKeyEx(scanCode, MAPVK_VSC_TO_VK, (HKL)0x04090409);
 		int ret = ToUnicodeEx(vkey, scanCode, KeyState, TranslatedChar, 1, 0, (HKL)0x04090409);
-		libkm::KeyMagicString * contextBefore = m_engine->getContextText();
+		libkm::KeyMagicString contextBefore = m_engine->getContextText();
 
         keyval = ret > 0 ? TranslatedChar[0] : 0;
 
@@ -114,8 +114,8 @@ namespace KeyMagicDotNet {
 
 	String ^ KeyMagicEngine::GetContextText()
 	{
-		libkm::KeyMagicString * s = m_engine->getContextText();
-		return gcnew String(s->c_str());
+		libkm::KeyMagicString s = m_engine->getContextText();
+		return gcnew String(s.c_str());
 	}
 
 	void KeyMagicEngine::SetContextText(String ^ textContext)
@@ -123,11 +123,10 @@ namespace KeyMagicDotNet {
 		marshal_context ^ context = gcnew marshal_context();
 		const wchar_t* szTextContext = context->marshal_as<const wchar_t*>(textContext);
 
-		libkm::KeyMagicString * s = new libkm::KeyMagicString(szTextContext);
+		libkm::KeyMagicString s(szTextContext);
 		
 		m_engine->setContextText(s);
 
-		delete s;
 		delete context;
 	}
 
