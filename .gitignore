@@ -71,3 +71,8 @@ cross-platform/libkeymagic/keymagic2.xcodeproj/project.xcworkspace/xcshareddata
 cross-platform/libkeymagic/keymagic2.xcodeproj/project.xcworkspace/xcuserdata
 cross-platform/libkeymagic/keymagic2.xcodeproj/xcuserdata
 cross-platform/libkeymagic/libKeyMagic.xcodeproj/project.xcworkspace/xcshareddata
+/windows/KeyMagic.NET/ipch
+/cross-platform/libkeymagic/libkeymagic.net/*.filters
+/cross-platform/libkeymagic/vs/ipch
+/windows/KeyMagic.NET/HookInput/Debug
+/windows/KeyMagic.NET/HookInput/x64
