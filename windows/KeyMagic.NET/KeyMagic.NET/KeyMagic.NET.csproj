@@ -84,9 +84,9 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="KeyMagicDotNet, Version=1.0.4844.9182, Culture=neutral, processorArchitecture=x86">
-      <HintPath>.\KeyMagicDotNet.dll</HintPath>
+    <Reference Include="KeyMagicDotNet, Version=1.0.5102.20413, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\KeyMagicDotNet.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Win32.TaskScheduler, Version=1.5.4028.21356, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

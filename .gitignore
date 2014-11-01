@@ -66,3 +66,4 @@ libkeymagic.a
 /cross-platform/libkeymagic/vs/ipch
 /windows/KeyMagic.NET/HookInput/Debug
 /windows/KeyMagic.NET/HookInput/x64
+windows/KeyMagic.NET/HookInput/Release
