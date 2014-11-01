@@ -1,0 +1,132 @@
+﻿/*
+@NAME = "Zawgyi Tai"
+@FONTFAMILY = "Zawgyi Tai"
+@DESCRIPTION = "Zawgyi Tai mini unicode that can type shan text"
+
+@HOTKEY = "CTRL + Alt + g"
+@TRACK_CAPSLOCK = "false"
+@EAT_KEYS = "true"
+@US_LAYOUT_BASED = "true"
+@SMART_BACKSPACE = "true"
+*/
+
+<VK_SPACE> => ' '
+
+// Start of Row One
+
+$kinzi = U1004 + U103A + U1039
+
+("RIGHT_SQUARE_BRACKET") + ANY => $1	
+
+<VK_KEY_1> => Uaa3c
+<VK_KEY_1 & VK_SHIFT> => Uaa06
+<VK_KEY_2> => Uaa3d
+<VK_KEY_2 & VK_SHIFT> => Uaa08
+<VK_KEY_3> => Uaa3e
+<VK_KEY_3 & VK_SHIFT> => Uaa0a
+<VK_KEY_4> => Uaa3f
+<VK_KEY_4 & VK_SHIFT> => Uaa0b
+<VK_KEY_5> => Uaa40
+<VK_KEY_5 & VK_SHIFT> => Uaa0c
+<VK_KEY_6> => Uaa41
+<VK_KEY_6 & VK_SHIFT> => Uaa0d
+<VK_KEY_7> => Uaa42
+<VK_KEY_7 & VK_SHIFT> => U108e
+<VK_KEY_8> => Uaa43
+<VK_KEY_8 & VK_SHIFT> => U002a
+<VK_KEY_9> => Uaa44
+<VK_KEY_9 & VK_SHIFT> => U0028
+<VK_KEY_0> => Uaa3b
+<VK_KEY_0 & VK_SHIFT> => U0029
+<VK_OEM_MINUS> => U002d
+<VK_OEM_MINUS & VK_SHIFT> => U002f
+<VK_OEM_PLUS> => U003d
+<VK_OEM_PLUS & VK_SHIFT> => U002b
+
+// End of Row One
+
+// Start of Row Two
+
+<VK_KEY_Q> => Uaa05
+<VK_KEY_Q & VK_SHIFT> => Uaa07
+<VK_KEY_W> => U1010
+<VK_KEY_W & VK_SHIFT> => Uaa11
+<VK_KEY_E> => Uaa13
+<VK_KEY_E & VK_SHIFT> => Uaa0e
+<VK_KEY_R> => U1019
+<VK_KEY_R & VK_SHIFT> => U107d+ U103c
+<VK_KEY_T> => Uaa21
+<VK_KEY_T & VK_SHIFT> => U107E
+<VK_KEY_Y> => U1015
+<VK_KEY_Y & VK_SHIFT> => Uaa16
+<VK_KEY_U> => Uaa00
+<VK_KEY_U & VK_SHIFT> => Uaa02
+<VK_KEY_I> => U1004
+<VK_KEY_I & VK_SHIFT> => U101b
+<VK_KEY_O> => U101d
+<VK_KEY_O & VK_SHIFT> => U101e
+<VK_KEY_P> => Uaa1f
+<VK_KEY_P & VK_SHIFT> => Uaa1f + Uaa2e + U1039
+<VK_OEM_4> => Uaa2e + U1039
+<VK_OEM_4 & VK_SHIFT> => U0078
+<VK_OEM_6> => U0027
+<VK_OEM_6 & VK_SHIFT> => U0027
+<VK_OEM_5> => U00f7
+<VK_OEM_5 & VK_SHIFT> => U0025
+
+// End of Row Two
+
+// Start of Row Three
+
+<VK_KEY_A> => U1031
+<VK_KEY_A & VK_SHIFT> => Uaa31
+<VK_KEY_S> => Uaa2c
+<VK_KEY_S & VK_SHIFT> => Uaa30
+<VK_KEY_D> => U102d
+<VK_KEY_D & VK_SHIFT> => U102e
+<VK_KEY_F> => U1039
+<VK_KEY_F & VK_SHIFT> => U103b
+<VK_KEY_G> => U103c
+<VK_KEY_G & VK_SHIFT> => Uaa2e
+<VK_KEY_H> => Uaa2f
+<VK_KEY_H & VK_SHIFT> => U0021
+<VK_KEY_J> => Uaa23
+<VK_KEY_J & VK_SHIFT> => U002e + U002e + U002e
+<VK_KEY_K> => U102f
+<VK_KEY_K & VK_SHIFT> => U1033
+<VK_KEY_L> => U1030
+<VK_KEY_L & VK_SHIFT> => U1034
+<VK_OEM_1> => Uaa33
+<VK_OEM_1 & VK_SHIFT> =>U1038
+<VK_OEM_7> => Uaa18
+<VK_OEM_7 & VK_SHIFT> => U0022
+//<VK_OEM_3> => U0060
+//<VK_OEM_3 & VK_SHIFT> => U007e
+
+// End of Row Three
+
+// Start of Row Four
+
+<VK_KEY_Z> => Uaa15
+<VK_KEY_Z & VK_SHIFT> => Uaa17
+<VK_KEY_X> => U1011
+<VK_KEY_X & VK_SHIFT> => Uaa12
+<VK_KEY_C> => Uaa01
+<VK_KEY_C & VK_SHIFT> => Uaa03
+<VK_KEY_V> => U101c
+<VK_KEY_V & VK_SHIFT> => Uaa20
+<VK_KEY_B> => U101a
+<VK_KEY_B & VK_SHIFT> => U103a
+<VK_KEY_N> => Uaa09
+<VK_KEY_N & VK_SHIFT> => Uaa1f + U1030
+<VK_KEY_M> => Uaa24
+<VK_KEY_M & VK_SHIFT> =>Uaa1f + U103c
+<VK_OEM_COMMA> => Uaa32
+<VK_OEM_COMMA & VK_SHIFT> => Uaa36
+<VK_OEM_PERIOD> => Uaa35
+<VK_OEM_PERIOD & VK_SHIFT> => U1036
+<VK_OEM_2> => U104b
+<VK_OEM_2 & VK_SHIFT> => U104a
+
+// End of Row Four
+

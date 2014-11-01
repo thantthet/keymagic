@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>tsInputMethodCharacterRepertoireKey</key>
+	<array>
+		<string>my-MM</string>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
@@ -33,7 +37,7 @@
 	<key>TISInputSourceID</key>
 	<string>org.keymagic.inputmethod.KeyMagic</string>
 	<key>tsInputMethodIconFileKey</key>
-	<string>KeyMagic_black.icns</string>
+	<string>KeyMagic.icns</string>
 	<key>LSUIElement</key>
 	<true/>
 </dict>

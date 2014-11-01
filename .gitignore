@@ -61,6 +61,16 @@ KeyMagic-1.5.pkg
 OSX/IMKBased/KeyMagic.xcodeproj/project.xcworkspace/xcuserdata
 libkeymagic.a
 *.sdf
+dummy.km*
+OSX/IMKBased/KeyMagic.xcodeproj/project.xcworkspace/xcshareddata
+OSX/IMKBased/KeyMagic.xcodeproj/xcuserdata
+cross-platform/KeyMagicTester/KeyMagicTester.xcodeproj/project.xcworkspace/xcuserdata
+cross-platform/KeyMagicTester/KeyMagicTester.xcodeproj/xcuserdata
+cross-platform/keymagic.xcodeproj/project.xcworkspace/xcshareddata
+cross-platform/libkeymagic/keymagic2.xcodeproj/project.xcworkspace/xcshareddata
+cross-platform/libkeymagic/keymagic2.xcodeproj/project.xcworkspace/xcuserdata
+cross-platform/libkeymagic/keymagic2.xcodeproj/xcuserdata
+cross-platform/libkeymagic/libKeyMagic.xcodeproj/project.xcworkspace/xcshareddata
 /windows/KeyMagic.NET/ipch
 /cross-platform/libkeymagic/libkeymagic.net/*.filters
 /cross-platform/libkeymagic/vs/ipch

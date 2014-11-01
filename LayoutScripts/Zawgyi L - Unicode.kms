@@ -1,6 +1,6 @@
 /*
 @NAME = "ဇော်ဂျီ - ယူနီကုဒ်"
-@FONTFAMILY = "Yunghkio"
+@FONTFAMILY = "TharLon"
 @DESCRIPTION = "A Unicode Keyboard Layout that can be type the same sequence just like normal ZawgyiL Layout but its output is Unicode. | Thant Thet Khin Zaw"
 @ICON = "Zawgyi L - Unicode.png"
 @HOTKEY = "CTRL + SHIFT + Z"

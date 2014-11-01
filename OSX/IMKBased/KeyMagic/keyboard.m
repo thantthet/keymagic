@@ -22,32 +22,4 @@
 @synthesize title;
 @synthesize path;
 
-//-(NSString*) title {
-//	return title;
-//}
-//-(void) setTitle:(NSString*)_title {
-//	title = _title;
-//}
-//
-//-(NSString*) path {
-//	return path;
-//}
-//-(void) setPath:(NSString *)_path {
-//	path = _path;
-//}
-
-//-(Hotkey) hotkey {
-//	return hotkey;
-//}
-//-(void) setHotkey:(Hotkey)_hotkey {
-//	hotkey = _hotkey;
-//}
-
-//-(NSImage*) image {
-//	return image;
-//}
-//-(void) setImage:(NSImage*)_image {
-//	image = _image;
-//}
-
 @end

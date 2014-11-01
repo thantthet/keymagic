@@ -76,16 +76,16 @@ namespace libkm {
 		return true;
 	}
 	
-	void getDifference(const KeyMagicString& contextBefore, const KeyMagicString& contextAfter, unsigned int * del, KeyMagicString * str)
+	void getDifference(const KeyMagicString& contextBefore, const KeyMagicString& contextAfter, unsigned long * del, KeyMagicString * str)
 	{
 		if (contextBefore == contextAfter) {
 			return;
 		}
 		
-		int m_del = 0;
+		unsigned long m_del = 0;
 		
-		int lengthBefore = contextBefore.length();
-		int lengthAfter = contextAfter.length();
+		unsigned long lengthBefore = contextBefore.length();
+		unsigned long lengthAfter = contextAfter.length();
 		
 		if (contextBefore.length() > contextAfter.length()) {
 			m_del = contextBefore.length() - contextAfter.length();

@@ -29,20 +29,9 @@ typedef struct Hotkey Hotkey;
 	@public
 	NSString *title;
 	NSString *path;
-	//Hotkey hotkey;
-	//NSImage * image;
 }
 
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSString *path;
 
-//@property(assign) NSString * title;
-//-(NSString*)title;
-//-(void)setTitle:(NSString*)_title;
-//-(NSString*)path;
-//-(void)setPath:(NSString*)_path;
-//-(Hotkey) hotkey;
-//-(void) setHotkey:(Hotkey)_hotkey;
-//-(NSImage*) image;
-//-(void) setImage:(NSImage*)_image;
 @end

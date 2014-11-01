@@ -22,6 +22,17 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		90301AD31951DF8700F4FAFD /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B507AC7413A66734008F7F78 /* main.cpp */; };
+		90301AD41951DF9100F4FAFD /* KeyMagicErrorLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5D2600E13365ABE00BCEC22 /* KeyMagicErrorLogger.cpp */; };
+		90301AD51951DF9100F4FAFD /* LogFileWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5D2601013365ABE00BCEC22 /* LogFileWriter.cpp */; };
+		90301AD61951DF9100F4FAFD /* KeyMagicString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5C1EB9112FC49AE0061BF73 /* KeyMagicString.cpp */; };
+		90301AD71951DF9100F4FAFD /* KeyMagicTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90FF59FC17162A760013858A /* KeyMagicTypes.cpp */; };
+		90301AD81951DF9100F4FAFD /* RuleInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5C1EB9412FC49AE0061BF73 /* RuleInfo.cpp */; };
+		90301AD91951DF9100F4FAFD /* KeyMagicEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5C1EB8512FC49A00061BF73 /* KeyMagicEngine.cpp */; };
+		90301ADA1951DF9100F4FAFD /* KeyMagicKeyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5C1EB8712FC49A00061BF73 /* KeyMagicKeyboard.cpp */; };
+		90301ADB1951DF9100F4FAFD /* KeyMagicLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5C1EB8912FC49A00061BF73 /* KeyMagicLogger.cpp */; };
+		90301ADC1951DF9100F4FAFD /* Util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5E05C17131FC68F0050B283 /* Util.cpp */; };
+		90301ADD1951DF9E00F4FAFD /* KeyCodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5C1EB8112FC498C0061BF73 /* KeyCodes.cpp */; };
 		90594CF916B4133B009159D0 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90594CF816B4133B009159D0 /* Cocoa.framework */; };
 		90594D2816B413BA009159D0 /* KeyMagicErrorLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5D2600E13365ABE00BCEC22 /* KeyMagicErrorLogger.cpp */; };
 		90594D2916B413BA009159D0 /* LogFileWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5D2601013365ABE00BCEC22 /* LogFileWriter.cpp */; };
@@ -53,6 +64,8 @@
 		90594D7416B415EB009159D0 /* KeyCodes.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B5C1EB8212FC498C0061BF73 /* KeyCodes.h */; };
 		90594D7516B415EB009159D0 /* Util.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B5E05C16131FC68F0050B283 /* Util.h */; };
 		90594D7616B415EB009159D0 /* keymagic.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B5761A1F1320E07B0095AADC /* keymagic.h */; };
+		90FF59FD17162A760013858A /* KeyMagicTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90FF59FC17162A760013858A /* KeyMagicTypes.cpp */; };
+		90FF59FE17162A760013858A /* KeyMagicTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90FF59FC17162A760013858A /* KeyMagicTypes.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +79,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		90301ACA1951DF7600F4FAFD /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		90594D5416B41572009159D0 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -89,6 +111,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		90301ACC1951DF7600F4FAFD /* keymagic_console */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = keymagic_console; sourceTree = BUILT_PRODUCTS_DIR; };
 		90594CF716B4133B009159D0 /* libkeymagic.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libkeymagic.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		90594CF816B4133B009159D0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		90594CFB16B4133B009159D0 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -97,7 +120,8 @@
 		90594D0C16B41358009159D0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		90594D5116B4152C009159D0 /* keymagic_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = keymagic_Prefix.pch; sourceTree = "<group>"; };
 		90594D5616B41572009159D0 /* libikeymagic.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libikeymagic.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		B507AC7413A66734008F7F78 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		90FF59FC17162A760013858A /* KeyMagicTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyMagicTypes.cpp; sourceTree = "<group>"; };
+		B507AC7413A66734008F7F78 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../main.cpp; sourceTree = "<group>"; };
 		B5408F4F141609FB00CD7734 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		B5761A1F1320E07B0095AADC /* keymagic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keymagic.h; sourceTree = "<group>"; };
 		B5C1EB8112FC498C0061BF73 /* KeyCodes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyCodes.cpp; sourceTree = "<group>"; };
@@ -122,6 +146,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		90301AC91951DF7600F4FAFD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		90594CF416B4133B009159D0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -146,6 +177,7 @@
 			children = (
 				90594CF716B4133B009159D0 /* libkeymagic.a */,
 				90594D5616B41572009159D0 /* libikeymagic.a */,
+				90301ACC1951DF7600F4FAFD /* keymagic_console */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -155,6 +187,7 @@
 			children = (
 				5073E0CA09E734BC00EC74B6 /* Configuration Files */,
 				08FB77ACFE841707C02AAC07 /* Source */,
+				90301ACD1951DF7600F4FAFD /* keymagic_console */,
 				B5408F4E141609FB00CD7734 /* Frameworks */,
 				034768DDFF38A45A11DB9C8B /* Products */,
 			);
@@ -170,6 +203,7 @@
 				B5D2601113365ABE00BCEC22 /* LogFileWriter.h */,
 				B5C1EB9112FC49AE0061BF73 /* KeyMagicString.cpp */,
 				B5C1EB9212FC49AE0061BF73 /* KeyMagicString.h */,
+				90FF59FC17162A760013858A /* KeyMagicTypes.cpp */,
 				B5C1EB9312FC49AE0061BF73 /* KeyMagicTypes.h */,
 				B5C1EB9412FC49AE0061BF73 /* RuleInfo.cpp */,
 				B5C1EB9512FC49AE0061BF73 /* RuleInfo.h */,
@@ -180,12 +214,11 @@
 				B5C1EB8912FC49A00061BF73 /* KeyMagicLogger.cpp */,
 				B5C1EB8A12FC49A00061BF73 /* KeyMagicLogger.h */,
 				B5C1EB8112FC498C0061BF73 /* KeyCodes.cpp */,
-				90594D5116B4152C009159D0 /* keymagic_Prefix.pch */,
 				B5C1EB8212FC498C0061BF73 /* KeyCodes.h */,
+				90594D5116B4152C009159D0 /* keymagic_Prefix.pch */,
 				B5E05C16131FC68F0050B283 /* Util.h */,
 				B5E05C17131FC68F0050B283 /* Util.cpp */,
 				B5761A1F1320E07B0095AADC /* keymagic.h */,
-				B507AC7413A66734008F7F78 /* main.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -195,6 +228,14 @@
 			children = (
 			);
 			name = "Configuration Files";
+			sourceTree = "<group>";
+		};
+		90301ACD1951DF7600F4FAFD /* keymagic_console */ = {
+			isa = PBXGroup;
+			children = (
+				B507AC7413A66734008F7F78 /* main.cpp */,
+			);
+			path = keymagic_console;
 			sourceTree = "<group>";
 		};
 		90594CFA16B4133B009159D0 /* Other Frameworks */ = {
@@ -231,6 +272,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		90301ACB1951DF7600F4FAFD /* keymagic_console */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 90301AD21951DF7600F4FAFD /* Build configuration list for PBXNativeTarget "keymagic_console" */;
+			buildPhases = (
+				90301AC81951DF7600F4FAFD /* Sources */,
+				90301AC91951DF7600F4FAFD /* Frameworks */,
+				90301ACA1951DF7600F4FAFD /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = keymagic_console;
+			productName = keymagic_console;
+			productReference = 90301ACC1951DF7600F4FAFD /* keymagic_console */;
+			productType = "com.apple.product-type.tool";
+		};
 		90594CF616B4133B009159D0 /* keymagic */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 90594D0416B4133B009159D0 /* Build configuration list for PBXNativeTarget "keymagic" */;
@@ -271,7 +329,12 @@
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0450;
+				LastUpgradeCheck = 0600;
+				TargetAttributes = {
+					90301ACB1951DF7600F4FAFD = {
+						CreatedOnToolsVersion = 6.0;
+					};
+				};
 			};
 			buildConfigurationList = 1DEB916408733D950010E9CD /* Build configuration list for PBXProject "keymagic2" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -292,6 +355,7 @@
 				90594CF616B4133B009159D0 /* keymagic */,
 				90594D5516B41572009159D0 /* ikeymagic */,
 				90594E0B16B421FB009159D0 /* ikeymagic-universal */,
+				90301ACB1951DF7600F4FAFD /* keymagic_console */,
 			);
 		};
 /* End PBXProject section */
@@ -313,6 +377,24 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		90301AC81951DF7600F4FAFD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				90301ADA1951DF9100F4FAFD /* KeyMagicKeyboard.cpp in Sources */,
+				90301AD91951DF9100F4FAFD /* KeyMagicEngine.cpp in Sources */,
+				90301AD61951DF9100F4FAFD /* KeyMagicString.cpp in Sources */,
+				90301AD81951DF9100F4FAFD /* RuleInfo.cpp in Sources */,
+				90301ADD1951DF9E00F4FAFD /* KeyCodes.cpp in Sources */,
+				90301AD41951DF9100F4FAFD /* KeyMagicErrorLogger.cpp in Sources */,
+				90301AD71951DF9100F4FAFD /* KeyMagicTypes.cpp in Sources */,
+				90301ADB1951DF9100F4FAFD /* KeyMagicLogger.cpp in Sources */,
+				90301AD31951DF8700F4FAFD /* main.cpp in Sources */,
+				90301AD51951DF9100F4FAFD /* LogFileWriter.cpp in Sources */,
+				90301ADC1951DF9100F4FAFD /* Util.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		90594CF316B4133B009159D0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -326,6 +408,7 @@
 				90594D2E16B413BA009159D0 /* KeyMagicLogger.cpp in Sources */,
 				90594D2F16B413BA009159D0 /* KeyCodes.cpp in Sources */,
 				90594D3016B413BA009159D0 /* Util.cpp in Sources */,
+				90FF59FD17162A760013858A /* KeyMagicTypes.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -342,6 +425,7 @@
 				90594D6816B4159E009159D0 /* KeyMagicLogger.cpp in Sources */,
 				90594D6916B4159E009159D0 /* KeyCodes.cpp in Sources */,
 				90594D6A16B4159E009159D0 /* Util.cpp in Sources */,
+				90FF59FE17162A760013858A /* KeyMagicTypes.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -359,14 +443,14 @@
 		1DEB916508733D950010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACH_O_TYPE = staticlib;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -374,8 +458,8 @@
 		1DEB916608733D950010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -383,16 +467,82 @@
 			};
 			name = Release;
 		};
+		90301AD01951DF7600F4FAFD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				MACH_O_TYPE = mh_execute;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				METAL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		90301AD11951DF7600F4FAFD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				MACH_O_TYPE = mh_execute;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				METAL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		90594D0516B4133B009159D0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libstdc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -414,12 +564,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libstdc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -436,9 +584,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libstdc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -452,7 +597,7 @@
 					"$(inherited)",
 				);
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -465,9 +610,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libstdc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -476,7 +618,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = keymagic_Prefix.pch;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -488,7 +630,6 @@
 		90594E0D16B421FB009159D0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -499,7 +640,6 @@
 		90594E0E16B421FB009159D0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -515,6 +655,15 @@
 			buildConfigurations = (
 				1DEB916508733D950010E9CD /* Debug */,
 				1DEB916608733D950010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		90301AD21951DF7600F4FAFD /* Build configuration list for PBXNativeTarget "keymagic_console" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				90301AD01951DF7600F4FAFD /* Debug */,
+				90301AD11951DF7600F4FAFD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -544,6 +693,7 @@
 				90594E0E16B421FB009159D0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

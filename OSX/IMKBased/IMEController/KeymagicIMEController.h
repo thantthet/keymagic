@@ -47,16 +47,16 @@ extern "C" {
 	BOOL instantCommit;
 }
 
-@property (nonatomic, retain) Keyboard *activeKeyboard;
+@property (nonatomic, strong) Keyboard *activeKeyboard;
 @property (nonatomic, copy) NSString *activePath;
 @property (nonatomic, assign) BOOL instantCommit;
 
 - (void)selectionChanged:(id)sender;
-- (void)WriteConfigurationFile;
-- (void)LoadConfigurationFile;
+- (void)writeConfigurationFile;
+- (void)loadConfigurationFile;
 - (NSArray *)getKeyboardPathsFrom:(NSString*)directory;
 - (BOOL)changeKeyboardLayout:(Keyboard*)Keyboard;
 - (void)switchKeyboardLayout:(BOOL)previous;
-- (void)GetKeyboardLayouts;
+- (void)getKeyboardLayouts;
 
 @end
