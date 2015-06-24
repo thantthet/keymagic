@@ -508,6 +508,9 @@ namespace KeyMagic
                     td.Principal.RunLevel = TaskRunLevel.Highest;
                     td.RegistrationInfo.Description = "Run KeyMagic on startup";
 
+                    td.Settings.DisallowStartIfOnBatteries = false;
+                    td.Settings.ExecutionTimeLimit = TimeSpan.Zero;
+
                     // Create a trigger that will fire the task at this time every other day
                     td.Triggers.Add(new LogonTrigger());
 
@@ -1529,9 +1532,8 @@ namespace KeyMagic
                         }
                     }
                 }
-                catch (ThreadAbortException)
-                {
-                }
+                catch (ThreadAbortException) {}
+                catch (WebException) {}
                 catch (Exception ex)
                 {
                     if (!autoCheck) MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
