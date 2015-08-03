@@ -1,0 +1,339 @@
+/*w
+@NAME = "Ours-Unicode-Taikhamti"
+@FONTFAMILY = "Ours-Unicode"
+@DESCRIPTION = "A Unicode Keyboard Layout that can be type the same as normal  Shan Unicode. | Ours-Uni-Team"
+@ICON = "khamti.png"
+@HOTKEY = "SHIFT + CTRL + K"
+@TRACK_CAPSLOCK = "false"
+@EAT_KEYS = "true"
+@US_LAYOUT_BASED = "true"
+@SMART_BACKSPACE = "true"
+*/
+
+$kinzi = U1082 + U103A 
+
+("RIGHT_SQUARE_BRACKET") + ANY => $1	
+
+<VK_KEY_1> => U0031
+<VK_KEY_1 & VK_SHIFT> => U0021
+<VK_KEY_2> => U0032
+<VK_KEY_2 & VK_SHIFT> => U0040
+<VK_KEY_3> => U0033
+<VK_KEY_3 & VK_SHIFT> => U0023
+<VK_KEY_4> => U0034
+<VK_KEY_4 & VK_SHIFT> => U0024
+<VK_KEY_5> => U0035
+<VK_KEY_5 & VK_SHIFT> => U0025
+<VK_KEY_6> => U0036
+<VK_KEY_6 & VK_SHIFT> => U005E
+<VK_KEY_7> => U0037
+<VK_KEY_7 & VK_SHIFT> => U0026
+<VK_KEY_8> => U0038
+<VK_KEY_8 & VK_SHIFT> => U002A
+U200B + U103C + <VK_KEY_8 & VK_SHIFT> => U1002 + U103C
+<VK_KEY_9> => U0039
+<VK_KEY_9 & VK_SHIFT> => U0028
+<VK_KEY_0> => U0030
+<VK_KEY_0 & VK_SHIFT> => U0029
+<VK_OEM_MINUS> => U002d
+<VK_OEM_MINUS & VK_SHIFT> => U005F
+<VK_OEM_PLUS> => U003d
+<VK_OEM_PLUS & VK_SHIFT> => U002b
+<VK_KEY_Q> => UAA61
+<VK_KEY_Q & VK_SHIFT> => UAA63
+//U200B + U103C + <VK_KEY_Q> =>  UAA61 + U103C 
+<VK_KEY_W> => U1010
+U200B + U103C + <VK_KEY_W> => U1010 + U103C
+<VK_KEY_W & VK_SHIFT> => U107B
+<VK_KEY_E> => UAA6B
+<VK_KEY_E & VK_SHIFT> => U107C
+<VK_KEY_R> => U1019
+//U200B + U103C + <VK_KEY_R> => U1019 + U103C
+<VK_KEY_R & VK_SHIFT> => UAA76
+//U200B + U103C + <VK_KEY_T> => U1021 + U103C
+<VK_KEY_T> => U1022
+<VK_KEY_T & VK_SHIFT> => U103C
+<VK_KEY_Y> => U1015
+//U200B + U103C + <VK_KEY_Y> => U1015 + U103C
+<VK_KEY_Y & VK_SHIFT> => U107F
+<VK_KEY_U> => UAA71
+//U200B + U103C + <VK_KEY_U> => UAA71 + U103C
+<VK_KEY_U & VK_SHIFT> => UAA60
+<VK_KEY_I> => U1004
+U200B + U103C + <VK_KEY_I> => U1004 + U103C
+<VK_KEY_I & VK_SHIFT> => U101B
+<VK_KEY_O> => U101D
+U200B + U103C + <VK_KEY_O> => U101D + U103C
+<VK_KEY_O & VK_SHIFT> => UAA6C
+<VK_KEY_P> => UAA6D
+//U200B + U103C + <VK_KEY_P> => UAA6D + U103C
+// <VK_KEY_P & VK_SHIFT> => 
+//U200B + U103C + <VK_KEY_P & VK_SHIFT> => U100f + U103C
+<VK_OEM_4> => U005B
+//U200B + U103C + <VK_OEM_4> => U101F + U103C
+<VK_OEM_4 & VK_SHIFT> => U007B
+<VK_OEM_6> => ("RIGHT_SQUARE_BRACKET")
+<VK_OEM_6 & VK_SHIFT> => U007d
+<VK_KEY_A> => U200B + U1031
+<VK_KEY_A & VK_SHIFT> => UAA75
+//U200B + U103C + <VK_KEY_A & VK_SHIFT> => U1017 + U103C
+<VK_KEY_S> => U1084
+<VK_KEY_S & VK_SHIFT> => U1085
+<VK_KEY_D> => U102d
+<VK_KEY_D & VK_SHIFT> => U102e
+<VK_KEY_F> => U103A
+<VK_KEY_F & VK_SHIFT> => $kinzi
+<VK_KEY_G> => U103D
+<VK_KEY_G & VK_SHIFT> => U109B
+<VK_KEY_H> => U1037
+<VK_KEY_H & VK_SHIFT> => U1036
+<VK_KEY_J> => U1087
+<VK_KEY_J & VK_SHIFT> => U1032
+<VK_KEY_K> => U102f
+<VK_KEY_K & VK_SHIFT> => UAA70
+<VK_KEY_L> => U1030
+<VK_KEY_L & VK_SHIFT> => U108A
+<VK_OEM_1> => U1088
+<VK_OEM_1 & VK_SHIFT> => U1038
+<VK_OEM_7> => U0027
+<VK_OEM_7 & VK_SHIFT> => U0022
+//<VK_OEM_3> => U0060
+//<VK_OEM_3 & VK_SHIFT> => U007e
+<VK_OEM_5> => U005C
+<VK_KEY_Z> => U1078
+//U200B + U103C + <VK_KEY_Z> => U1078 + U103C
+<VK_KEY_Z & VK_SHIFT> => U1078 + U103E
+<VK_KEY_X> => U1011
+//U200B + U103C + <VK_KEY_X & VK_SHIFT> => U1011 + U103C
+<VK_KEY_X & VK_SHIFT> => UAA6A
+<VK_KEY_C> => U1075
+//U200B + U103C + <VK_KEY_C> => U1075 + U103C
+<VK_KEY_C & VK_SHIFT> => U1048
+//U200B + U103C + <VK_KEY_C & VK_SHIFT> => U1048 + U103C
+<VK_KEY_V> => U101c
+//U200B + U103C + <VK_KEY_V> => U101C + U103C
+<VK_KEY_V & VK_SHIFT> => UAA6E
+<VK_KEY_B> => U101A
+//U200B + U103C + <VK_KEY_B> => U101A + U103C
+<VK_KEY_B & VK_SHIFT> => U103B
+<VK_KEY_N> => UAA65
+<VK_KEY_N & VK_SHIFT> => UAA74
+<VK_KEY_M> => U1062
+<VK_KEY_M & VK_SHIFT> => U1083
+<VK_OEM_COMMA> => U002C
+//U200B + U103C + <VK_OEM_COMMA> => U101a + U103C
+<VK_OEM_COMMA & VK_SHIFT> => U104A
+//U200B + U103C + <VK_OEM_COMMA & VK_SHIFT> => U101D + U103C
+<VK_OEM_PERIOD> => U002E
+<VK_OEM_PERIOD & VK_SHIFT> => U104B
+<VK_OEM_2 > => U002F
+<VK_OEM_2 & VK_SHIFT> => U003F
+//<VK_OEM_2> => U104b
+//<VK_OEM_2 & VK_SHIFT> => U104a
+//<VK_SPACE> => U0020 // This will prevent from commiting composition string when press space
+//<VK_SPACE & VK_SHIFT> => U0020
+//<VK_DECIMAL> => U002e
+//<VK_DECIMAL & VK_SHIFT> => U002e
+<VK_KEY_P & VK_SHIFT> => uAA6D + u1082 + u1072
+
+<VK_OEM_3> => ("GRAVE_ACCENT")
+("GRAVE_ACCENT") + <VK_KEY_Q> => UAA72
+("GRAVE_ACCENT") + <VK_KEY_A> => NULL
+("GRAVE_ACCENT") + <VK_KEY_B> => NULL
+("GRAVE_ACCENT") + <VK_KEY_N> => UAA77
+("GRAVE_ACCENT") + <VK_KEY_M> => NULL
+("GRAVE_ACCENT") + <VK_OEM_COMMA> => NULL
+("GRAVE_ACCENT") + <VK_OEM_PERIOD> => NULL
+("GRAVE_ACCENT") + <VK_OEM_2> => NULL
+("GRAVE_ACCENT") + <VK_KEY_V> => NULL
+("GRAVE_ACCENT") + <VK_KEY_C> => NULL
+("GRAVE_ACCENT") + <VK_KEY_X> => UAA67
+("GRAVE_ACCENT") + <VK_KEY_Z> => U1079
+("GRAVE_ACCENT") + <VK_KEY_J> => NULL
+("GRAVE_ACCENT") + <VK_KEY_D> => NULL
+("GRAVE_ACCENT") + <VK_KEY_S> => NULL
+("GRAVE_ACCENT") + <VK_KEY_F> => NULL
+("GRAVE_ACCENT") + <VK_KEY_G> => NULL
+("GRAVE_ACCENT") + <VK_KEY_H> => U109A
+("GRAVE_ACCENT") + <VK_KEY_K> => NULL
+("GRAVE_ACCENT") + <VK_KEY_L> => NULL
+("GRAVE_ACCENT") + <VK_OEM_1> => NULL
+("GRAVE_ACCENT") + <VK_OEM_1 & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_OEM_7> => NULL
+("GRAVE_ACCENT") + <VK_OEM_7 & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_KEY_W> => UAA66
+("GRAVE_ACCENT") + <VK_KEY_W & VK_SHIFT> => UAA68
+("GRAVE_ACCENT") + <VK_KEY_E> => NULL
+("GRAVE_ACCENT") + <VK_KEY_E & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_KEY_R> => NULL
+("GRAVE_ACCENT") + <VK_KEY_R & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_KEY_P> => NULL
+("GRAVE_ACCENT") + <VK_KEY_P & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_KEY_U> => UAA78
+("GRAVE_ACCENT") + <VK_KEY_U & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_KEY_I> => UAA79
+("GRAVE_ACCENT") + <VK_KEY_I & VK_SHIFT> => UAA7A
+("GRAVE_ACCENT") + <VK_KEY_T> => NULL
+("GRAVE_ACCENT") + <VK_KEY_T & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_KEY_Y> => NULL
+("GRAVE_ACCENT") + <VK_KEY_Y & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_KEY_O> => UAA62
+//("GRAVE_ACCENT") + <VK_KEY_O & VK_SHIFT> => UAA62
+//("GRAVE_ACCENT") + <VK_KEY_Q> => U1079
+("GRAVE_ACCENT") + <VK_OEM_4> => NULL
+("GRAVE_ACCENT") + <VK_OEM_4 & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_OEM_6> => NULL
+("GRAVE_ACCENT") + <VK_OEM_6 & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_KEY_Q & VK_SHIFT> => NULL
+
+("GRAVE_ACCENT") + <VK_KEY_N & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_KEY_C & VK_SHIFT> =>NULL
+("GRAVE_ACCENT") + <VK_KEY_Z & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_KEY_M & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_KEY_A & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_KEY_J & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_KEY_D & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_KEY_S & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_KEY_F & VK_SHIFT> => NULL
+//("GRAVE_ACCENT") + <VK_KEY_E & VK_SHIFT> => ?
+("GRAVE_ACCENT") + <VK_KEY_P & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_KEY_O & VK_SHIFT> => UAA64
+("GRAVE_ACCENT") + <VK_KEY_T & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_KEY_X & VK_SHIFT> => UAA69
+("GRAVE_ACCENT") + <VK_KEY_V & VK_SHIFT> => UAA73
+("GRAVE_ACCENT") + <VK_KEY_B & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_KEY_N & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_KEY_M & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_OEM_COMMA & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_OEM_PERIOD & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_OEM_2 & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_OEM_MINUS & VK_SHIFT> => U00f7
+("GRAVE_ACCENT") + U0020 => U0020
+("GRAVE_ACCENT") + <VK_OEM_MINUS> => U200b
+("GRAVE_ACCENT") + <VK_KEY_Y & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_OEM_PERIOD & VK_SHIFT> => NULL
+("GRAVE_ACCENT") + <VK_OEM_COMMA & VK_SHIFT> => NULL
+//("GRAVE_ACCENT") + U103C + <VK_OEM_COMMA & VK_SHIFT> => U100E + U103C
+("GRAVE_ACCENT") + <VK_OEM_COMMA> => U100E
+("GRAVE_ACCENT") + U103C + <VK_OEM_COMMA> => NULL
+
+// Number in Shan & Myanmar
+
+("GRAVE_ACCENT") + <VK_KEY_1> =>  U1091
+("GRAVE_ACCENT") + <VK_KEY_2> =>  U1092
+("GRAVE_ACCENT") + <VK_KEY_3> =>  U1093
+("GRAVE_ACCENT") + <VK_KEY_4> =>  U1094
+("GRAVE_ACCENT") + <VK_KEY_5> =>  U1095
+("GRAVE_ACCENT") + <VK_KEY_6> =>  U1096
+("GRAVE_ACCENT") + <VK_KEY_7> =>  U1097
+("GRAVE_ACCENT") + <VK_KEY_8> =>  U1098
+("GRAVE_ACCENT") + <VK_KEY_9> =>  U1099
+("GRAVE_ACCENT") + <VK_KEY_0> =>  U1090
+
+("GRAVE_ACCENT") + <VK_SHIFT & VK_KEY_1> =>  U1041
+("GRAVE_ACCENT") + <VK_SHIFT & VK_KEY_2> =>  U1042
+("GRAVE_ACCENT") + <VK_SHIFT & VK_KEY_3> =>  U1043
+("GRAVE_ACCENT") + <VK_SHIFT & VK_KEY_4> =>  U1044
+("GRAVE_ACCENT") + <VK_SHIFT & VK_KEY_5> =>  U1045
+("GRAVE_ACCENT") + <VK_SHIFT & VK_KEY_6> =>  U1046
+("GRAVE_ACCENT") + <VK_SHIFT & VK_KEY_7> =>  U1047
+("GRAVE_ACCENT") + <VK_SHIFT & VK_KEY_8> =>  U1048
+("GRAVE_ACCENT") + <VK_SHIFT & VK_KEY_9> =>  U1049
+("GRAVE_ACCENT") + <VK_SHIFT & VK_KEY_0> =>  U1040   
+
+<VK_SHIFT & VK_OEM_3> => ("TILDE")
+("TILDE") + <VK_KEY_Q> => U1039 + U1006
+("TILDE") + <VK_KEY_W> => U1039 + U1010
+("TILDE") + <VK_KEY_X> => U1039 + U1011
+("TILDE") + <VK_KEY_N> => U100A
+("TILDE") + <VK_KEY_B> => U1039 + U1018
+
+// RE-ORDER
+$consU = U1000 + U1001 + U1002 + U1003 + U1004 + U1005 + U1006 + U1007 + \
+	U1008 + U1009 + U100A + U100B + U100C + U100D + U100E + U100F + \
+	U1010 + U1011 + U1012 + U1013 + U1014 + U1015 + U1016 + U1017 + \
+	U1018 + U1019 + U101A + U101B + U101C + U101D + U101E + U101F + \
+	U1020 + U1021 
+
+U200B + U1031 + $consU[*] => $consU[$3] + $2
+U200B + U103C + $consU[*] =>  $consU[$3] + $2
+
+U200B + U1031 + $consU[*] + U103C => $3 + $4 + $2
+
+$sdiaU = U103B + U103C + U103E + U103D 
+
+U1031 + $sdiaU[*] => $2 + $1
+U1031 + $sdiaU[*] + $sdiaU[*] => $2 + $3 + $1
+U1031 + $sdiaU[*] + $sdiaU[*] + $sdiaU[*] => $2 + $3 + $4 + $1
+
+//out-ka-myin <-> a-thet
+U103A + U1037 => $2 + $1
+
+//kinzi
+$consU[*] + $kinzi => $kinzi + $1
+$consU[*] + U103C + $kinzi => $kinzi + $1 + U103C
+$consU[*] + U1031 + $kinzi => $kinzi + $1 + U1031
+
+// AUTO-CORRECT
+
+U1025 + U102E => U1026
+
+// following are taken from myWin and some more rules are added
+$numOrLetU = U1040 + U1047 + U1048 
+$numAsLetU = U101D + U101B + U1002 
+
+$numOrLetU[*] + U102C => $numAsLetU[$1] + U102C 
+$numOrLetU[*] + U102B => $numAsLetU[$1] + U102B 
+$numOrLetU[*] + U103A => $numAsLetU[$1] + U103A 
+$numOrLetU[*] + U1036 => $numAsLetU[$1] + U1036 
+$numOrLetU[*] + U102D => $numAsLetU[$1] + U102D 
+$numOrLetU[*] + U102E => $numAsLetU[$1] + U102E
+$numOrLetU[*] + U1032 => $numAsLetU[$1] + U1032
+$numOrLetU[*] + U103B => $numAsLetU[$1] + U103B
+$numOrLetU[*] + U103D => $numAsLetU[$1] + U103D
+$numOrLetU[*] + U103E => $numAsLetU[$1] + U103E
+U1031 + $numOrLetU[*] => U1031 + $numAsLetU[$2]
+U1044 + U1004 + U103A + U1038 => U104E + U1004 + U103A + U1038 
+$numOrLetU[*] + U1004 + U103A => $numAsLetU[$1] + U1004 + U103A 
+$numOrLetU[*] + $consU[*] + U103A => $numAsLetU[$1] + $consU[$2] + U103A 
+$numOrLetU[*] + $numOrLetU[*] + U103A => $numAsLetU[$1] + $numAsLetU[$2] + U103A 
+
+// users usually type u-tha when they mean nya child tha
+U1025 + U103A => U1009 + U103A 
+U1025 + U102C => U1009 + U102C 
+U1025 + U1039 + $consU[*] => U1009 + $2 + $3
+
+U1005 + U103B => U1008
+U101E + U103C => U1029
+U101E + U103C + U1031 + U102C + U103A => U102A //aww
+
+// create some classes for diacritics that might have been 
+// sensibly typed before the user types the medial
+$allDiaU = U1031 + U102F + U1030 + U102D + U1032 + U1036 + U1037 
+$udiaU = U102D + U102E + U1032 + U102F + U1030 
+$ldiaU = U102F + U1030 
+
+// these allow the user to type upper and lower diacritics in
+// any order, but to still get the storage right
+$udiaU[*] + U1037 + $ldiaU[*] => $1 + $3 + U1037 
+$ldiaU[*] + U1037 + $udiaU[*] => $3 + $1 + $2
+U1037 + $udiaU[*] => $2 + $1
+U1037 + $ldiaU[*] => $2 + $1
+
+U1036 + $udiaU[*] => $2 + $1
+$ldiaU[*] + U1036 + $udiaU[*] => $3 + $1 + $2
+
+U1031 + U1039 + $consU[*] => U1039 + $3 + U1031
+$consU[*] + U103B + U1031 + $kinzi => $kinzi + $1 + $2 + $3
+$consU[*] + U1039 + $kinzi + $consU[*] =>  $kinzi + $1 + $2 + $4
+$consU[*] + U1039 + $consU[*] + U102F + $kinzi => $kinzi + $1 + $2 + $3 + $4
+$consU[*] + U1031 + U1037 + $kinzi => $kinzi + $1 + $2 + $3
+
+U102F + U102D => U102D + U102F
+U102F + U102E => U102E + U102F
+
+$U2D2E = U102D + U102E
+U102F + $U2D2E[*] => $2 + $1
+$U2D2E[*] + U103B => $2 + $1
+$U2D2E[*] + U103E => $2 + $1
+$U2D2E[*] + U103D => $2 + $1
