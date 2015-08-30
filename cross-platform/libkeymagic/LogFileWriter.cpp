@@ -30,7 +30,7 @@ namespace libkm {
 		m_logFile = file;
 	}
 
-	void LogFileWriter::log(const std::string &fmt, ...) {
+	void LogFileWriter::log(const std::string fmt, ...) {
 		va_list vl;
 		
 		if (indentation) {

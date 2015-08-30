@@ -408,7 +408,8 @@ bool mapVK(int virtualkey, int * winVK)
 	unsigned int delCount = 0;
 	
 	KeyMagicString *output = new KeyMagicString();
-	getDifference(beforeProcessed, afterProcessed, &delCount, output);
+//	getDifference(beforeProcessed, afterProcessed, &delCount, output);
+    delCount = kme.getDifference(beforeProcessed, output);
 	
 	m_delCountGenerated = 0;
 	

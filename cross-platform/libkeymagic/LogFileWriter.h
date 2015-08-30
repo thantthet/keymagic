@@ -33,7 +33,7 @@ namespace libkm {
 		 * Log to file
 		 * @param fmt Format
 		 */
-		void log(const std::string &fmt, ...);
+		void log(const std::string fmt, ...);
 		/**
 		 * Get current destination file
 		 */
