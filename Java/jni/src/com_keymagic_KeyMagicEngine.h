@@ -20,8 +20,16 @@ JNIEXPORT void JNICALL Java_com_keymagic_KeyMagicEngine_initialise
  * Method:    loadKeyboardFile
  * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jboolean JNICALL Java_com_keymagic_KeyMagicEngine_loadKeyboardFile
+JNIEXPORT jboolean JNICALL Java_com_keymagic_KeyMagicEngine_loadKeyboardFile__Ljava_lang_String_2
   (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     com_keymagic_KeyMagicEngine
+ * Method:    loadKeyboardFile
+ * Signature: (Landroid/content/res/AssetManager;Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_keymagic_KeyMagicEngine_loadKeyboardFile__Landroid_content_res_AssetManager_2Ljava_lang_String_2
+  (JNIEnv *, jobject, jobject, jstring);
 
 /*
  * Class:     com_keymagic_KeyMagicEngine
@@ -70,6 +78,14 @@ JNIEXPORT void JNICALL Java_com_keymagic_KeyMagicEngine_reset
  */
 JNIEXPORT jstring JNICALL Java_com_keymagic_KeyMagicEngine_getContextText
   (JNIEnv *, jobject);
+
+/*
+ * Class:     com_keymagic_KeyMagicEngine
+ * Method:    setContextText
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_keymagic_KeyMagicEngine_setContextText
+  (JNIEnv *, jobject, jstring);
 
 /*
  * Class:     com_keymagic_KeyMagicEngine

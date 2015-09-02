@@ -9,7 +9,7 @@ public class test
     public static void main(String[] args) {
         KeyMagicEngine engine = new KeyMagicEngine();
         engine.loadKeyboardFile("/Users/thantthet/codes/keymagic-git/LayoutScripts/Zawgyi L - Unicode.km2");
-        engine.processKeyEvent('a', 'A', 0);
+        engine.processKeyEvent('\u1031', 0, 0);
 
         String text = engine.getContextText();
 

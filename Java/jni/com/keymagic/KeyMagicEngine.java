@@ -1,5 +1,7 @@
 package com.keymagic;
 
+import android.content.res.AssetManager;
+
 import java.util.HashMap;
 
 public class KeyMagicEngine
@@ -9,6 +11,7 @@ public class KeyMagicEngine
 	private native void initialise();
 
     public native boolean loadKeyboardFile(String filePath);
+    public native boolean loadKeyboardFile(AssetManager assetManager, String name);
     public native short getKeyState(int keycode);
     public native void setKeyState(int keycode, short state);
     public native void setKeyStates(byte[] states);
@@ -17,6 +20,7 @@ public class KeyMagicEngine
 	public native void reset();
 
     public native String getContextText();
+    public native void setContextText(String textContext);
 
 	public native long getDifference(String contextBefore, StringBuffer difference);
 
@@ -25,4 +29,17 @@ public class KeyMagicEngine
 
     public native HashMap<Integer, Boolean> getSwitchMap();
     public native void setSwitchMap(HashMap<Integer, Boolean> switchMap);
+
+
+    public static KeyMagicEngine engineFromFilePath(String filePath) {
+        KeyMagicEngine newEngine = new KeyMagicEngine();
+        newEngine.loadKeyboardFile(filePath);
+        return  newEngine;
+    }
+
+    public static KeyMagicEngine engineFromAndroidAssets(AssetManager assetManager, String name) {
+        KeyMagicEngine newEngine = new KeyMagicEngine();
+        newEngine.loadKeyboardFile(assetManager, name);
+        return  newEngine;
+    }
 }

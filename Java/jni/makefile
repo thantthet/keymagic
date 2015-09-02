@@ -5,7 +5,7 @@ SOURCES := src/com_keymagic_KeyMagicEngine.cpp $(wildcard ../cross-platform/libk
 OBJECTS := $(SOURCES:.cpp=.o)
 LIBRARY := libkeymagic-jni.dylib
 JAVA_HOME := `/usr/libexec/java_home`
-INCLUDES := -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/darwin -I../cross-platform/libkeymagic/
+INCLUDES := -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/darwin -I../../cross-platform/libkeymagic/
 CXXFLAGS := $(INCLUDES) $(CFLAGS)
 
 all: $(SOURCES) $(LIBRARY)
