@@ -51,6 +51,38 @@ namespace libkm {
 		return true;
 	}
 
+	bool KeyMagicEngine::loadKeyboardFromFileDescriptor(int fd) {
+		bool success;
+		
+		//load keyboard from file
+		success = m_keyboard.loadKeyboardFromFileDescriptor(fd);
+		
+		//keyboard failed to load ?
+		if (!success) {
+			m_haveKeyboard = false;
+			return false;
+		}
+
+		prepareForMatching();
+		return true;
+	}
+
+	bool KeyMagicEngine::loadKeyboardFromFileHandle(FILE *hFile) {
+		bool success;
+		
+		//load keyboard from file
+		success = m_keyboard.loadKeyboardFromFileHandle(hFile);
+		
+		//keyboard failed to load ?
+		if (!success) {
+			m_haveKeyboard = false;
+			return false;
+		}
+
+		prepareForMatching();
+		return true;
+	}
+
 	#if defined (_WIN32) || defined (_WIN64)
 	bool KeyMagicEngine::loadKeyboardFile(const WCHAR * keyboardFile) {
 		bool success;

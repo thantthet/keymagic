@@ -49,6 +49,11 @@ public:
 	 * @param filename File name of the file to load
 	 */
 	bool loadKeyboardFile(const char * filename);
+
+	bool loadKeyboardFromFileDescriptor(int fd);
+
+	bool loadKeyboardFromFileHandle(FILE *hFile);
+	
 #if defined (_WIN32) || defined (_WIN64)
 	bool loadKeyboardFile(const WCHAR * filename);
 #endif

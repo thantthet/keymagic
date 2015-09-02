@@ -53,7 +53,7 @@ namespace libkm {
 			szFile[len] = '\0';
 			return getVersion(szFile);
 		}
-		return NULL;
+		return 0;
 	}
 
 	bool KeyMagicKeyboard::loadKeyboardFile(const WCHAR * wcPath) {
@@ -84,13 +84,13 @@ namespace libkm {
 		hFile = fopen(file, "rb");
 		if (!hFile){
 			PERROR("Cannot open keyboard file : %s\n", file);
-			return NULL;
+			return 0;
 		}
 
 		if (ReadHeader(hFile, &fh) == false) {
 			PERROR("Fail to load keyboard file : %s\n", file);
 			fclose(hFile);
-			return NULL;
+			return 0;
 		}
 
 		fclose(hFile);
@@ -213,21 +213,31 @@ namespace libkm {
 		return true;
 	}
 
+	bool KeyMagicKeyboard::loadKeyboardFromFileDescriptor(int fd) {
+		FILE *hFile = fdopen(fd, "rb");
+
+		return loadKeyboardFromFileHandle(hFile);
+	}
+
 	bool KeyMagicKeyboard::loadKeyboardFile(const char * szPath) {
+		FILE *hFile = fopen(szPath, "rb");
+
+		return loadKeyboardFromFileHandle(hFile);
+	}
+
+	bool KeyMagicKeyboard::loadKeyboardFromFileHandle(FILE *hFile) {
 		FileHeader fh;
-		FILE * hFile;
 
 		BinaryRuleList rules;
 		BinaryStringList strings;
 
-		hFile = fopen(szPath, "rb");
 		if (!hFile){
-			PERROR("Cannot open keyboard file : %s\n", szPath);
+			PERROR("Cannot open keyboard file");
 			return false;
 		}
 
 		if (ReadHeader(hFile, &fh) == false) {
-			PERROR("Fail to load keyboard file : %s\n", szPath);
+			PERROR("Failed to load keyboard file");
 			fclose(hFile);
 			return false;
 		}
