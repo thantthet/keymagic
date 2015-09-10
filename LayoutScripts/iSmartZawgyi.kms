@@ -70,6 +70,16 @@ $full_height[*] + U1037 => $1 + U1094
 U100A + $above[*] + $short[*]=> $1 + $2 + $long[$3]
 U100A + $short[*] => $1 + $long[$2]
 
+// ta-chaung-nyin
+U103C + U102D + $short[*] => $1 + $2 + $long[$3]
+U103C + $short[*] => $1 + $long[$2]
+
+// wa-swal + ha htol
+U103C + U103D => U108A
+
+// normalize ya-pint + ha hotl
+U103A + U103D => U103D + U103A
+
 $l = U102D + U102E
 $short[*] + $l[*] => $2 + $1
 $l[*] + U103C => $2 + $1
@@ -100,6 +110,9 @@ $patSints = U1060 + U1061 + U1062 + U1063 + U1065 + U1066 + U1067 + \
 	U1068 + U1069 + U106C + U106D + U1070 + U1071 + U1072 + U1074 + \
 	U1073 + U1075 + U1076 + U1077 + U1078 + U1079 + U107A + U107B + U107C + U1093
 
+// pat-sint and ta-chaung-nyin
+$patSints[*] + $short[*] => $1 + $long[$2]
+
 // Na
 U1014 + $short[*] => U108F + $2
 U1014 + U103D => U108F + $2
@@ -114,12 +127,37 @@ $below[*] + $two_dot_belows[*] => $1 + U1095
 
 $three_dot_belows = U1037 + U1094 + U1095
 
+// Ywae
+U101B + U103A + U1039 => U104D
+
+// Eil
+U1000 + U103A + U1039 => U1024
+
+// Ool + Yay-Cha
+U1025 + U102C => U1009 + U102C
+
+// 
+U1044 + U1004 + U1039 + U1038 => U104E
+
+// 
+U1027 + U104B + U1039 => U104F
+
+//
+U102D + U1064 => U108B
+U102E + U1064 => U108C
+
+U1064 + U102D => U108B
+U1064 + U102E => U108C
+U1064 + U1036 => U108D
+U102D + U1036 => U108E
+
 // dobule tap
 U102D + U102D => U102E
 U102B + U102B => U103C
 $three_dot_belows[*] + $three_dot_belows[*] => U1036
 U103B + U103B => U1032
 U103A + U103A => U103D
+U1031 + U1031 => U1017
 
 U1014 + $below[*]  => U108F + $2
 

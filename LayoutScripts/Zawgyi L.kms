@@ -247,6 +247,8 @@ $long[*] + U1037 => $1 + U1095
 U1014 + $above[*] + U1037 => $1 + $2 + U1094
 $full_height[*] + $above[*] + U1037 => $1 + $2 + U1095
 $full_height[*] + U1037 => $1 + U1094
+U100A + $above[*] + $short[*]=> $1 + $2 + $long[$3]
+U100A + $short[*] => $1 + $long[$2]
 
 // Nya
 U100A + $above[*] + $short[*]=> $1 + $2 + $long[$3]
@@ -356,6 +358,11 @@ $single_width[*] + $pat_sint_for_double_width[*] => $1 + $pat_sint_for_single_wi
 $double_width[*] + $pat_sint_for_single_width[*] => $1 + $pat_sint_for_double_width[$2]
 
 U102B + U1039 => U105A
+
+U1064 + U102D => U108B
+U1064 + U102E => U108C
+U1064 + U1036 => U108D
+U102D + U1036 => U108E
 
 U103A + U1037 => $1 + U1095
 U103A + $above[*] + U1037 => $1 + $2 + U1095
