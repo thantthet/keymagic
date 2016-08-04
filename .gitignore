@@ -77,3 +77,11 @@ cross-platform/libkeymagic/libKeyMagic.xcodeproj/project.xcworkspace/xcshareddat
 /windows/KeyMagic.NET/HookInput/Debug
 /windows/KeyMagic.NET/HookInput/x64
 windows/KeyMagic.NET/HookInput/Release
+windows/KeyMagic2/MagicAssit/x64
+windows/KeyMagic2/x64
+windows/KeyMagic2/ipch
+*.obj
+*.idb
+windows/KeyMagic2/KeyMagic2/x64
+obj/local/x86_64/objs
+obj

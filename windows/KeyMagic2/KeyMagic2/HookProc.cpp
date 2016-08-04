@@ -3,13 +3,13 @@
 #include <keymagic.h>
 #include <iostream>
 #include <array>
+#include "KeyboardManager.h"
 #include "../MagicAssit/MagicAssit.h"
 
 HHOOK HH_KEYBOARD_LL;
 
 using namespace libkm;
 
-KeyMagicEngine *engine;
 BYTE KeyboardStates[256];
 
 void SendString(KeyMagicString);
@@ -42,18 +42,31 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 		std::pair<std::vector<int>, short*>({ VK_LMENU, VK_RMENU }, &modKeyStates.MENU)
 	};
 
-	for (auto i = map.begin(); i != map.end(); i++)
-	{
-		auto vks = i->first;
-		auto pointer = i->second;
+	bool isModifierKey = false;
 
-		for (auto ii = vks.begin(); ii != vks.end(); ii++)
+	for (auto &pair : map)
+	{
+		auto vks = pair.first;
+		auto pointer = pair.second;
+
+		for (auto vk: vks)
 		{
-			if (*ii == kbd->vkCode)
+			if (vk == kbd->vkCode)
 			{
 				*pointer = (wParam == WM_KEYDOWN) ? 0x80 : 0;
+				isModifierKey = true;
 			}
 		}
+	}
+
+	if (isModifierKey)
+	{
+		if (modKeyStates.CONTROL && modKeyStates.SHIFT)
+		{
+			KeyboardManager *mgr = KeyboardManager::sharedManager();
+			mgr->ToggleKeyboard();
+		}
+		return CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
 	}
 
 	if ((kbd->flags & LLKHF_UP) == LLKHF_UP || kbd->vkCode == VK_PACKET || kbd->dwExtraInfo == 0xDEADC0DE)
@@ -93,20 +106,33 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 	UINT code = MapVirtualKeyEx(kbd->scanCode, MAPVK_VSC_TO_VK_EX, (HKL)0x04090409);
 	ToUnicodeEx(code, kbd->scanCode, states, unicode, 1, 0, (HKL)0x04090409);
 
+	Keyboard *selectedKeyboard = KeyboardManager::sharedManager()->SelectedKeyboard();
+
+	if (selectedKeyboard == nullptr)
+	{
+		return CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
+	}
+
+	KeyMagicEngine *engine = selectedKeyboard->GetKeyMagicEngine();
+
 	KeyMagicString contextBefore = engine->getContextText();
 	KeyMagicString difference;
 
 	BYTE emptyStates[256] = { 0 };
 	engine->setKeyStates(states);
 
-	bool eat = engine->processKeyEvent(unicode[0], code, modifier);
+	if (engine->processKeyEvent(unicode[0], code, modifier)) {
 
-	ULONG deleteCount = engine->getDifference(contextBefore, &difference);
+		ULONG deleteCount = engine->getDifference(contextBefore, &difference);
 
-	SendBackspace(deleteCount);
-	SendString(difference);
-
-	return eat ? eat : CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
+		SendBackspace(deleteCount);
+		SendString(difference);
+		return true;
+	}
+	else {
+		engine->reset();
+	}
+	return CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
 }
 
 void SendString(KeyMagicString s)
@@ -162,9 +188,6 @@ void SendBackspace(ULONG count)
 BOOL InitHooks(HWND mainHwnd)
 {
 	HH_KEYBOARD_LL = SetWindowsHookEx(WH_KEYBOARD_LL, &LowLevelKeyboardProc, NULL, NULL);
-
-	engine = new KeyMagicEngine();
-	bool success = engine->loadKeyboardFile(L"\\\\Mac\\Home\\codes\\keymagic-git\\LayoutScripts\\Zawgyi L - Unicode.km2");
 
 	HMODULE hModule = LoadLibrary(L"MagicAssit.dll");
 

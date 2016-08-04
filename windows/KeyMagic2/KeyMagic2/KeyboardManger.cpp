@@ -21,9 +21,15 @@ HBITMAP Keyboard::GetKeyboardIcon()
 	}
 	return this->hIcon;
 }
+
+std::string Keyboard::KeyboardFullPath()
+{
+	return (this->basePath + this->path);
+}
+
 void Keyboard::LoadKeyboardIcon()
 {
-	auto infoList = libkm::KeyMagicKeyboard::getInfosFromKeyboardFile((this->basePath + this->path).c_str());
+	auto infoList = libkm::KeyMagicKeyboard::getInfosFromKeyboardFile(this->KeyboardFullPath().c_str());
 	auto pair = infoList->find('icon');
 	if (pair == infoList->end())
 	{
@@ -42,9 +48,21 @@ void Keyboard::LoadKeyboardIcon()
 	pStream->Release();
 }
 
+libkm::KeyMagicEngine * Keyboard::GetKeyMagicEngine()
+{
+	if (m_engine != nullptr) {
+		return m_engine;
+	}
+
+	m_engine = new libkm::KeyMagicEngine();
+	m_engine->loadKeyboardFile(this->KeyboardFullPath().c_str());
+
+	return m_engine;
+}
+
 BOOL KeyboardManager::SetKeyboards(nlohmann::json jsonKeyboards)
 {
-	this->keyboards.clear();
+	this->m_keyboards.clear();
 
 	int index = 0;
 	for (auto& k : jsonKeyboards) {
@@ -55,14 +73,61 @@ BOOL KeyboardManager::SetKeyboards(nlohmann::json jsonKeyboards)
 		keyboard.name = k["name"].get<std::string>();
 		keyboard.path = k["path"].get<std::string>();
 
-		this->keyboards.push_back(keyboard);
+		this->m_keyboards.push_back(keyboard);
 	}
 	return true;
 }
 
-TKeyboardList KeyboardManager::GetKeyboards()
+TKeyboardList& KeyboardManager::GetKeyboards()
 {
-	return this->keyboards;
+	return this->m_keyboards;
+}
+
+BOOL KeyboardManager::SelectKeyboard(Keyboard * keyboard)
+{
+	if (keyboard != nullptr)
+	{
+		for (auto &kb : this->m_keyboards)
+		{
+			if (&kb == keyboard) {
+				this->m_lastSelectedKeyboard = this->m_selectedKeyboard;
+				this->m_selectedKeyboard = keyboard;
+				return true;
+			}
+		}
+	}
+	else {
+		this->m_lastSelectedKeyboard = this->m_selectedKeyboard;
+		this->m_selectedKeyboard = nullptr;
+	}
+	return true;
+}
+
+BOOL KeyboardManager::ToggleKeyboard()
+{
+	if (this->m_selectedKeyboard != nullptr) {
+		this->SelectKeyboard(nullptr);
+	}
+	else if (this->m_lastSelectedKeyboard) {
+		this->SelectKeyboard(this->m_lastSelectedKeyboard);
+	}
+	else if (this->m_keyboards.size()) {
+		this->SelectKeyboard(&this->m_keyboards.front());
+	}
+	else {
+		return false;
+	}
+
+	return true;
+}
+
+KeyboardManager * KeyboardManager::sharedManager()
+{
+	static KeyboardManager * sharedManager = nullptr;
+	if (sharedManager == nullptr) {
+		sharedManager = new KeyboardManager();
+	}
+	return sharedManager;
 }
 
 std::string const& KeyboardManager::basePath() const
@@ -73,4 +138,20 @@ std::string const& KeyboardManager::basePath() const
 void KeyboardManager::basePath(std::string const& newBasePath)
 {
 	this->m_basePath = newBasePath;
+}
+
+Keyboard * KeyboardManager::SelectedKeyboard()
+{
+	return this->m_selectedKeyboard;
+}
+
+Keyboard * KeyboardManager::KeyboardAtIndex(int index)
+{
+	for (auto &keyboard : this->m_keyboards) {
+		if (keyboard.index == index)
+		{
+			return &keyboard;
+		}
+	}
+	return nullptr;
 }

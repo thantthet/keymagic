@@ -10,6 +10,7 @@
 #include <fstream>
 #include <iosfwd>
 #include <codecvt>
+#include <shellapi.h>
 #include "json.hpp"
 #include "HookProc.h"
 #include "KeyboardManager.h"
@@ -21,6 +22,7 @@ name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
 processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 #define MAX_LOADSTRING 100
+#define IDM_KEYBOARD_ 0x5000
 
 const int kRightColumnWidth = 200;
 const int kRightColumnPadding = 10;
@@ -35,10 +37,9 @@ std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
-KeyboardManager kbdMgr;
 
 // Forward declarations of functions included in this code module:
-ATOM                MyRegisterClass(HINSTANCE hInstance);
+ATOM                RegisterWindowClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
@@ -76,7 +77,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_KEYMAGIC2, szWindowClass, MAX_LOADSTRING);
-    MyRegisterClass(hInstance);
+    RegisterWindowClass(hInstance);
 
     // Perform application initialization:
     if (!InitInstance (hInstance, nCmdShow))
@@ -106,11 +107,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 
 //
-//  FUNCTION: MyRegisterClass()
+//  FUNCTION: RegisterWindowClass()
 //
 //  PURPOSE: Registers the window class.
 //
-ATOM MyRegisterClass(HINSTANCE hInstance)
+ATOM RegisterWindowClass(HINSTANCE hInstance)
 {
     WNDCLASSEXW wcex;
 
@@ -219,7 +220,7 @@ BOOL InitListViewColumns(HWND hWndListView)
 	return TRUE;
 }
 
-BOOL createListView(HWND hWnd)
+BOOL CreateListView(HWND hWnd)
 {
 	HWND hControl;
 
@@ -244,7 +245,7 @@ BOOL createListView(HWND hWnd)
 	return true;
 }
 
-HWND createAddKeyboardButton(HWND hWnd)
+HWND CreateAddKeyboardButton(HWND hWnd)
 {
 	HWND hControl ;
 
@@ -266,8 +267,39 @@ HWND createAddKeyboardButton(HWND hWnd)
 
 	return hControl;
 }
+#define MY_TRAY_ICON_ID 999
+#define MY_TRAY_ICON_MESSAGE WM_APP + 999
 
-void sizeListView(HWND hWnd)
+void CreateShellNotifyIcon(HWND hWnd)
+{
+	NOTIFYICONDATA ni = { 0 };
+	ni.cbSize = sizeof(NOTIFYICONDATA);
+	ni.uID = MY_TRAY_ICON_ID;
+	ni.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
+	ni.hIcon =
+		(HICON)LoadImage(hInst,
+			MAKEINTRESOURCE(IDI_KEYMAGIC2),
+			IMAGE_ICON,
+			GetSystemMetrics(SM_CXSMICON),
+			GetSystemMetrics(SM_CYSMICON),
+			LR_DEFAULTCOLOR);
+	ni.hWnd = hWnd;
+	ni.uCallbackMessage = MY_TRAY_ICON_MESSAGE;
+
+	Shell_NotifyIcon(NIM_ADD, &ni);
+}
+
+void DeleteShellNotifyIcon(HWND hWnd)
+{
+	NOTIFYICONDATA ni = { 0 };
+	ni.cbSize = sizeof(NOTIFYICONDATA);
+	ni.hWnd = hWnd;
+	ni.uID = MY_TRAY_ICON_ID;
+
+	Shell_NotifyIcon(NIM_DELETE, &ni);
+}
+
+void SizeListView(HWND hWnd)
 {
 	HWND hControl;
 	RECT rcClient;
@@ -284,7 +316,7 @@ void sizeListView(HWND hWnd)
 		SWP_NOZORDER);
 }
 
-void sizeAddKeyboardButton(HWND hWnd)
+void SizeAddKeyboardButton(HWND hWnd)
 {
 	HWND hControl;
 	RECT rcClient;
@@ -407,13 +439,14 @@ void ReloadKeyboards(HWND hWnd)
 		HWND hControl = GetDlgItem(hWnd, IDC_LV_KEYBOARDS);
 		SendMessage(hControl, LVM_DELETEALLITEMS, 0, 0); // clear list view items
 
+		KeyboardManager *mgr = KeyboardManager::sharedManager();
 		json keyboards = config["keyboards"];
-		kbdMgr.basePath(dirname(jsonFile));
-		kbdMgr.SetKeyboards(keyboards);
+		mgr->basePath(dirname(jsonFile));
+		mgr->SetKeyboards(keyboards);
 
-		HIMAGELIST himl = ImageList_Create(16, 16, ILC_COLOR, kbdMgr.GetKeyboards().size(), 1);
+		HIMAGELIST himl = ImageList_Create(16, 16, ILC_COLOR, mgr->GetKeyboards().size(), 1);
 
-		for (auto& keyboard : kbdMgr.GetKeyboards()) {
+		for (auto& keyboard : mgr->GetKeyboards()) {
 			int ret = ImageList_Add(himl, keyboard.GetKeyboardIcon(), NULL);
 			std::cout << ret;
 		}
@@ -421,10 +454,52 @@ void ReloadKeyboards(HWND hWnd)
 		ListView_SetImageList(hControl, himl, LVSIL_SMALL);
 		ListView_SetImageList(hControl, himl, LVSIL_NORMAL);
 
-		for (auto& keyboard : kbdMgr.GetKeyboards()) {
+		for (auto& keyboard : mgr->GetKeyboards()) {
 			InsertListViewItems(hControl, keyboard);
 		}
 	}
+}
+
+void ShowTrayContextMenu(HWND hWnd)
+{
+	HMENU hMenu;
+	hMenu = CreatePopupMenu();
+
+	KeyboardManager *mgr = KeyboardManager::sharedManager();
+	for (auto& keyboard : mgr->GetKeyboards())
+	{
+		TCHAR title[200] = { 0 };
+
+		std::wstring wide = converter.from_bytes(keyboard.name);
+		memcpy(title, wide.c_str(), wide.size() * sizeof(wchar_t));
+
+		MENUITEMINFO mii = { 0 };
+		mii.cbSize = sizeof(MENUITEMINFO);
+		mii.cch = wide.size() * sizeof(wchar_t);
+		mii.fMask = MIIM_STRING | MIIM_STATE | MIIM_ID;
+		mii.dwTypeData = title;
+		mii.fState = MFS_UNCHECKED;
+		if (mgr->SelectedKeyboard() == &keyboard)
+		{
+			mii.fState = MFS_CHECKED;
+		}
+		mii.wID = IDM_KEYBOARD_ + keyboard.index;
+
+		InsertMenuItem(hMenu, IDM_KEYBOARD_ + keyboard.index, false, &mii);
+	}
+
+	MENUITEMINFO mii = { 0 };
+	mii.cbSize = sizeof(MENUITEMINFO);
+	mii.fMask = MIIM_TYPE;
+	mii.fType = MFT_SEPARATOR;
+	InsertMenuItem(hMenu, 0, false, &mii);
+
+	AppendMenu(hMenu, MF_STRING, IDM_EXIT, _T("Exit"));
+
+	POINT pt;
+	GetCursorPos(&pt);
+	SetForegroundWindow(hWnd);
+	TrackPopupMenu(hMenu, TPM_BOTTOMALIGN | TPM_VERNEGANIMATION, pt.x, pt.y, 0, hWnd, NULL);
 }
 
 //
@@ -441,9 +516,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
+	case MY_TRAY_ICON_MESSAGE:
+		switch (lParam)
+		{
+		case WM_LBUTTONDBLCLK:
+			ShowWindow(hWnd, SW_RESTORE);
+			break;
+		case WM_RBUTTONDOWN:
+		case WM_CONTEXTMENU:
+			ShowTrayContextMenu(hWnd);
+		}
+		break;
 	case WM_COMMAND:
 	{
 		int wmId = LOWORD(wParam);
+		if (wmId >= IDM_KEYBOARD_)
+		{
+			int index = wmId - IDM_KEYBOARD_;
+			KeyboardManager * mgr = KeyboardManager::sharedManager();
+			Keyboard * keyboard = mgr->KeyboardAtIndex(index);
+			if (keyboard != nullptr)
+			{
+				mgr->SelectKeyboard(keyboard);
+			}
+		}
 		// Parse the menu selections:
 		switch (wmId)
 		{
@@ -480,16 +576,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		icex.dwICC = ICC_LISTVIEW_CLASSES;
 		InitCommonControlsEx(&icex);
 
-		createListView(hWnd);
-		createAddKeyboardButton(hWnd);
+		CreateListView(hWnd);
+		CreateAddKeyboardButton(hWnd);
+		CreateShellNotifyIcon(hWnd);
 
 		ReloadKeyboards(hWnd);
 	}
 	break;
 	case WM_SIZE:
 	{
-		sizeListView(hWnd);
-		sizeAddKeyboardButton(hWnd);
+		SizeListView(hWnd);
+		SizeAddKeyboardButton(hWnd);
 	}
 	break;
 	case WM_PAINT:
@@ -500,7 +597,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EndPaint(hWnd, &ps);
 	}
 	break;
+	case WM_CLOSE:
+		ShowWindow(hWnd, SW_HIDE);
+		return false;
 	case WM_DESTROY:
+		DeleteShellNotifyIcon(hWnd);
 		PostQuitMessage(0);
 		break;
 
