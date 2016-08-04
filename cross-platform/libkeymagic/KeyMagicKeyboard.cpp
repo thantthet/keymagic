@@ -80,8 +80,11 @@ namespace libkm {
 	unsigned long KeyMagicKeyboard::getVersion(const char * file) {
 		FileHeader fh;
 		FILE * hFile;
-
+#ifdef _MSC_VER
+		fopen_s(&hFile, file, "rb");
+#else
 		hFile = fopen(file, "rb");
+#endif
 		if (!hFile){
 			PERROR("Cannot open keyboard file : %s\n", file);
 			return 0;
@@ -104,7 +107,11 @@ namespace libkm {
 
 		InfoList * infos = new InfoList();
 
+#ifdef _MSC_VER
+		fopen_s(&hFile, file, "rb");
+#else
 		hFile = fopen(file, "rb");
+#endif
 		if (!hFile){
 			PERROR("Cannot open keyboard file : %s\n", file);
 			return NULL;
@@ -214,13 +221,18 @@ namespace libkm {
 	}
 
 	bool KeyMagicKeyboard::loadKeyboardFromFileDescriptor(int fd) {
-		FILE *hFile = fdopen(fd, "rb");
+		FILE *hFile = _fdopen(fd, "rb");
 
 		return loadKeyboardFromFileHandle(hFile);
 	}
 
 	bool KeyMagicKeyboard::loadKeyboardFile(const char * szPath) {
-		FILE *hFile = fopen(szPath, "rb");
+		FILE *hFile;
+#ifdef _MSC_VER
+		fopen_s(&hFile, szPath, "rb");
+#else
+		hFile = fopen(szPath, "rb");
+#endif
 
 		return loadKeyboardFromFileHandle(hFile);
 	}
