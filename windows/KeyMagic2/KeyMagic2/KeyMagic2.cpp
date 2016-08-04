@@ -1,0 +1,546 @@
+// KeyMagic2.cpp : Defines the entry point for the application.
+//
+
+#include "stdafx.h"
+#include "KeyMagic2.h"
+#include <CommCtrl.h>
+#include <Commdlg.h>
+#include <Shlobj.h>
+#include <string>
+#include <fstream>
+#include <iosfwd>
+#include <codecvt>
+#include "json.hpp"
+#include "HookProc.h"
+#include "KeyboardManager.h"
+#include <keymagic.h>
+#include "../MagicAssit/MagicAssit.h"
+
+#pragma comment(linker,"\"/manifestdependency:type='win32' \
+name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
+processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+
+#define MAX_LOADSTRING 100
+
+const int kRightColumnWidth = 200;
+const int kRightColumnPadding = 10;
+const int kListViewMargin = 10;
+const int kButtonWidth = kRightColumnWidth - kRightColumnPadding * 2;
+const int kButtonHeight = 30;
+
+using json = nlohmann::json;
+std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+
+// Global Variables:
+HINSTANCE hInst;                                // current instance
+WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
+WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+KeyboardManager kbdMgr;
+
+// Forward declarations of functions included in this code module:
+ATOM                MyRegisterClass(HINSTANCE hInstance);
+BOOL                InitInstance(HINSTANCE, int);
+LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+template<typename string_t>
+string_t dirname(string_t source)
+{
+	source.erase(std::find(source.rbegin(), source.rend(), '\\').base(), source.end());
+	return source;
+}
+
+template<class T>
+T base_name(T const & path)
+{
+	return path.substr(path.find_last_of('\\') + 1);
+}
+template<class T>
+
+T remove_extension(T const & filename)
+{
+	typename T::size_type const p(filename.find_last_of('.'));
+	return p > 0 && p != T::npos ? filename.substr(0, p) : filename;
+}
+
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
+                     _In_opt_ HINSTANCE hPrevInstance,
+                     _In_ LPWSTR    lpCmdLine,
+                     _In_ int       nCmdShow)
+{
+    UNREFERENCED_PARAMETER(hPrevInstance);
+    UNREFERENCED_PARAMETER(lpCmdLine);
+
+    // TODO: Place code here.
+
+    // Initialize global strings
+    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+    LoadStringW(hInstance, IDC_KEYMAGIC2, szWindowClass, MAX_LOADSTRING);
+    MyRegisterClass(hInstance);
+
+    // Perform application initialization:
+    if (!InitInstance (hInstance, nCmdShow))
+    {
+        return FALSE;
+    }
+
+    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_KEYMAGIC2));
+
+    MSG msg;
+
+    // Main message loop:
+    while (GetMessage(&msg, nullptr, 0, 0))
+    {
+        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+    }
+
+	Dll_UnHook();
+
+    return (int) msg.wParam;
+}
+
+
+
+//
+//  FUNCTION: MyRegisterClass()
+//
+//  PURPOSE: Registers the window class.
+//
+ATOM MyRegisterClass(HINSTANCE hInstance)
+{
+    WNDCLASSEXW wcex;
+
+    wcex.cbSize = sizeof(WNDCLASSEX);
+
+    wcex.style          = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc    = WndProc;
+    wcex.cbClsExtra     = 0;
+    wcex.cbWndExtra     = 0;
+    wcex.hInstance      = hInstance;
+    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_KEYMAGIC2));
+    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
+    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
+    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_KEYMAGIC2);
+    wcex.lpszClassName  = szWindowClass;
+    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_KEYMAGIC2));
+
+    return RegisterClassExW(&wcex);
+}
+
+//
+//   FUNCTION: InitInstance(HINSTANCE, int)
+//
+//   PURPOSE: Saves instance handle and creates main window
+//
+//   COMMENTS:
+//
+//        In this function, we save the instance handle in a global variable and
+//        create and display the main program window.
+//
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+{
+   hInst = hInstance; // Store instance handle in our global variable
+
+   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+
+   if (!hWnd)
+   {
+      return FALSE;
+   }
+
+   ShowWindow(hWnd, nCmdShow);
+   UpdateWindow(hWnd);
+   InitHooks(hWnd);
+
+   return TRUE;
+}
+
+BOOL InsertListViewItems(HWND hWndListView, Keyboard keyboard)
+{
+	LVITEM lvI;
+
+	TCHAR text[200];
+
+	lstrcpyn(text, converter.from_bytes(keyboard.name).c_str(), 200);
+
+	lvI.pszText = text;
+	lvI.mask = LVIF_TEXT | LVIF_STATE | LVIF_IMAGE;
+	lvI.stateMask = 0;
+	lvI.iSubItem = 0;
+	lvI.state = 0;
+	lvI.iItem = keyboard.index;
+	lvI.iImage = keyboard.index;
+
+	if (ListView_InsertItem(hWndListView, &lvI) == -1)
+		return FALSE;
+
+	return TRUE;
+}
+
+BOOL InitListViewColumns(HWND hWndListView)
+{
+	WCHAR szText[256];     // Temporary buffer.
+	LVCOLUMN lvc;
+	int iCol;
+
+	// Initialize the LVCOLUMN structure.
+	// The mask specifies that the format, width, text,
+	// and subitem members of the structure are valid.
+	lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
+
+	// Add the columns.
+	for (iCol = 0; iCol < 1; iCol++)
+	{
+		lvc.iSubItem = iCol;
+		lvc.pszText = szText;
+		lvc.cx = 200;               // Width of column in pixels.
+
+		if (iCol < 2)
+			lvc.fmt = LVCFMT_LEFT;  // Left-aligned column.
+		else
+			lvc.fmt = LVCFMT_RIGHT; // Right-aligned column.
+
+									// Load the names of the column headings from the string resources.
+		LoadString(hInst,
+			IDS_LVC_FIRST + iCol,
+			szText,
+			sizeof(szText) / sizeof(szText[0]));
+
+		// Insert the columns into the list view.
+		if (ListView_InsertColumn(hWndListView, iCol, &lvc) == -1)
+			return FALSE;
+	}
+
+	return TRUE;
+}
+
+BOOL createListView(HWND hWnd)
+{
+	HWND hControl;
+
+	hControl = CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW,
+		_T(""),
+		WS_CHILD | WS_VISIBLE | LVS_REPORT | WS_HSCROLL | WS_VSCROLL,
+		0, 0, 0, 0,
+		hWnd,
+		(HMENU)IDC_LV_KEYBOARDS,
+		hInst,
+		NULL);
+	if (hControl == NULL) {
+		MessageBox(hWnd, _T("Could not create list view."), _T("Error"), MB_OK | MB_ICONERROR);
+		return false;
+	}
+
+	HFONT hfDefault = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+	SendMessage(hControl, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE, 0));
+
+	InitListViewColumns(hControl);
+
+	return true;
+}
+
+HWND createAddKeyboardButton(HWND hWnd)
+{
+	HWND hControl ;
+
+	hControl = CreateWindow(WC_BUTTON,
+		_T("Add"),
+		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+		0, 0, 0, 0,
+		hWnd,
+		(HMENU)IDC_BTN_ADD,
+		hInst,
+		NULL);
+
+	if (hControl == NULL) {
+		MessageBox(hWnd, _T("Could not create add button."), _T("Error"), MB_OK | MB_ICONERROR);
+	}
+
+	HFONT hfDefault = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+	SendMessage(hControl, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE, 0));
+
+	return hControl;
+}
+
+void sizeListView(HWND hWnd)
+{
+	HWND hControl;
+	RECT rcClient;
+
+	GetClientRect(hWnd, &rcClient);
+
+	hControl = GetDlgItem(hWnd, IDC_LV_KEYBOARDS);
+	SetWindowPos(hControl,
+		NULL,
+		kListViewMargin,
+		kListViewMargin,
+		rcClient.right - kRightColumnWidth - kListViewMargin,
+		rcClient.bottom - kListViewMargin * 2,
+		SWP_NOZORDER);
+}
+
+void sizeAddKeyboardButton(HWND hWnd)
+{
+	HWND hControl;
+	RECT rcClient;
+
+	int width = 100;
+	int height = 30;
+
+	GetClientRect(hWnd, &rcClient);
+
+	hControl = GetDlgItem(hWnd, IDC_BTN_ADD);
+	SetWindowPos(hControl,
+		NULL,
+		rcClient.right - kRightColumnWidth + kRightColumnPadding,
+		kRightColumnPadding,
+		kButtonWidth,
+		kButtonHeight,
+		SWP_NOZORDER);
+}
+
+static LPCTSTR AppDataDirectory()
+{
+	TCHAR szPath[MAX_PATH];
+	static std::wstring destDirPath;
+	
+	if (destDirPath.size())
+	{
+		return destDirPath.c_str();
+	}
+
+	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath))) {
+		destDirPath = szPath;
+		destDirPath += _T("\\KeyMagic\\");
+		CreateDirectory(destDirPath.c_str(), NULL);
+	}
+
+	return destDirPath.c_str();
+}
+
+std::string jsonFilePath()
+{
+	char temp[MAX_PATH];
+	size_t converted;
+
+	std::string dataDirectory = converter.to_bytes(AppDataDirectory());
+	std::string jsonFile = dataDirectory + "config.json";
+
+	return jsonFile;
+}
+
+void RegisterKeyboardFile(HWND hWnd, LPCTSTR fileName)
+{
+	std::string keyboardPath = converter.to_bytes(fileName);
+	
+	std::string jsonFile = jsonFilePath();
+	std::ifstream t(jsonFile);
+
+	json config;
+
+	if (t.good())
+	{
+		config = json::parse(t);
+	}
+	else {
+		json keyboards = {};
+		config = { { "keyboards", keyboards } };
+	}
+
+	json keyboards = config["keyboards"];
+	std::string keyboardName;
+
+	auto infos = libkm::KeyMagicKeyboard::getInfosFromKeyboardFile(keyboardPath.c_str());
+	auto name = infos->find('name');
+	if (name != infos->end())
+	{
+		auto nameInfo = name->second;
+		keyboardName.assign(nameInfo.Data(), nameInfo.Size());
+	}
+	else {
+		keyboardName.assign(base_name(keyboardPath));
+	}
+
+	json keyboard = {
+		{"name", keyboardName},
+		{"path", keyboardPath}
+	};
+
+	keyboards.push_back(keyboard);
+
+	config["keyboards"] = keyboards;
+
+	std::ofstream out(jsonFile);
+	out << config.dump(4);
+	out.close();
+}
+
+void AddKeyboardFile(HWND hWnd, LPCTSTR filePath)
+{
+	
+	std::wstring basename = base_name<std::wstring>(filePath);
+	if (CopyFile(filePath, (AppDataDirectory() + basename).c_str(), true)) {
+		RegisterKeyboardFile(hWnd, basename.c_str());
+		ReloadKeyboards(hWnd);
+	}
+	else {
+		MessageBox(NULL, _T("Copying failed while registering keyboard!"), _T("Oh Snap!"), MB_OK);
+	}
+}
+
+void ReloadKeyboards(HWND hWnd)
+{
+	std::string jsonFile = jsonFilePath();
+	std::ifstream t(jsonFile);
+
+	json config;
+
+	if (t.good())
+	{
+		config = json::parse(t);
+
+		HWND hControl = GetDlgItem(hWnd, IDC_LV_KEYBOARDS);
+		SendMessage(hControl, LVM_DELETEALLITEMS, 0, 0); // clear list view items
+
+		json keyboards = config["keyboards"];
+		kbdMgr.basePath(dirname(jsonFile));
+		kbdMgr.SetKeyboards(keyboards);
+
+		HIMAGELIST himl = ImageList_Create(16, 16, ILC_COLOR, kbdMgr.GetKeyboards().size(), 1);
+
+		for (auto& keyboard : kbdMgr.GetKeyboards()) {
+			int ret = ImageList_Add(himl, keyboard.GetKeyboardIcon(), NULL);
+			std::cout << ret;
+		}
+
+		ListView_SetImageList(hControl, himl, LVSIL_SMALL);
+		ListView_SetImageList(hControl, himl, LVSIL_NORMAL);
+
+		for (auto& keyboard : kbdMgr.GetKeyboards()) {
+			InsertListViewItems(hControl, keyboard);
+		}
+	}
+}
+
+//
+//  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
+//
+//  PURPOSE:  Processes messages for the main window.
+//
+//  WM_COMMAND  - process the application menu
+//  WM_PAINT    - Paint the main window
+//  WM_DESTROY  - post a quit message and return
+//
+//
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+	case WM_COMMAND:
+	{
+		int wmId = LOWORD(wParam);
+		// Parse the menu selections:
+		switch (wmId)
+		{
+		case IDM_ABOUT:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+			break;
+		case IDM_EXIT:
+			DestroyWindow(hWnd);
+			break;
+		case IDC_BTN_ADD:
+		{
+			TCHAR fileName[MAX_PATH] = { 0 };
+			OPENFILENAME ofn = { 0 };
+			ofn.lStructSize = sizeof(OPENFILENAME);
+			ofn.hInstance = hInst;
+			ofn.hwndOwner = hWnd;
+			ofn.lpstrFilter = _T("KeyMagic Keyboard File (*.km2)\0*.km2\0");
+			ofn.lpstrFile = fileName;
+			ofn.nMaxFile = MAX_PATH;
+			ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST;
+			if (GetOpenFileName(&ofn)) {
+				AddKeyboardFile(hWnd, fileName);
+			}
+		}
+			break;
+		default:
+			return DefWindowProc(hWnd, message, wParam, lParam);
+		}
+	}
+	break;
+	case WM_CREATE:
+	{
+		INITCOMMONCONTROLSEX icex;           // Structure for control initialization.
+		icex.dwICC = ICC_LISTVIEW_CLASSES;
+		InitCommonControlsEx(&icex);
+
+		createListView(hWnd);
+		createAddKeyboardButton(hWnd);
+
+		ReloadKeyboards(hWnd);
+	}
+	break;
+	case WM_SIZE:
+	{
+		sizeListView(hWnd);
+		sizeAddKeyboardButton(hWnd);
+	}
+	break;
+	case WM_PAINT:
+	{
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(hWnd, &ps);
+		// TODO: Add any drawing code that uses hdc here...
+		EndPaint(hWnd, &ps);
+	}
+	break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+
+		// KeyMagic Messages
+	case WM_COPYDATA:
+	{
+		PCOPYDATASTRUCT cds = (PCOPYDATASTRUCT)lParam;
+		if (cds->dwData == 0x8855) {
+			memcpy_s(KeyboardStates, 256, cds->lpData, cds->cbData);
+		}
+		break;
+	}
+	case KM_GOTFOCUS:
+		
+		break;
+	case KM_LOSTFOCUS:
+
+		break;
+    default:
+        return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+    return 0;
+}
+
+// Message handler for about box.
+INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    UNREFERENCED_PARAMETER(lParam);
+    switch (message)
+    {
+    case WM_INITDIALOG:
+        return (INT_PTR)TRUE;
+
+    case WM_COMMAND:
+        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+        {
+            EndDialog(hDlg, LOWORD(wParam));
+            return (INT_PTR)TRUE;
+        }
+        break;
+    }
+    return (INT_PTR)FALSE;
+}
