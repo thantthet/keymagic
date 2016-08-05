@@ -24,7 +24,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #define MAX_LOADSTRING 100
 #define IDM_KEYBOARD_ 0x5000
 
-const int kRightColumnWidth = 200;
+const int kRightColumnWidth = 120;
 const int kRightColumnPadding = 10;
 const int kListViewMargin = 10;
 const int kButtonWidth = kRightColumnWidth - kRightColumnPadding * 2;
@@ -72,7 +72,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: Place code here.
+	char buffer[MAX_PATH] = { 0 };
+	GetModuleFileNameA(NULL, buffer, MAX_PATH);
+
+	//std::string command;
+	//command += "/create /tn \"KeyMagic\" /tr \"";
+	//command += buffer;
+	//command += "\" /sc onstart /ru system";
+	//ShellExecuteA(NULL, "open", "schtasks.exe", command.c_str(), "", 1);
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -80,7 +87,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     RegisterWindowClass(hInstance);
 
     // Perform application initialization:
-    if (!InitInstance (hInstance, nCmdShow))
+    if (!InitInstance (hInstance, SW_HIDE))
     {
         return FALSE;
     }
@@ -99,7 +106,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
     }
 
-	Dll_UnHook();
+	//Dll_UnHook();
 
     return (int) msg.wParam;
 }
@@ -147,7 +154,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // Store instance handle in our global variable
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+      CW_USEDEFAULT, 0, 500, 300, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
@@ -287,6 +294,35 @@ void CreateShellNotifyIcon(HWND hWnd)
 	ni.uCallbackMessage = MY_TRAY_ICON_MESSAGE;
 
 	Shell_NotifyIcon(NIM_ADD, &ni);
+}
+
+void SetShellNotifyIcon(HWND hWnd)
+{
+	KeyboardManager *mgr = KeyboardManager::sharedManager();
+	Keyboard * keyboard = mgr->SelectedKeyboard();
+
+	HWND hControl = GetDlgItem(hWnd, IDC_LV_KEYBOARDS);
+	HIMAGELIST himl = ListView_GetImageList(hControl, LVSIL_SMALL);
+
+	NOTIFYICONDATA ni = { 0 };
+	ni.cbSize = sizeof(NOTIFYICONDATA);
+	ni.uID = MY_TRAY_ICON_ID;
+	ni.uFlags = NIF_ICON;
+	ni.hWnd = hWnd;
+	if (keyboard != nullptr) {
+		HICON hIcon = ImageList_GetIcon(himl, keyboard->index, 0);
+		ni.hIcon = hIcon;
+	}
+	else {
+		ni.hIcon =
+			(HICON)LoadImage(hInst,
+				MAKEINTRESOURCE(IDI_KEYMAGIC2),
+				IMAGE_ICON,
+				GetSystemMetrics(SM_CXSMICON),
+				GetSystemMetrics(SM_CYSMICON),
+				LR_DEFAULTCOLOR);
+	}
+	Shell_NotifyIcon(NIM_MODIFY, &ni);
 }
 
 void DeleteShellNotifyIcon(HWND hWnd)
@@ -444,7 +480,14 @@ void ReloadKeyboards(HWND hWnd)
 		mgr->basePath(dirname(jsonFile));
 		mgr->SetKeyboards(keyboards);
 
-		HIMAGELIST himl = ImageList_Create(16, 16, ILC_COLOR, mgr->GetKeyboards().size(), 1);
+		HIMAGELIST himl = ListView_GetImageList(hControl, LVSIL_SMALL);
+
+		if (himl)
+		{
+			ImageList_Destroy(himl);
+		}
+
+		himl = ImageList_Create(16, 16, ILC_COLOR, mgr->GetKeyboards().size(), 1);
 
 		for (auto& keyboard : mgr->GetKeyboards()) {
 			int ret = ImageList_Add(himl, keyboard.GetKeyboardIcon(), NULL);
@@ -452,7 +495,6 @@ void ReloadKeyboards(HWND hWnd)
 		}
 
 		ListView_SetImageList(hControl, himl, LVSIL_SMALL);
-		ListView_SetImageList(hControl, himl, LVSIL_NORMAL);
 
 		for (auto& keyboard : mgr->GetKeyboards()) {
 			InsertListViewItems(hControl, keyboard);
@@ -476,9 +518,10 @@ void ShowTrayContextMenu(HWND hWnd)
 		MENUITEMINFO mii = { 0 };
 		mii.cbSize = sizeof(MENUITEMINFO);
 		mii.cch = wide.size() * sizeof(wchar_t);
-		mii.fMask = MIIM_STRING | MIIM_STATE | MIIM_ID;
+		mii.fMask = MIIM_STRING | MIIM_STATE | MIIM_ID | MIIM_BITMAP;
 		mii.dwTypeData = title;
 		mii.fState = MFS_UNCHECKED;
+		mii.hbmpItem = keyboard.GetKeyboardIcon();
 		if (mgr->SelectedKeyboard() == &keyboard)
 		{
 			mii.fState = MFS_CHECKED;
@@ -579,6 +622,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		CreateListView(hWnd);
 		CreateAddKeyboardButton(hWnd);
 		CreateShellNotifyIcon(hWnd);
+
+		KeyboardManager *mgr = KeyboardManager::sharedManager();
+		mgr->addOnKeyboardDidChangeHandler([hWnd]() {
+			SetShellNotifyIcon(hWnd);
+		});
 
 		ReloadKeyboards(hWnd);
 	}

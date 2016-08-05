@@ -62,6 +62,8 @@ libkm::KeyMagicEngine * Keyboard::GetKeyMagicEngine()
 
 BOOL KeyboardManager::SetKeyboards(nlohmann::json jsonKeyboards)
 {
+	this->SelectKeyboard(nullptr);
+	this->m_lastSelectedKeyboard = nullptr;
 	this->m_keyboards.clear();
 
 	int index = 0;
@@ -92,13 +94,16 @@ BOOL KeyboardManager::SelectKeyboard(Keyboard * keyboard)
 			if (&kb == keyboard) {
 				this->m_lastSelectedKeyboard = this->m_selectedKeyboard;
 				this->m_selectedKeyboard = keyboard;
+				this->m_callback();
 				return true;
 			}
 		}
+		return false;
 	}
 	else {
 		this->m_lastSelectedKeyboard = this->m_selectedKeyboard;
 		this->m_selectedKeyboard = nullptr;
+		this->m_callback();
 	}
 	return true;
 }
@@ -118,6 +123,31 @@ BOOL KeyboardManager::ToggleKeyboard()
 		return false;
 	}
 
+	return true;
+}
+
+BOOL KeyboardManager::AdvanceToNextKeyboard()
+{
+	if (this->m_keyboards.size()) {
+		if (this->m_selectedKeyboard == nullptr) {
+			this->SelectKeyboard(&this->m_keyboards.front());
+		}
+		else
+		{
+			int nextIndex = this->m_selectedKeyboard->index + 1;
+			if (nextIndex == this->m_keyboards.size())
+			{
+				this->SelectKeyboard(nullptr);
+			}
+			else {
+				Keyboard &keyboard = this->m_keyboards.at(nextIndex);
+				this->SelectKeyboard(&keyboard);
+			}
+		}
+	}
+	else {
+		return false;
+	}
 	return true;
 }
 

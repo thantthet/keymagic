@@ -68,6 +68,14 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 		}
 		return CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
 	}
+	else if (kbd->vkCode == VK_SPACE && wParam == WM_KEYDOWN) {
+		if (modKeyStates.CONTROL) {
+			KeyboardManager *mgr = KeyboardManager::sharedManager();
+			if (mgr->AdvanceToNextKeyboard()) {
+				return true;
+			}
+		}
+	}
 
 	if ((kbd->flags & LLKHF_UP) == LLKHF_UP || kbd->vkCode == VK_PACKET || kbd->dwExtraInfo == 0xDEADC0DE)
 	{
@@ -189,10 +197,10 @@ BOOL InitHooks(HWND mainHwnd)
 {
 	HH_KEYBOARD_LL = SetWindowsHookEx(WH_KEYBOARD_LL, &LowLevelKeyboardProc, NULL, NULL);
 
-	HMODULE hModule = LoadLibrary(L"MagicAssit.dll");
+	//HMODULE hModule = LoadLibrary(L"MagicAssit.dll");
 
-	Dll_SetMainWindowsHandle(mainHwnd);
-	Dll_SetWindowsHooks(hModule);
+	//Dll_SetMainWindowsHandle(mainHwnd);
+	//Dll_SetWindowsHooks(hModule);
 
 	return HH_KEYBOARD_LL != NULL;
 }

@@ -27,7 +27,7 @@ public:
 	libkm::KeyMagicEngine * GetKeyMagicEngine();
 };
 
-typedef std::list<Keyboard> TKeyboardList;
+typedef std::vector<Keyboard> TKeyboardList;
 
 class KeyboardManager
 {
@@ -36,9 +36,15 @@ private:
 	Keyboard* m_selectedKeyboard;
 	Keyboard* m_lastSelectedKeyboard;
 	std::string m_basePath;
+	std::function<void()> m_callback;
 
 public:
 	static KeyboardManager * sharedManager();
+
+	void addOnKeyboardDidChangeHandler(std::function<void()> callback)
+	{
+		m_callback = callback;
+	}
 
 	std::string const& basePath() const;
 	void basePath(std::string const& newBasePath);
@@ -48,4 +54,5 @@ public:
 	TKeyboardList& GetKeyboards();
 	BOOL SelectKeyboard(Keyboard * keyboard);
 	BOOL ToggleKeyboard();
+	BOOL AdvanceToNextKeyboard();
 };
