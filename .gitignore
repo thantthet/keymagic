@@ -85,3 +85,9 @@ windows/KeyMagic2/ipch
 windows/KeyMagic2/KeyMagic2/x64
 obj/local/x86_64/objs
 obj
+windows/KeyMagic2/KeyMagic2/Release
+windows/KeyMagic2/MagicAssit/Debug
+windows/KeyMagic2/Release
+windows/KeyMagic2/MagicAssit/Release
+windows/KeyMagic2/KeyMagic2/Debug
+windows/KeyMagic2/Debug

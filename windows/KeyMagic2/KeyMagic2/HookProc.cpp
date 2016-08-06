@@ -7,6 +7,7 @@
 #include "../MagicAssit/MagicAssit.h"
 
 HHOOK HH_KEYBOARD_LL;
+HHOOK HH_MOUSE_LL;
 
 using namespace libkm;
 
@@ -23,6 +24,56 @@ struct ModifierKeyStates
 };
 
 ModifierKeyStates modKeyStates;
+
+KeyMagicEngine * GetEngineForSelectedKeyboard()
+{
+	auto selectedKeyboard = KeyboardManager::sharedManager()->SelectedKeyboard();
+	if (selectedKeyboard == nullptr)
+	{
+		return nullptr;
+	}
+
+	KeyMagicEngine *engine = selectedKeyboard->GetKeyMagicEngine();
+
+	return engine;
+}
+
+bool ResetEngine()
+{
+	KeyMagicEngine *engine = GetEngineForSelectedKeyboard();
+	if (engine)
+	{
+		engine->reset();
+		return true;
+	}
+	return false;
+}
+
+LRESULT CALLBACK LowLevelMouseProc(
+	_In_ int    nCode,
+	_In_ WPARAM wParam,
+	_In_ LPARAM lParam
+	)
+{
+	if (nCode < 0) {
+		return CallNextHookEx(HH_MOUSE_LL, nCode, wParam, lParam);
+	}
+
+	UINT mouseAction = wParam;
+	switch (mouseAction)
+	{
+	case WM_LBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+	{
+		ResetEngine();
+	}
+		break;
+	default:
+		break;
+	}
+
+	return CallNextHookEx(HH_MOUSE_LL, nCode, wParam, lParam);
+}
 
 LRESULT CALLBACK LowLevelKeyboardProc(
 	_In_ int    nCode,
@@ -82,6 +133,12 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 		return CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
 	}
 
+	std::list<short> resettingKeys = { VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN };
+	if (std::find(resettingKeys.begin(), resettingKeys.end(), kbd->vkCode) != resettingKeys.end()) {
+		ResetEngine();
+		return CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
+	}
+
 	//GUITHREADINFO ti;
 	//ti.cbSize = sizeof(GUITHREADINFO);
 	//GetGUIThreadInfo(0, &ti);
@@ -114,14 +171,11 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 	UINT code = MapVirtualKeyEx(kbd->scanCode, MAPVK_VSC_TO_VK_EX, (HKL)0x04090409);
 	ToUnicodeEx(code, kbd->scanCode, states, unicode, 1, 0, (HKL)0x04090409);
 
-	Keyboard *selectedKeyboard = KeyboardManager::sharedManager()->SelectedKeyboard();
-
-	if (selectedKeyboard == nullptr)
+	KeyMagicEngine *engine = GetEngineForSelectedKeyboard();
+	if (engine == nullptr)
 	{
 		return CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
 	}
-
-	KeyMagicEngine *engine = selectedKeyboard->GetKeyMagicEngine();
 
 	KeyMagicString contextBefore = engine->getContextText();
 	KeyMagicString difference;
@@ -196,6 +250,7 @@ void SendBackspace(ULONG count)
 BOOL InitHooks(HWND mainHwnd)
 {
 	HH_KEYBOARD_LL = SetWindowsHookEx(WH_KEYBOARD_LL, &LowLevelKeyboardProc, NULL, NULL);
+	HH_MOUSE_LL = SetWindowsHookEx(WH_MOUSE_LL, &LowLevelMouseProc, NULL, NULL);
 
 	//HMODULE hModule = LoadLibrary(L"MagicAssit.dll");
 

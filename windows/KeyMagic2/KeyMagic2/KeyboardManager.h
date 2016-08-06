@@ -14,6 +14,7 @@ public:
 	std::string basePath;
 
 	int index; // index for convience
+	int imageListIndex;
 
 	std::string name;
 	std::string path;

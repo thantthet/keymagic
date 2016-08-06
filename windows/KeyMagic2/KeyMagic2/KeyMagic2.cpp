@@ -15,6 +15,7 @@
 #include "HookProc.h"
 #include "KeyboardManager.h"
 #include <keymagic.h>
+#include "Tasker.h"
 #include "../MagicAssit/MagicAssit.h"
 
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
@@ -24,7 +25,7 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #define MAX_LOADSTRING 100
 #define IDM_KEYBOARD_ 0x5000
 
-const int kRightColumnWidth = 120;
+const int kRightColumnWidth = 150;
 const int kRightColumnPadding = 10;
 const int kListViewMargin = 10;
 const int kButtonWidth = kRightColumnWidth - kRightColumnPadding * 2;
@@ -70,16 +71,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ int       nCmdShow)
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
 
-	char buffer[MAX_PATH] = { 0 };
-	GetModuleFileNameA(NULL, buffer, MAX_PATH);
-
-	//std::string command;
-	//command += "/create /tn \"KeyMagic\" /tr \"";
-	//command += buffer;
-	//command += "\" /sc onstart /ru system";
-	//ShellExecuteA(NULL, "open", "schtasks.exe", command.c_str(), "", 1);
+	if (std::wstring(lpCmdLine).find(L"/runAtBoot") != std::string::npos)
+	{
+		RegisterProgram();
+		return 1;
+	}
+	else if (std::wstring(lpCmdLine).find(L"/NoRunAtBoot") != std::string::npos) {
+		UnRegisterProgramForStartup();
+		return 1;
+	}
+	else if (std::wstring(lpCmdLine).find(L"/startup") != std::string::npos) {
+		nCmdShow = SW_HIDE;
+	}
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -87,7 +91,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     RegisterWindowClass(hInstance);
 
     // Perform application initialization:
-    if (!InitInstance (hInstance, SW_HIDE))
+    if (!InitInstance (hInstance, nCmdShow))
     {
         return FALSE;
     }
@@ -182,7 +186,7 @@ BOOL InsertListViewItems(HWND hWndListView, Keyboard keyboard)
 	lvI.iSubItem = 0;
 	lvI.state = 0;
 	lvI.iItem = keyboard.index;
-	lvI.iImage = keyboard.index;
+	lvI.iImage = keyboard.imageListIndex;
 
 	if (ListView_InsertItem(hWndListView, &lvI) == -1)
 		return FALSE;
@@ -274,6 +278,46 @@ HWND CreateAddKeyboardButton(HWND hWnd)
 
 	return hControl;
 }
+
+HWND CreateRemoveKeyboardButton(HWND hWnd)
+{
+	HWND hControl;
+
+	hControl = CreateWindow(WC_BUTTON,
+		_T("Remove"),
+		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+		0, 0, 0, 0,
+		hWnd,
+		(HMENU)IDC_BTN_REMOVE,
+		hInst,
+		NULL);
+
+	if (hControl == NULL) {
+		MessageBox(hWnd, _T("Could not create remove button."), _T("Error"), MB_OK | MB_ICONERROR);
+	}
+
+	HFONT hfDefault = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+	SendMessage(hControl, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE, 0));
+
+	return hControl;
+}
+
+HWND CreateLabel(HWND hWnd)
+{
+	HWND hControl = CreateWindow(_T("static"), _T("ST_U"),
+		WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+		0, 0, 0, 0,
+		hWnd, (HMENU)IDC_LABEL,
+		hInst,
+		NULL);
+	SetWindowText(hControl, _T("CTRL+SHIFT = Enable/Disable KeyMagic.\n\nCTRL+SPACE = Choose next keyboard."));
+
+	HFONT hfDefault = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+	SendMessage(hControl, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE, 0));
+
+	return hControl;
+}
+
 #define MY_TRAY_ICON_ID 999
 #define MY_TRAY_ICON_MESSAGE WM_APP + 999
 
@@ -282,7 +326,7 @@ void CreateShellNotifyIcon(HWND hWnd)
 	NOTIFYICONDATA ni = { 0 };
 	ni.cbSize = sizeof(NOTIFYICONDATA);
 	ni.uID = MY_TRAY_ICON_ID;
-	ni.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
+	ni.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP | NIF_INFO;
 	ni.hIcon =
 		(HICON)LoadImage(hInst,
 			MAKEINTRESOURCE(IDI_KEYMAGIC2),
@@ -291,6 +335,9 @@ void CreateShellNotifyIcon(HWND hWnd)
 			GetSystemMetrics(SM_CYSMICON),
 			LR_DEFAULTCOLOR);
 	ni.hWnd = hWnd;
+	ni.dwInfoFlags = NIIF_NOSOUND;
+	lstrcpy(ni.szTip, _T("KeyMagic"));
+	lstrcpy(ni.szInfo, _T("Find me in notification tray!"));
 	ni.uCallbackMessage = MY_TRAY_ICON_MESSAGE;
 
 	Shell_NotifyIcon(NIM_ADD, &ni);
@@ -357,9 +404,6 @@ void SizeAddKeyboardButton(HWND hWnd)
 	HWND hControl;
 	RECT rcClient;
 
-	int width = 100;
-	int height = 30;
-
 	GetClientRect(hWnd, &rcClient);
 
 	hControl = GetDlgItem(hWnd, IDC_BTN_ADD);
@@ -369,6 +413,43 @@ void SizeAddKeyboardButton(HWND hWnd)
 		kRightColumnPadding,
 		kButtonWidth,
 		kButtonHeight,
+		SWP_NOZORDER);
+}
+
+void SizeRemoveKeyboardButton(HWND hWnd)
+{
+	HWND hControl;
+	RECT rcClient;
+
+	GetClientRect(hWnd, &rcClient);
+
+	hControl = GetDlgItem(hWnd, IDC_BTN_REMOVE);
+	SetWindowPos(hControl,
+		NULL,
+		rcClient.right - kRightColumnWidth + kRightColumnPadding,
+		kRightColumnPadding + kButtonHeight + 5,
+		kButtonWidth,
+		kButtonHeight,
+		SWP_NOZORDER);
+}
+
+void SizeLabel(HWND hWnd)
+{
+	HWND hControl;
+	RECT rcClient;
+
+	hControl = GetDlgItem(hWnd, IDC_BTN_REMOVE);
+
+	GetWindowRect(hControl, &rcClient);
+	MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rcClient, 2);
+
+	hControl = GetDlgItem(hWnd, IDC_LABEL);
+	SetWindowPos(hControl,
+		NULL,
+		rcClient.left,
+		rcClient.bottom + 5,
+		kButtonWidth,
+		70,
 		SWP_NOZORDER);
 }
 
@@ -448,9 +529,39 @@ void RegisterKeyboardFile(HWND hWnd, LPCTSTR fileName)
 	out.close();
 }
 
+void UnregisterKeyboard(Keyboard &keyboard)
+{
+	std::string jsonFile = jsonFilePath();
+	std::ifstream t(jsonFile);
+
+	json config;
+
+	if (t.good())
+	{
+		std::string dirName = dirname(jsonFile);
+
+		config = json::parse(t);
+		json &j = config["keyboards"];
+		for (auto it = j.begin(); it != j.end(); ++it) {
+			auto &k = *it;
+			if (k["path"].get<std::string>() == keyboard.path)
+			{
+				j.erase(it);
+
+				std::ofstream out(jsonFile);
+				out << config.dump(4);
+				out.close();
+
+				DeleteFileA((dirName + keyboard.path).c_str());
+
+				return;
+			}
+		}
+	}
+}
+
 void AddKeyboardFile(HWND hWnd, LPCTSTR filePath)
 {
-	
 	std::wstring basename = base_name<std::wstring>(filePath);
 	if (CopyFile(filePath, (AppDataDirectory() + basename).c_str(), true)) {
 		RegisterKeyboardFile(hWnd, basename.c_str());
@@ -490,8 +601,8 @@ void ReloadKeyboards(HWND hWnd)
 		himl = ImageList_Create(16, 16, ILC_COLOR, mgr->GetKeyboards().size(), 1);
 
 		for (auto& keyboard : mgr->GetKeyboards()) {
-			int ret = ImageList_Add(himl, keyboard.GetKeyboardIcon(), NULL);
-			std::cout << ret;
+			int index = ImageList_Add(himl, keyboard.GetKeyboardIcon(), NULL);
+			keyboard.imageListIndex = index;
 		}
 
 		ListView_SetImageList(hControl, himl, LVSIL_SMALL);
@@ -545,6 +656,33 @@ void ShowTrayContextMenu(HWND hWnd)
 	TrackPopupMenu(hMenu, TPM_BOTTOMALIGN | TPM_VERNEGANIMATION, pt.x, pt.y, 0, hWnd, NULL);
 }
 
+void ShellExecuteAndWait(HWND hwnd, LPCWSTR lpOperation, LPCWSTR lpFile, LPCWSTR lpParameters, LPCWSTR lpDirectory, INT nShowCmd)
+{
+	SHELLEXECUTEINFO ShExecInfo = { 0 };
+	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+	ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+	ShExecInfo.hwnd = hwnd;
+	ShExecInfo.lpVerb = lpOperation;
+	ShExecInfo.lpFile = lpFile;
+	ShExecInfo.lpParameters = lpParameters;
+	ShExecInfo.lpDirectory = lpDirectory;
+	ShExecInfo.nShow = nShowCmd;
+	ShExecInfo.hInstApp = NULL;
+	ShellExecuteEx(&ShExecInfo);
+	WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+}
+
+void UpdateMenuState(HWND hWnd)
+{
+	UINT state = MF_UNCHECKED;
+	if (IsRegisteredForStartup())
+	{
+		state = MF_CHECKED;
+	}
+
+	CheckMenuItem(GetMenu(hWnd), IDM_OPTIONS_RUNATSTARTUP, MF_BYCOMMAND | state);
+}
+
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -592,6 +730,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case IDM_EXIT:
 			DestroyWindow(hWnd);
 			break;
+		case IDM_OPTIONS_RUNATSTARTUP:
+		{
+			UINT state = GetMenuState(GetMenu(hWnd), IDM_OPTIONS_RUNATSTARTUP, MF_BYCOMMAND);
+			if (state == MF_CHECKED)
+			{
+				WCHAR buffer[MAX_PATH] = { 0 };
+				GetModuleFileNameW(NULL, buffer, MAX_PATH);
+				ShellExecuteAndWait(NULL, L"RunAs", buffer, L"/NoRunAtBoot", L"", 0);
+			}
+			else {
+				WCHAR buffer[MAX_PATH] = { 0 };
+				GetModuleFileNameW(NULL, buffer, MAX_PATH);
+				ShellExecuteAndWait(NULL, L"RunAs", buffer, L"/runAtBoot", L"", 0);
+			}
+			
+			UpdateMenuState(hWnd);
+		}
+			break;
 		case IDC_BTN_ADD:
 		{
 			TCHAR fileName[MAX_PATH] = { 0 };
@@ -608,6 +764,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 		}
 			break;
+		case IDC_BTN_REMOVE:
+		{
+			HWND hListView = GetDlgItem(hWnd, IDC_LV_KEYBOARDS);
+
+			std::list<int> selectedIndexes;
+
+			int iPos = ListView_GetNextItem(hListView, -1, LVNI_SELECTED);
+			while (iPos != -1) {
+				selectedIndexes.push_back(iPos);
+				iPos = ListView_GetNextItem(hListView, iPos, LVNI_SELECTED);
+			}
+
+			if (selectedIndexes.size())
+			{
+				int result = MessageBox(hWnd, _T("Are you sure you want to remove selected keyboard(s)?"), _T("Y sure?"), MB_YESNO);
+				if (result == IDYES)
+				{
+					auto keyboards = KeyboardManager::sharedManager()->GetKeyboards();
+					for (auto index : selectedIndexes) {
+						UnregisterKeyboard(keyboards.at(index));
+					}
+					ReloadKeyboards(hWnd);
+				}
+			}
+		}
+			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
@@ -621,6 +803,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		CreateListView(hWnd);
 		CreateAddKeyboardButton(hWnd);
+		CreateRemoveKeyboardButton(hWnd);
+		CreateLabel(hWnd);
 		CreateShellNotifyIcon(hWnd);
 
 		KeyboardManager *mgr = KeyboardManager::sharedManager();
@@ -629,12 +813,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		});
 
 		ReloadKeyboards(hWnd);
+
+		UpdateMenuState(hWnd);
 	}
 	break;
 	case WM_SIZE:
 	{
 		SizeListView(hWnd);
 		SizeAddKeyboardButton(hWnd);
+		SizeRemoveKeyboardButton(hWnd);
+		SizeLabel(hWnd);
 	}
 	break;
 	case WM_PAINT:
