@@ -20,7 +20,7 @@
   <ItemGroup>
     <Text Include="ReadMe.txt" />
     <Text Include="json.hpp">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
@@ -78,6 +78,12 @@
     <ClInclude Include="Tasker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="HotkeyManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -123,6 +129,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Tasker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HotkeyManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

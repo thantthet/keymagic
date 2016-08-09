@@ -171,7 +171,9 @@
     <ClInclude Include="..\..\..\cross-platform\libkeymagic\LogFileWriter.h" />
     <ClInclude Include="..\..\..\cross-platform\libkeymagic\RuleInfo.h" />
     <ClInclude Include="..\..\..\cross-platform\libkeymagic\Util.h" />
+    <ClInclude Include="ConfigUtils.h" />
     <ClInclude Include="HookProc.h" />
+    <ClInclude Include="HotkeyManager.h" />
     <ClInclude Include="KeyboardManager.h" />
     <ClInclude Include="KeyMagic2.h" />
     <ClInclude Include="Resource.h" />
@@ -241,7 +243,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ConfigUtils.cpp" />
     <ClCompile Include="HookProc.cpp" />
+    <ClCompile Include="HotkeyManager.cpp" />
     <ClCompile Include="KeyboardManger.cpp" />
     <ClCompile Include="KeyMagic2.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -5,15 +5,12 @@
 #include "KeyMagic2.h"
 #include <CommCtrl.h>
 #include <Commdlg.h>
-#include <Shlobj.h>
 #include <string>
-#include <fstream>
-#include <iosfwd>
-#include <codecvt>
 #include <shellapi.h>
-#include "json.hpp"
+#include "ConfigUtils.h"
 #include "HookProc.h"
 #include "KeyboardManager.h"
+#include "HotkeyManager.h"
 #include <keymagic.h>
 #include "Tasker.h"
 #include "../MagicAssit/MagicAssit.h"
@@ -32,7 +29,6 @@ const int kButtonWidth = kRightColumnWidth - kRightColumnPadding * 2;
 const int kButtonHeight = 30;
 
 using json = nlohmann::json;
-std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 
 // Global Variables:
 HINSTANCE hInst;                                // current instance
@@ -44,6 +40,7 @@ ATOM                RegisterWindowClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK    Hotkeys(HWND, UINT, WPARAM, LPARAM);
 
 template<typename string_t>
 string_t dirname(string_t source)
@@ -65,12 +62,42 @@ T remove_extension(T const & filename)
 	return p > 0 && p != T::npos ? filename.substr(0, p) : filename;
 }
 
+bool CheckIfRunning()
+{
+	// Try to open the mutex.
+	HANDLE hMutex = OpenMutex(
+		MUTEX_ALL_ACCESS, 0, _T("KeyMagic"));
+
+	if (!hMutex) {
+		// Mutex doesn’t exist. This is
+		// the first instance so create
+		// the mutex.
+		hMutex = CreateMutex(0, 0, _T("KeyMagic"));
+	}
+	else {
+		// The mutex exists so this is the
+		// the second instance so return.
+
+		HWND hWnd = FindWindow(szWindowClass, szTitle);
+
+		ShowWindow(hWnd, SW_SHOW);
+
+		return true;
+	}
+
+	return false;
+}
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPWSTR    lpCmdLine,
                      _In_ int       nCmdShow)
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
+
+	// Initialize global strings
+	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+	LoadStringW(hInstance, IDC_KEYMAGIC2, szWindowClass, MAX_LOADSTRING);
 
 	if (std::wstring(lpCmdLine).find(L"/runAtBoot") != std::string::npos)
 	{
@@ -85,9 +112,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		nCmdShow = SW_HIDE;
 	}
 
-    // Initialize global strings
-    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadStringW(hInstance, IDC_KEYMAGIC2, szWindowClass, MAX_LOADSTRING);
+	if (CheckIfRunning()) {
+		return 0;
+	}
+
     RegisterWindowClass(hInstance);
 
     // Perform application initialization:
@@ -304,13 +332,20 @@ HWND CreateRemoveKeyboardButton(HWND hWnd)
 
 HWND CreateLabel(HWND hWnd)
 {
+	std::wstring text;
+
+	text += converter.from_bytes(HotkeyManager::wHotkeyToString(HotkeyManager::sharedManager()->hky_onoff));
+	text += _T(" = Enable/Disable KeyMagic.\n\n");
+	text += converter.from_bytes(HotkeyManager::wHotkeyToString(HotkeyManager::sharedManager()->hky_nextkbd));
+	text += _T(" = Choose next keyboard.");
+
 	HWND hControl = CreateWindow(_T("static"), _T("ST_U"),
 		WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 		0, 0, 0, 0,
 		hWnd, (HMENU)IDC_LABEL,
 		hInst,
 		NULL);
-	SetWindowText(hControl, _T("CTRL+SHIFT = Enable/Disable KeyMagic.\n\nCTRL+SPACE = Choose next keyboard."));
+	SetWindowText(hControl, text.c_str());
 
 	HFONT hfDefault = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
 	SendMessage(hControl, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE, 0));
@@ -453,53 +488,11 @@ void SizeLabel(HWND hWnd)
 		SWP_NOZORDER);
 }
 
-static LPCTSTR AppDataDirectory()
-{
-	TCHAR szPath[MAX_PATH];
-	static std::wstring destDirPath;
-	
-	if (destDirPath.size())
-	{
-		return destDirPath.c_str();
-	}
-
-	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath))) {
-		destDirPath = szPath;
-		destDirPath += _T("\\KeyMagic\\");
-		CreateDirectory(destDirPath.c_str(), NULL);
-	}
-
-	return destDirPath.c_str();
-}
-
-std::string jsonFilePath()
-{
-	char temp[MAX_PATH];
-	size_t converted;
-
-	std::string dataDirectory = converter.to_bytes(AppDataDirectory());
-	std::string jsonFile = dataDirectory + "config.json";
-
-	return jsonFile;
-}
-
 void RegisterKeyboardFile(HWND hWnd, LPCTSTR fileName)
 {
 	std::string keyboardPath = converter.to_bytes(fileName);
-	
-	std::string jsonFile = jsonFilePath();
-	std::ifstream t(jsonFile);
 
-	json config;
-
-	if (t.good())
-	{
-		config = json::parse(t);
-	}
-	else {
-		json keyboards = {};
-		config = { { "keyboards", keyboards } };
-	}
+	json config = ConfigUtils::Read();
 
 	json keyboards = config["keyboards"];
 	std::string keyboardName;
@@ -524,38 +517,26 @@ void RegisterKeyboardFile(HWND hWnd, LPCTSTR fileName)
 
 	config["keyboards"] = keyboards;
 
-	std::ofstream out(jsonFile);
-	out << config.dump(4);
-	out.close();
+	ConfigUtils::Write(config);
 }
 
 void UnregisterKeyboard(Keyboard &keyboard)
 {
-	std::string jsonFile = jsonFilePath();
-	std::ifstream t(jsonFile);
+	std::string dirName = dirname(ConfigUtils::jsonFilePath());
 
-	json config;
+	json config = ConfigUtils::Read();
+	json &j = config["keyboards"];
+	for (auto it = j.begin(); it != j.end(); ++it) {
+		auto &k = *it;
+		if (k["path"].get<std::string>() == keyboard.path)
+		{
+			j.erase(it);
 
-	if (t.good())
-	{
-		std::string dirName = dirname(jsonFile);
+			ConfigUtils::Write(config);
 
-		config = json::parse(t);
-		json &j = config["keyboards"];
-		for (auto it = j.begin(); it != j.end(); ++it) {
-			auto &k = *it;
-			if (k["path"].get<std::string>() == keyboard.path)
-			{
-				j.erase(it);
+			DeleteFileA((dirName + keyboard.path).c_str());
 
-				std::ofstream out(jsonFile);
-				out << config.dump(4);
-				out.close();
-
-				DeleteFileA((dirName + keyboard.path).c_str());
-
-				return;
-			}
+			return;
 		}
 	}
 }
@@ -574,42 +555,34 @@ void AddKeyboardFile(HWND hWnd, LPCTSTR filePath)
 
 void ReloadKeyboards(HWND hWnd)
 {
-	std::string jsonFile = jsonFilePath();
-	std::ifstream t(jsonFile);
+	json config = ConfigUtils::Read();
 
-	json config;
+	HWND hControl = GetDlgItem(hWnd, IDC_LV_KEYBOARDS);
+	SendMessage(hControl, LVM_DELETEALLITEMS, 0, 0); // clear list view items
 
-	if (t.good())
+	KeyboardManager *mgr = KeyboardManager::sharedManager();
+	json keyboards = config["keyboards"];
+	mgr->basePath(dirname(ConfigUtils::jsonFilePath()));
+	mgr->SetKeyboards(keyboards);
+
+	HIMAGELIST himl = ListView_GetImageList(hControl, LVSIL_SMALL);
+
+	if (himl)
 	{
-		config = json::parse(t);
+		ImageList_Destroy(himl);
+	}
 
-		HWND hControl = GetDlgItem(hWnd, IDC_LV_KEYBOARDS);
-		SendMessage(hControl, LVM_DELETEALLITEMS, 0, 0); // clear list view items
+	himl = ImageList_Create(16, 16, ILC_COLOR, mgr->GetKeyboards().size(), 1);
 
-		KeyboardManager *mgr = KeyboardManager::sharedManager();
-		json keyboards = config["keyboards"];
-		mgr->basePath(dirname(jsonFile));
-		mgr->SetKeyboards(keyboards);
+	for (auto& keyboard : mgr->GetKeyboards()) {
+		int index = ImageList_Add(himl, keyboard.GetKeyboardIcon(), NULL);
+		keyboard.imageListIndex = index;
+	}
 
-		HIMAGELIST himl = ListView_GetImageList(hControl, LVSIL_SMALL);
+	ListView_SetImageList(hControl, himl, LVSIL_SMALL);
 
-		if (himl)
-		{
-			ImageList_Destroy(himl);
-		}
-
-		himl = ImageList_Create(16, 16, ILC_COLOR, mgr->GetKeyboards().size(), 1);
-
-		for (auto& keyboard : mgr->GetKeyboards()) {
-			int index = ImageList_Add(himl, keyboard.GetKeyboardIcon(), NULL);
-			keyboard.imageListIndex = index;
-		}
-
-		ListView_SetImageList(hControl, himl, LVSIL_SMALL);
-
-		for (auto& keyboard : mgr->GetKeyboards()) {
-			InsertListViewItems(hControl, keyboard);
-		}
+	for (auto& keyboard : mgr->GetKeyboards()) {
+		InsertListViewItems(hControl, keyboard);
 	}
 }
 
@@ -726,6 +699,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 		case IDM_ABOUT:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+			break;
+		case ID_OPTIONS_HOTKEYS:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_HOTKEYS), hWnd, Hotkeys);
 			break;
 		case IDM_EXIT:
 			DestroyWindow(hWnd);
@@ -880,4 +856,167 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     return (INT_PTR)FALSE;
+}
+
+void InitHotkeyToRadioStates(HWND hDlg)
+{
+	std::map<UINT, WORD> OnOffControls = {
+		{ IDC_RO_ONOFF_SC, MAKEWORD(0, HOTKEYF_SHIFT | HOTKEYF_CONTROL) },
+		{ IDC_RO_ONOFF_CS, MAKEWORD(VK_SPACE, HOTKEYF_CONTROL) },
+		{ IDC_RO_ONOFF_WS, MAKEWORD(VK_SPACE, HOTKEYF_EXT) }
+	};
+	std::map<UINT, WORD> NextControls = {
+		{ IDC_RO_NEXT_SC, MAKEWORD(0, HOTKEYF_SHIFT | HOTKEYF_CONTROL) },
+		{ IDC_RO_NEXT_CS, MAKEWORD(VK_SPACE, HOTKEYF_CONTROL) },
+		{ IDC_RO_NEXT_WS, MAKEWORD(VK_SPACE, HOTKEYF_EXT) }
+	};
+
+	HotkeyManager *hmgr = HotkeyManager::sharedManager();
+
+	bool checked = false;
+
+	for (auto &pair : OnOffControls)
+	{
+		if (pair.second == hmgr->hky_onoff)
+		{
+			CheckDlgButton(hDlg, pair.first, true);
+			checked = true;
+		}
+	}
+
+	if (checked == false)
+	{
+		CheckDlgButton(hDlg, IDC_RO_ONOFF_CUSTOM, MF_CHECKED);
+		SendMessage(GetDlgItem(hDlg, IDC_HK_ONOFF), HKM_SETHOTKEY, hmgr->hky_onoff, 0);
+	}
+
+	checked = false;
+
+	for (auto &pair : NextControls)
+	{
+		if (pair.second == hmgr->hky_nextkbd)
+		{
+			CheckDlgButton(hDlg, pair.first, true);
+			checked = true;
+		}
+	}
+
+	if (checked == false)
+	{
+		CheckDlgButton(hDlg, IDC_RO_NEXT_CUSTOM, MF_CHECKED);
+		EnableWindow(GetDlgItem(hDlg, IDC_HK_NEXT), true);
+		SendMessage(GetDlgItem(hDlg, IDC_HK_NEXT), HKM_SETHOTKEY, hmgr->hky_nextkbd, 0);
+	}
+}
+
+void ReloadRadioButtonStates(HWND hDlg)
+{
+	bool isChecked;
+
+	// enable/disable custom hotkey control
+	isChecked = IsDlgButtonChecked(hDlg, IDC_RO_ONOFF_CUSTOM);
+	EnableWindow(GetDlgItem(hDlg, IDC_HK_ONOFF), isChecked);
+
+	isChecked = IsDlgButtonChecked(hDlg, IDC_RO_NEXT_CUSTOM);
+	EnableWindow(GetDlgItem(hDlg, IDC_HK_NEXT), isChecked);
+
+	// get state
+	isChecked = IsDlgButtonChecked(hDlg, IDC_RO_ONOFF_SC);
+	EnableWindow(GetDlgItem(hDlg, IDC_RO_NEXT_SC), !isChecked);
+	if (isChecked) CheckDlgButton(hDlg, IDC_RO_NEXT_SC, false);
+
+	isChecked = IsDlgButtonChecked(hDlg, IDC_RO_ONOFF_CS);
+	EnableWindow(GetDlgItem(hDlg, IDC_RO_NEXT_CS), !isChecked);
+	if (isChecked) CheckDlgButton(hDlg, IDC_RO_NEXT_CS, false);
+
+	isChecked = IsDlgButtonChecked(hDlg, IDC_RO_ONOFF_WS);
+	EnableWindow(GetDlgItem(hDlg, IDC_RO_NEXT_WS), !isChecked);
+	if (isChecked) CheckDlgButton(hDlg, IDC_RO_NEXT_WS, false);
+}
+
+void SaveHotkeys(HWND hDlg)
+{
+	bool isChecked;
+
+	WORD wOnOff, wNext;
+
+	std::map<UINT, WORD> OnOffControls = {
+		{IDC_RO_ONOFF_SC, MAKEWORD(0, HOTKEYF_SHIFT | HOTKEYF_CONTROL) },
+		{IDC_RO_ONOFF_CS, MAKEWORD(VK_SPACE, HOTKEYF_CONTROL) },
+		{IDC_RO_ONOFF_WS, MAKEWORD(VK_SPACE, HOTKEYF_EXT) }
+	};
+	std::map<UINT, WORD> NextControls = {
+		{ IDC_RO_NEXT_SC, MAKEWORD(0, HOTKEYF_SHIFT | HOTKEYF_CONTROL) },
+		{ IDC_RO_NEXT_CS, MAKEWORD(VK_SPACE, HOTKEYF_CONTROL) },
+		{ IDC_RO_NEXT_WS, MAKEWORD(VK_SPACE, HOTKEYF_EXT) }
+	};
+
+	isChecked = IsDlgButtonChecked(hDlg, IDC_RO_ONOFF_CUSTOM);
+	if (isChecked)
+	{
+		wOnOff = (WORD)SendMessage(GetDlgItem(hDlg, IDC_HK_ONOFF), HKM_GETHOTKEY, 0, 0);
+	}
+	else {
+		for (auto &pair : OnOffControls)
+		{
+			isChecked = IsDlgButtonChecked(hDlg, pair.first);
+			if (isChecked)
+			{
+				wOnOff = pair.second;
+			}
+		}
+	}
+
+	isChecked = IsDlgButtonChecked(hDlg, IDC_RO_NEXT_CUSTOM);
+	if (isChecked)
+	{
+		wNext = (WORD)SendMessage(GetDlgItem(hDlg, IDC_HK_NEXT), HKM_GETHOTKEY, 0, 0);
+	}
+	else {
+		for (auto &pair : NextControls)
+		{
+			isChecked = IsDlgButtonChecked(hDlg, pair.first);
+			if (isChecked)
+			{
+				wNext = pair.second;
+			}
+		}
+	}
+
+	HotkeyManager * hmgr = HotkeyManager::sharedManager();
+	hmgr->hky_onoff = wOnOff;
+	hmgr->hky_nextkbd = wNext;
+	hmgr->WriteHotkey();
+}
+
+INT_PTR CALLBACK Hotkeys(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(lParam);
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
+
+	case WM_ACTIVATE:
+		InitHotkeyToRadioStates(hDlg);
+		ReloadRadioButtonStates(hDlg);
+		break;
+
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK)
+		{
+			SaveHotkeys(hDlg);
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		else if (LOWORD(wParam) == IDCANCEL) {
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		else {
+			ReloadRadioButtonStates(hDlg);
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
 }

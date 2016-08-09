@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "KeyMagic"
-#define MyAppVersion "2.0Pre-1"
+#define MyAppVersion "2.0Pre-2"
 #define MyAppPublisher "KeyMagic"
 #define MyAppURL "http://www.keymagic.net/"
 #define MyAppExeName "KeyMagic2.exe"
@@ -22,7 +22,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DisableProgramGroupPage=yes
 LicenseFile=..\doc\License.txt
-OutputBaseFilename=KeyMagic-v2.0Pre
+OutputBaseFilename=KeyMagic-v2.0Pre -2
 Compression=lzma
 SolidCompression=yes
 
