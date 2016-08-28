@@ -65,18 +65,6 @@ namespace kEditor
             thisDir = System.IO.Path.GetDirectoryName(thisExe);
 
             SciEditor.Lexing.Lexer = (ScintillaNet.Lexer)100;
-
-            bool defaultEditor = isDefaultEditor();
-            defaultEditorToolStripMenuItem.Checked = defaultEditor;
-
-            if (Properties.Settings.Default.ForceDefaultEditor)
-            {
-                forceAsDefaultEditorToolStripMenuItem.Checked = true;
-                if (defaultEditor == false && makeDefaultEditor())
-                {
-                    defaultEditorToolStripMenuItem.Checked = true;
-                }
-            }
         }
         DockPanel dockPanel;
         DockContent GlyphDock;
@@ -264,6 +252,18 @@ namespace kEditor
 
         private void mainForm_Load(object sender, EventArgs e)
         {
+            bool defaultEditor = isDefaultEditor();
+            defaultEditorToolStripMenuItem.Checked = defaultEditor;
+
+            if (Properties.Settings.Default.ForceDefaultEditor)
+            {
+                forceAsDefaultEditorToolStripMenuItem.Checked = true;
+                if (defaultEditor == false && makeDefaultEditor())
+                {
+                    defaultEditorToolStripMenuItem.Checked = true;
+                }
+            }
+
             lex = new Styler(SciEditor);
             frmStyleConfig = new ConfigStyles(SciEditor, lex.GetStyleNameIndex());
 
@@ -406,9 +406,15 @@ namespace kEditor
             }
 
             Properties.Settings.Default.LastTabs = string.Join("|", tabs.ToArray());
-            Properties.Settings.Default.RecentFiles = string.Join("|", recentFiles.ToArray());
-            Properties.Settings.Default.DefaultFontName = selectedFont.Name;
-            Properties.Settings.Default.DefaultFontSize = selectedFont.Size;
+            if (recentFiles != null)
+            {
+                Properties.Settings.Default.RecentFiles = string.Join("|", recentFiles.ToArray());
+            }
+            if (selectedFont != null)
+            {
+                Properties.Settings.Default.DefaultFontName = selectedFont.Name;
+                Properties.Settings.Default.DefaultFontSize = selectedFont.Size;
+            }
             Properties.Settings.Default.GlyphFilterText = glyphTable.Filter;
             Properties.Settings.Default.LineNumber = lineNumbersToolStripMenuItem.Checked;
             Properties.Settings.Default.HexNotation = hexadecimalToolStripMenuItem.Checked;
