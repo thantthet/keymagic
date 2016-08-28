@@ -3,6 +3,7 @@
 //#define _WIN32_DCOM
 
 #include "Tasker.h"
+#include "ConfigUtils.h"
 
 //# pragma comment(lib, "taskschd.lib")
 //# pragma comment(lib, "comsupp.lib")
@@ -280,17 +281,19 @@ void UnRegisterProgramForStartup(PCWSTR pszAppName)
 	BOOL fSuccess = TRUE;
 	DWORD dwRegType = REG_SZ;
 
-	lResult = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_READ, &hKey);
+	std::string szAppName = converter.to_bytes(pszAppName);
+
+	lResult = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_ALL_ACCESS, &hKey);
 	
 	if (fSuccess)
 	{
-		lResult = RegGetValueW(hKey, NULL, pszAppName, RRF_RT_REG_SZ, &dwRegType, NULL, 0);
+		lResult = RegQueryValueEx(hKey, pszAppName, NULL, &dwRegType, NULL, NULL);
 		fSuccess = (lResult == 0);
 	}
 
 	if (fSuccess)
 	{
-		lResult = RegDeleteKeyValue(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", pszAppName);
+		lResult = RegDeleteValue(hKey, pszAppName);
 		fSuccess = (lResult == 0);
 	}
 }
@@ -301,8 +304,9 @@ BOOL IsRegisteredForStartup(PCWSTR pszAppName)
 	LONG lResult = 0;
 	BOOL fSuccess = TRUE;
 	DWORD dwRegType = REG_SZ;
+	BYTE bData[1000] = {};
 	wchar_t szPathToExe[MAX_PATH] = {};
-	DWORD dwSize = sizeof(szPathToExe);
+	DWORD dwSize = sizeof(bData);
 
 	lResult = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_READ, &hKey);
 
@@ -310,7 +314,8 @@ BOOL IsRegisteredForStartup(PCWSTR pszAppName)
 
 	if (fSuccess)
 	{
-		lResult = RegGetValueW(hKey, NULL, pszAppName, RRF_RT_REG_SZ, &dwRegType, szPathToExe, &dwSize);
+		lResult = RegQueryValueEx(hKey, pszAppName, NULL, &dwRegType, bData, &dwSize);
+		wcscpy_s(szPathToExe, (wchar_t*) bData);
 		fSuccess = (lResult == 0);
 	}
 
