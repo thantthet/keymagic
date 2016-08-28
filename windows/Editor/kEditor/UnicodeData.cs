@@ -13,6 +13,11 @@ namespace kEditor
     class UnicodeData
     {
         private Dictionary<int, string> uniList = new Dictionary<int, string>();
+
+        public UnicodeData()
+        {
+            uniList.Add(0x1000, "Ka Gyi");
+        }
         
         public UnicodeData(string fileName)
         {
@@ -37,8 +42,13 @@ namespace kEditor
             }
         }
 
-        public KeyValuePair<String, int>[] getContains(string filter)
+        public KeyValuePair<String, int>[] getContains(string filter = null)
         {
+            if (filter == null)
+            {
+                filter = "";
+            }
+
             filter = filter.ToUpper();
             
             var a = from r in uniList

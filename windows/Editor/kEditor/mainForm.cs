@@ -921,7 +921,7 @@ namespace kEditor
                 if (parserProcess.ExitCode == 1)
                 {
                     txtOutput.Text += errText + nl;
-                    //MessageBox.Show(this, errText, "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(this, "Faile to compile the script. Please check output window for more information.", "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     ret = false;
                 }
                 else

@@ -40,15 +40,17 @@
             this.flowLayoutPanel.Controls.Add(this.btnDone);
             this.flowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel.Location = new System.Drawing.Point(0, 0);
+            this.flowLayoutPanel.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.flowLayoutPanel.Name = "flowLayoutPanel";
-            this.flowLayoutPanel.Size = new System.Drawing.Size(284, 262);
+            this.flowLayoutPanel.Size = new System.Drawing.Size(602, 504);
             this.flowLayoutPanel.TabIndex = 0;
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(3, 3);
+            this.btnCancel.Location = new System.Drawing.Point(6, 6);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 23);
+            this.btnCancel.Size = new System.Drawing.Size(150, 44);
             this.btnCancel.TabIndex = 2;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
@@ -56,9 +58,10 @@
             // 
             // btnDone
             // 
-            this.btnDone.Location = new System.Drawing.Point(84, 3);
+            this.btnDone.Location = new System.Drawing.Point(168, 6);
+            this.btnDone.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.btnDone.Name = "btnDone";
-            this.btnDone.Size = new System.Drawing.Size(75, 23);
+            this.btnDone.Size = new System.Drawing.Size(150, 44);
             this.btnDone.TabIndex = 1;
             this.btnDone.Text = "Done";
             this.btnDone.UseVisualStyleBackColor = true;
@@ -66,11 +69,12 @@
             // 
             // ConfigStyles
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 262);
+            this.ClientSize = new System.Drawing.Size(602, 504);
             this.Controls.Add(this.flowLayoutPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.Name = "ConfigStyles";
             this.ShowInTaskbar = false;
             this.Text = "Config Styles";

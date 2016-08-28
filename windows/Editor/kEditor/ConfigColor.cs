@@ -85,9 +85,9 @@ namespace kEditor
                 flowLayoutPanel.Controls.Add(foreButton);
 
                 backButton = new Button();
-                backButton.Text = "Back Color";
+                backButton.Text = "Background";
                 backButton.FlatStyle = FlatStyle.Popup;
-                backButton.Size = new Size(70, 20);
+                backButton.Size = new Size(80, 20);
                 backButton.Tag = thisIndex;
                 backButton.Click += new EventHandler(backButton_Click);
                 flowLayoutPanel.Controls.Add(backButton);

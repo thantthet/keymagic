@@ -17,11 +17,14 @@ namespace kEditor
 
         public GlyphTable()
         {
-            InitializeComponent();
-            if (this.DesignMode == false)
+            if (System.Diagnostics.Process.GetCurrentProcess().ProcessName == "devenv")
+            {
+                ud = new UnicodeData();
+            } else
             {
                 ud = new UnicodeData(@"UnicodeData.txt");
             }
+            InitializeComponent();
         }
 
         private void GlyphTable_Load(object sender, EventArgs e)
@@ -183,7 +186,7 @@ namespace kEditor
                 }
                 characters = charList.ToArray();
             }
-            else
+            else if (ud != null)
             {
                 KeyValuePair<String, int>[] a = ud.getContains(filter);
                 if (a == null)

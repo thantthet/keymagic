@@ -52,7 +52,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>KeyScript.ico</ApplicationIcon>
+    <ApplicationIcon>Editor.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="KeyMagicDotNet, Version=1.0.4174.2103, Culture=neutral, processorArchitecture=x86">
@@ -189,18 +189,18 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="KeyScript.ico" />
     <EmbeddedResource Include="TesterForm.resx">
       <DependentUpon>TesterForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Logo.png" />
+    <None Include="Resources\Logo.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\table.png" />
     <None Include="Resources\report.png" />
+    <Content Include="Editor.ico" />
     <Content Include="UnicodeData.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
