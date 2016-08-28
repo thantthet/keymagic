@@ -107,7 +107,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 		{
 			if (vk == kbd->vkCode)
 			{
-				*pointer = (wParam == WM_KEYDOWN) ? 0x80 : 0;
+				*pointer = (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) ? 0x80 : 0;
 				isModifierKey = true;
 			}
 		}
@@ -178,8 +178,12 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 
 	TCHAR unicode[2] = { 0 };
 
+	states[VK_MENU] = 0; // set to zero for ToUnicodeEx
+
 	UINT code = MapVirtualKeyEx(kbd->scanCode, MAPVK_VSC_TO_VK_EX, (HKL)0x04090409);
 	ToUnicodeEx(code, kbd->scanCode, states, unicode, 1, 0, (HKL)0x04090409);
+	
+	states[VK_MENU] = modKeyStates.MENU;
 
 	KeyMagicEngine *engine = GetEngineForSelectedKeyboard();
 	if (engine == nullptr)
@@ -259,9 +263,9 @@ void SendBackspace(ULONG count)
 
 BOOL InitHooks(HWND mainHwnd)
 {
-	HH_KEYBOARD_LL = SetWindowsHookEx(WH_KEYBOARD_LL, &LowLevelKeyboardProc, NULL, NULL);
+	HH_KEYBOARD_LL = SetWindowsHookEx(WH_KEYBOARD_LL, &LowLevelKeyboardProc, GetModuleHandle(NULL), NULL);
 #ifndef _DEBUG
-	HH_MOUSE_LL = SetWindowsHookEx(WH_MOUSE_LL, &LowLevelMouseProc, NULL, NULL);
+	HH_MOUSE_LL = SetWindowsHookEx(WH_MOUSE_LL, &LowLevelMouseProc, GetModuleHandle(NULL), NULL);
 #endif
 
 	HotkeyManager * hmgr = HotkeyManager::sharedManager();
