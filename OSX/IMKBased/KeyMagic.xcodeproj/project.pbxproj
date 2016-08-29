@@ -353,7 +353,7 @@
 		6AA6D1D60EAC63E100DF1C2C /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0730;
 			};
 			buildConfigurationList = 6AA6D1D90EAC63E100DF1C2C /* Build configuration list for PBXProject "KeyMagic" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -510,6 +510,7 @@
 					"-framework",
 					AppKit,
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.keymagic.KeyMagicServer;
 				PRODUCT_NAME = KeyMagicServer;
 				SDKROOT = macosx;
 			};
@@ -547,6 +548,7 @@
 					"-framework",
 					AppKit,
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.keymagic.KeyMagicServer;
 				PRODUCT_NAME = KeyMagicServer;
 				SDKROOT = macosx;
 				ZERO_LINK = NO;
@@ -577,6 +579,7 @@
 					"-framework",
 					AppKit,
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.keymagic.KeyMagic-TSM";
 				PRODUCT_NAME = KeyMagic;
 				SDKROOT = macosx;
 				WRAPPER_EXTENSION = bundle;
@@ -606,6 +609,7 @@
 					"-framework",
 					AppKit,
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.keymagic.KeyMagic-TSM";
 				PRODUCT_NAME = KeyMagic;
 				SDKROOT = macosx;
 				WRAPPER_EXTENSION = bundle;
@@ -640,6 +644,8 @@
 			buildSettings = {
 				CLANG_CXX_LIBRARY = "libstdc++";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 			};
@@ -650,6 +656,7 @@
 			buildSettings = {
 				CLANG_CXX_LIBRARY = "libstdc++";
 				COPY_PHASE_STRIP = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 			};
 			name = Release;
@@ -671,7 +678,7 @@
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
 				HEADER_SEARCH_PATHS = "$(LIBKEYMAGIC)";
 				INFOPLIST_FILE = "KeyMagic-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
+				INSTALL_PATH = "\"/Library/Input Methods/\"";
 				LIBKEYMAGIC = "../../cross-platform/libkeymagic";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -684,6 +691,7 @@
 					"-framework",
 					AppKit,
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.keymagic.inputmethod.KeyMagic;
 				PRODUCT_NAME = KeyMagic;
 				SDKROOT = macosx;
 			};
@@ -706,7 +714,7 @@
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
 				HEADER_SEARCH_PATHS = "$(LIBKEYMAGIC)";
 				INFOPLIST_FILE = "KeyMagic-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
+				INSTALL_PATH = "\"/Library/Input Methods/\"";
 				LIBKEYMAGIC = "../../cross-platform/libkeymagic";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -719,6 +727,7 @@
 					"-framework",
 					AppKit,
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.keymagic.inputmethod.KeyMagic;
 				PRODUCT_NAME = KeyMagic;
 				SDKROOT = macosx;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;

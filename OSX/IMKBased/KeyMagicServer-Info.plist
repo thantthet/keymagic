@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>tsInputMethodCharacterRepertoireKey</key>
-	<array>
-		<string>my-MM</string>
-	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
@@ -13,7 +9,7 @@
 	<key>CFBundleIconFile</key>
 	<string>KeyMagic.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.keymagic.KeyMagicServer</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -30,15 +26,19 @@
 	<string>KeyMagicIMEController</string>
 	<key>InputMethodServerDelegateClass</key>
 	<string>KeyMagicIMEController</string>
+	<key>LSUIElement</key>
+	<true/>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>TISInputSourceID</key>
 	<string>org.keymagic.inputmethod.KeyMagic</string>
+	<key>tsInputMethodCharacterRepertoireKey</key>
+	<array>
+		<string>my-MM</string>
+	</array>
 	<key>tsInputMethodIconFileKey</key>
 	<string>KeyMagic.icns</string>
-	<key>LSUIElement</key>
-	<true/>
 </dict>
 </plist>

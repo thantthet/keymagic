@@ -9,7 +9,7 @@
 	<key>CFBundleIconFile</key>
 	<string>KeyMagic.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.keymagic.inputmethod.KeyMagic</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -26,17 +26,17 @@
 	<string>KeyMagicIMEController</string>
 	<key>InputMethodServerDelegateClass</key>
 	<string>KeyMagicIMEController</string>
+	<key>LSBackgroundOnly</key>
+	<true/>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>TISInputSourceID</key>
 	<string>org.keymagic.inputmethod.KeyMagic</string>
-	<key>tsInputMethodIconFileKey</key>
-	<string>KeyMagic.icns</string>
 	<key>TISIntendedLanguage</key>
 	<string>mul</string>
-	<key>LSBackgroundOnly</key>
-	<true/>
+	<key>tsInputMethodIconFileKey</key>
+	<string>KeyMagic.icns</string>
 </dict>
 </plist>
