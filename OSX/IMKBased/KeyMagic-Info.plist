@@ -34,6 +34,8 @@
 	<string>org.keymagic.inputmethod.KeyMagic</string>
 	<key>tsInputMethodIconFileKey</key>
 	<string>KeyMagic.icns</string>
+	<key>TISIntendedLanguage</key>
+	<string>mul</string>
 	<key>LSBackgroundOnly</key>
 	<true/>
 </dict>

@@ -653,7 +653,10 @@ bool mapVK(int virtualkey, int * winVK)
 }
 
 - (void)writeConfigurationFile {
-	NSData *data = [NSPropertyListSerialization dataFromPropertyList:configDictionary format:NSPropertyListXMLFormat_v1_0 errorDescription:nil];
+    NSData *data = [NSPropertyListSerialization dataWithPropertyList:configDictionary
+                                                              format:NSPropertyListXMLFormat_v1_0
+                                                             options:0
+                                                               error:nil];
 	if (data) {
 		[data writeToFile:[self configFilePath] atomically:YES];
 	}
@@ -663,7 +666,12 @@ bool mapVK(int virtualkey, int * winVK)
 	NSData *data = [NSData dataWithContentsOfFile:[self configFilePath]];
 	if (data) {
 		NSPropertyListFormat format;
-		id plist = [NSPropertyListSerialization propertyListFromData:data mutabilityOption:NSPropertyListMutableContainersAndLeaves format:&format errorDescription:nil];
+        
+        id plist = [NSPropertyListSerialization propertyListWithData:data
+                                                             options:NSPropertyListMutableContainersAndLeaves
+                                                              format:&format
+                                                               error:nil];
+        
 		if ([plist isKindOfClass:[NSDictionary class]]) {
 			[configDictionary removeAllObjects];
 			[configDictionary addEntriesFromDictionary:plist];
