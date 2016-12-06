@@ -3,7 +3,7 @@
 ## We Now Have Official KeyMagic Website - http://keymagic.net/
 
 
-*[KeyMagic Download Page](http://code.google.com/p/keymagic/downloads/list)*
+*[KeyMagic Download Page](http://keymagic.net/downloads/)*
 
 ## Introduction
 
