@@ -26,6 +26,11 @@ $long = U1033 + U1034
 
 U103B + $double_width[*] => U107E + $2
 
+$normal_ra[*] + $all_width[*] + U103D => $1 + $2 + U1087
+
+$normal_ra[*] + $double_width[*] + U1087 + $above[*] => U1080 + $2 + $3 + $4
+$normal_ra[*] + $single_width[*] + U1087 + $above[*] => U107F + $2 + $3 + $4
+
 $normal_ra[*] + $double_width[*] + $above[*] => U1080 + $2 + $3
 $normal_ra[*] + $single_width[*] + $above[*] => U107F + $2 + $3
 
