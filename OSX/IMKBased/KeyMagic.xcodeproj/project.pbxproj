@@ -6,102 +6,24 @@
 	objectVersion = 46;
 	objects = {
 
-/* Begin PBXAggregateTarget section */
-		6A31F7850EAC69E90045D7EE /* All */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = 6A31F78F0EAC69FC0045D7EE /* Build configuration list for PBXAggregateTarget "All" */;
-			buildPhases = (
-			);
-			dependencies = (
-				6A31F78B0EAC69F10045D7EE /* PBXTargetDependency */,
-				6A31F7890EAC69EE0045D7EE /* PBXTargetDependency */,
-			);
-			name = All;
-			productName = All;
-		};
-/* End PBXAggregateTarget section */
-
 /* Begin PBXBuildFile section */
-		6A31F73C0EAC680D0045D7EE /* Context.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A31F7390EAC680D0045D7EE /* Context.m */; };
-		6A31F73D0EAC680D0045D7EE /* InputMethodKitTiger.mm in Sources */ = {isa = PBXBuildFile; fileRef = 6A31F73B0EAC680D0045D7EE /* InputMethodKitTiger.mm */; };
-		6A31F7470EAC68880045D7EE /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A31F7460EAC68880045D7EE /* Carbon.framework */; };
-		6A31F7480EAC68880045D7EE /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AA6D20D0EAC655B00DF1C2C /* Cocoa.framework */; };
-		6A31F75E0EAC68E50045D7EE /* Component.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A31F75C0EAC68E50045D7EE /* Component.m */; };
-		6A31F75F0EAC68E50045D7EE /* Component.r in Rez */ = {isa = PBXBuildFile; fileRef = 6A31F75D0EAC68E50045D7EE /* Component.r */; };
-		6A31F7600EAC68EA0045D7EE /* Context.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A31F7390EAC680D0045D7EE /* Context.m */; };
-		6A31F7650EAC69040045D7EE /* KeyMagicServer.app in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6A31F7210EAC67580045D7EE /* KeyMagicServer.app */; };
-		6A31F7830EAC69DC0045D7EE /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A31F7460EAC68880045D7EE /* Carbon.framework */; };
-		6A31F7840EAC69DC0045D7EE /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AA6D20D0EAC655B00DF1C2C /* Cocoa.framework */; };
 		6AA6D20E0EAC655B00DF1C2C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AA6D20D0EAC655B00DF1C2C /* Cocoa.framework */; };
 		6AA6D2100EAC655B00DF1C2C /* InputMethodKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AA6D20F0EAC655B00DF1C2C /* InputMethodKit.framework */; };
 		6AAE6B230EAC6AA400E8EBBA /* KeyMagic.icns in Resources */ = {isa = PBXBuildFile; fileRef = 6AAE6B220EAC6AA400E8EBBA /* KeyMagic.icns */; };
-		6AAE6B240EAC6AA400E8EBBA /* KeyMagic.icns in Resources */ = {isa = PBXBuildFile; fileRef = 6AAE6B220EAC6AA400E8EBBA /* KeyMagic.icns */; };
-		6AAE6B250EAC6AA400E8EBBA /* KeyMagic.icns in Resources */ = {isa = PBXBuildFile; fileRef = 6AAE6B220EAC6AA400E8EBBA /* KeyMagic.icns */; };
-		6AAE6B560EAC6BE900E8EBBA /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6AAE6B550EAC6BE900E8EBBA /* MainMenu.xib */; };
 		6AAE6B570EAC6BE900E8EBBA /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6AAE6B550EAC6BE900E8EBBA /* MainMenu.xib */; };
 		900E5E7C1955F573006962A7 /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 900E5E771955F16E006962A7 /* libstdc++.dylib */; };
 		90BFC4451955EF3C007F5136 /* libkeymagic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90BFC4441955EF3C007F5136 /* libkeymagic.a */; };
-		90FF59CC171628C70013858A /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90FF59CA171628C70013858A /* Growl.framework */; };
-		B510C5B413769F16008798E7 /* KeyMagicUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = B510C5B313769F16008798E7 /* KeyMagicUtil.mm */; };
 		B510C5B513769F16008798E7 /* KeyMagicUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = B510C5B313769F16008798E7 /* KeyMagicUtil.mm */; };
 		B511BFC412009E270060A548 /* Keyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = B511BFB612009E270060A548 /* Keyboard.m */; };
-		B511BFCD12009E270060A548 /* Keyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = B511BFB612009E270060A548 /* Keyboard.m */; };
-		B511BFD612009E270060A548 /* Keyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = B511BFB612009E270060A548 /* Keyboard.m */; };
 		B511C1BC1200A6CA0060A548 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A31F7460EAC68880045D7EE /* Carbon.framework */; };
-		B51D988012FFA555008E0A2F /* KeyMagicNSString.mm in Sources */ = {isa = PBXBuildFile; fileRef = B51D987D12FFA555008E0A2F /* KeyMagicNSString.mm */; };
 		B51D988212FFA555008E0A2F /* KeyMagicNSString.mm in Sources */ = {isa = PBXBuildFile; fileRef = B51D987D12FFA555008E0A2F /* KeyMagicNSString.mm */; };
 		B51D989012FFA5AC008E0A2F /* KeymagicIMEController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B51D988E12FFA5AC008E0A2F /* KeymagicIMEController.mm */; };
 		B51D989112FFA5AC008E0A2F /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = B51D988F12FFA5AC008E0A2F /* main.mm */; };
 		B595DA2513D39931005636D3 /* KeyMagic_black.icns in Resources */ = {isa = PBXBuildFile; fileRef = B595DA2413D39931005636D3 /* KeyMagic_black.icns */; };
-		B595DA2613D39931005636D3 /* KeyMagic_black.icns in Resources */ = {isa = PBXBuildFile; fileRef = B595DA2413D39931005636D3 /* KeyMagic_black.icns */; };
-		B595DA4113D3999D005636D3 /* KeyMagic_black.icns in Resources */ = {isa = PBXBuildFile; fileRef = B595DA2413D39931005636D3 /* KeyMagic_black.icns */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		6A31F7610EAC68F50045D7EE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6AA6D1D60EAC63E100DF1C2C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 6A31F7200EAC67580045D7EE;
-			remoteInfo = "SimpleIMEServer (Server for TSM component)";
-		};
-		6A31F7880EAC69EE0045D7EE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6AA6D1D60EAC63E100DF1C2C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 6AA6D1EA0EAC640E00DF1C2C;
-			remoteInfo = "SimpleIME (IMK-based)";
-		};
-		6A31F78A0EAC69F10045D7EE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6AA6D1D60EAC63E100DF1C2C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 6A31F7510EAC689A0045D7EE;
-			remoteInfo = "SimpleIME (TSM component)";
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXCopyFilesBuildPhase section */
-		6A31F77B0EAC69270045D7EE /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 12;
-			files = (
-				6A31F7650EAC69040045D7EE /* KeyMagicServer.app in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		B51D98CF12FFA797008E0A2F /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B51D98D612FFA7B9008E0A2F /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
@@ -113,18 +35,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		6A31F7210EAC67580045D7EE /* KeyMagicServer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KeyMagicServer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A31F7230EAC67580045D7EE /* KeyMagicServer-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "KeyMagicServer-Info.plist"; sourceTree = "<group>"; };
-		6A31F7370EAC680D0045D7EE /* ComponentConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComponentConfig.h; path = IMKTiger/ComponentConfig.h; sourceTree = "<group>"; };
-		6A31F7380EAC680D0045D7EE /* Context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Context.h; path = IMKTiger/Context.h; sourceTree = "<group>"; };
-		6A31F7390EAC680D0045D7EE /* Context.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Context.m; path = IMKTiger/Context.m; sourceTree = "<group>"; };
-		6A31F73A0EAC680D0045D7EE /* InputMethodKitTiger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputMethodKitTiger.h; path = IMKTiger/InputMethodKitTiger.h; sourceTree = "<group>"; };
-		6A31F73B0EAC680D0045D7EE /* InputMethodKitTiger.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = InputMethodKitTiger.mm; path = IMKTiger/InputMethodKitTiger.mm; sourceTree = "<group>"; };
 		6A31F7460EAC68880045D7EE /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
-		6A31F7520EAC689A0045D7EE /* KeyMagic.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KeyMagic.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
-		6A31F75B0EAC68E50045D7EE /* Component.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Component.h; path = IMKTiger/Component.h; sourceTree = "<group>"; };
-		6A31F75C0EAC68E50045D7EE /* Component.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Component.m; path = IMKTiger/Component.m; sourceTree = "<group>"; };
-		6A31F75D0EAC68E50045D7EE /* Component.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; name = Component.r; path = IMKTiger/Component.r; sourceTree = "<group>"; };
 		6A31F77C0EAC69480045D7EE /* KeyMagic-TSM-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "KeyMagic-TSM-Info.plist"; sourceTree = "<group>"; };
 		6AA6D1EB0EAC640E00DF1C2C /* KeyMagic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KeyMagic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6AA6D1EE0EAC640E00DF1C2C /* KeyMagic-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "KeyMagic-Info.plist"; sourceTree = "<group>"; };
@@ -145,30 +57,9 @@
 		B51D988E12FFA5AC008E0A2F /* KeymagicIMEController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = KeymagicIMEController.mm; path = IMEController/KeymagicIMEController.mm; sourceTree = "<group>"; };
 		B51D988F12FFA5AC008E0A2F /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = main.mm; path = IMEController/main.mm; sourceTree = "<group>"; };
 		B595DA2413D39931005636D3 /* KeyMagic_black.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = KeyMagic_black.icns; sourceTree = "<group>"; };
-		B59E0256139FE45B00F36391 /* Growl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Growl.h; sourceTree = "<group>"; };
-		B59E0257139FE45B00F36391 /* Growl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Growl.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		6A31F71F0EAC67580045D7EE /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				6A31F7470EAC68880045D7EE /* Carbon.framework in Frameworks */,
-				6A31F7480EAC68880045D7EE /* Cocoa.framework in Frameworks */,
-				90FF59CC171628C70013858A /* Growl.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		6A31F7500EAC689A0045D7EE /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				6A31F7830EAC69DC0045D7EE /* Carbon.framework in Frameworks */,
-				6A31F7840EAC69DC0045D7EE /* Cocoa.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		6AA6D1E90EAC640E00DF1C2C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -184,45 +75,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		6A31F71C0EAC67450045D7EE /* IMK-Tiger */ = {
-			isa = PBXGroup;
-			children = (
-				6A31F75A0EAC68C30045D7EE /* For Component */,
-				6A31F7590EAC68BD0045D7EE /* For Server App to Compile With */,
-				6A31F7560EAC68B90045D7EE /* Shared */,
-			);
-			name = "IMK-Tiger";
-			sourceTree = "<group>";
-		};
-		6A31F7560EAC68B90045D7EE /* Shared */ = {
-			isa = PBXGroup;
-			children = (
-				6A31F7370EAC680D0045D7EE /* ComponentConfig.h */,
-				6A31F7380EAC680D0045D7EE /* Context.h */,
-				6A31F7390EAC680D0045D7EE /* Context.m */,
-			);
-			name = Shared;
-			sourceTree = "<group>";
-		};
-		6A31F7590EAC68BD0045D7EE /* For Server App to Compile With */ = {
-			isa = PBXGroup;
-			children = (
-				6A31F73A0EAC680D0045D7EE /* InputMethodKitTiger.h */,
-				6A31F73B0EAC680D0045D7EE /* InputMethodKitTiger.mm */,
-			);
-			name = "For Server App to Compile With";
-			sourceTree = "<group>";
-		};
-		6A31F75A0EAC68C30045D7EE /* For Component */ = {
-			isa = PBXGroup;
-			children = (
-				6A31F75B0EAC68E50045D7EE /* Component.h */,
-				6A31F75C0EAC68E50045D7EE /* Component.m */,
-				6A31F75D0EAC68E50045D7EE /* Component.r */,
-			);
-			name = "For Component";
-			sourceTree = "<group>";
-		};
 		6AA6D1D40EAC63E100DF1C2C = {
 			isa = PBXGroup;
 			children = (
@@ -230,7 +82,6 @@
 				90BFC4441955EF3C007F5136 /* libkeymagic.a */,
 				B511C3EF1200CA880060A548 /* Keyboards */,
 				B511BFAC12009E1A0060A548 /* KeyMagic */,
-				6A31F71C0EAC67450045D7EE /* IMK-Tiger */,
 				6AA6D1F20EAC641200DF1C2C /* KeyMagic (IMK-based) */,
 				6AA6D1EC0EAC640E00DF1C2C /* Products */,
 				90FF59CA171628C70013858A /* Growl.framework */,
@@ -244,8 +95,6 @@
 			isa = PBXGroup;
 			children = (
 				6AA6D1EB0EAC640E00DF1C2C /* KeyMagic.app */,
-				6A31F7210EAC67580045D7EE /* KeyMagicServer.app */,
-				6A31F7520EAC689A0045D7EE /* KeyMagic.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -253,8 +102,6 @@
 		6AA6D1F20EAC641200DF1C2C /* KeyMagic (IMK-based) */ = {
 			isa = PBXGroup;
 			children = (
-				B59E0256139FE45B00F36391 /* Growl.h */,
-				B59E0257139FE45B00F36391 /* Growl.m */,
 				B511BF9D12009D950060A548 /* KeymagicIMEController.h */,
 				B51D988E12FFA5AC008E0A2F /* KeymagicIMEController.mm */,
 				B51D988F12FFA5AC008E0A2F /* main.mm */,
@@ -291,44 +138,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6A31F7200EAC67580045D7EE /* KeyMagicServer (Server for TSM component) */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 6A31F7260EAC67590045D7EE /* Build configuration list for PBXNativeTarget "KeyMagicServer (Server for TSM component)" */;
-			buildPhases = (
-				6A31F71D0EAC67580045D7EE /* Resources */,
-				6A31F71E0EAC67580045D7EE /* Sources */,
-				6A31F71F0EAC67580045D7EE /* Frameworks */,
-				B51D98D612FFA7B9008E0A2F /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "KeyMagicServer (Server for TSM component)";
-			productName = SimpleIMEServer;
-			productReference = 6A31F7210EAC67580045D7EE /* KeyMagicServer.app */;
-			productType = "com.apple.product-type.application";
-		};
-		6A31F7510EAC689A0045D7EE /* KeyMagic (TSM component) */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 6A31F7580EAC68B90045D7EE /* Build configuration list for PBXNativeTarget "KeyMagic (TSM component)" */;
-			buildPhases = (
-				6A31F74E0EAC689A0045D7EE /* Resources */,
-				6A31F74F0EAC689A0045D7EE /* Sources */,
-				6A31F7500EAC689A0045D7EE /* Frameworks */,
-				6A31F7570EAC68B90045D7EE /* Rez */,
-				6A31F77B0EAC69270045D7EE /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				6A31F7620EAC68F50045D7EE /* PBXTargetDependency */,
-			);
-			name = "KeyMagic (TSM component)";
-			productName = SimpleIME;
-			productReference = 6A31F7520EAC689A0045D7EE /* KeyMagic.bundle */;
-			productType = "com.apple.product-type.bundle";
-		};
 		6AA6D1EA0EAC640E00DF1C2C /* KeyMagic (IMK-based) */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6AA6D1F10EAC640F00DF1C2C /* Build configuration list for PBXNativeTarget "KeyMagic (IMK-based)" */;
@@ -370,34 +179,12 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				6A31F7850EAC69E90045D7EE /* All */,
 				6AA6D1EA0EAC640E00DF1C2C /* KeyMagic (IMK-based) */,
-				6A31F7510EAC689A0045D7EE /* KeyMagic (TSM component) */,
-				6A31F7200EAC67580045D7EE /* KeyMagicServer (Server for TSM component) */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		6A31F71D0EAC67580045D7EE /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				6AAE6B250EAC6AA400E8EBBA /* KeyMagic.icns in Resources */,
-				6AAE6B560EAC6BE900E8EBBA /* MainMenu.xib in Resources */,
-				B595DA2613D39931005636D3 /* KeyMagic_black.icns in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		6A31F74E0EAC689A0045D7EE /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				B595DA4113D3999D005636D3 /* KeyMagic_black.icns in Resources */,
-				6AAE6B240EAC6AA400E8EBBA /* KeyMagic.icns in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		6AA6D1E70EAC640E00DF1C2C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -410,40 +197,7 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXRezBuildPhase section */
-		6A31F7570EAC68B90045D7EE /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				6A31F75F0EAC68E50045D7EE /* Component.r in Rez */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXRezBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
-		6A31F71E0EAC67580045D7EE /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				6A31F73C0EAC680D0045D7EE /* Context.m in Sources */,
-				6A31F73D0EAC680D0045D7EE /* InputMethodKitTiger.mm in Sources */,
-				B511BFD612009E270060A548 /* Keyboard.m in Sources */,
-				B51D988012FFA555008E0A2F /* KeyMagicNSString.mm in Sources */,
-				B510C5B413769F16008798E7 /* KeyMagicUtil.mm in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		6A31F74F0EAC689A0045D7EE /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				6A31F7600EAC68EA0045D7EE /* Context.m in Sources */,
-				6A31F75E0EAC68E50045D7EE /* Component.m in Sources */,
-				B511BFCD12009E270060A548 /* Keyboard.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		6AA6D1E80EAC640E00DF1C2C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -458,187 +212,7 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		6A31F7620EAC68F50045D7EE /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 6A31F7200EAC67580045D7EE /* KeyMagicServer (Server for TSM component) */;
-			targetProxy = 6A31F7610EAC68F50045D7EE /* PBXContainerItemProxy */;
-		};
-		6A31F7890EAC69EE0045D7EE /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 6AA6D1EA0EAC640E00DF1C2C /* KeyMagic (IMK-based) */;
-			targetProxy = 6A31F7880EAC69EE0045D7EE /* PBXContainerItemProxy */;
-		};
-		6A31F78B0EAC69F10045D7EE /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 6A31F7510EAC689A0045D7EE /* KeyMagic (TSM component) */;
-			targetProxy = 6A31F78A0EAC69F10045D7EE /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin XCBuildConfiguration section */
-		6A31F7240EAC67590045D7EE /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)\"",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
-				GCC_VERSION = "";
-				INFOPLIST_FILE = "KeyMagicServer-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)\"",
-				);
-				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../cross-platform/libkeymagic/build/Release\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					AppKit,
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.keymagic.KeyMagicServer;
-				PRODUCT_NAME = KeyMagicServer;
-				SDKROOT = macosx;
-			};
-			name = Debug;
-		};
-		6A31F7250EAC67590045D7EE /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)\"",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
-				GCC_VERSION = "";
-				INFOPLIST_FILE = "KeyMagicServer-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)\"",
-				);
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_3 = "\"$(SRCROOT)/../../cross-platform/libkeymagic/build/Release\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					AppKit,
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.keymagic.KeyMagicServer;
-				PRODUCT_NAME = KeyMagicServer;
-				SDKROOT = macosx;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
-		6A31F7530EAC689B0045D7EE /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				HEADER_SEARCH_PATHS = "$(LIBKEYMAGIC)";
-				INFOPLIST_FILE = "KeyMagic-TSM-Info.plist";
-				INSTALL_PATH = "$(HOME)/Library/Bundles";
-				LIBKEYMAGIC = "../../cross-platform/libkeymagic";
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)";
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					AppKit,
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.keymagic.KeyMagic-TSM";
-				PRODUCT_NAME = KeyMagic;
-				SDKROOT = macosx;
-				WRAPPER_EXTENSION = bundle;
-			};
-			name = Debug;
-		};
-		6A31F7540EAC689B0045D7EE /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				HEADER_SEARCH_PATHS = "$(LIBKEYMAGIC)";
-				INFOPLIST_FILE = "KeyMagic-TSM-Info.plist";
-				INSTALL_PATH = "$(HOME)/Library/Bundles";
-				LIBKEYMAGIC = "../../cross-platform/libkeymagic";
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)";
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					AppKit,
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.keymagic.KeyMagic-TSM";
-				PRODUCT_NAME = KeyMagic;
-				SDKROOT = macosx;
-				WRAPPER_EXTENSION = bundle;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
-		6A31F7860EAC69E90045D7EE /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				PRODUCT_NAME = All;
-			};
-			name = Debug;
-		};
-		6A31F7870EAC69E90045D7EE /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				PRODUCT_NAME = All;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
 		6AA6D1D70EAC63E100DF1C2C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -678,7 +252,6 @@
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
 				HEADER_SEARCH_PATHS = "$(LIBKEYMAGIC)";
 				INFOPLIST_FILE = "KeyMagic-Info.plist";
-				INSTALL_PATH = "\"/Library/Input Methods/\"";
 				LIBKEYMAGIC = "../../cross-platform/libkeymagic";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -714,7 +287,6 @@
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
 				HEADER_SEARCH_PATHS = "$(LIBKEYMAGIC)";
 				INFOPLIST_FILE = "KeyMagic-Info.plist";
-				INSTALL_PATH = "\"/Library/Input Methods/\"";
 				LIBKEYMAGIC = "../../cross-platform/libkeymagic";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -738,33 +310,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6A31F7260EAC67590045D7EE /* Build configuration list for PBXNativeTarget "KeyMagicServer (Server for TSM component)" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				6A31F7240EAC67590045D7EE /* Debug */,
-				6A31F7250EAC67590045D7EE /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		6A31F7580EAC68B90045D7EE /* Build configuration list for PBXNativeTarget "KeyMagic (TSM component)" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				6A31F7530EAC689B0045D7EE /* Debug */,
-				6A31F7540EAC689B0045D7EE /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		6A31F78F0EAC69FC0045D7EE /* Build configuration list for PBXAggregateTarget "All" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				6A31F7860EAC69E90045D7EE /* Debug */,
-				6A31F7870EAC69E90045D7EE /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		6AA6D1D90EAC63E100DF1C2C /* Build configuration list for PBXProject "KeyMagic" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
