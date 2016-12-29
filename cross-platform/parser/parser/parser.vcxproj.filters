@@ -9,7 +9,7 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
+    <Filter Include="Source Files\Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
@@ -18,24 +18,21 @@
     <ClCompile Include="ConvertUTF.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lex.yy.cc">
+    <ClCompile Include="keymagic-parser.tab.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="keymagic-driver.cc">
+    <ClCompile Include="lex.yy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="keymagic-parser.tab.cc">
+    <ClCompile Include="keymagic-driver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cc">
+    <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConvertUTF.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="keymagic-parser.tab.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="location.hh">
@@ -44,10 +41,13 @@
     <ClInclude Include="position.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="keymagic-driver.hh">
+    <ClInclude Include="stack.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="stack.hh">
+    <ClInclude Include="keymagic-driver.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="keymagic-parser.tab.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

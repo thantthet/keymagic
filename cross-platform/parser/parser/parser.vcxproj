@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -20,12 +20,14 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -76,12 +78,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ConvertUTF.h" />
-    <ClInclude Include="keymagic-driver.hh">
-      <FileType>Document</FileType>
-    </ClInclude>
-    <ClInclude Include="keymagic-parser.tab.hh">
-      <FileType>Document</FileType>
-    </ClInclude>
+    <ClInclude Include="keymagic-driver.hpp" />
+    <ClInclude Include="keymagic-parser.tab.hpp" />
     <ClInclude Include="location.hh">
       <FileType>Document</FileType>
     </ClInclude>
@@ -94,10 +92,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConvertUTF.cpp" />
-    <ClCompile Include="keymagic-driver.cc" />
-    <ClCompile Include="keymagic-parser.tab.cc" />
-    <ClCompile Include="lex.yy.cc" />
-    <ClCompile Include="Main.cc" />
+    <ClCompile Include="keymagic-driver.cpp" />
+    <ClCompile Include="keymagic-parser.tab.cpp" />
+    <ClCompile Include="lex.yy.cpp" />
+    <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
