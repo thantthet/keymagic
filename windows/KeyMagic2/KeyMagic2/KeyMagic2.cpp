@@ -284,21 +284,21 @@ BOOL CreateListView(HWND hWnd)
 	return true;
 }
 
-HWND CreateAddKeyboardButton(HWND hWnd)
+HWND CreateButton(HWND hWnd, LPTSTR title, HMENU buttonId)
 {
-	HWND hControl ;
+	HWND hControl;
 
 	hControl = CreateWindow(WC_BUTTON,
-		_T("Add"),
+		title,
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		0, 0, 0, 0,
 		hWnd,
-		(HMENU)IDC_BTN_ADD,
+		buttonId,
 		hInst,
 		NULL);
 
 	if (hControl == NULL) {
-		MessageBox(hWnd, _T("Could not create add button."), _T("Error"), MB_OK | MB_ICONERROR);
+		MessageBox(hWnd, _T("Could not create button."), _T("Error"), MB_OK | MB_ICONERROR);
 	}
 
 	HFONT hfDefault = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
@@ -307,25 +307,23 @@ HWND CreateAddKeyboardButton(HWND hWnd)
 	return hControl;
 }
 
+HWND CreateAddKeyboardButton(HWND hWnd)
+{
+	HWND hControl = CreateButton(hWnd, _T("Add"), (HMENU)IDC_BTN_ADD);
+
+	return hControl;
+}
+
 HWND CreateRemoveKeyboardButton(HWND hWnd)
 {
-	HWND hControl;
+	HWND hControl = CreateButton(hWnd, _T("Remove"), (HMENU)IDC_BTN_REMOVE);
 
-	hControl = CreateWindow(WC_BUTTON,
-		_T("Remove"),
-		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
-		0, 0, 0, 0,
-		hWnd,
-		(HMENU)IDC_BTN_REMOVE,
-		hInst,
-		NULL);
+	return hControl;
+}
 
-	if (hControl == NULL) {
-		MessageBox(hWnd, _T("Could not create remove button."), _T("Error"), MB_OK | MB_ICONERROR);
-	}
-
-	HFONT hfDefault = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
-	SendMessage(hControl, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE, 0));
+HWND CreateReportBugButton(HWND hWnd)
+{
+	HWND hControl = CreateButton(hWnd, _T("Report Bug"), (HMENU)IDC_BTN_BUG);
 
 	return hControl;
 }
@@ -468,13 +466,31 @@ void SizeRemoveKeyboardButton(HWND hWnd)
 		SWP_NOZORDER);
 }
 
+void SizeReportBugButton(HWND hWnd)
+{
+	HWND hControl;
+	RECT rcClient;
+
+	hControl = GetDlgItem(hWnd, IDC_LABEL);
+	GetWindowRect(hControl, &rcClient);
+	MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rcClient, 2);
+
+	hControl = GetDlgItem(hWnd, IDC_BTN_BUG);
+	SetWindowPos(hControl,
+		NULL,
+		rcClient.left,
+		rcClient.bottom + 5,
+		kButtonWidth,
+		kButtonHeight,
+		SWP_NOZORDER);
+}
+
 void SizeLabel(HWND hWnd)
 {
 	HWND hControl;
 	RECT rcClient;
 
 	hControl = GetDlgItem(hWnd, IDC_BTN_REMOVE);
-
 	GetWindowRect(hControl, &rcClient);
 	MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rcClient, 2);
 
@@ -765,6 +781,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				}
 			}
 		}
+		case IDC_BTN_BUG:
+		{
+			ShellExecute(0, 0, _T("https://github.com/thantthet/keymagic/issues"), 0, 0, SW_SHOW);
+		}
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -780,6 +800,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		CreateListView(hWnd);
 		CreateAddKeyboardButton(hWnd);
 		CreateRemoveKeyboardButton(hWnd);
+		CreateReportBugButton(hWnd);
 		CreateLabel(hWnd);
 		CreateShellNotifyIcon(hWnd);
 
@@ -799,6 +820,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		SizeAddKeyboardButton(hWnd);
 		SizeRemoveKeyboardButton(hWnd);
 		SizeLabel(hWnd);
+		SizeReportBugButton(hWnd);
 	}
 	break;
 	case WM_PAINT:
