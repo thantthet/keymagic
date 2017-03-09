@@ -362,7 +362,7 @@ bool mapVK(int virtualkey, int * winVK)
 	return NO;
 }
 
-- (BOOL)handleEvent:(NSEvent*)event TSMDocumentAccessSupportedClient:(id)sender
+- (BOOL)handleEvent:(NSEvent*)event TSMDocumentAccessSupportedClient:(id<IMKTextInput,NSObject>)sender
 {
     if ([event type] != NSKeyDown || m_success == NO) {
 		return NO;
@@ -456,7 +456,7 @@ bool mapVK(int virtualkey, int * winVK)
 	return YES;
 }
 
-- (BOOL)handleEvent:(NSEvent*)event TSMDocumentAccessUnSupportedClient:(id)sender
+- (BOOL)handleEvent:(NSEvent*)event TSMDocumentAccessUnSupportedClient:(id<IMKTextInput,NSObject>)sender
 {
     if ([event type] != NSKeyDown || m_success == NO) {
 		return NO;
@@ -485,14 +485,16 @@ bool mapVK(int virtualkey, int * winVK)
 
 	[attrString setAttributes:attrDict range:NSMakeRange(0, [_composingBuffer length])];  
 	
-	// selectionRange means "cursor position index"
+	// selectionRange means "cursor position by index" in our case
 	NSRange selectionRange = NSMakeRange([_composingBuffer length], 0); 
-	[sender setMarkedText:attrString selectionRange:selectionRange replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
+	[sender setMarkedText:attrString
+           selectionRange:selectionRange
+         replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
 	
     return YES;
 }
 
-- (BOOL)handleEvent:(NSEvent*)event client:(id)sender
+- (BOOL)handleEvent:(NSEvent*)event client:(id<IMKTextInput,NSObject>)sender
 {
 	if (instantCommit) {
 		return [self handleEvent:event TSMDocumentAccessSupportedClient:sender];

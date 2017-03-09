@@ -22,10 +22,6 @@
 #import <InputMethodKit/InputMethodKit.h>
 #import "KeyMagicIMEController.h"
 
-#include "KeyMagicEngine.h"
-#include "KeyMagicLogger.h"
-#include "KeyMagicString.h"
-
 IMKServer *KeyMagicInputMethodServer = nil;
 
 int main(int argc, char *argv[])
