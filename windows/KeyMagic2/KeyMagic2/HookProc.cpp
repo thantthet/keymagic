@@ -14,7 +14,7 @@ using namespace libkm;
 
 BYTE KeyboardStates[256];
 
-void SendString(KeyMagicString);
+void SendString(const KeyMagicString &);
 void SendBackspace(ULONG);
 
 struct ModifierKeyStates
@@ -163,7 +163,14 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 	states[VK_MENU] = 0; // set to zero for ToUnicodeEx
 
 	UINT code = MapVirtualKeyEx(kbd->scanCode, MAPVK_VSC_TO_VK_EX, (HKL)0x04090409);
-	ToUnicodeEx(code, kbd->scanCode, states, unicode, 1, 0, (HKL)0x04090409);
+	if (isModifierKey) {
+		// we dont want to pass value/code value for modifier keys
+		code = 0;
+	}
+	else {
+		ToUnicodeEx(code, kbd->scanCode, states, unicode, 1, 0, (HKL)0x04090409);
+		states[code] = 0x80;
+	}
 	
 	states[VK_MENU] = modKeyStates.MENU;
 
@@ -188,14 +195,18 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 		return true;
 	}
 	else if (unicode[0]) {
-		engine->reset();
+		ResetEngine();
 	}
 	return CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
 }
 
-void SendString(KeyMagicString s)
+void SendString(const KeyMagicString & s)
 {
 	int eventCount = s.size() * 2;
+
+	if (eventCount == 0) {
+		return;
+	}
 
 	INPUT *inputs = new INPUT[eventCount];
 
