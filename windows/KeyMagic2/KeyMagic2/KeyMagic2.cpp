@@ -117,7 +117,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	if (CheckIfRunning()) {
 		return 0;
 	}
-
+#ifdef DEBUG
 	char szPath[MAX_PATH];
 
 	if (SUCCEEDED(SHGetFolderPathA(NULL,
@@ -138,7 +138,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		libkm::KeyMagicLogger::getInstance()->setFile(hFile);
 	}
-
+#endif
     RegisterWindowClass(hInstance);
 
     // Perform application initialization:
