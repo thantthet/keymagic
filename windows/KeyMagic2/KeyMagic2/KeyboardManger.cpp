@@ -55,6 +55,7 @@ libkm::KeyMagicEngine * Keyboard::GetKeyMagicEngine()
 	}
 
 	m_engine = new libkm::KeyMagicEngine();
+	m_engine->m_verbose = true;
 	m_engine->loadKeyboardFile(this->KeyboardFullPath().c_str());
 
 	return m_engine;

@@ -7,6 +7,8 @@
 #include <Commdlg.h>
 #include <string>
 #include <shellapi.h>
+#include <Shlwapi.h>
+#include <Shlobj.h>
 #include "ConfigUtils.h"
 #include "HookProc.h"
 #include "KeyboardManager.h"
@@ -114,6 +116,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	if (CheckIfRunning()) {
 		return 0;
+	}
+
+	char szPath[MAX_PATH];
+
+	if (SUCCEEDED(SHGetFolderPathA(NULL,
+		CSIDL_APPDATA,
+		NULL,
+		0,
+		szPath)))
+	{
+		PathAppendA(szPath, "keymagic.log");
+
+		FILE * hFile;
+
+#ifdef _MSC_VER
+		fopen_s(&hFile, szPath, "wb");
+#else
+		hFile = fopen(szPath, "wb");
+#endif
+
+		libkm::KeyMagicLogger::getInstance()->setFile(hFile);
 	}
 
     RegisterWindowClass(hInstance);
