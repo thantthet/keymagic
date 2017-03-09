@@ -113,24 +113,6 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 		}
 	}
 
-	//if (isModifierKey)
-	//{
-	//	if (modKeyStates.CONTROL && modKeyStates.SHIFT)
-	//	{
-	//		KeyboardManager *mgr = KeyboardManager::sharedManager();
-	//		mgr->ToggleKeyboard();
-	//	}
-	//	return CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
-	//}
-	//else if (kbd->vkCode == VK_SPACE && wParam == WM_KEYDOWN) {
-	//	if (modKeyStates.CONTROL) {
-	//		KeyboardManager *mgr = KeyboardManager::sharedManager();
-	//		if (mgr->AdvanceToNextKeyboard()) {
-	//			return true;
-	//		}
-	//	}
-	//}
-
 	if (wParam == WM_KEYDOWN) {
 		char vk = isModifierKey ? 0 : kbd->vkCode;
 		bool match = HotkeyManager::sharedManager()->MatchAndCall(
