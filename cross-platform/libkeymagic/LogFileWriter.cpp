@@ -33,19 +33,16 @@ namespace libkm {
 	void LogFileWriter::log(const std::string fmt, ...) {
 		va_list vl;
 		
-		if (indentation) {
+		if (indentation) { // print out indentation if any
 			int spaces = 3 * indentation;
-			char *indent = new char[spaces + 1];
-			memset(indent, 0x20, spaces);
-			indent[spaces] = '\0'; 
-			fprintf(m_logFile, "%s", indent);
-            delete [] indent;
+			std::string str(spaces, ' ');
+			fprintf(m_logFile, "%s", str.c_str());
 		}
 
 		va_start(vl, fmt);
 		vfprintf(m_logFile, fmt.c_str(), vl);
-		flush();
 		va_end(vl);
+		this->flush();
 	}
 
 	void LogFileWriter::flush() {

@@ -62,7 +62,7 @@ public:
 	 * @param keyval character value
 	 * @param keycode virtual-key code
 	 * @param modifier modifier key states (CTRL, SHIFT, ALT)
-	 * @return TRUE if key is processed otherwise false
+	 * @return TRUE if key is processed otherwise FALSE
 	 */
 	bool processKeyEvent(int keyval, int keycode, int modifier);
 	/**

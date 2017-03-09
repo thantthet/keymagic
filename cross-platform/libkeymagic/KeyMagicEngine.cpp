@@ -160,7 +160,7 @@ namespace libkm {
 			m_verbose = v;
 			if (success) {
 				
-				LOG("rule matched: %d\n", rule.getRuleIndex());
+				LOG("rule id matched: %d\n", rule.getRuleIndex());
 				
 				if (keycode) {
 					m_switch.clear();
@@ -213,6 +213,7 @@ namespace libkm {
 		
 		//not success, no control key
 		if (!success && keycode >= 0x20) {
+			LOG("reseting switch since process input failed and keycode > 0x20\n");
 			m_switch.clear();
 		}
 
@@ -517,7 +518,7 @@ namespace libkm {
 		LOG_FUNC();
 		KeyMagicString outputResult, backupResult;
 		
-		LOG("index = %d\n", rule->getRuleIndex());
+		LOG("process output rule index = %d\n", rule->getRuleIndex());
 		
 		RuleInfo::ItemList* inRules = rule->getLHS();
 //		RuleInfo::ItemList::iterator iInRule = inRules->begin();
