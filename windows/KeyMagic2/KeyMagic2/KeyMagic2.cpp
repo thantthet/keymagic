@@ -804,6 +804,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				}
 			}
 		}
+			break;
 		case IDC_BTN_BUG:
 		{
 			ShellExecute(0, 0, _T("https://github.com/thantthet/keymagic/issues"), 0, 0, SW_SHOW);
