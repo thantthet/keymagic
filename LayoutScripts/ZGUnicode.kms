@@ -1,5 +1,5 @@
 /*
-@NAME = "ဇော်ဂျီ - ယူနီကုဒ်"
+@NAME = "ဇတ်ကုဒ်"
 @FONTFAMILY = "TharLon"
 @DESCRIPTION = "A Unicode Keyboard Layout that can be type the same sequence just like normal ZawgyiL Layout but its output is Unicode. | Thant Thet Khin Zaw"
 @ICON = "Zawgyi L - Unicode.png"
@@ -144,7 +144,7 @@ U200B + U103C + <VK_OEM_COMMA & VK_SHIFT> => U101D + U103C
 ("GRAVE_ACCENT") + <VK_KEY_V> => U1039 + U101C
 ("GRAVE_ACCENT") + <VK_KEY_C> => U1039 + U1001
 ("GRAVE_ACCENT") + <VK_KEY_X> => U1039 + U1011
-("GRAVE_ACCENT") + <VK_KEY_Z> => U1039 + U1007
+("GRAVE_ACCENT") + <VK_KEY_Z> => U1039 + U1016
 ("GRAVE_ACCENT") + <VK_KEY_J> => U200B + U103C
 ("GRAVE_ACCENT") + <VK_KEY_D> => U102D + U1036
 ("GRAVE_ACCENT") + <VK_OEM_7> => U1039 + U1012
