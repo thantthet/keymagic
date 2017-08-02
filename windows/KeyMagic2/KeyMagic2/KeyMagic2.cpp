@@ -583,12 +583,23 @@ void UnregisterKeyboard(Keyboard &keyboard)
 void AddKeyboardFile(HWND hWnd, LPCTSTR filePath)
 {
 	std::wstring basename = base_name<std::wstring>(filePath);
-	if (CopyFile(filePath, (AppDataDirectory() + basename).c_str(), true)) {
+
+	std::wstring destFilePath = (AppDataDirectory() + basename);
+
+	if (PathFileExists(destFilePath.c_str())) {
+		int result = MessageBox(hWnd, _T("File with the same name already exits. Do you want to overwrite?"), _T("Y sure?"), MB_YESNO | MB_ICONWARNING);
+		if (result == IDYES)
+		{
+			DeleteFile(destFilePath.c_str());
+			AddKeyboardFile(hWnd, filePath);
+		}
+	}
+	else if (CopyFile(filePath, destFilePath.c_str(), true)) {
 		RegisterKeyboardFile(hWnd, basename.c_str());
 		ReloadKeyboards(hWnd);
 	}
 	else {
-		MessageBox(NULL, _T("Copying failed while registering keyboard!"), _T("Oh Snap!"), MB_OK);
+		MessageBox(NULL, _T("Copying failed while registering keyboard!"), _T("Oh Snap!"), MB_OK | MB_ICONERROR);
 	}
 }
 
