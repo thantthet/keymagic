@@ -804,7 +804,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			if (selectedIndexes.size())
 			{
-				int result = MessageBox(hWnd, _T("Are you sure you want to remove selected keyboard(s)?"), _T("Y sure?"), MB_YESNO);
+				int result = MessageBox(hWnd, _T("Are you sure you want to remove selected keyboard(s)?"), _T("Y sure?"), MB_YESNO | MB_ICONEXCLAMATION);
 				if (result == IDYES)
 				{
 					auto keyboards = KeyboardManager::sharedManager()->GetKeyboards();
