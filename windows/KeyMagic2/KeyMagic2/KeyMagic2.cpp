@@ -229,7 +229,7 @@ BOOL InsertListViewItems(HWND hWndListView, Keyboard keyboard)
 
 	TCHAR text[200];
 
-	lstrcpyn(text, converter.from_bytes(keyboard.name).c_str(), 200);
+	lstrcpyn(text, keyboard.name.c_str(), 200);
 
 	lvI.pszText = text;
 	lvI.mask = LVIF_TEXT | LVIF_STATE | LVIF_IMAGE;
@@ -561,19 +561,20 @@ void RegisterKeyboardFile(HWND hWnd, LPCTSTR fileName)
 
 void UnregisterKeyboard(Keyboard &keyboard)
 {
-	std::string dirName = dirname(ConfigUtils::jsonFilePath());
+	std::wstring dirName = dirname(ConfigUtils::jsonFilePath());
 
 	json config = ConfigUtils::Read();
 	json &j = config["keyboards"];
+	std::string path = converter.to_bytes(keyboard.path);
 	for (auto it = j.begin(); it != j.end(); ++it) {
 		auto &k = *it;
-		if (k["path"].get<std::string>() == keyboard.path)
+		if (k["path"].get<std::string>() == path)
 		{
 			j.erase(it);
 
 			ConfigUtils::Write(config);
 
-			DeleteFileA((dirName + keyboard.path).c_str());
+			DeleteFile((dirName + keyboard.path).c_str());
 
 			return;
 		}
@@ -646,12 +647,12 @@ void ShowTrayContextMenu(HWND hWnd)
 	{
 		TCHAR title[200] = { 0 };
 
-		std::wstring wide = converter.from_bytes(keyboard.name);
-		memcpy(title, wide.c_str(), wide.size() * sizeof(wchar_t));
+		std::wstring name = keyboard.name;
+		memcpy(title, name.c_str(), name.size() * sizeof(wchar_t));
 
 		MENUITEMINFO mii = { 0 };
 		mii.cbSize = sizeof(MENUITEMINFO);
-		mii.cch = wide.size() * sizeof(wchar_t);
+		mii.cch = name.size() * sizeof(wchar_t);
 		mii.fMask = MIIM_STRING | MIIM_STATE | MIIM_ID | MIIM_BITMAP;
 		mii.dwTypeData = title;
 		mii.fState = MFS_UNCHECKED;

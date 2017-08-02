@@ -22,7 +22,7 @@ public:
 		return sharedManager;
 	}
 
-	HotkeyManager(std::string jsonPath);
+	HotkeyManager(std::wstring jsonPath);
 
 	void WriteHotkey();
 	void ReloadHotkey();
@@ -84,7 +84,7 @@ private:
 	}
 
 private:
-	std::string jsonPath;
+	std::wstring jsonPath;
 	std::map<LPWORD, std::function<void()>> m_handlers;
 public:
 	WORD hky_onoff;

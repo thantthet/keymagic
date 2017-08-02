@@ -32,12 +32,12 @@ using json = nlohmann::json;
 class ConfigUtils
 {
 public:
-	static std::string jsonFilePath() {
+	static std::wstring jsonFilePath() {
 		char temp[MAX_PATH];
 		size_t converted;
 
-		std::string dataDirectory = converter.to_bytes(AppDataDirectory());
-		std::string jsonFile = dataDirectory + "config.json";
+		std::wstring dataDirectory = AppDataDirectory();
+		std::wstring jsonFile = dataDirectory + _T("config.json");
 
 		return jsonFile;
 	}
@@ -53,7 +53,7 @@ public:
 
 	static json Read()
 	{
-		std::string jsonFile = jsonFilePath();
+		std::wstring jsonFile = jsonFilePath();
 		std::ifstream t(jsonFile);
 
 		json config = json::object();

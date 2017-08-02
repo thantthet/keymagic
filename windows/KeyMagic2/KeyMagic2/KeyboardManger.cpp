@@ -2,6 +2,7 @@
 #include <keymagic.h>
 
 #include "KeyboardManager.h"
+#include "ConfigUtils.h"
 #include <atlimage.h>
 #include <gdiplus.h>
 
@@ -22,7 +23,7 @@ HBITMAP Keyboard::GetKeyboardIcon()
 	return this->hIcon;
 }
 
-std::string Keyboard::KeyboardFullPath()
+std::wstring Keyboard::KeyboardFullPath()
 {
 	return (this->basePath + this->path);
 }
@@ -35,7 +36,7 @@ void Keyboard::LoadKeyboardIcon()
 	{
 		return;
 	}
-	auto info =pair->second;
+	auto info = pair->second;
 
 	IStream *pStream = SHCreateMemStream((BYTE *)info.Data(), info.Size());
 	
@@ -75,8 +76,11 @@ BOOL KeyboardManager::SetKeyboards(nlohmann::json jsonKeyboards)
 		keyboard.index = index++;
 		keyboard.basePath = this->m_basePath;
 
-		keyboard.name = k["name"].get<std::string>();
-		keyboard.path = k["path"].get<std::string>();
+		std::string name = k["name"].get<std::string>();
+		std::string path = k["path"].get<std::string>();
+
+		keyboard.name = converter.from_bytes(name);
+		keyboard.path = converter.from_bytes(path);
 
 		this->m_keyboards.push_back(keyboard);
 	}
@@ -163,12 +167,12 @@ KeyboardManager * KeyboardManager::sharedManager()
 	return sharedManager;
 }
 
-std::string const& KeyboardManager::basePath() const
+std::wstring const& KeyboardManager::basePath() const
 {
 	return this->m_basePath;
 }
 
-void KeyboardManager::basePath(std::string const& newBasePath)
+void KeyboardManager::basePath(std::wstring const& newBasePath)
 {
 	this->m_basePath = newBasePath;
 }

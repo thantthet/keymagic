@@ -2,7 +2,7 @@
 #include "HotkeyManager.h"
 #include "ConfigUtils.h"
 
-HotkeyManager::HotkeyManager(std::string jsonPath)
+HotkeyManager::HotkeyManager(std::wstring jsonPath)
 	: jsonPath(jsonPath)
 {
 
