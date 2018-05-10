@@ -12,6 +12,7 @@ $patSints = U1060 + U1061 + U1062 + U1063 + U1065 + U1066 + U1067 + \
 
 $above = U102D + U102E + U1032 + U108B + U108C + U108D + U108E + U1039
 $below = U103C + U103D + U108A
+$below_without_ha_htol = U103C + U108A
 $ab = $above + $below + U1033 + U1034
 
 $normal_ra = U103B + U107E
@@ -24,6 +25,9 @@ $abnormal_double_width_ra = U1080 + U1082 + U1084
 $short = U102F + U1030
 $long = U1033 + U1034
 
+$above + U103D => $2 + $1
+$above + U1087 => $2 + $1
+
 U103B + $double_width[*] => U107E + $2
 
 $normal_ra[*] + $all_width[*] + U103D => $1 + $2 + U1087
@@ -34,14 +38,14 @@ $normal_ra[*] + $single_width[*] + U1087 + $above[*] => U107F + $2 + $3 + $4
 $normal_ra[*] + $double_width[*] + $above[*] => U1080 + $2 + $3
 $normal_ra[*] + $single_width[*] + $above[*] => U107F + $2 + $3
 
-$normal_ra[*] + $double_width[*] + $below[*] => U1082 + $2 + $3
-$normal_ra[*] + $single_width[*] + $below[*] => U1081 + $2 + $3
+$normal_ra[*] + $double_width[*] + $below_without_ha_htol[*] => U1082 + $2 + $3
+$normal_ra[*] + $single_width[*] + $below_without_ha_htol[*] => U1081 + $2 + $3
 
-$single_cut_ra[*] + $double_width[*] + $above[*] + $below[*] => U1084 + $2 + $3 + $4
-$single_cut_ra[*] + $single_width[*] + $above[*] + $below[*] => U1083 + $2 + $3 + $4
+$single_cut_ra[*] + $double_width[*] + $above[*] + $below_without_ha_htol[*] => U1084 + $2 + $3 + $4
+$single_cut_ra[*] + $single_width[*] + $above[*] + $below_without_ha_htol[*] => U1083 + $2 + $3 + $4
 
-$single_cut_ra[*] + $double_width[*] + $below[*] + $above[*] => U1084 + $2 + $3 + $4
-$single_cut_ra[*] + $single_width[*] + $below[*] + $above[*] => U1083 + $2 + $3 + $4
+$single_cut_ra[*] + $double_width[*] + $below_without_ha_htol[*] + $above[*] => U1084 + $2 + $3 + $4
+$single_cut_ra[*] + $single_width[*] + $below_without_ha_htol[*] + $above[*] => U1083 + $2 + $3 + $4
 
 $all_ra[*] + $all_width[*] + $short[*] => $1 + $2 + $long[$3]
 //$all_ra[*] + $all_width[*] + U1030 => $1 + $2 + U1034
@@ -69,8 +73,6 @@ $long[*] + U1037 => $1 + U1095
 U1014 + $above[*] + U1037 => $1 + $2 + U1094
 $full_height[*] + $above[*] + U1037 => $1 + $2 + U1095
 $full_height[*] + U1037 => $1 + U1094
-U100A + $above[*] + $short[*]=> $1 + $2 + $long[$3]
-U100A + $short[*] => $1 + $long[$2]
 
 // ta-chaung-nyin
 U103C + U102D + $short[*] => $1 + $2 + $long[$3]
@@ -99,12 +101,18 @@ U101B + $short[*] => U1090 + $2
 U101B + $above[*] + $short[*] => U1090 + $2 + $3
 U1090 + $above[*] + $short[*]  + U1037=> $1 + $2 + $3 + U1095
 $all_yakauk[*] + U103D + $above[*] + $short[*]  => U1090 + $2 + $3 + $long[$4]
+$all_yakauk[*] + U103D + $short[*]  => U1090 + $2 + $long[$3]
 U102C + U102D => $1 + U1039
 U102C + U102B => $1 + U1039
 
 // U100A + U102B => $1 + U1039
+// Nya
 U100A + U103D => $1 + U1087
-U100A + $below[*] => U106B + $2
+U100A + $below_without_ha_htol[*] => U106B + $2
+U100A + $below[*] + $short[*] => $1 + $2 + $long[$3]
+U100A + $below[*] + $above[*] + $short[*] => $1 + $2 + $3 + $long[$4]
+U100A + $above[*] + $short[*] => $1 + $2 + $long[$3]
+U100A + $short[*] => $1 + $long[$2]
 
 $YY_1 = U107E + U107F + U1080
 $YY_1[*] + $all_width[*] + U103D => $1 + $2 + U1087

@@ -1,25 +1,7 @@
-// @NAME = "မြန်စံ (Smart)"
-// @FONTFAMILY = "Myanmar3"
-// @DESCRIPTION = "Converted into KeyMagic Layout from Official Myanmar3 Keyman Layout | by Thant Thet Khin Zaw"
-// @ICON = "Myanmar3.bmp"
-// @HOTKEY = "CTRL+ALT+M"
-// @TRACK_CAPSLOCK = "FALSE"
-// @EAT_ALL_UNUSED_KEYS = "TRUE"
-// @US_LAYOUT_BASED = "TRUE"
-// @SMART_BACKSPACE = "TRUE"
-
-// $baseK = 'qwert' + \
-// 		'yuiop' + \
-// 		"[zxc" + \
-// 		"vbnQ" + \
-// 		"OP{AKL" + \
-// 		"ZXCVNM" + \
-// 		'!#%^' + \
-// 		'&' + \
-// 		'=_\\]' + \
-// 		'~' + \
-// 		'WETYUI' + \
-// 		'?'
+/*
+@US_LAYOUT_BASED = "TRUE"
+@SMART_BACKSPACE = "TRUE"
+*/
 
 $baseU = u1006 + u1010 + u1014 + u1019 + u1021 + \
 		u1015 + u1000 + u1004 + u101E + u1005 + \
@@ -34,36 +16,25 @@ $baseU = u1006 + u1010 + u1014 + u1019 + u1021 + \
 		u101D + u1023 +  u1024 + u104C + u1025 + u104D + \
 		U104A
 
-// $addK = ',.]}'
 $addU = U101A + u002E + u1029 + u102A
 
-            
-// $numK = '1234567890' 
 $numU = u1041 + u1042 + u1043 + u1044 + u1045 + \
 		u1046 + u1047 + u1048 + u1049 + u1040                
 
-// $aftereK = 'gmh;'
 $aftereU = u102B + u102C + u1037 + u1038
 
-// $aaK = 'gm'
 $aaU = u102B + u102C  
 
-// $lDotK = 'h'
 $lDotU = u1037    
 
-// $visargaK = ';'
 $visargaU = u1038
                       
-// $udia1K = 'dD'
 $udia1U = u102D + u102E 
 
-// $udia2K = 'JH'     
 $udia2U = u1032 + u1036
                   
-// $ldiaK = 'kl'
 $ldiaU = u102F + u1030
 
-// $asatK = 'f'
 $asatU = u103A 
 
 $consU = u1000 + u1001 + u1002 + u1003 + u1004 + u1005 + u1006 + u1007 + \
@@ -72,63 +43,42 @@ $consU = u1000 + u1001 + u1002 + u1003 + u1004 + u1005 + u1006 + u1007 + \
 		u1018 + u1019 + u101A + u101B + u101C + u101D + u101E + u101F + \
 		u1020 + u1021
 
-// $mediaK = 'sjSG' 
 $mediaU = u103B + u103C + u103E + u103D 
 
-// $yDiaK = 's'
 $yDiaU = u103B
 
-// $rDiaK = 'j'
 $rDiaU = u103C
-   
-// $wDiaK = 'G'
+
 $wDiaU = u103D 
 
-// $hDiaK = 'S' 
 $hDiaU = u103E
                 
 $filler = u200B   
 
-// $vowelEK = 'a'
 $vowelEU = u1031
 
 $allDiaU = u102F + u1030 + u102D + u102E + u1032 + u1036 + u1037
 $firstDiaU = u102D + u102F + u1032
 $secondDiaU = u102D + u1036 + u1037 + u102F  
 
-// $stackK = 'F'
 $stackU = u1039 
 
-// $vowelEK => $filler + $vowelEU
-// $stackK => $stackU
 $filler + u1031 + $consU[*] => $3 + u1031
 u1031 + u1039 + $consU[*] => u1039 + $3 + u1031 
 u1031 + $mediaU[*] => $2 + u1031
 
-// $addK[*]=> $addU[$1]
-// $numK[*] => $numU[$1]
-
-
-// $baseK[*] => $baseU[$1] 
-// $aftereK[*] => $aftereU[$1] 
-// $asatK => $asatU
-
 u101E + u103C + u1031 + u102C + $asatU => u102A
-u1025 + u102E => u1026  
+u1025 + 'D' => u1026  
 $ldiaU[*] + $udia1U[*] => $2 + $1
 $udia2U[*] + $ldiaU[*] => $2 + $1
 $udia2U[*] + $udia1U[*] => $2 + $1
 u1037 + $udia1U[*] => $2 + $1
 u1037 + $udia2U[*] => $2 + $1
 u1037 + $ldiaU[*] => $2 + $1
-u1036 + u1032 => $2 + $1
+u1036 + 'J'=> u1032 + u1036
 u1037 + $aaU[*] => $2 + $1
 u1038 + $lDotU[*] => $2 + $1
 //u103A + 'h' => u1037 + u103A
-
-// $ldiaK[*] => $ldiaU[$1]
-// $udia1K[*] => $udia1U[$1]  
-// $udia2K[*] => $udia2U[$1]
 
 $wDiaU[*] + $yDiaU[*] => $2 + $1
 $hDiaU[*] + $yDiaU[*] => $2 + $1
@@ -148,8 +98,6 @@ $hDiaU[*] + u1031 + $wDiaU[*] => $3 + $1 + $2
 $wDiaU[*] + $hDiaU[*] + u1031 + $yDiaU[*] => $4 + $1 + $2 + $3
 $wDiaU[*] + $hDiaU[*] + u1031 + $rDiaU[*] => $4 + $1 + $2 + $3
 
-// $mediaK[*] => $mediaU[$1]
-
 // u200B + u1031 + < VK_BACK > => NULL
 // $baseU[*] + u1031 + < VK_BACK > => $filler + u1031
 // $mediaU[*] + u1031 + < VK_BACK >=> u1031
@@ -159,49 +107,6 @@ $wDiaU[*] + $hDiaU[*] + u1031 + $rDiaU[*] => $4 + $1 + $2 + $3
 
 //out-ka-myin <-> a-thet
 U103A + U1037 => $2 + $1
-
-// Novasteps Edit Start
-
-< VK_SHIFT & VK_KEY_4 > => U1000 + U103B + U1015 + U103A
-'(' => '('
-')' => ')'
-'@' => U100F + U1039 + U100D
-'|' => U100B + U1039 + U100C
-'`' => ('tick')
-'2' + ('tick') => U100F + U1039 + U100C
-'=' + ('tick') => U00F7
-':' => U1002
-'R' => U104E +U1004 +U103A +U1038
-'\'' => '\''
-'"' => '"'
-'-' => U2212
-'+' => U002B
-'_' => U00D7
-
-<VK_NUMPAD0> => '0'
-<VK_NUMPAD1> => '1'
-<VK_NUMPAD2> => '2'
-<VK_NUMPAD3> => '3'
-<VK_NUMPAD4> => '4'
-<VK_NUMPAD5> => '5'
-<VK_NUMPAD6> => '6'
-<VK_NUMPAD7> => '7'
-<VK_NUMPAD8> => '8'
-<VK_NUMPAD9> => '9'
-
-<VK_MULTIPLY> => '*'
-<VK_SHIFT & VK_KEY_8 > => U1002
-<VK_ADD > => '+'
-<VK_SUBTRACT> => '-'
-
-<VK_DIVIDE > => '/'
-<VK_QUESTION> =>  U104B
-<VK_SHIFT & VK_QUESTION> => U104A
-
-<VK_SPACE> => ' '
-
-$filler + U1031 + U103F => $3 + $2
-// U103F + U1031 + <VK_BACK> => $filler + U1031
 
 // double tap
 

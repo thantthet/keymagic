@@ -1,8 +1,8 @@
-// @NAME = "မြန်စံ (Smart)"
+// @NAME = "PaOh"
 // @FONTFAMILY = "Myanmar3"
-// @DESCRIPTION = "Converted into KeyMagic Layout from Official Myanmar3 Keyman Layout | by Thant Thet Khin Zaw"
+// @DESCRIPTION = "base on MyanSan Mobile Keyboard"
 // @ICON = "Myanmar3.bmp"
-// @HOTKEY = "CTRL+ALT+M"
+// @HOTKEY = "CTRL+ALT+P"
 // @TRACK_CAPSLOCK = "FALSE"
 // @EAT_ALL_UNUSED_KEYS = "TRUE"
 // @US_LAYOUT_BASED = "TRUE"
@@ -13,7 +13,7 @@
 // 		"[zxc" + \
 // 		"vbnQ" + \
 // 		"OP{AKL" + \
-// 		"ZXCVNM" + \
+// 		"ZXCVBNM<" + \
 // 		'!#%^' + \
 // 		'&' + \
 // 		'=_\\]' + \
@@ -26,7 +26,7 @@ $baseU = u1006 + u1010 + u1014 + u1019 + u1021 + \
 		u101F + u1016 + u1011 + u1001 + \
 		u101C + u1018 + u100A + u1008 + \
 		u103F + u100F + u1027 + u1017 + u1012 + u1013 + \
-		u1007 + u100C + u1003 + u1020 + u1009 + u1026 + \
+		u1007 + u100C + u1003 + u1020 + U101A + u1009 + u1026 + Uaa7b +\
 		u100D + u100B + '%' + '/' + \
 		u101B + \
 		U003D + u005F + u104F + u1029 + \
@@ -35,7 +35,7 @@ $baseU = u1006 + u1010 + u1014 + u1019 + u1021 + \
 		U104A
 
 // $addK = ',.]}'
-$addU = U101A + u002E + u1029 + u102A
+$addU = U108f + u002E + u1029 + u102A
 
             
 // $numK = '1234567890' 
@@ -114,14 +114,14 @@ u1031 + $mediaU[*] => $2 + u1031
 // $asatK => $asatU
 
 u101E + u103C + u1031 + u102C + $asatU => u102A
-u1025 + u102E => u1026  
+u1025 + 'D' => u1026  
 $ldiaU[*] + $udia1U[*] => $2 + $1
 $udia2U[*] + $ldiaU[*] => $2 + $1
 $udia2U[*] + $udia1U[*] => $2 + $1
 u1037 + $udia1U[*] => $2 + $1
 u1037 + $udia2U[*] => $2 + $1
 u1037 + $ldiaU[*] => $2 + $1
-u1036 + u1032 => $2 + $1
+u1036 + 'J'=> u1032 + u1036
 u1037 + $aaU[*] => $2 + $1
 u1038 + $lDotU[*] => $2 + $1
 //u103A + 'h' => u1037 + u103A
@@ -211,7 +211,7 @@ U102d + U102d => U102e
 U103A + U103A => u1039
 U102b + U102b => U103D
 U1037 + U1037 => U1036
-U103C + U103C => U1032
-U102F + U102F => U1012
-u1030 + u1030 => U1013
+U200B + U103C + U200B + U103C => U1032
+U102F + U102F => U1013
+u1030 + u1030 => U1012
 u1038 + u1038 => U1002
