@@ -26,8 +26,8 @@ void HudWindow::onKeyboardDidChange()
 {
 	this->Show();
 	SetTimer(this->hWnd,
-		1,            // timer identifier
-		3000,
+		1,
+		1000,
 		NULL);
 }
 
@@ -84,7 +84,7 @@ ATOM HudWindow::RegisterWindowClass(HINSTANCE hInstance)
 BOOL HudWindow::InitInstance()
 {
 	HWND hWnd = CreateWindowEx(
-		WS_EX_LAYERED | WS_EX_TOPMOST,
+		WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
 		szWindowClass,
 		_T(""),
 		WS_POPUP | WS_VISIBLE | WS_SYSMENU,
@@ -125,6 +125,8 @@ LRESULT CALLBACK HudWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 			break;
 		}
 		break;
+	case WM_NCHITTEST:
+		return HTNOWHERE;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
@@ -134,6 +136,7 @@ LRESULT CALLBACK HudWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 void HudWindow::Show()
 {
 	HBITMAP bitmap = this->CreateBitmap();
+
 	this->SetBitmap(bitmap);
 	DeleteObject(bitmap);
 }
@@ -143,10 +146,89 @@ void HudWindow::Hide()
 	MoveWindow(this->hWnd, 0, 0, 0, 0, false);
 }
 
+void HudWindow::SetBitmapAlpha(HDC hdc, HBITMAP hBmp)
+{
+	BITMAP bm = { 0 };
+	GetObject(hBmp, sizeof(bm), &bm);
+	BITMAPINFO* bmi = (BITMAPINFO*)malloc(sizeof(BITMAPINFOHEADER) + (256 * sizeof(RGBQUAD)));
+	ZeroMemory(bmi, sizeof(BITMAPINFOHEADER) + (256 * sizeof(RGBQUAD)));
+	bmi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	BOOL bRes = GetDIBits(hdc, hBmp, 0, bm.bmHeight, NULL, bmi, DIB_RGB_COLORS);
+	if (!bRes || bmi->bmiHeader.biBitCount != 32) return;
+	LPBYTE pBitData = (LPBYTE)LocalAlloc(LPTR, bm.bmWidth * bm.bmHeight * sizeof(DWORD));
+	if (pBitData == NULL) return;
+	LPBYTE pData = pBitData;
+	GetDIBits(hdc, hBmp, 0, bm.bmHeight, pData, bmi, DIB_RGB_COLORS);
+	for (int y = 0; y < bm.bmHeight; y++) {
+		for (int x = 0; x < bm.bmWidth; x++) {
+			pData += 4;
+		}
+	}
+	SetDIBits(hdc, hBmp, 0, bm.bmHeight, pBitData, bmi, DIB_RGB_COLORS);
+	LocalFree(pBitData);
+	free(bmi);
+}
+
 HBITMAP HudWindow::CreateBitmap()
 {
 	HDC hdc = GetDC(HWND_DESKTOP);
-	return CreateCompatibleBitmap(hdc, 100, 100);
+
+	// Get current keyboard name
+	Keyboard *kbd = this->kbdManager->SelectedKeyboard();
+	std::wstring name(_T("Turned Off"));
+	if (kbd) {
+		name = kbd->name;
+	}
+
+	// Create and draw onto memory bitmap
+	HDC memDC = CreateCompatibleDC(NULL);
+	SetBkMode(memDC, TRANSPARENT);
+
+	// Create Font
+	LOGFONT font = { 0 };
+	lstrcpyn(font.lfFaceName, _T("Arial"), 6);
+	font.lfWeight = FW_BOLD;
+	font.lfHeight = -MulDiv(25, GetDeviceCaps(hdc, LOGPIXELSY), 72);
+	HGDIOBJ hfnt = CreateFontIndirect(&font);
+	
+	// Set Font
+	SelectObject(memDC, hfnt);
+
+	// Measure Text
+	SIZE size;
+	GetTextExtentPoint32(memDC, name.c_str(), name.length(), &size);
+
+	LONG bmpWidth = size.cx + (20 * 2);
+	LONG bmpHeight = size.cy + (20 * 2);
+	HBITMAP bmp = CreateCompatibleBitmap(hdc, bmpWidth, bmpHeight);
+
+	// Set Pen
+	SelectObject(memDC, bmp);
+	HPEN transparentPen = CreatePen(PS_SOLID, 0, this->transparent);
+	SelectObject(memDC, transparentPen);
+	// Set Brush
+	HBRUSH transparentBrush = CreateSolidBrush(this->transparent);
+	SelectObject(memDC, transparentBrush);
+	// Draw Rect
+	Rectangle(memDC, 0, 0, bmpWidth, bmpHeight);
+	// Set Brush
+	HBRUSH brush = CreateSolidBrush(RGB(0, 0, 0));
+	SelectObject(memDC, brush);
+	RoundRect(memDC, 0, 0, bmpWidth, bmpHeight, 22, 22);
+
+	RECT rect = { 0 };
+	rect.right = bmpWidth;
+	rect.bottom = bmpHeight;
+	SetTextColor(memDC, RGB(0xff, 0xff, 0xff));
+
+	DrawTextEx(memDC, (LPTSTR)name.c_str(), name.length(), &rect, DT_CENTER | DT_SINGLELINE | DT_VCENTER, NULL);
+	
+	//this->SetBitmapAlpha(memDC, bmp);
+	DeleteObject(hfnt);
+	DeleteObject(brush);
+	DeleteDC(memDC);
+
+	return bmp;
 }
 
 //
@@ -173,19 +255,16 @@ void HudWindow::SetBitmap(HBITMAP hbmpSplash)
 	ptOrigin.y = rcWork.top + (rcWork.bottom - rcWork.top - sizeSplash.cy) / 2;
 
 	// create a memory DC holding the splash bitmap
-	HDC hdcScreen = GetDC(NULL);
+	HDC hdcScreen = GetDC(HWND_DESKTOP);
 	HDC hdcMem = CreateCompatibleDC(hdcScreen);
 	HBITMAP hbmpOld = (HBITMAP)SelectObject(hdcMem, hbmpSplash);
 
 	// use the source image's alpha channel for blending
-	BLENDFUNCTION blend = { 0 };
-	blend.BlendOp = AC_SRC_OVER;
-	blend.SourceConstantAlpha = 255;
-	blend.AlphaFormat = AC_SRC_ALPHA;
+	BLENDFUNCTION blend = { AC_SRC_OVER, 0, abs(0.9 * 255), AC_SRC_ALPHA };
 
 	// paint the window (in the right location) with the alpha-blended bitmap
 	UpdateLayeredWindow(this->hWnd, hdcScreen, &ptOrigin, &sizeSplash,
-		hdcMem, &ptZero, RGB(255, 255, 255), &blend, ULW_COLORKEY);
+		hdcMem, &ptZero, this->transparent, &blend, ULW_COLORKEY);
 
 	// delete temporary objects
 	SelectObject(hdcMem, hbmpOld);

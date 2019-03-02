@@ -19,11 +19,13 @@ private:
 	HWND hWnd;
 	KeyboardManager * kbdManager;
 
+	COLORREF transparent = RGB(0xff, 0xff, 0);
 	static constexpr LPTSTR szWindowClass = _T("HudWindow");
 	static BOOL registered;
 
 	void onKeyboardDidChange();
 	HBITMAP CreateBitmap();
+	void SetBitmapAlpha(HDC hdc, HBITMAP hBitmap);
 	void SetBitmap(HBITMAP hbmp);
 	LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 };
