@@ -220,11 +220,13 @@ namespace libkm {
 		return true;
 	}
 
+#ifdef _POSIX_SOURCE
 	bool KeyMagicKeyboard::loadKeyboardFromFileDescriptor(int fd) {
 		FILE *hFile = _fdopen(fd, "rb");
 
 		return loadKeyboardFromFileHandle(hFile);
 	}
+#endif
 
 	bool KeyMagicKeyboard::loadKeyboardFile(const char * szPath) {
 		FILE *hFile;

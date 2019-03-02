@@ -51,6 +51,7 @@ namespace libkm {
 		return true;
 	}
 
+#ifdef _POSIX_SOURCE
 	bool KeyMagicEngine::loadKeyboardFromFileDescriptor(int fd) {
 		bool success;
 		
@@ -66,6 +67,7 @@ namespace libkm {
 		prepareForMatching();
 		return true;
 	}
+#endif
 
 	bool KeyMagicEngine::loadKeyboardFromFileHandle(FILE *hFile) {
 		bool success;
