@@ -97,6 +97,21 @@ bool CheckIfRunning()
 	return false;
 }
 
+void AddFont()
+{
+	TCHAR filename[256] = { 0 };
+	GetModuleFileName(NULL, filename, 255);
+	PathRemoveFileSpecW(filename);
+	PathAppend(filename, _T("Pyidaungsu-2.5_Regular.ttf"));
+
+	int nResults = AddFontResourceEx(
+		filename, // font file name
+		FR_PRIVATE, // font characteristics
+		NULL);
+
+	DebugLog("" << nResults);
+}
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPWSTR    lpCmdLine,
@@ -146,6 +161,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		libkm::KeyMagicLogger::getInstance()->setFile(hFile);
 	}
 #endif
+
+	AddFont();
 
 	HudWindow * hud = new HudWindow(hInstance, KeyboardManager::sharedManager());
 	hud->InitInstance();
