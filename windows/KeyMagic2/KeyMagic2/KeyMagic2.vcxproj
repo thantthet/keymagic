@@ -172,8 +172,10 @@
     <ClInclude Include="..\..\..\cross-platform\libkeymagic\RuleInfo.h" />
     <ClInclude Include="..\..\..\cross-platform\libkeymagic\Util.h" />
     <ClInclude Include="ConfigUtils.h" />
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="HookProc.h" />
     <ClInclude Include="HotkeyManager.h" />
+    <ClInclude Include="HudWindow.h" />
     <ClInclude Include="KeyboardManager.h" />
     <ClInclude Include="KeyMagic2.h" />
     <ClInclude Include="Resource.h" />
@@ -247,6 +249,7 @@
     <ClCompile Include="ConfigUtils.cpp" />
     <ClCompile Include="HookProc.cpp" />
     <ClCompile Include="HotkeyManager.cpp" />
+    <ClCompile Include="HudWindow.cpp" />
     <ClCompile Include="KeyboardManger.cpp" />
     <ClCompile Include="KeyMagic2.cpp" />
     <ClCompile Include="stdafx.cpp">

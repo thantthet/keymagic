@@ -2,8 +2,10 @@
 //
 
 #include "stdafx.h"
-#include "KeyMagic2.h"
 #include "version.h"
+
+#include "KeyMagic2.h"
+#include "HudWindow.h"
 
 #include <CommCtrl.h>
 #include <Commdlg.h>
@@ -27,7 +29,6 @@
 name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
 processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
-#define MAX_LOADSTRING 100
 #define IDM_KEYBOARD_ 0x5000
 
 const int kRightColumnWidth = 150;
@@ -145,6 +146,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		libkm::KeyMagicLogger::getInstance()->setFile(hFile);
 	}
 #endif
+
+	HudWindow * hud = new HudWindow(hInstance, KeyboardManager::sharedManager());
+	hud->InitInstance();
+
     RegisterWindowClass(hInstance);
 
     // Perform application initialization:

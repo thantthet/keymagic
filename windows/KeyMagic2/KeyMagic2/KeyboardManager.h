@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include <vector>
 #include <keymagic.h>
 #include "json.hpp"
 
@@ -29,7 +30,7 @@ public:
 };
 
 typedef std::vector<Keyboard> TKeyboardList;
-
+typedef std::function<void()> onDidChangeCallback;
 class KeyboardManager
 {
 private:
@@ -37,14 +38,16 @@ private:
 	Keyboard* m_selectedKeyboard;
 	Keyboard* m_lastSelectedKeyboard;
 	std::wstring m_basePath;
-	std::function<void()> m_callback;
+	std::vector<onDidChangeCallback> m_callbacks;
+
+	void notifyCallbacks();
 
 public:
 	static KeyboardManager * sharedManager();
 
 	void addOnKeyboardDidChangeHandler(std::function<void()> callback)
 	{
-		m_callback = callback;
+		m_callbacks.push_back(callback);
 	}
 
 	std::wstring const& basePath() const;

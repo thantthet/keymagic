@@ -101,7 +101,7 @@ BOOL KeyboardManager::SelectKeyboard(Keyboard * keyboard)
 			if (&kb == keyboard) {
 				this->m_lastSelectedKeyboard = this->m_selectedKeyboard;
 				this->m_selectedKeyboard = keyboard;
-				this->m_callback();
+				this->notifyCallbacks();
 				return true;
 			}
 		}
@@ -110,7 +110,7 @@ BOOL KeyboardManager::SelectKeyboard(Keyboard * keyboard)
 	else {
 		this->m_lastSelectedKeyboard = this->m_selectedKeyboard;
 		this->m_selectedKeyboard = nullptr;
-		this->m_callback();
+		this->notifyCallbacks();
 	}
 	return true;
 }
@@ -131,6 +131,14 @@ BOOL KeyboardManager::ToggleKeyboard()
 	}
 
 	return true;
+}
+
+
+void KeyboardManager::notifyCallbacks()
+{
+	for (auto callback : m_callbacks) {
+		callback();
+	}
 }
 
 BOOL KeyboardManager::AdvanceToNextKeyboard()
