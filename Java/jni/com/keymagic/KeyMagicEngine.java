@@ -33,13 +33,20 @@ public class KeyMagicEngine
 
     public static KeyMagicEngine engineFromFilePath(String filePath) {
         KeyMagicEngine newEngine = new KeyMagicEngine();
-        newEngine.loadKeyboardFile(filePath);
-        return  newEngine;
+        if (!newEngine.loadKeyboardFile(filePath)) {
+            Log.e(TAG, "Could not load keyboard from file: " + filePath);
+            return null;
+        }
+        return newEngine;
     }
 
     public static KeyMagicEngine engineFromAndroidAssets(AssetManager assetManager, String name) {
         KeyMagicEngine newEngine = new KeyMagicEngine();
-        newEngine.loadKeyboardFile(assetManager, name);
-        return  newEngine;
+        if (!newEngine.loadKeyboardFile(assetManager, name)) {
+            Log.e(TAG, "Could not load keyboard from asset: " + name);
+            return null;
+        }
+        return newEngine;
     }
+}
 }

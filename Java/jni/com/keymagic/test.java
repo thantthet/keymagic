@@ -3,7 +3,7 @@ package com.keymagic;
 public class test
 {
     static {
-        System.loadLibrary("keymagic-jni");
+        System.loadLibrary("jni-keymagic");
     }
 
     public static void main(String[] args) {

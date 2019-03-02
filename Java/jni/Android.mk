@@ -48,7 +48,7 @@ LOCAL_C_INCLUDES := $(KEYMAGIC_CORE_SOURCE_DIR)
 
 LOCAL_SRC_FILES := src/com_keymagic_KeyMagicEngine.cpp src/android_fopen.c
 
-LOCAL_MODULE := keymagic-jni
+LOCAL_MODULE := jni_keymagic
 LOCAL_MODULE_TAGS := optional
 
 LOCAL_CLANG := true
