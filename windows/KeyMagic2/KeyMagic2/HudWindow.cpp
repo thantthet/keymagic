@@ -175,7 +175,7 @@ HBITMAP HudWindow::CreateBitmap()
 
 	// Get current keyboard name
 	Keyboard *kbd = this->kbdManager->SelectedKeyboard();
-	std::wstring name(_T("Turned Off"));
+	std::wstring name(_T("Off"));
 	if (kbd) {
 		name = kbd->name;
 	}
@@ -186,7 +186,7 @@ HBITMAP HudWindow::CreateBitmap()
 
 	// Create Font
 	LOGFONT font = { 0 };
-	lstrcpyn(font.lfFaceName, _T("Arial"), 6);
+	lstrcpyn(font.lfFaceName, _T("Pyidaungsu"), 6);
 	font.lfWeight = FW_BOLD;
 	font.lfHeight = -MulDiv(25, GetDeviceCaps(hdc, LOGPIXELSY), 72);
 	HGDIOBJ hfnt = CreateFontIndirect(&font);
