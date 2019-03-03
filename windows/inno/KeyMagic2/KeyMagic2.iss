@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "KeyMagic"
-#define MyAppVersion "2.0Pre-4"
+#define MyAppVersion "2.0.0.5"
 #define MyAppPublisher "KeyMagic"
 #define MyAppURL "http://www.keymagic.net/"
 #define MyAppExeName "KeyMagic2.exe"
@@ -35,6 +35,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "KeyMagic2.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "MagicAssit.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "Pyidaungsu-2.5_Regular.ttf"; DestDir: "{app}"; Flags: ignoreversion
 Source: "AppData\*"; DestDir: "{userappdata}\KeyMagic"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
