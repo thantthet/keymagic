@@ -7,7 +7,6 @@
 #include "KeyMagic2.h"
 #include "HudWindow.h"
 
-#include <CommCtrl.h>
 #include <Commdlg.h>
 #include <string>
 #include <shellapi.h>
@@ -19,6 +18,7 @@
 #include "HotkeyManager.h"
 #include <keymagic.h>
 #include "Tasker.h"
+#include "NotifyIcon.h"
 #include "../MagicAssit/MagicAssit.h"
 
 #include <winhttp.h>
@@ -43,6 +43,7 @@ using json = nlohmann::json;
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+BOOL updateVersionNotificationWasShown = FALSE;
 
 // Forward declarations of functions included in this code module:
 ATOM                RegisterWindowClass(HINSTANCE hInstance);
@@ -400,70 +401,6 @@ HWND CreateLabel(HWND hWnd)
 	SendMessage(hControl, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE, 0));
 
 	return hControl;
-}
-
-#define MY_TRAY_ICON_ID 999
-#define MY_TRAY_ICON_MESSAGE WM_APP + 999
-
-void CreateShellNotifyIcon(HWND hWnd)
-{
-	NOTIFYICONDATA ni = { 0 };
-	ni.cbSize = sizeof(NOTIFYICONDATA);
-	ni.uID = MY_TRAY_ICON_ID;
-	ni.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP | NIF_INFO;
-	ni.hIcon =
-		(HICON)LoadImage(hInst,
-			MAKEINTRESOURCE(IDI_KEYMAGIC2),
-			IMAGE_ICON,
-			GetSystemMetrics(SM_CXSMICON),
-			GetSystemMetrics(SM_CYSMICON),
-			LR_DEFAULTCOLOR);
-	ni.hWnd = hWnd;
-	ni.dwInfoFlags = NIIF_NOSOUND;
-	lstrcpy(ni.szTip, _T("KeyMagic"));
-	lstrcpy(ni.szInfo, _T("Find me in notification tray!"));
-	ni.uCallbackMessage = MY_TRAY_ICON_MESSAGE;
-
-	Shell_NotifyIcon(NIM_ADD, &ni);
-}
-
-void SetShellNotifyIcon(HWND hWnd)
-{
-	KeyboardManager *mgr = KeyboardManager::sharedManager();
-	Keyboard * keyboard = mgr->SelectedKeyboard();
-
-	HWND hControl = GetDlgItem(hWnd, IDC_LV_KEYBOARDS);
-	HIMAGELIST himl = ListView_GetImageList(hControl, LVSIL_SMALL);
-
-	NOTIFYICONDATA ni = { 0 };
-	ni.cbSize = sizeof(NOTIFYICONDATA);
-	ni.uID = MY_TRAY_ICON_ID;
-	ni.uFlags = NIF_ICON;
-	ni.hWnd = hWnd;
-	if (keyboard != nullptr) {
-		HICON hIcon = ImageList_GetIcon(himl, keyboard->index, 0);
-		ni.hIcon = hIcon;
-	}
-	else {
-		ni.hIcon =
-			(HICON)LoadImage(hInst,
-				MAKEINTRESOURCE(IDI_KEYMAGIC2),
-				IMAGE_ICON,
-				GetSystemMetrics(SM_CXSMICON),
-				GetSystemMetrics(SM_CYSMICON),
-				LR_DEFAULTCOLOR);
-	}
-	Shell_NotifyIcon(NIM_MODIFY, &ni);
-}
-
-void DeleteShellNotifyIcon(HWND hWnd)
-{
-	NOTIFYICONDATA ni = { 0 };
-	ni.cbSize = sizeof(NOTIFYICONDATA);
-	ni.hWnd = hWnd;
-	ni.uID = MY_TRAY_ICON_ID;
-
-	Shell_NotifyIcon(NIM_DELETE, &ni);
 }
 
 void SizeListView(HWND hWnd)
@@ -882,6 +819,20 @@ BOOL CheckForUpdate(BOOL * newVersionAvailable)
 	return success;
 }
 
+void openGithubReleasePage()
+{
+	ShellExecute(NULL, _T("open"), _T("https://github.com/thantthet/keymagic/releases"), NULL, NULL, SW_SHOWNORMAL);
+}
+
+void CheckForUpdateAndNotify(HWND hWnd)
+{
+	BOOL available = FALSE;
+	if (CheckForUpdate(&available) && available) {
+		UpdateShellNotifyIcon(hWnd, NULL, _T("New version is available"));
+		updateVersionNotificationWasShown = TRUE;
+	}
+}
+
 void CheckForUpdateDialogEnabled(HWND hWnd)
 {
 	BOOL available = FALSE;
@@ -893,7 +844,7 @@ void CheckForUpdateDialogEnabled(HWND hWnd)
 	{
 		if (MessageBox(hWnd, _T("There is new version available. Go to download page?"), _T("Got new"), MB_YESNO | MB_ICONINFORMATION) == IDYES)
 		{
-			ShellExecute(NULL, _T("open"), _T("https://github.com/thantthet/keymagic/releases"), NULL, NULL, SW_SHOWNORMAL);
+			openGithubReleasePage();
 		}
 	}
 	else
@@ -925,6 +876,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case WM_RBUTTONDOWN:
 		case WM_CONTEXTMENU:
 			ShowTrayContextMenu(hWnd);
+			break;
+		case NIN_BALLOONUSERCLICK:
+			if (updateVersionNotificationWasShown)
+			{
+				openGithubReleasePage();
+			}
+			break;
 		}
 		break;
 	case WM_COMMAND:
@@ -1036,16 +994,44 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		CreateRemoveKeyboardButton(hWnd);
 		CreateReportBugButton(hWnd);
 		CreateLabel(hWnd);
-		CreateShellNotifyIcon(hWnd);
+		HICON icon = (HICON)LoadImage(hInst,
+			MAKEINTRESOURCE(IDI_KEYMAGIC2),
+			IMAGE_ICON,
+			GetSystemMetrics(SM_CXSMICON),
+			GetSystemMetrics(SM_CYSMICON),
+			LR_DEFAULTCOLOR);
+		CreateShellNotifyIcon(hWnd, icon, _T("Find me in notification tray!"));
 
 		KeyboardManager *mgr = KeyboardManager::sharedManager();
-		mgr->addOnKeyboardDidChangeHandler([hWnd]() {
-			SetShellNotifyIcon(hWnd);
+		mgr->addOnKeyboardDidChangeHandler([hWnd, mgr]() {
+
+			Keyboard * keyboard = mgr->SelectedKeyboard();
+
+			HWND hControl = GetDlgItem(hWnd, IDC_LV_KEYBOARDS);
+			HIMAGELIST himl = ListView_GetImageList(hControl, LVSIL_SMALL);
+
+			HICON icon;
+
+			if (keyboard != nullptr) {
+				HICON hIcon = ImageList_GetIcon(himl, keyboard->index, 0);
+				icon = hIcon;
+			}
+			else {
+				icon =
+					(HICON)LoadImage(hInst,
+						MAKEINTRESOURCE(IDI_KEYMAGIC2),
+						IMAGE_ICON,
+						GetSystemMetrics(SM_CXSMICON),
+						GetSystemMetrics(SM_CYSMICON),
+						LR_DEFAULTCOLOR);
+			}
+			
+			UpdateShellNotifyIcon(hWnd, icon);
 		});
 
 		ReloadKeyboards(hWnd);
-
 		UpdateMenuState(hWnd);
+		CheckForUpdateAndNotify(hWnd);
 	}
 	break;
 	case WM_SIZE:
