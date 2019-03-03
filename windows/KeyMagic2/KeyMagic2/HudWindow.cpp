@@ -175,7 +175,7 @@ HBITMAP HudWindow::CreateBitmap()
 
 	// Get current keyboard name
 	Keyboard *kbd = this->kbdManager->SelectedKeyboard();
-	std::wstring name(_T("Off"));
+	std::wstring name(_T("keymagic is off"));
 	if (kbd) {
 		name = kbd->name;
 	}
