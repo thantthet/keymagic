@@ -207,10 +207,20 @@ bool mapVK(int virtualkey, int * winVK)
 
 - (void)activateServer:(id)sender
 {
+    trace(@"activateServer: %@", sender);
+    
+    kme.reset();
+    
+    [super activateServer:sender];
 }
 
 - (void)deactivateServer:(id)sender
 {
+    trace(@"deactivateServer: %@", sender);
+    
+    [self commitComposition:sender];
+    
+    [super deactivateServer:sender];
 }
 
 - (BOOL)isTSMDocumentAccessSupportedClient:(id)sender {
