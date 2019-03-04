@@ -1,0 +1,10 @@
+#!/bin/sh
+cd "/tmp"
+mkdir "$HOME/.keymagic"
+mv "kbLayouts.zip" "$HOME/.keymagic/"
+cd "$HOME/.keymagic/"
+unzip -o "kbLayouts.zip"
+rm "kbLayouts.zip"
+rm "/tmp/kbLayouts.zip"
+
+exit 0

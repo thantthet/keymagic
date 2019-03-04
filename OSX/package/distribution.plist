@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="1">
+    <readme file="readme.txt" mime-type="text/plain"></readme>
+    <license file="gpl-2.0.txt" mime-type="text/plain"></license>
+    <conclusion file="summary.txt" mime-type="text/plain"></conclusion>
+
+    <domains enable_anywhere="false" enable_currentUserHome="true" enable_localSystem="true"></domains>
+
+    <pkg-ref id="org.keymagic.pkg.app"/>
+    <pkg-ref id="org.keymagic.resources"/>
+    <options customize="never" require-scripts="false"/>
+    <choices-outline>
+        <line choice="default">
+            <line choice="org.keymagic.pkg.app"/>
+            <line choice="org.keymagic.resources"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="org.keymagic.pkg.app" visible="false">
+        <pkg-ref id="org.keymagic.pkg.app"/>
+    </choice>
+    <pkg-ref id="org.keymagic.pkg.app" version="1.5.2" onConclusion="RequireLogout">app.pkg</pkg-ref>
+    <pkg-ref id="org.keymagic.pkg.app">
+        <must-close>
+            <app id="org.keymagic.inputmethod.KeyMagic"/>
+        </must-close>
+    </pkg-ref>
+    <choice id="org.keymagic.resources" visible="false">
+        <pkg-ref id="org.keymagic.resources"/>
+    </choice>
+    <pkg-ref id="org.keymagic.resources" version="0" onConclusion="none">resources.pkg</pkg-ref>
+</installer-gui-script>

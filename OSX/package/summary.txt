@@ -1,0 +1,6 @@
+Logout လုပ်ပြီးလျှင် -
+
+System Preferences -> Language & Text -> Input Sources မှ KeyMagic ကို အမှန်ခြစ်ပါ။
+
+
+COMMAND+SPACE (သို့) CONTROL+SPACE ကိုနှိပ်ပြီး MenuBar တွင် KeyMagic Icon ပေါ်လာလျှင် အသုံးပြုလို့ရပါပြီ။
