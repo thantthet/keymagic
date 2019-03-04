@@ -187,7 +187,7 @@ HBITMAP HudWindow::CreateBitmap()
 
 	// Create Font
 	LOGFONT font = { 0 };
-	StrCpy(font.lfFaceName, _T("Pyidaungsu"));
+	StrCpy(font.lfFaceName, _T("Padauk"));
 	font.lfHeight = -MulDiv(25, GetDeviceCaps(hdc, LOGPIXELSY), 72);
 	HGDIOBJ hfnt = CreateFontIndirect(&font);
 	

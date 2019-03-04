@@ -103,7 +103,7 @@ void AddFont()
 	TCHAR filename[256] = { 0 };
 	GetModuleFileName(NULL, filename, 255);
 	PathRemoveFileSpecW(filename);
-	PathAppend(filename, _T("Pyidaungsu-2.5_Regular.ttf"));
+	PathAppend(filename, _T("Padauk-Bold.ttf"));
 
 	int nResults = AddFontResourceEx(
 		filename, // font file name
