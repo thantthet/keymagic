@@ -20,7 +20,7 @@
 #import <Carbon/Carbon.h>
 #import <Foundation/Foundation.h>
 
-#import "KeymagicIMEController.h"
+#import "KeyMagicIMEController.h"
 #import	"keymagic.h"
 #import "KeyMagicUtil.h"
 

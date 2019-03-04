@@ -27,7 +27,12 @@ IMKServer *KeyMagicInputMethodServer = nil;
 int main(int argc, char *argv[])
 {
     @autoreleasepool {
-		KeyMagicInputMethodServer = [[IMKServer alloc] initWithName:@"KeyMagic_1_Connection"
+#ifndef DEBUG
+        NSString * name = @"KeyMagic_1_Connection";
+#else
+        NSString * name = @"KeyMagic_DEBUG_Connection";
+#endif
+		KeyMagicInputMethodServer = [[IMKServer alloc] initWithName:name
                                                    bundleIdentifier:[[NSBundle mainBundle] bundleIdentifier]];
         if (!KeyMagicInputMethodServer) {
 			NSLog(@"input method server init failed!");
