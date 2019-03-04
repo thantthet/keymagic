@@ -171,34 +171,32 @@ bool mapVK(int virtualkey, int * winVK)
         
         [self getKeyboardLayouts];
         
-        if ([super initWithServer:server delegate:delegate client:inputClient] == self) {	
-            configDictionary = [NSMutableDictionary new];
-            self.activePath = @"";
-            
-            [self loadConfigurationFile];
-            
-            instantCommit = [[configDictionary objectForKey:kInstantCommit] boolValue];
-            
-            m_success = NO;
-            m_delCountGenerated = 0;
-            NSString *path = [configDictionary objectForKey:kLastKeyboardPathKey];
-            
-            if (path) {
-                self.activePath = path;
-                m_success = kme.loadKeyboardFile([activePath cStringUsingEncoding:NSUTF8StringEncoding]);
-                if (m_success) {
-                    const InfoList infos = kme.getKeyboard()->getInfoList();
-                    NSString *title = [KeyMagicUtil getKeyboardNameOrTitle:infos pathName:path];
-                                
-                    [activeKeyboard setTitle:title];
-                    [activeKeyboard setPath:path];
-                    
-                    NSUserNotification *notification = [[NSUserNotification alloc] init];
-                    notification.title = @"KeyMagic";
-                    notification.informativeText = activeKeyboard.title;
-                    notification.hasActionButton = NO;
-                    [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];;
-                }
+        configDictionary = [NSMutableDictionary new];
+        self.activePath = @"";
+        
+        [self loadConfigurationFile];
+        
+        instantCommit = [[configDictionary objectForKey:kInstantCommit] boolValue];
+        
+        m_success = NO;
+        m_delCountGenerated = 0;
+        NSString *path = [configDictionary objectForKey:kLastKeyboardPathKey];
+        
+        if (path) {
+            self.activePath = path;
+            m_success = kme.loadKeyboardFile([activePath cStringUsingEncoding:NSUTF8StringEncoding]);
+            if (m_success) {
+                const InfoList infos = kme.getKeyboard()->getInfoList();
+                NSString *title = [KeyMagicUtil getKeyboardNameOrTitle:infos pathName:path];
+                
+                [activeKeyboard setTitle:title];
+                [activeKeyboard setPath:path];
+                
+                NSUserNotification *notification = [[NSUserNotification alloc] init];
+                notification.title = @"KeyMagic";
+                notification.informativeText = activeKeyboard.title;
+                notification.hasActionButton = NO;
+                [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];;
             }
         }
     }
