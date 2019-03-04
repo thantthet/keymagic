@@ -51,7 +51,7 @@ CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF32LE);
 	}
 	
 	char* data = (char*) (kString.data() + beginFrom);
-	unsigned size = length * sizeof(wchar_t);
+	unsigned long size = length * sizeof(wchar_t);
 	
 	NSString* result = [[NSString alloc] initWithBytes:data length:size
 											   encoding:kEncoding_KeyMagicString];

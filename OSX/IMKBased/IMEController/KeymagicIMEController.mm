@@ -251,7 +251,7 @@ bool mapVK(int virtualkey, int * winVK)
 - (BOOL)processSpecialKeys:(NSEvent*)event client:(id)sender exit:(BOOL *)exit {
 	
 //	NSString *chars = [event characters];
-	unsigned int cocoaModifiers = [event modifierFlags];
+	unsigned long cocoaModifiers = [event modifierFlags];
 	unsigned short virtualKeyCode = [event keyCode];
 	
 	if (virtualKeyCode == kVK_Space && (cocoaModifiers & NSControlKeyMask) && (cocoaModifiers & NSShiftKeyMask)) {
@@ -302,7 +302,7 @@ bool mapVK(int virtualkey, int * winVK)
 - (BOOL)engineProcessWithEvent:(NSEvent *)event client:(id)sender exit:(BOOL *)exit {
 	
 	NSString *chars = [event characters];
-	unsigned int cocoaModifiers = [event modifierFlags];
+	unsigned long cocoaModifiers = [event modifierFlags];
 	unsigned short virtualKeyCode = [event keyCode];
 	
 	unsigned char kbStates[256] = {0};
@@ -405,7 +405,7 @@ bool mapVK(int virtualkey, int * winVK)
 	if (exit) return result;
 	
 	KeyMagicString afterProcessed = kme.getContextText();
-	unsigned int delCount = 0;
+	unsigned long delCount = 0;
 	
 	KeyMagicString *output = new KeyMagicString();
 //	getDifference(beforeProcessed, afterProcessed, &delCount, output);
@@ -428,14 +428,13 @@ bool mapVK(int virtualkey, int * winVK)
 																					   dictionaryWithObject:NSStringFromRange(replacementRange)
 																					   forKey:NSTextInputReplacementRangeAttributeName]];
 		
-		NSLog(@"text = %@, delCount = %d, replacementRange = %@", textToInsert, delCount, NSStringFromRange(replacementRange));
+        NSLog(@"text = %@, delCount = %lu, replacementRange = %@", textToInsert, delCount, NSStringFromRange(replacementRange));
 		
 		if (textToInsert.length == 0 && delCount) {
 			
-			CGEventRef down, up, uni;
+			CGEventRef down, up;
 			down = CGEventCreateKeyboardEvent (NULL, (CGKeyCode)51, true);
 			up = CGEventCreateKeyboardEvent (NULL, (CGKeyCode)51, false);
-//		uni = CGEventCreateKeyboardEvent (NULL, (CGKeyCode)1, true);
 			
 			m_delCountGenerated = delCount;
 			
