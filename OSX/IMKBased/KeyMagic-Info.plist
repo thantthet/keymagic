@@ -16,8 +16,6 @@
 	<string>${PRODUCT_NAME}</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
-	<key>CFBundleSignature</key>
-	<string>TTKZ</string>
 	<key>CFBundleVersion</key>
 	<string>1.5.1</string>
 	<key>InputMethodConnectionName</key>
