@@ -148,6 +148,8 @@ bool mapVK(int virtualkey, int * winVK)
 
 - (id)initWithServer:(IMKServer*)server delegate:(id)delegate client:(id)inputClient
 {
+    trace(@"initWithServer:delegate:client %@ %@ %@", server, delegate, inputClient);
+    
     self = [super initWithServer:server delegate:delegate client:inputClient];
     
     if (self) {
