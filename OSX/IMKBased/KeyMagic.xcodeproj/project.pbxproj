@@ -80,7 +80,6 @@
 		90706E4F222D0EF5003B56F0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		90706E51222D0EF8003B56F0 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		90706E53222D11CF003B56F0 /* keymagic.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; name = keymagic.h; path = "../../cross-platform/libkeymagic/keymagic.h"; sourceTree = "<group>"; };
-		90FF59CA171628C70013858A /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Growl.framework; sourceTree = "<group>"; };
 		B510C5B213769F16008798E7 /* KeyMagicUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyMagicUtil.h; path = KeyMagic/KeyMagicUtil.h; sourceTree = "<group>"; };
 		B510C5B313769F16008798E7 /* KeyMagicUtil.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = KeyMagicUtil.mm; path = KeyMagic/KeyMagicUtil.mm; sourceTree = "<group>"; };
 		B511BFB512009E270060A548 /* Keyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Keyboard.h; path = KeyMagic/Keyboard.h; sourceTree = "<group>"; };
@@ -112,7 +111,6 @@
 				B511BFAC12009E1A0060A548 /* KeyMagic */,
 				6AA6D1F20EAC641200DF1C2C /* KeyMagic (IMK-based) */,
 				6AA6D1EC0EAC640E00DF1C2C /* Products */,
-				90FF59CA171628C70013858A /* Growl.framework */,
 				6AA6D20D0EAC655B00DF1C2C /* Cocoa.framework */,
 				6AA6D20F0EAC655B00DF1C2C /* InputMethodKit.framework */,
 				6A31F7460EAC68880045D7EE /* Carbon.framework */,
