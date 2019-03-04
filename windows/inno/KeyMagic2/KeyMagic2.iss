@@ -35,7 +35,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "KeyMagic2.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "MagicAssit.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "Pyidaungsu-2.5_Regular.ttf"; DestDir: "{app}"; Flags: ignoreversion
+Source: "Padauk-Bold.ttf"; DestDir: "{app}"; Flags: ignoreversion
 Source: "AppData\*"; DestDir: "{userappdata}\KeyMagic"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
