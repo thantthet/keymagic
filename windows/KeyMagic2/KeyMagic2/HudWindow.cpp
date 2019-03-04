@@ -2,6 +2,7 @@
 #include "HudWindow.h"
 #include "Resource.h"
 #include <time.h>
+#include <Shlwapi.h>
 
 BOOL HudWindow::registered = FALSE;
 
@@ -186,8 +187,7 @@ HBITMAP HudWindow::CreateBitmap()
 
 	// Create Font
 	LOGFONT font = { 0 };
-	lstrcpyn(font.lfFaceName, _T("Pyidaungsu"), 6);
-	font.lfWeight = FW_BOLD;
+	StrCpy(font.lfFaceName, _T("Pyidaungsu"));
 	font.lfHeight = -MulDiv(25, GetDeviceCaps(hdc, LOGPIXELSY), 72);
 	HGDIOBJ hfnt = CreateFontIndirect(&font);
 	
