@@ -35,10 +35,6 @@ int main(int argc, char *argv[])
             return 1;
         }
         
-		[[NSBundle mainBundle] loadNibNamed:@"MainMenu"
-                                      owner:[NSApplication sharedApplication]
-                            topLevelObjects:NULL];
-        
 		[[NSApplication sharedApplication] run];
 	}	
 	return 0;

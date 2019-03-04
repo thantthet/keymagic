@@ -665,7 +665,7 @@ bool mapVK(int virtualkey, int * winVK)
 
 - (NSString*)configFilePath {
 	NSArray *dirs = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
-	NSString *prefPath = [[dirs objectAtIndex:0] stringByAppendingPathComponent:@"Preferences"];	
+	NSString *prefPath = [[dirs firstObject] stringByAppendingPathComponent:@"Preferences"];	
 	return [prefPath stringByAppendingPathComponent:@"org.keymagic.plist"];
 }
 
