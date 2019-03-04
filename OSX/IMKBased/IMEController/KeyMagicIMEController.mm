@@ -45,6 +45,20 @@ case b: \
 *winVK = c;\
 return TRUE
 
+void trace(NSString * format, ...) NS_FORMAT_FUNCTION(1, 2) NS_NO_TAIL_CALL;
+
+void trace(NSString * format, ...)
+{
+#ifdef DEBUG
+    va_list args;
+    va_start(args, format);
+    
+    NSLogv(format, args);
+    
+    va_end(args);
+#endif
+}
+
 // Map OS X Virtual Key to Windows Virtual Key
 bool mapVK(int virtualkey, int * winVK)
 {
@@ -149,7 +163,9 @@ bool mapVK(int virtualkey, int * winVK)
         
         logger = KeyMagicLogger::getInstance();
         if (m_logFile != 0) logger->setFile(m_logFile);
+#ifdef DEBUG
         kme.m_verbose = true;
+#endif
         
         [self getKeyboardLayouts];
         
@@ -200,10 +216,10 @@ bool mapVK(int virtualkey, int * winVK)
 - (BOOL)isTSMDocumentAccessSupportedClient:(id)sender {
 	NSRange range = [sender selectedRange];
 	if (range.location == NSNotFound || range.length == NSNotFound) {
-		NSLog(@"NO TSM ACCESS %@", NSStringFromRange(range));
+		trace(@"NO TSM ACCESS %@", NSStringFromRange(range));
 		return NO;
 	} else {
-		NSLog(@"YES TSM ACCESS %@", NSStringFromRange(range));
+		trace(@"YES TSM ACCESS %@", NSStringFromRange(range));
 		return YES;
 	}
 }
@@ -294,7 +310,7 @@ bool mapVK(int virtualkey, int * winVK)
 #ifdef DEBUG
 	TContextHistory::const_iterator begin = history.begin();
 	for (TContextHistory::const_iterator i = begin; i != history.end(); i++) {
-		NSLog(@"%ld- %@", i - begin, [NSString stringWithKeyMagicString:*i]);
+		trace(@"%ld- %@", i - begin, [NSString stringWithKeyMagicString:*i]);
 	}
 #endif
 }
@@ -336,7 +352,9 @@ bool mapVK(int virtualkey, int * winVK)
 	}
 	
 	kme.setKeyStates(kbStates);
-	NSLog(@"processKeyEvent = %c 0x%x 0x%x", [chars characterAtIndex:0], winVK, modifier);
+	
+    trace(@"processKeyEvent = %c 0x%x 0x%x", [chars characterAtIndex:0], winVK, modifier);
+    
 	if (kme.processKeyEvent([chars characterAtIndex:0], winVK, modifier) == NO) {
 		switch (virtualKeyCode) {
 			case kVK_Space:
@@ -392,11 +410,11 @@ bool mapVK(int virtualkey, int * winVK)
 	NSString * memoryContext = [NSString stringWithKeyMagicString:kme.getContextText() maximumLength:beforeCursorContext.length fromEnd:YES];
 	
     if (![beforeCursorContext.string isEqualToString:memoryContext]) {
-		NSLog(@"diff %@ != %@", beforeCursorContext, memoryContext);
+		trace(@"diff %@ != %@", beforeCursorContext, memoryContext);
 		kme.reset();
 		kme.setContextText([beforeCursorContext.string getKeyMagicString]);
 	} else {
-		NSLog(@"same %@", memoryContext);
+		trace(@"same %@", memoryContext);
 	}
 	
 	KeyMagicString beforeProcessed = kme.getContextText();
@@ -428,7 +446,7 @@ bool mapVK(int virtualkey, int * winVK)
 																					   dictionaryWithObject:NSStringFromRange(replacementRange)
 																					   forKey:NSTextInputReplacementRangeAttributeName]];
 		
-        NSLog(@"text = %@, delCount = %lu, replacementRange = %@", textToInsert, delCount, NSStringFromRange(replacementRange));
+        trace(@"text = %@, delCount = %lu, replacementRange = %@", textToInsert, delCount, NSStringFromRange(replacementRange));
 		
 		if (textToInsert.length == 0 && delCount) {
 			
@@ -535,7 +553,7 @@ bool mapVK(int virtualkey, int * winVK)
 
 			}
 			@catch (NSException * e) {
-				NSLog(@"Failed to notify with Growl!");
+				trace(@"Failed to notify!");
 			}
 		}
 	}
@@ -578,9 +596,7 @@ bool mapVK(int virtualkey, int * winVK)
 	paths = [mainBundle pathsForResourcesOfType:@"km2" inDirectory:nil];
 	[allPaths addObjectsFromArray:paths];
 
-	NSEnumerator *e = [allPaths objectEnumerator];
-	
-	while (NSString *path = [e nextObject]) {		
+	for (NSString *path in allPaths) {
 		const char * szPath = [path cStringUsingEncoding:NSUTF8StringEncoding];
 		InfoList * infos = KeyMagicKeyboard::getInfosFromKeyboardFile(szPath);
 		
