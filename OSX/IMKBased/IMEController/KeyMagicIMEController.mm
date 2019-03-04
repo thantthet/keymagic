@@ -1,5 +1,5 @@
 //
-// KeymagicIMEController.m
+// KeyMagicIMEController.m
 //
 //Copyright (C) 2008  KeyMagic Project
 //http://keymagic.googlecode.com
