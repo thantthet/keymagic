@@ -27,6 +27,7 @@ public:
 	void WriteHotkey();
 	void ReloadHotkey();
 
+	static std::string funcKeyNameForVK(BYTE vkCode);
 	static std::string wHotkeyToString(WORD hotkey);
 
 	void AddOnHotkeyHandler(std::function<void()> callback, LPWORD hotkeyPointer)

@@ -49,41 +49,60 @@ void HotkeyManager::ReloadHotkey()
 	}
 }
 
+
+std::string HotkeyManager::funcKeyNameForVK(BYTE vkCode)
+{
+	if (vkCode >= VK_F1 && vkCode <= VK_F24) {
+		int number = (vkCode - VK_F1) + 1;
+		auto name = std::string("F") + std::to_string(number);
+		return name;
+	}
+	return std::string();
+}
+
 std::string HotkeyManager::wHotkeyToString(WORD hotkey)
 {
 	{
-		std::string s;
+		std::stringstream ss;
 
 		BYTE vk = LOBYTE(hotkey);
 		BYTE mod = HIBYTE(hotkey);
 
 		if (mod & HOTKEYF_ALT)
 		{
-			s += "Alt+";
+			ss << "Alt+";
 		}
 		if (mod & HOTKEYF_CONTROL)
 		{
-			s += "Ctrl+";
+			ss << "Ctrl+";
 		}
 		if (mod & HOTKEYF_SHIFT)
 		{
-			s += "Shift+";
+			ss << "Shift+";
 		}
 		if (mod & HOTKEYF_EXT)
 		{
-			s += "Win+";
+			ss << "Win+";
 		}
 
 		if (vk)
 		{
-			s += (char)MapVirtualKey(vk, MAPVK_VK_TO_CHAR);
+			if (auto ch = (char)MapVirtualKey(vk, MAPVK_VK_TO_CHAR)) {
+				ss << ch;
+			}
+			else {
+				ss << funcKeyNameForVK(vk);
+			}
 		}
 
-		if (s.back() == '+') {
+		std::string s = ss.str();
+
+		if (s.back() == '+')
+{
 			s.pop_back();
 		}
-
-		if (s.back() == ' ') {
+		else if (s.back() == ' ')
+		{
 			s.pop_back();
 			s += "Space";
 		}
