@@ -226,6 +226,8 @@ bool mapVK(int virtualkey, int * winVK)
 
 - (void)commitComposition:(id)sender 
 {
+    trace(@"commitComposition: %@", sender);
+    
 	if (instantCommit) {
 		kme.reset();
 	} else {
@@ -513,6 +515,7 @@ bool mapVK(int virtualkey, int * winVK)
 
 - (BOOL)handleEvent:(NSEvent*)event client:(id<IMKTextInput,NSObject>)sender
 {
+    trace(@"handleEvent:event:client %@ %@", event, sender);
 	if (instantCommit) {
 		return [self handleEvent:event TSMDocumentAccessSupportedClient:sender];
 	} else {
@@ -520,7 +523,7 @@ bool mapVK(int virtualkey, int * winVK)
 	}
 }
 
-- (void)_aboutAction:(id)sender
+- (void)aboutAction:(id)sender
 {
 	[NSApp orderFrontStandardAboutPanel:sender];
 }
@@ -622,6 +625,8 @@ bool mapVK(int virtualkey, int * winVK)
 
 - (NSMenu *)menu
 {
+    trace(@"menu");
+    
 	NSMenu *menu = [NSMenu new];
 	
 	[self getKeyboardLayouts];
@@ -657,9 +662,10 @@ bool mapVK(int virtualkey, int * winVK)
     
     menuItem = [NSMenuItem new];
 	[menuItem setTarget:self];
-	[menuItem setAction:@selector(_aboutAction:)];
+	[menuItem setAction:@selector(aboutAction:)];
 	[menuItem setTitle:@"About KeyMagic"];
 	[menu addItem:menuItem];
+    
 	return menu;
 }
 
