@@ -1,10 +1,23 @@
 #!/bin/sh
-cd "/tmp"
-mkdir "$HOME/.keymagic"
-mv "kbLayouts.zip" "$HOME/.keymagic/"
+
+# check if was installed to root or user home
+if [ -f "/kbLayouts.zip" ]
+then
+	DESC_DIR="/"
+elif [ -f "$HOME/kbLayouts.zip" ]
+then
+	DESC_DIR="$HOME/"
+fi
+
+# make dir
+mkdir -p "$HOME/.keymagic"
+# cd to dir
 cd "$HOME/.keymagic/"
+# move zip
+mv "$DESC_DIR/kbLayouts.zip" "$HOME/.keymagic/"
+# unzip
 unzip -o "kbLayouts.zip"
+# remove
 rm "kbLayouts.zip"
-rm "/tmp/kbLayouts.zip"
 
 exit 0

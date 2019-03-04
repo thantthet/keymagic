@@ -1,13 +1,14 @@
 IDENTITY_APP = "Developer ID Application: H T KHIN ZAW (YQ4W4QMX9D)"
 IDENTITY_INSTALLER = "Developer ID Installer: H T KHIN ZAW (YQ4W4QMX9D)"
 ROOT_DIR = "/tmp/KeyMagic.dst"
-
+VERSION = "1.5.2"
 all: clean copy
 	pkgbuild \
 	--root $(ROOT_DIR) \
+	--install-location "/Library/Input Methods" \
 	--component-plist components.plist \
 	--identifier org.keymagic.pkg.app \
-	--version 1.5.2 \
+	--version $(VERSION) \
 	app.pkg
 
 	pkgbuild --root ./resource/others \
@@ -20,7 +21,7 @@ all: clean copy
 	--resources ./ \
 	--package-path . \
 	--sign $(IDENTITY_INSTALLER) \
-	installer.pkg
+	keymagic-$(VERSION).pkg
 
 cp: copy #components plist
 	pkgbuild --analyze --root $(ROOT_DIR) app.plist
@@ -36,6 +37,7 @@ signapp:
 
 clean:
 	rm -rf $(ROOT_DIR)
+	rm -f app.pkg resources.pkg
 	
 copy:
 	mkdir -p $(ROOT_DIR)

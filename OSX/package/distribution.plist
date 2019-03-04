@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<installer-gui-script minSpecVersion="1">
+<installer-gui-script minSpecVersion="2">
     <readme file="readme.txt" mime-type="text/plain"></readme>
     <license file="gpl-2.0.txt" mime-type="text/plain"></license>
     <conclusion file="summary.txt" mime-type="text/plain"></conclusion>
 
     <domains enable_anywhere="false" enable_currentUserHome="true" enable_localSystem="true"></domains>
+
+
+    <allowed-os-versions>
+        <os-version min="10.7"></os-version>
+    </allowed-os-versions>
 
     <pkg-ref id="org.keymagic.pkg.app"/>
     <pkg-ref id="org.keymagic.resources"/>
