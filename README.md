@@ -14,12 +14,12 @@
 
   * KeyMagic program manager or application, you can manage all your compiled/generated keyboard layout.
   * You can generate multiple keyboad layout files, using kEditor. You will have to use [http://code.google.com/p/keymagic/wiki/LayoutScripting Script to layout the key mapping].
-  * Following Keyboards are pre-installed:
-    # Myanmar3
-    # Parabaik
-    # myWin
-    # Zawgyi L - Unicode
-    # (Your Keyboard Layout Here - Please contact us)
+  * Pre-installed keyboards:
+    - Pyidaungsu MM
+    - my-Win 2.3.0
+    - MyanSan
+    - Zawgyi
+    - Zawgyi - Unicode (Unicode keyboard that type like Zawgyi)
 
 ## Project Information
 
