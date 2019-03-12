@@ -21,8 +21,8 @@ void wstring2string(std::wstring wstr, std::string &str)
 void string2wstring(std::string str, std::wstring &wstr)
 {
 	std::wstring_convert<std::codecvt_utf8<wchar_t>> myconv;
-    std::wstring u16str = myconv.from_bytes(str);
-    wstr.assign(u16str);
+	std::wstring u16str = myconv.from_bytes(str);
+	wstr.assign(u16str);
 }
 
 void Java_com_keymagic_KeyMagicEngine_initialise(JNIEnv *env, jobject obj)
@@ -34,34 +34,34 @@ void Java_com_keymagic_KeyMagicEngine_initialise(JNIEnv *env, jobject obj)
 jboolean Java_com_keymagic_KeyMagicEngine_loadKeyboardFile__Ljava_lang_String_2(JNIEnv *env, jobject obj, jstring pathString)
 {
 	KeyMagicEngine *engine = getHandle<KeyMagicEngine>(env, obj);
-    const char *str_path = env->GetStringUTFChars(pathString, 0);
-    bool success = engine->loadKeyboardFile(str_path);
-    env->ReleaseStringUTFChars(pathString, str_path);
-    return success;
+	const char *str_path = env->GetStringUTFChars(pathString, 0);
+	bool success = engine->loadKeyboardFile(str_path);
+	env->ReleaseStringUTFChars(pathString, str_path);
+	return success;
 }
 
 jboolean Java_com_keymagic_KeyMagicEngine_loadKeyboardFile__Landroid_content_res_AssetManager_2Ljava_lang_String_2(JNIEnv *env, jobject obj, jobject assetManager, jstring filename)
 {
-    // convert Java string to UTF-8
-    const char *utf8 = env->GetStringUTFChars(filename, NULL);
-    assert(NULL != utf8);
+	// convert Java string to UTF-8
+	const char *utf8 = env->GetStringUTFChars(filename, NULL);
+	assert(NULL != utf8);
 
-    __android_log_print(ANDROID_LOG_INFO, APPNAME, "opening asset file: %s.", utf8);
+	__android_log_print(ANDROID_LOG_INFO, APPNAME, "opening asset file: %s.", utf8);
 
-    // use asset manager to open asset by filename
-    AAssetManager* mgr = AAssetManager_fromJava(env, assetManager);
-    assert(NULL != mgr);
-    
-    android_fopen_set_asset_manager(mgr);
+	// use asset manager to open asset by filename
+	AAssetManager* mgr = AAssetManager_fromJava(env, assetManager);
+	assert(NULL != mgr);
+	
+	android_fopen_set_asset_manager(mgr);
 
-    FILE *hFile = android_fopen(utf8, "rb");
+	FILE *hFile = android_fopen(utf8, "rb");
 
-    env->ReleaseStringUTFChars(filename, utf8);
+	env->ReleaseStringUTFChars(filename, utf8);
 
-    __android_log_print(ANDROID_LOG_INFO, APPNAME, "opening keyboard from android file handle.");
+	__android_log_print(ANDROID_LOG_INFO, APPNAME, "opening keyboard from android file handle.");
 
-    KeyMagicEngine *engine = getHandle<KeyMagicEngine>(env, obj);
-    return engine->loadKeyboardFromFileHandle(hFile);
+	KeyMagicEngine *engine = getHandle<KeyMagicEngine>(env, obj);
+	return engine->loadKeyboardFromFileHandle(hFile);
 }
 
 jshort Java_com_keymagic_KeyMagicEngine_getKeyState(JNIEnv *env, jobject obj, jint keycode)
@@ -136,15 +136,16 @@ jlong Java_com_keymagic_KeyMagicEngine_getDifference(JNIEnv *env, jobject obj, j
 	if (difference_java != 0) {
 		jclass clazz = env->GetObjectClass(difference_java);
 		jmethodID mid = 
-        env->GetMethodID (clazz, 
-                          "append", 
-                                  "(Ljava/lang/String;)Ljava/lang/StringBuffer;");
-        if (mid != 0) {
-    		std::string differenceUTF8;
-    		wstring2string(difference, differenceUTF8);
-    		jstring _jstring = env->NewStringUTF (differenceUTF8.c_str());
-    		env->CallObjectMethod (difference_java, mid, _jstring);
-    	}
+		env->GetMethodID (
+			clazz, 
+			"append",
+			"(Ljava/lang/String;)Ljava/lang/StringBuffer;");
+		if (mid != 0) {
+			std::string differenceUTF8;
+			wstring2string(difference, differenceUTF8);
+			jstring _jstring = env->NewStringUTF (differenceUTF8.c_str());
+			env->CallObjectMethod (difference_java, mid, _jstring);
+		}
 	}
 	return deleteCount;
 }
@@ -156,18 +157,18 @@ void Java_com_keymagic_KeyMagicEngine_setHistory(JNIEnv *env, jobject obj, jobje
 	TContextHistory history_native;
 
 	for (int i=0; i<stringCount; i++) {
-        jstring string = (jstring) env->GetObjectArrayElement(history_java, i);
-        const char *rawString = env->GetStringUTFChars(string, 0);
-        
-        KeyMagicString contextString;
+		jstring string = (jstring) env->GetObjectArrayElement(history_java, i);
+		const char *rawString = env->GetStringUTFChars(string, 0);
+		
+		KeyMagicString contextString;
 		string2wstring(rawString, contextString);
 
 		history_native.push_back(contextString);
 
-        env->ReleaseStringUTFChars(string, rawString);
-    }
+		env->ReleaseStringUTFChars(string, rawString);
+	}
 
-    engine->setHistory(history_native);
+	engine->setHistory(history_native);
 }
 
 jobjectArray Java_com_keymagic_KeyMagicEngine_getHistory(JNIEnv *env, jobject obj) {
@@ -176,12 +177,12 @@ jobjectArray Java_com_keymagic_KeyMagicEngine_getHistory(JNIEnv *env, jobject ob
 
 	jobjectArray history_java = (jobjectArray)env->NewObjectArray(history_native.size(), env->FindClass("java/lang/String"), env->NewStringUTF(""));
 
-    for(int i=0; i<history_native.size(); i++) {
-    	std::string contextUTF8;
-    	KeyMagicString context = history_native.at(i);
-    	wstring2string(context, contextUTF8);
-    	env->SetObjectArrayElement(history_java, i, env->NewStringUTF(contextUTF8.c_str()));
-    }
+	for(int i=0; i<history_native.size(); i++) {
+		std::string contextUTF8;
+		KeyMagicString context = history_native.at(i);
+		wstring2string(context, contextUTF8);
+		env->SetObjectArrayElement(history_java, i, env->NewStringUTF(contextUTF8.c_str()));
+	}
 
-    return history_java;
+	return history_java;
 }
