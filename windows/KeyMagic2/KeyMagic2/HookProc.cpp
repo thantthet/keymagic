@@ -77,6 +77,26 @@ LRESULT CALLBACK LowLevelMouseProc(
 	return CallNextHookEx(HH_MOUSE_LL, nCode, wParam, lParam);
 }
 
+DWORD handleNumpadKeys(DWORD sc)
+{
+	if (GetKeyState(VK_NUMLOCK) & 0xffff != 0) {
+		switch (sc) {
+		case 0x52: return VK_KEY_0;
+		case 0x4f: return VK_KEY_1;
+		case 0x50: return VK_KEY_2;
+		case 0x51: return VK_KEY_3;
+		case 0x4b: return VK_KEY_4;
+		case 0x4c: return VK_KEY_5;
+		case 0x4d: return VK_KEY_6;
+		case 0x47: return VK_KEY_7;
+		case 0x48: return VK_KEY_8;
+		case 0x49: return VK_KEY_9;
+		case 0x53: return VK_OEM_PERIOD;
+		}
+	}
+	return 0;
+}
+
 LRESULT CALLBACK LowLevelKeyboardProc(
 	_In_ int    nCode,
 	_In_ WPARAM wParam,
@@ -168,6 +188,8 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 		code = 0;
 	}
 	else {
+		DWORD vk = handleNumpadKeys(kbd->scanCode);
+		if (vk) code = vk;
 		ToUnicodeEx(code, kbd->scanCode, states, unicode, 1, 0, (HKL)0x04090409);
 		states[code] = 0x80;
 	}
