@@ -146,18 +146,15 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 		}
 	}
 
-	if ((kbd->flags & LLKHF_UP) == LLKHF_UP || kbd->vkCode == VK_PACKET || kbd->dwExtraInfo == 0xDEADC0DE)
+	if ((kbd->flags & LLKHF_EXTENDED) == LLKHF_EXTENDED || // ignore function keys
+		(kbd->flags & LLKHF_UP) == LLKHF_UP || // ignore key ups
+		kbd->vkCode == VK_PACKET || // ignore packets
+		kbd->dwExtraInfo == 0xDEADC0DE)
 	{
 		return CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
 	}
 
-	//GUITHREADINFO ti;
-	//ti.cbSize = sizeof(GUITHREADINFO);
-	//GetGUIThreadInfo(0, &ti);
-	//SendMessage(ti.hwndActive, KM_SENDKEYSTATES, 0, 0);
-
 	BYTE states[256] = { 0 };
-	//memcpy_s(states, 256, KeyboardStates, 256);
 
 	states[VK_CONTROL] = modKeyStates.CONTROL;
 	states[VK_SHIFT] = modKeyStates.SHIFT;
