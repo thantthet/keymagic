@@ -133,17 +133,13 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 		}
 	}
 
-	if (wParam == WM_KEYDOWN) {
-		char vk = isModifierKey ? 0 : kbd->vkCode;
-		bool match = HotkeyManager::sharedManager()->MatchAndCall(
-			modKeyStates.CONTROL,
-			modKeyStates.MENU,
-			modKeyStates.SHIFT,
-			modKeyStates.WIN,
-			vk);
-		if (match) {
-			return true;
-		}
+	if (wParam == WM_KEYDOWN)
+	{
+		HotkeyManager::sharedManager()->OnKeyDown(kbd->vkCode);
+	}
+	else if (wParam == WM_KEYUP)
+	{
+		HotkeyManager::sharedManager()->OnKeyUp(kbd->vkCode);
 	}
 
 	if ((kbd->flags & LLKHF_EXTENDED) == LLKHF_EXTENDED || // ignore function keys

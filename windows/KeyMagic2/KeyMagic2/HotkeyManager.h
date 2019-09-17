@@ -35,58 +35,21 @@ public:
 		m_handlers[hotkeyPointer] = callback;
 	}
 
+	void OnKeyDown(int key);
+	void OnKeyUp(int key);
+
 	// match hotkeys and call callback when found
-	bool MatchAndCall(bool ctrl, bool alt, bool shift, bool win, char vk)
-	{
-		std::list<LPWORD> hkys = { &hky_onoff, &hky_nextkbd };
-		for (auto & hky : hkys) {
-			if (MatchHotkey(ctrl, alt, shift, win, vk, *hky))
-			{
-				if (m_handlers.find(hky) != m_handlers.end()) {
-					m_handlers[hky]();
-				}
-				return true;
-			}
-		}
-		return false;
-	}
+	bool MatchAndCall();
 
 private:
-	bool MatchHotkey(bool ctrl, bool alt, bool shift, bool win, char vk, WORD hky)
-	{
-		BYTE vk2 = LOBYTE(hky);
-		BYTE mod = HIBYTE(hky);
-
-		if (ctrl != ((mod & HOTKEYF_CONTROL) == HOTKEYF_CONTROL))
-		{
-			return false;
-		}
-
-		if (alt != ((mod & HOTKEYF_ALT) == HOTKEYF_ALT))
-		{
-			return false;
-		}
-
-		if (shift != ((mod & HOTKEYF_SHIFT) == HOTKEYF_SHIFT))
-		{
-			return false;
-		}
-
-		if (win != ((mod & HOTKEYF_EXT) == HOTKEYF_EXT))
-		{
-			return false;
-		}
-
-		if (vk != vk2) {
-			return false;
-		}
-
-		return true;
-	}
+	void ResetKeys();
+	bool MatchHotkey(WORD hky);
 
 private:
 	std::wstring jsonPath;
 	std::map<LPWORD, std::function<void()>> m_handlers;
+	bool ctrl, alt, shift, win;
+	int vk;
 public:
 	WORD hky_onoff;
 	WORD hky_nextkbd;
