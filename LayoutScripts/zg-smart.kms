@@ -83,7 +83,8 @@ $patSints[*] + U102D + $short[*] => $1 + $2 + $long[$3]
 U103C + U103D => U108A
 
 // normalize ya-pint + ha hotl
-U103A + U103D => U103D + U103A
+// :incompatible with double tap
+// U103A + U103D => U103D + U103A
 
 $l = U102D + U102E
 $short[*] + $l[*] => $2 + $1
@@ -104,6 +105,7 @@ $all_yakauk[*] + U103D + $above[*] + $short[*]  => U1090 + $2 + $3 + $long[$4]
 $all_yakauk[*] + U103D + $short[*]  => U1090 + $2 + $long[$3]
 U102C + U102D => $1 + U1039
 U102C + U102B => $1 + U1039
+U101B + U1088 => U1090 + $2
 
 // U100A + U102B => $1 + U1039
 // Nya

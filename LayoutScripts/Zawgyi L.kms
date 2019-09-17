@@ -9,6 +9,8 @@
 @SMART_BACKSPACE = "TRUE"
 */
 
+$nbsp = U00A0
+
 ("RIGHT_SQUARE_BRACKET") + ANY => $1	
 
 <VK_KEY_1> => U1041
@@ -71,7 +73,7 @@
 <VK_KEY_G & VK_SHIFT> => U103c
 <VK_KEY_H> => U1037
 <VK_KEY_H & VK_SHIFT> => U1036
-<VK_KEY_J> => U103b
+<VK_KEY_J> => U103b + $nbsp
 <VK_KEY_J & VK_SHIFT> => U1032
 <VK_KEY_K> => U102f
 <VK_KEY_K & VK_SHIFT> => U1033
@@ -184,3 +186,5 @@ $numOrLet[*] + $numToLet[*] => $numAsLet[$1] + $2
 
 /* include autocorrect rules file */
 include ( "zg-smart.kms" )
+
+$all_ra[*] + $nbsp + $all_width[*] => $1 + $3
