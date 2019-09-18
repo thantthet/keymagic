@@ -158,17 +158,6 @@ bool mapVK(int virtualkey, int * winVK)
         self.activeKeyboard = [[Keyboard alloc] init];
         self.keyboards = [[NSMutableArray alloc] init];
         
-        char logPath[300];
-        char * home = getenv("HOME");
-        sprintf(logPath, "%s%s", home, "/Library/Logs/KeyMagic.log");
-        m_logFile = fopen(logPath, "w");
-        
-        logger = KeyMagicLogger::getInstance();
-        if (m_logFile != 0) logger->setFile(m_logFile);
-#ifdef DEBUG
-        kme.m_verbose = true;
-#endif
-        
         [self getKeyboardLayouts];
         
         configDictionary = [NSMutableDictionary new];
@@ -251,6 +240,7 @@ bool mapVK(int virtualkey, int * winVK)
 
 - (void)switchKeyboardLayout:(BOOL)previous
 {
+    trace(@"switchKeyboardLayout:%d", previous);
 	Keyboard * first = [keyboards objectAtIndex:0];
 	Keyboard * last = [keyboards objectAtIndex:[keyboards count] - 1];
 	
@@ -714,7 +704,7 @@ bool mapVK(int virtualkey, int * winVK)
 
 - (void)inputControllerWillClose
 {
-	if (m_logFile != 0) fclose(m_logFile);
+    trace(@"inputControllerWillClose");
 }
 
 - (void)userNotificationCenter:(NSUserNotificationCenter *)center didDeliverNotification:(NSUserNotification *)notification

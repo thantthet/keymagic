@@ -35,8 +35,6 @@ extern "C" {
 	NSString *activePath;
 	KeyMagicEngine kme;
 	BOOL m_success;
-	FILE * m_logFile;
-	KeyMagicLogger * logger;
 	NSStatusItem * statusItem;
 	Keyboard * activeKeyboard;
 	NSUInteger m_delCountGenerated;
