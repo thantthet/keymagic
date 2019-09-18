@@ -45,9 +45,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		6A31F7230EAC67580045D7EE /* KeyMagicServer-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "KeyMagicServer-Info.plist"; sourceTree = "<group>"; };
 		6A31F7460EAC68880045D7EE /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
-		6A31F77C0EAC69480045D7EE /* KeyMagic-TSM-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "KeyMagic-TSM-Info.plist"; sourceTree = "<group>"; };
 		6AA6D1EB0EAC640E00DF1C2C /* KeyMagic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KeyMagic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6AA6D1EE0EAC640E00DF1C2C /* KeyMagic-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "KeyMagic-Info.plist"; sourceTree = "<group>"; };
 		6AA6D20D0EAC655B00DF1C2C /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
@@ -134,9 +132,7 @@
 				90412BC5222D13A700D03B91 /* main.mm */,
 				6AAE6B220EAC6AA400E8EBBA /* KeyMagic.icns */,
 				B595DA2413D39931005636D3 /* KeyMagic_black.icns */,
-				6A31F77C0EAC69480045D7EE /* KeyMagic-TSM-Info.plist */,
 				6AA6D1EE0EAC640E00DF1C2C /* KeyMagic-Info.plist */,
-				6A31F7230EAC67580045D7EE /* KeyMagicServer-Info.plist */,
 				6AAE6B550EAC6BE900E8EBBA /* MainMenu.xib */,
 			);
 			name = "KeyMagic (IMK-based)";
