@@ -491,16 +491,10 @@ bool mapVK(int virtualkey, int * winVK)
 	NSString * _composingBuffer = [NSString stringWithKeyMagicString:kme.getContextText()];
 	NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:_composingBuffer attributes:[NSDictionary dictionary]];
 
-    #if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_5
-		NSDictionary *attrDict = [NSDictionary dictionaryWithObjectsAndKeys:
-								  [NSNumber numberWithInt:0], NSKernAttributeName,
-								  [NSNumber numberWithInt:NSUnderlineStyleSingle], NSUnderlineStyleAttributeName,
-								  [NSNumber numberWithInt:0], NSMarkedClauseSegmentAttributeName, nil];
-    #else
-		NSDictionary *attrDict = [NSDictionary dictionaryWithObjectsAndKeys:
-								  [NSNumber numberWithInt:NSUnderlineStyleSingle], @"UnderlineStyleAttribute",
-								  [NSNumber numberWithInt:0], @"MarkedClauseSegmentAttribute", nil];
-    #endif
+    NSDictionary *attrDict = [NSDictionary dictionaryWithObjectsAndKeys:
+                              [NSNumber numberWithInt:0], NSKernAttributeName,
+                              [NSNumber numberWithInt:NSUnderlineStyleSingle], NSUnderlineStyleAttributeName,
+                              [NSNumber numberWithInt:0], NSMarkedClauseSegmentAttributeName, nil];
 
 	[attrString setAttributes:attrDict range:NSMakeRange(0, [_composingBuffer length])];  
 	
