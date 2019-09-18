@@ -712,6 +712,11 @@ bool mapVK(int virtualkey, int * winVK)
 	}
 }
 
+- (void)inputControllerWillClose
+{
+	if (m_logFile != 0) fclose(m_logFile);
+}
+
 - (void)userNotificationCenter:(NSUserNotificationCenter *)center didDeliverNotification:(NSUserNotification *)notification
 {
     [center performSelector:@selector(removeDeliveredNotification:) withObject:notification afterDelay:1.5];
