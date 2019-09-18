@@ -18,11 +18,7 @@
 //Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #import <Cocoa/Cocoa.h>
-#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_5
- 	#import <InputMethodKit/InputMethodKit.h>
-#else
-	#import "InputMethodKitTiger.h"
-#endif
+#import <InputMethodKit/InputMethodKit.h>
 #import "KeyMagicNSString.h"
 #import "Keyboard.h"
 
