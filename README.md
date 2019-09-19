@@ -1,9 +1,8 @@
 ![KeyMagic Logo](http://sites.google.com/site/thantthetkz/key.png)
 
-## We Now Have Official KeyMagic Website - http://keymagic.net/
+[Website](http://keymagic.net/)
 
-
-*[KeyMagic Download Page](http://keymagic.net/downloads/)*
+[Releases](https://github.com/thantthet/keymagic/releases)
 
 ## Introduction
 
@@ -19,22 +18,4 @@
     - my-Win 2.3.0
     - MyanSan
     - Zawgyi
-    - Zawgyi - Unicode (Unicode keyboard that type like Zawgyi)
-
-## Project Information
-
- * *Programming Language* : C++ / ObjC / C#
- * *Development Status* : Production/Stable
- * *License* : GNU General Public License (GPL)
- * *Operating System* : Windows 2000 / XP / Vista / 7, Mac OSX and Linux
-
-## Authors, Role and Responsibility
-
-  * Thant Thet Khin Zaw
-  * Victor, San Kho Lin
-
-## Special Thanks:
-  * Seth N. Hetu (http://waitzar.googlecode.com)
-
-----
-[http://www.waitzar.com http://waitzar.googlecode.com/files/wz_usericon.png]
+    - ZawCode (A Unicode keyboard, but type in Zawgyi way)
