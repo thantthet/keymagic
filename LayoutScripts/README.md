@@ -1,1 +1,1 @@
-[Moved to separated repository](https://github.com/thantthet/keymagic-keyboards)
+[Moved to separate repository](https://github.com/thantthet/keymagic-keyboards)
