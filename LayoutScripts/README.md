@@ -1,0 +1,1 @@
+[Moved to separated repository](https://github.com/thantthet/keymagic-keyboards)
