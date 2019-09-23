@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # check if was installed to root or user home
 if [ -f "/kbLayouts.zip" ]
@@ -9,7 +9,9 @@ then
 	DESC_DIR="$HOME/"
 fi
 
-# make dir
+# remove old keyboards
+rm -rf "$HOME/.keymagic"
+# remake dir
 mkdir -p "$HOME/.keymagic"
 # cd to dir
 cd "$HOME/.keymagic/"
