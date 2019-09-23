@@ -12,7 +12,7 @@
 ## Features
 
   * KeyMagic program manager or application, you can manage all your compiled/generated keyboard layout.
-  * You can generate multiple keyboad layout files, using kEditor. You will have to use [Script to layout the key mapping](http://code.google.com/p/keymagic/wiki/LayoutScripting).
+  * You can generate multiple keyboad layout files, using kEditor. You will have to use [Script to layout the key mapping](https://github.com/thantthet/keymagic/wiki/Guide-to-layout-scripting).
   * Pre-installed keyboards:
     - Pyidaungsu MM
     - my-Win 2.3.0
