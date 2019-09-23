@@ -24,8 +24,8 @@
 #import	"keymagic.h"
 #import "KeyMagicUtil.h"
 
-#define kLastKeyboardPathKey @"DefaultKeyboardPath"
-#define kInstantCommit @"InstantCommit"
+static NSString * const ConfigKeyLastKeyboardPathKey = @"DefaultKeyboardPath";
+static NSString * const ConfigKeyInstantCommit = @"InstantCommit";
 
 @interface KeyMagicIMEController () <NSUserNotificationCenterDelegate>
 
@@ -165,11 +165,11 @@ bool mapVK(int virtualkey, int * winVK)
         
         [self loadConfigurationFile];
         
-        instantCommit = [[configDictionary objectForKey:kInstantCommit] boolValue];
+        instantCommit = [[configDictionary objectForKey:ConfigKeyInstantCommit] boolValue];
         
         m_success = NO;
         m_delCountGenerated = 0;
-        NSString *path = [configDictionary objectForKey:kLastKeyboardPathKey];
+        NSString *path = [configDictionary objectForKey:ConfigKeyLastKeyboardPathKey];
         
         if (path) {
             self.activePath = path;
@@ -524,8 +524,8 @@ bool mapVK(int virtualkey, int * winVK)
 
 - (void)instantCommitMenuClicked:(id)sender
 {
-	BOOL instant = ![[configDictionary objectForKey:kInstantCommit] boolValue];
-	[configDictionary setObject:[NSNumber numberWithBool:instant] forKey:kInstantCommit];
+	BOOL instant = ![[configDictionary objectForKey:ConfigKeyInstantCommit] boolValue];
+	[configDictionary setObject:[NSNumber numberWithBool:instant] forKey:ConfigKeyInstantCommit];
 	instantCommit = instant;
 	kme.reset();
 	
@@ -536,7 +536,7 @@ bool mapVK(int virtualkey, int * winVK)
 {
 	if (keyboard.path != nil) {
 		if ((m_success = kme.loadKeyboardFile([keyboard.path cStringUsingEncoding:NSUTF8StringEncoding]))) {
-			[configDictionary setObject:[keyboard path] forKey:kLastKeyboardPathKey];
+			[configDictionary setObject:[keyboard path] forKey:ConfigKeyLastKeyboardPathKey];
 			self.activePath = [keyboard path];
 			self.activeKeyboard = keyboard;
 			[self writeConfigurationFile];
@@ -647,7 +647,7 @@ bool mapVK(int virtualkey, int * winVK)
     [menuItem setTarget:self];
     [menuItem setAction:@selector(instantCommitMenuClicked:)];
     [menuItem setTitle:@"Instant Commit"];
-    if ([[configDictionary objectForKey:kInstantCommit] boolValue] == YES) {
+    if ([[configDictionary objectForKey:ConfigKeyInstantCommit] boolValue] == YES) {
         [menuItem setState:NSOnState];
     }
     [menu addItem:menuItem];
