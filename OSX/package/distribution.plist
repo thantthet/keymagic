@@ -24,7 +24,7 @@
     <choice id="org.keymagic.pkg.app" visible="false">
         <pkg-ref id="org.keymagic.pkg.app"/>
     </choice>
-    <pkg-ref id="org.keymagic.pkg.app" version="1.5.2" onConclusion="RequireLogout">app.pkg</pkg-ref>
+    <pkg-ref id="org.keymagic.pkg.app" version="1.5.3" onConclusion="RequireLogout">app.pkg</pkg-ref>
     <pkg-ref id="org.keymagic.pkg.app">
         <must-close>
             <app id="org.keymagic.inputmethod.KeyMagic"/>
