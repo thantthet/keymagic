@@ -584,6 +584,16 @@ bool mapVK(int virtualkey, int * winVK)
 	[self writeConfigurationFile];
 }
 
+- (void)openKeyboardDirectory
+{
+    NSString *directory = [@"~/.keymagic" stringByExpandingTildeInPath];
+    if ([NSFileManager.defaultManager fileExistsAtPath:directory] == NO) {
+        [NSFileManager.defaultManager createDirectoryAtPath:directory withIntermediateDirectories:NO attributes:nil error:nil];
+    }
+    NSURL *url = [NSURL fileURLWithPath:directory];
+    [[NSWorkspace sharedWorkspace] openURL:url];
+}
+
 - (BOOL)changeKeyboardLayout:(Keyboard*)keyboard
 {
 	if (keyboard.path != nil) {
@@ -707,7 +717,13 @@ bool mapVK(int virtualkey, int * winVK)
         [menuItem setState:NSOnState];
     }
     [menu addItem:menuItem];
-    [menu addItem:[NSMenuItem separatorItem]];
+    
+    // OPEN KEYBOARD DIR MENU ITEM
+    menuItem = [NSMenuItem new];
+    [menuItem setTarget:self];
+    [menuItem setAction:@selector(openKeyboardDirectory)];
+    [menuItem setTitle:@"Open keyboards directory"];
+    [menu addItem:menuItem];
     
     // ABOUT MENU ITEM
     menuItem = [NSMenuItem new];
