@@ -181,11 +181,7 @@ bool mapVK(int virtualkey, int * winVK)
                 [activeKeyboard setTitle:title];
                 [activeKeyboard setPath:path];
                 
-                NSUserNotification *notification = [[NSUserNotification alloc] init];
-                notification.title = @"KeyMagic";
-                notification.informativeText = activeKeyboard.title;
-                notification.hasActionButton = NO;
-                [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];;
+                [self deliverNotification:activeKeyboard.title];
             }
         }
     }
@@ -540,18 +536,8 @@ bool mapVK(int virtualkey, int * winVK)
 			self.activePath = [keyboard path];
 			self.activeKeyboard = keyboard;
 			[self writeConfigurationFile];
-			
-			@try {
-                NSUserNotification *notification = [[NSUserNotification alloc] init];
-                notification.title = @"KeyMagic";
-                notification.informativeText = keyboard.title;
-                notification.hasActionButton = NO;
-                [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];;
 
-			}
-			@catch (NSException * e) {
-				trace(@"Failed to notify!");
-			}
+            [self deliverNotification:keyboard.title];
 		}
 	}
 }
@@ -643,6 +629,8 @@ bool mapVK(int virtualkey, int * winVK)
 	[menu addItem:[NSMenuItem separatorItem]];
 	
 	NSMenuItem *menuItem;
+    
+    // INSTANT COMMIT MENU ITEM
     menuItem = [NSMenuItem new];
     [menuItem setTarget:self];
     [menuItem setAction:@selector(instantCommitMenuClicked:)];
@@ -654,6 +642,7 @@ bool mapVK(int virtualkey, int * winVK)
     
     [menu addItem:[NSMenuItem separatorItem]];
     
+    // ABOUT MENU ITEM
     menuItem = [NSMenuItem new];
 	[menuItem setTarget:self];
 	[menuItem setAction:@selector(aboutAction:)];
@@ -699,6 +688,20 @@ bool mapVK(int virtualkey, int * winVK)
 - (void)inputControllerWillClose
 {
     trace(@"inputControllerWillClose");
+}
+
+- (void)deliverNotification:(NSString *)text
+{
+    @try {
+        NSUserNotification *notification = [[NSUserNotification alloc] init];
+        notification.title = @"KeyMagic";
+        notification.informativeText = text;
+        notification.hasActionButton = NO;
+        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
+    }
+    @catch (NSException * e) {
+        trace(@"Failed to deliver notification!");
+    }
 }
 
 - (void)userNotificationCenter:(NSUserNotificationCenter *)center didDeliverNotification:(NSUserNotification *)notification
