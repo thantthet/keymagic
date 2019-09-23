@@ -1,7 +1,7 @@
 IDENTITY_APP = "Developer ID Application: H T KHIN ZAW (YQ4W4QMX9D)"
 IDENTITY_INSTALLER = "Developer ID Installer: H T KHIN ZAW (YQ4W4QMX9D)"
 ROOT_DIR = "/tmp/KeyMagic.dst"
-VERSION = "1.5.2"
+VERSION = "1.5.3"
 all: clean copy
 	pkgbuild \
 	--root $(ROOT_DIR) \
