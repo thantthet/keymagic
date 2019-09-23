@@ -4,7 +4,7 @@
     <license file="gpl-2.0.txt" mime-type="text/plain"></license>
     <conclusion file="summary.txt" mime-type="text/plain"></conclusion>
 
-    <domains enable_anywhere="false" enable_currentUserHome="true" enable_localSystem="true"></domains>
+    <domains enable_anywhere="false" enable_currentUserHome="true" enable_localSystem="false"></domains>
 
 
     <allowed-os-versions>
