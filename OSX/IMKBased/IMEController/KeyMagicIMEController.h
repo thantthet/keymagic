@@ -39,6 +39,7 @@ extern "C" {
 	Keyboard * activeKeyboard;
 	NSUInteger m_delCountGenerated;
 	BOOL instantCommit;
+    BOOL _updateAvailable;
 }
 
 @property (nonatomic, strong) Keyboard *activeKeyboard;

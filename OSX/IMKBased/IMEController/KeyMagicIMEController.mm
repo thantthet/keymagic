@@ -26,13 +26,16 @@
 
 static NSString * const ConfigKeyLastKeyboardPathKey = @"DefaultKeyboardPath";
 static NSString * const ConfigKeyInstantCommit = @"InstantCommit";
+static NSString * const ConfigKeyLastUpdateCheck = @"ConfigKeyLastUpdateCheck";
+
+static NSString * const NotificationDurationKey = @"NotificationDurationKey";
+static NSString * const NotificationSelectorKey = @"NotificationSelectorKey";
 
 @interface KeyMagicIMEController () <NSUserNotificationCenterDelegate>
 
 @property (nonatomic, strong) NSMutableArray *keyboards;
 
 @end
-
 
 @implementation KeyMagicIMEController
 @synthesize activeKeyboard;
@@ -184,11 +187,58 @@ bool mapVK(int virtualkey, int * winVK)
                 [self deliverNotification:activeKeyboard.title];
             }
         }
+        
+        [self checkUpdateWhenNecessary];
     }
 	
 	return self;
 }
 
+- (void)checkUpdateWhenNecessary
+{
+    NSDate *lastUpdateCheck = [configDictionary objectForKey:ConfigKeyLastUpdateCheck];
+    NSTimeInterval sevenDays = 7/*day*/ * 24/*hour*/ * 60/*minute*/ * 60/*sec*/;
+    NSDate *nextCheck = [lastUpdateCheck dateByAddingTimeInterval:sevenDays];
+    if (nextCheck == nil) {
+        nextCheck = [NSDate new];
+    }
+    trace(@"next:%@ current:%@", nextCheck, [NSDate date]);
+    BOOL notify = [nextCheck compare:[NSDate date]] == NSOrderedAscending; // current date is beyond next check date
+    [self checkUpdateNotifying:notify];
+    // mark last check
+    [configDictionary setObject:[NSDate new] forKey:ConfigKeyLastUpdateCheck];
+    [self writeConfigurationFile];
+}
+
+- (void)checkUpdateNotifying:(BOOL)notify
+{
+    NSURL *url = [NSURL URLWithString:@"https://keymagic.s3-ap-southeast-1.amazonaws.com/releases/macos/latest/version.txt"];
+    NSError *error = nil;
+    NSString *lastestVersion = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
+    
+    if (error != nil) {
+        trace(@"Failed to check update: %@", error);
+        return;
+    }
+    
+    NSString *bundleVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+    
+    if ([lastestVersion compare:bundleVersion options:NSNumericSearch] == NSOrderedDescending) {
+        _updateAvailable = YES;
+        if (notify) {
+            NSString *text = @"New version of KeyMagic is available";
+            [self deliverNotification:text duration:3 onClick:@selector(openReleasesPage)];
+        }
+    } else {
+        _updateAvailable = NO;
+    }
+}
+
+- (void)openReleasesPage
+{
+    NSURL *url = [NSURL URLWithString:@"https://github.com/thantthet/keymagic/releases"];
+    [[NSWorkspace sharedWorkspace] openURL:url];
+}
 
 - (void)activateServer:(id)sender
 {
@@ -538,8 +588,10 @@ bool mapVK(int virtualkey, int * winVK)
 			[self writeConfigurationFile];
 
             [self deliverNotification:keyboard.title];
+            return YES;
 		}
 	}
+    return NO;
 }
 
 - (void)selectionChanged:(id)sender {
@@ -608,6 +660,18 @@ bool mapVK(int virtualkey, int * winVK)
     trace(@"menu");
     
 	NSMenu *menu = [NSMenu new];
+    
+    NSMenuItem *menuItem;
+    
+    // UPDATE VERSION MENU
+    if (_updateAvailable) {
+        menuItem = [NSMenuItem new];
+        [menuItem setTarget:self];
+        [menuItem setAction:@selector(openReleasesPage)];
+        [menuItem setTitle:@"New version available"];
+        [menu addItem:menuItem];
+        [menu addItem:[NSMenuItem separatorItem]];
+    }
 	
 	[self getKeyboardLayouts];
 	NSEnumerator * e = [keyboards objectEnumerator];
@@ -627,8 +691,6 @@ bool mapVK(int virtualkey, int * winVK)
 	}
 	
 	[menu addItem:[NSMenuItem separatorItem]];
-	
-	NSMenuItem *menuItem;
     
     // INSTANT COMMIT MENU ITEM
     menuItem = [NSMenuItem new];
@@ -639,7 +701,6 @@ bool mapVK(int virtualkey, int * winVK)
         [menuItem setState:NSOnState];
     }
     [menu addItem:menuItem];
-    
     [menu addItem:[NSMenuItem separatorItem]];
     
     // ABOUT MENU ITEM
@@ -692,21 +753,49 @@ bool mapVK(int virtualkey, int * winVK)
 
 - (void)deliverNotification:(NSString *)text
 {
+    [self deliverNotification:text duration:1.5 onClick:nil];
+}
+
+- (void)deliverNotification:(NSString *)text duration:(NSTimeInterval)duration onClick:(SEL)selector
+{
     @try {
+        BOOL hasActionButton = NO;
+        NSMutableDictionary* userInfo = [NSMutableDictionary new];
+        userInfo[NotificationDurationKey] = @(duration);
+        if (selector) {
+            hasActionButton = YES;
+            userInfo[NotificationSelectorKey] = NSStringFromSelector(selector);
+        }
+        
         NSUserNotification *notification = [[NSUserNotification alloc] init];
         notification.title = @"KeyMagic";
         notification.informativeText = text;
-        notification.hasActionButton = NO;
+        notification.hasActionButton = hasActionButton;
+        notification.userInfo = userInfo;
         [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
     }
-    @catch (NSException * e) {
-        trace(@"Failed to deliver notification!");
+    @catch (NSException * error) {
+        trace(@"Failed to deliver notification: %@", error);
+    }
+}
+
+- (void)userNotificationCenter:(NSUserNotificationCenter *)center didActivateNotification:(NSUserNotification *)notification
+{
+    NSLog(@"%@", notification.userInfo);
+    if (NSString *selector = [notification.userInfo objectForKey:NotificationSelectorKey]) {
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+        [self performSelector:NSSelectorFromString(selector)];
+        #pragma clang diagnostic pop
     }
 }
 
 - (void)userNotificationCenter:(NSUserNotificationCenter *)center didDeliverNotification:(NSUserNotification *)notification
 {
-    [center performSelector:@selector(removeDeliveredNotification:) withObject:notification afterDelay:1.5];
+    if (NSNumber *duration = [notification.userInfo objectForKey:NotificationDurationKey]) {
+        [center performSelector:@selector(removeDeliveredNotification:)
+                     withObject:notification afterDelay:[duration floatValue]];
+    }
 }
 
 - (BOOL)userNotificationCenter:(NSUserNotificationCenter *)center shouldPresentNotification:(NSUserNotification *)notification
