@@ -219,6 +219,8 @@ bool mapVK(int virtualkey, int * winVK)
     NSURL *url = [NSURL URLWithString:@"https://keymagic.s3-ap-southeast-1.amazonaws.com/releases/macos/latest/version.txt"];
     NSError *error = nil;
     NSString *lastestVersion = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
+    lastestVersion = [lastestVersion stringByTrimmingCharactersInSet:
+                      [NSCharacterSet whitespaceAndNewlineCharacterSet]];
     
     if (error != nil) {
         trace(@"Failed to check update: %@", error);
