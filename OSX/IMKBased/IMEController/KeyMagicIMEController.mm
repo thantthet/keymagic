@@ -188,7 +188,9 @@ bool mapVK(int virtualkey, int * winVK)
             }
         }
         
-        [self checkUpdateWhenNecessary];
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
+            [self checkUpdateWhenNecessary];
+        });
     }
 	
 	return self;
