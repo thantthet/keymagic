@@ -4,8 +4,39 @@
     <license file="gpl-2.0.txt" mime-type="text/plain"></license>
     <conclusion file="summary.txt" mime-type="text/plain"></conclusion>
 
-    <domains enable_anywhere="false" enable_currentUserHome="true" enable_localSystem="false"></domains>
-
+    <domains enable_anywhere="false" enable_currentUserHome="true" enable_localSystem="isNotCatalina();"></domains>
+    <installation-check script="installationCheck();"></installation-check>
+    <localization>
+        <strings language="en">
+<![CDATA[
+"SU_ERROR" = "Error";
+"SYSTEM_KEYMAGIC" = "Catalina no longer support installing in system volume and previous version of KeyMagic is found in system volume. Please run this command in Terminal: \n\nsudo rm -rf /Library/Input\\ Methods/KeyMagic.app\n\n Then run this installer again.";
+]]>
+        </strings>
+    </localization>
+    <script>
+        <![CDATA[
+        function isCatalina() {
+            return system.compareVersions(system.version.ProductVersion, '10.15') >= 0;
+        }
+        function isNotCatalina() {
+            return !isCatalina();
+        }
+        function installationCheck() {
+            if (isNotCatalina()) { return true; }
+            if (systemKeyMagicExists()) {
+                my.result.title = system.localizedString('SU_ERROR');
+                my.result.message = system.localizedString('SYSTEM_KEYMAGIC');
+                my.result.type = 'Fatal';
+                return false;
+            }
+            return true;
+        }
+        function systemKeyMagicExists() {
+            return system.files.fileExistsAtPath('/Library/Input Methods/KeyMagic.app');
+        }
+        ]]>
+    </script>
 
     <allowed-os-versions>
         <os-version min="10.7"></os-version>
@@ -24,7 +55,7 @@
     <choice id="org.keymagic.pkg.app" visible="false">
         <pkg-ref id="org.keymagic.pkg.app"/>
     </choice>
-    <pkg-ref id="org.keymagic.pkg.app" version="1.5.3" onConclusion="RequireLogout">app.pkg</pkg-ref>
+    <pkg-ref id="org.keymagic.pkg.app" version="1.5.4" onConclusion="RequireLogout">app.pkg</pkg-ref>
     <pkg-ref id="org.keymagic.pkg.app">
         <must-close>
             <app id="org.keymagic.inputmethod.KeyMagic"/>

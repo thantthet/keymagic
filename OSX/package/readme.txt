@@ -1,5 +1,5 @@
-What's new in Version 1.5.2 -
-1. Minor fixes
+What's new in Version 1.5.4 -
+1. Improved Installer
 
 Included Keyboard Layouts -
 1. Pyidaungsu MM
