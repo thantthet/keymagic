@@ -51,6 +51,7 @@ private:
 	std::map<LPWORD, std::function<void()>> m_handlers;
 	bool ctrl, alt, shift, win;
 	int vk;
+	bool ignoreMatchingOnKeyup;
 public:
 	WORD hky_onoff;
 	WORD hky_nextkbd;

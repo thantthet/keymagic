@@ -31,8 +31,10 @@ void HotkeyManager::OnKeyDown(int key)
 	
 	if (flag != modifiers.end()) {
 		*flag->second = true;
+		ignoreMatchingOnKeyup = false;
 	}
 	else {
+		ignoreMatchingOnKeyup = true;
 		vk = key;
 		// match on key down for non-modifier keys
 		MatchAndCall();
@@ -44,7 +46,7 @@ void HotkeyManager::OnKeyUp(int key)
 	auto modifiers = this->GetModifierToFlagMap();
 	auto flag = modifiers.find(key);
 
-	if (flag != modifiers.end()) {
+	if (flag != modifiers.end() && !ignoreMatchingOnKeyup) {
 		MatchAndCall();
 		*flag->second = false;
 	}
