@@ -44,6 +44,7 @@ HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 BOOL updateVersionNotificationWasShown = FALSE;
+HWND hHotkeyLabel;
 
 // Forward declarations of functions included in this code module:
 ATOM                RegisterWindowClass(HINSTANCE hInstance);
@@ -382,25 +383,34 @@ HWND CreateReportBugButton(HWND hWnd)
 
 HWND CreateLabel(HWND hWnd)
 {
-	std::wstring text;
-
-	text += converter.from_bytes(HotkeyManager::wHotkeyToString(HotkeyManager::sharedManager()->hky_onoff));
-	text += _T(" = Enable/Disable KeyMagic.\n\n");
-	text += converter.from_bytes(HotkeyManager::wHotkeyToString(HotkeyManager::sharedManager()->hky_nextkbd));
-	text += _T(" = Choose next keyboard.");
-
 	HWND hControl = CreateWindow(_T("static"), _T("ST_U"),
 		WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 		0, 0, 0, 0,
 		hWnd, (HMENU)IDC_LABEL,
 		hInst,
 		NULL);
-	SetWindowText(hControl, text.c_str());
 
 	HFONT hfDefault = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
 	SendMessage(hControl, WM_SETFONT, (WPARAM)hfDefault, MAKELPARAM(FALSE, 0));
 
 	return hControl;
+}
+
+void SetHotKeyTexts()
+{
+	std::wstring text;
+	auto manager = HotkeyManager::sharedManager();
+
+	if (manager->hky_onoff) {
+		text += converter.from_bytes(HotkeyManager::wHotkeyToString(manager->hky_onoff));
+		text += _T(" = Enable/Disable KeyMagic.\n\n");
+	}
+
+	if (manager->hky_nextkbd) {
+		text += converter.from_bytes(HotkeyManager::wHotkeyToString(manager->hky_nextkbd));
+		text += _T(" = Choose next keyboard.");
+	}
+	SetWindowText(hHotkeyLabel, text.c_str());
 }
 
 void SizeListView(HWND hWnd)
@@ -1022,7 +1032,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		CreateAddKeyboardButton(hWnd);
 		CreateRemoveKeyboardButton(hWnd);
 		CreateReportBugButton(hWnd);
-		CreateLabel(hWnd);
+		hHotkeyLabel = CreateLabel(hWnd);
+		SetHotKeyTexts();
 		HICON icon = (HICON)LoadImage(hInst,
 			MAKEINTRESOURCE(IDI_KEYMAGIC2),
 			IMAGE_ICON,
@@ -1210,7 +1221,7 @@ void SaveHotkeys(HWND hDlg)
 {
 	bool isChecked;
 
-	WORD wOnOff, wNext;
+	WORD wOnOff = 0, wNext = 0;
 
 	std::map<UINT, WORD> OnOffControls = {
 		{IDC_RO_ONOFF_SC, MAKEWORD(0, HOTKEYF_SHIFT | HOTKEYF_CONTROL) },
@@ -1259,6 +1270,7 @@ void SaveHotkeys(HWND hDlg)
 	hmgr->hky_onoff = wOnOff;
 	hmgr->hky_nextkbd = wNext;
 	hmgr->WriteHotkey();
+	SetHotKeyTexts();
 }
 
 INT_PTR CALLBACK Hotkeys(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
