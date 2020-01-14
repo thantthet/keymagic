@@ -46,8 +46,10 @@ void HotkeyManager::OnKeyUp(int key)
 	auto modifiers = this->GetModifierToFlagMap();
 	auto flag = modifiers.find(key);
 
-	if (flag != modifiers.end() && !ignoreMatchingOnKeyup) {
-		MatchAndCall();
+	if (flag != modifiers.end()) {
+		if (!ignoreMatchingOnKeyup) {
+			MatchAndCall();
+		}
 		*flag->second = false;
 	}
 	else if (vk == key) {
