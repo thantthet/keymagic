@@ -8,23 +8,29 @@ HotkeyManager::HotkeyManager(std::wstring jsonPath)
 	ResetKeys();
 }
 
+std::map<WORD, bool*> HotkeyManager::GetModifierToFlagMap() {
+	return {
+		{VK_LSHIFT, &shift},
+		{VK_RSHIFT, &shift},
+
+		{VK_LCONTROL, &ctrl},
+		{VK_RCONTROL, &ctrl},
+
+		{VK_LMENU, &alt},
+		{VK_RMENU, &alt},
+
+		{VK_LWIN, &win},
+		{VK_RWIN, &win},
+	};
+}
+
 void HotkeyManager::OnKeyDown(int key)
 {
-	if (key == VK_LSHIFT || key == VK_RSHIFT)
-	{
-		shift = true;
-	}
-	else if (key == VK_LCONTROL || key == VK_RCONTROL)
-	{
-		ctrl = true;
-	}
-	else if (key == VK_LMENU || key == VK_RMENU)
-	{
-		alt = true;
-	}
-	else if (key == VK_LWIN || key == VK_RWIN)
-	{
-		win = true;
+	auto modifiers = this->GetModifierToFlagMap();
+	auto flag = modifiers.find(key);
+	
+	if (flag != modifiers.end()) {
+		*flag->second = true;
 	}
 	else {
 		vk = key;
@@ -35,25 +41,12 @@ void HotkeyManager::OnKeyDown(int key)
 
 void HotkeyManager::OnKeyUp(int key)
 {
-	if (key == VK_LSHIFT || key == VK_RSHIFT)
-	{
+	auto modifiers = this->GetModifierToFlagMap();
+	auto flag = modifiers.find(key);
+
+	if (flag != modifiers.end()) {
 		MatchAndCall();
-		shift = false;
-	}
-	else if (key == VK_LCONTROL || key == VK_RCONTROL)
-	{
-		MatchAndCall();
-		ctrl = false;
-	}
-	else if (key == VK_LMENU || key == VK_RMENU)
-	{
-		MatchAndCall();
-		alt = false;
-	}
-	else if (key == VK_LWIN || key == VK_RWIN)
-	{
-		MatchAndCall();
-		win = false;
+		*flag->second = false;
 	}
 	else if (vk == key) {
 		vk = 0;

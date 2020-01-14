@@ -42,6 +42,7 @@ public:
 	bool MatchAndCall();
 
 private:
+	std::map<WORD, bool*> GetModifierToFlagMap();
 	void ResetKeys();
 	bool MatchHotkey(WORD hky);
 
