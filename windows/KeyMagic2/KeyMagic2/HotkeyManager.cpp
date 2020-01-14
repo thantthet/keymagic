@@ -28,15 +28,36 @@ void HotkeyManager::OnKeyDown(int key)
 	}
 	else {
 		vk = key;
+		// match on key down for non-modifier keys
+		MatchAndCall();
 	}
 }
 
 void HotkeyManager::OnKeyUp(int key)
 {
-	// match on key up
-	MatchAndCall();
-	// discard key states no matter what
-	ResetKeys();
+	if (key == VK_LSHIFT || key == VK_RSHIFT)
+	{
+		MatchAndCall();
+		shift = false;
+	}
+	else if (key == VK_LCONTROL || key == VK_RCONTROL)
+	{
+		MatchAndCall();
+		ctrl = false;
+	}
+	else if (key == VK_LMENU || key == VK_RMENU)
+	{
+		MatchAndCall();
+		alt = false;
+	}
+	else if (key == VK_LWIN || key == VK_RWIN)
+	{
+		MatchAndCall();
+		win = false;
+	}
+	else if (vk == key) {
+		vk = 0;
+	}
 }
 
 bool HotkeyManager::MatchAndCall()
