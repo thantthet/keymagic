@@ -1032,7 +1032,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		CreateShellNotifyIcon(hWnd, icon, _T("Find me in notification tray!"));
 
 		KeyboardManager *mgr = KeyboardManager::sharedManager();
-		mgr->addOnKeyboardDidChangeHandler([hWnd, mgr]() {
+		mgr->addOnKeyboardDidChangeHandler([hWnd, mgr](bool) {
 
 			Keyboard * keyboard = mgr->SelectedKeyboard();
 

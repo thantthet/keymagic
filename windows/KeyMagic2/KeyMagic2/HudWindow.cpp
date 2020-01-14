@@ -10,8 +10,11 @@ HudWindow::HudWindow(HINSTANCE hInstance, KeyboardManager * manager)
 {
 	this->hInst = hInstance;
 	this->kbdManager = manager;
-	this->kbdManager->addOnKeyboardDidChangeHandler([&]() {
-		this->onKeyboardDidChange();
+	this->kbdManager->addOnKeyboardDidChangeHandler([&](bool isToggle) {
+		if (!isToggle)
+		{
+			this->onKeyboardDidChange();
+		}
 	});
 	if (!HudWindow::registered) {
 		HudWindow::RegisterWindowClass(this->hInst);

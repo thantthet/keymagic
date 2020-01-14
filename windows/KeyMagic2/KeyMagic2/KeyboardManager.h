@@ -30,7 +30,7 @@ public:
 };
 
 typedef std::vector<Keyboard> TKeyboardList;
-typedef std::function<void()> onDidChangeCallback;
+typedef std::function<void(bool)> onDidChangeCallback;
 typedef std::map<HWND, Keyboard*> TMapWindowKeyboard;
 
 class KeyboardManager
@@ -45,12 +45,12 @@ private:
 	std::wstring m_basePath;
 	std::vector<onDidChangeCallback> m_callbacks;
 
-	void notifyCallbacks();
+	void notifyCallbacks(bool isToggle);
 
 public:
 	static KeyboardManager * sharedManager();
 
-	void addOnKeyboardDidChangeHandler(std::function<void()> callback)
+	void addOnKeyboardDidChangeHandler(onDidChangeCallback callback)
 	{
 		m_callbacks.push_back(callback);
 	}
@@ -61,7 +61,7 @@ public:
 	Keyboard * KeyboardAtIndex(int index);
 	BOOL SetKeyboards(nlohmann::json);
 	TKeyboardList& GetKeyboards();
-	BOOL SelectKeyboard(Keyboard * keyboard);
+	BOOL SelectKeyboard(Keyboard * keyboard, bool isToggle = true);
 	BOOL ToggleKeyboard();
 	BOOL AdvanceToNextKeyboard();
 	HWND GetWindowHandle();
