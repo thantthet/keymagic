@@ -498,7 +498,7 @@ void RegisterKeyboardFile(HWND hWnd, LPCTSTR fileName)
 
 	json config = ConfigUtils::Read();
 
-	json keyboards = config["keyboards"];
+	json keyboards = config[ConfigKeyKeyboards];
 	std::string keyboardName;
 
 	auto infos = libkm::KeyMagicKeyboard::getInfosFromKeyboardFile(keyboardPath.c_str());
@@ -519,7 +519,7 @@ void RegisterKeyboardFile(HWND hWnd, LPCTSTR fileName)
 
 	keyboards.push_back(keyboard);
 
-	config["keyboards"] = keyboards;
+	config[ConfigKeyKeyboards] = keyboards;
 
 	ConfigUtils::Write(config);
 }
@@ -529,7 +529,7 @@ void UnregisterKeyboard(Keyboard &keyboard)
 	std::wstring dirName = dirname(ConfigUtils::jsonFilePath());
 
 	json config = ConfigUtils::Read();
-	json &j = config["keyboards"];
+	json &j = config[ConfigKeyKeyboards];
 	std::string path = converter.to_bytes(keyboard.path);
 	for (auto it = j.begin(); it != j.end(); ++it) {
 		auto &k = *it;
@@ -577,7 +577,7 @@ void ReloadKeyboards(HWND hWnd)
 	SendMessage(hControl, LVM_DELETEALLITEMS, 0, 0); // clear list view items
 
 	KeyboardManager *mgr = KeyboardManager::sharedManager();
-	json keyboards = config["keyboards"];
+	json keyboards = config[ConfigKeyKeyboards];
 	mgr->basePath(dirname(ConfigUtils::jsonFilePath()));
 	mgr->SetKeyboards(keyboards);
 
@@ -670,6 +670,11 @@ void UpdateMenuState(HWND hWnd)
 	}
 
 	CheckMenuItem(GetMenu(hWnd), IDM_OPTIONS_RUNATSTARTUP, MF_BYCOMMAND | state);
+
+	json config = ConfigUtils::Read();
+	state = config[ConfigKeyKeyboardPerWindow] ? MF_CHECKED : MF_UNCHECKED;
+
+	CheckMenuItem(GetMenu(hWnd), IDM_OPTIONS_DIFFERENT_KEYBOARD, MF_BYCOMMAND | state);
 }
 
 bool ParseVersionString(unsigned digits[4], const std::string & i_version)
@@ -853,6 +858,26 @@ void CheckForUpdateDialogEnabled(HWND hWnd)
 	}
 }
 
+void SyncWindowMode()
+{
+	json config = ConfigUtils::Read();
+	bool flag = config[ConfigKeyKeyboardPerWindow];
+	KeyboardManager::sharedManager()->SetWindowMode(flag);
+}
+
+void ToggleKeyboardPerWindow()
+{
+	json config = ConfigUtils::Read();
+	bool flag = config[ConfigKeyKeyboardPerWindow];
+	
+	flag = !flag;
+
+	config[ConfigKeyKeyboardPerWindow] = flag;
+	ConfigUtils::Write(config);
+
+	SyncWindowMode();
+}
+
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -912,6 +937,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		case IDM_EXIT:
 			DestroyWindow(hWnd);
+			break;
+		case IDM_OPTIONS_DIFFERENT_KEYBOARD:
+			ToggleKeyboardPerWindow();
+			UpdateMenuState(hWnd);
 			break;
 		case IDM_OPTIONS_RUNATSTARTUP:
 		{
@@ -1031,6 +1060,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		ReloadKeyboards(hWnd);
 		UpdateMenuState(hWnd);
+		SyncWindowMode();
 		CheckForUpdateAndNotify(hWnd);
 	}
 	break;

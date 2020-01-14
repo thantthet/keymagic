@@ -94,10 +94,14 @@ TKeyboardList& KeyboardManager::GetKeyboards()
 
 HWND KeyboardManager::GetWindowHandle()
 {
-	return this->m_currentWindow;
+	if (windowMode) {
+		return this->m_currentWindow;
+	}
+	return 0;
 }
 
-void KeyboardManager::SetWindowHandle(HWND handle) {
+void KeyboardManager::SetWindowHandle(HWND handle)
+{
 	Keyboard * keyboard = this->SelectedKeyboard();
 	
 	this->m_currentWindow = handle;
@@ -106,6 +110,11 @@ void KeyboardManager::SetWindowHandle(HWND handle) {
 		this->notifyCallbacks();
 	}
  } 
+
+void KeyboardManager::SetWindowMode(BOOL flag)
+{
+	windowMode = flag;
+}
 
 BOOL KeyboardManager::SelectKeyboard(Keyboard * keyboard)
 {

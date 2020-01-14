@@ -37,6 +37,7 @@ class KeyboardManager
 {
 private:
 	TKeyboardList m_keyboards;
+	BOOL windowMode = false;
 	TMapWindowKeyboard m_windows;
 	HWND m_currentWindow;
 	//Keyboard* m_selectedKeyboard;
@@ -65,4 +66,5 @@ public:
 	BOOL AdvanceToNextKeyboard();
 	HWND GetWindowHandle();
 	void SetWindowHandle(HWND);
+	void SetWindowMode(BOOL);
 };

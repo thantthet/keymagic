@@ -6,9 +6,17 @@
 #include <fstream>
 #include <iosfwd>
 
+
+// config keys
+extern LPCSTR ConfigKeyKeyboards;
+extern LPCSTR ConfigKeyHotkeys;
+extern LPCSTR ConfigKeyHotkeysOnOff;
+extern LPCSTR ConfigKeyHotkeysNext;
+extern LPCSTR ConfigKeyKeyboardPerWindow;
+
 extern std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 
-static LPCTSTR AppDataDirectory()
+static LPCTSTR AppDataDirectory(BOOL roaming = true)
 {
 	TCHAR szPath[MAX_PATH];
 	static std::wstring destDirPath;
@@ -18,7 +26,7 @@ static LPCTSTR AppDataDirectory()
 		return destDirPath.c_str();
 	}
 
-	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath))) {
+	if (SUCCEEDED(SHGetFolderPath(NULL, roaming ? CSIDL_APPDATA : CSIDL_LOCAL_APPDATA, NULL, 0, szPath))) {
 		destDirPath = szPath;
 		destDirPath += _T("\\KeyMagic\\");
 		CreateDirectory(destDirPath.c_str(), NULL);
@@ -64,7 +72,20 @@ public:
 		}
 		else {
 			config = json::object();
-			config["keyboards"] = json::array();
+			config[ConfigKeyKeyboards] = json::array();
+		}
+
+		if (config.find(ConfigKeyHotkeys) == config.end()) {
+			WORD hky_onoff = MAKEWORD(0, HOTKEYF_SHIFT | HOTKEYF_CONTROL);
+			WORD hky_nextkbd = MAKEWORD(VK_SPACE, HOTKEYF_CONTROL);
+
+			config[ConfigKeyHotkeys] = json::object();
+			config[ConfigKeyHotkeys][ConfigKeyHotkeysOnOff] = hky_onoff;
+			config[ConfigKeyHotkeys][ConfigKeyHotkeysNext] = hky_nextkbd;
+		}
+
+		if (config.find(ConfigKeyKeyboardPerWindow) == config.end()) {
+			config[ConfigKeyKeyboardPerWindow] = false;
 		}
 
 		return config;

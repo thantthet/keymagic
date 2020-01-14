@@ -98,20 +98,12 @@ void HotkeyManager::ResetKeys()
 void HotkeyManager::WriteHotkey()
 {
 	json config = ConfigUtils::Read();
-	json hotkeys;
+	json hotkeys = config[ConfigKeyHotkeys];
 
-	if (config.find("hotkeys") != config.end())
-	{
-		hotkeys = config["hotkeys"];
-	}
-	else {
-		hotkeys = json::object();
-	}
+	hotkeys[ConfigKeyHotkeysOnOff] = hky_onoff;
+	hotkeys[ConfigKeyHotkeysNext] = hky_nextkbd;
 
-	hotkeys["onoff"] = hky_onoff;
-	hotkeys["next"] = hky_nextkbd;
-
-	config["hotkeys"] = hotkeys;
+	config[ConfigKeyHotkeys] = hotkeys;
 
 	ConfigUtils::Write(config);
 }
@@ -124,16 +116,10 @@ void HotkeyManager::ReloadHotkey()
 	hky_onoff = 0;
 	hky_nextkbd = 0;
 
-	if (config.find("hotkeys") != config.end())
-	{
-		hotkeys = config["hotkeys"];
-		hky_onoff = hotkeys["onoff"];
-		hky_nextkbd = hotkeys["next"];
-	}
-	else {
-		hky_onoff = MAKEWORD(0, HOTKEYF_SHIFT | HOTKEYF_CONTROL);
-		hky_nextkbd = MAKEWORD(VK_SPACE, HOTKEYF_CONTROL); 
-	}
+
+	hotkeys = config[ConfigKeyHotkeys];
+	hky_onoff = hotkeys[ConfigKeyHotkeysOnOff];
+	hky_nextkbd = hotkeys[ConfigKeyHotkeysNext];
 }
 
 
