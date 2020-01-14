@@ -43,7 +43,11 @@ bool HotkeyManager::MatchAndCall()
 {
 	std::list<LPWORD> hkys = { &hky_onoff, &hky_nextkbd };
 	for (auto & hky : hkys) {
-		if (MatchHotkey(*hky))
+		if (*hky == 0)
+		{
+			continue;
+		}
+		else if (MatchHotkey(*hky))
 		{
 			if (m_handlers.find(hky) != m_handlers.end()) {
 				m_handlers[hky]();
@@ -135,51 +139,48 @@ std::string HotkeyManager::funcKeyNameForVK(BYTE vkCode)
 
 std::string HotkeyManager::wHotkeyToString(WORD hotkey)
 {
+	std::stringstream ss;
+
+	BYTE vk = LOBYTE(hotkey);
+	BYTE mod = HIBYTE(hotkey);
+
+	if (mod & HOTKEYF_ALT)
 	{
-		std::stringstream ss;
-
-		BYTE vk = LOBYTE(hotkey);
-		BYTE mod = HIBYTE(hotkey);
-
-		if (mod & HOTKEYF_ALT)
-		{
-			ss << "Alt+";
-		}
-		if (mod & HOTKEYF_CONTROL)
-		{
-			ss << "Ctrl+";
-		}
-		if (mod & HOTKEYF_SHIFT)
-		{
-			ss << "Shift+";
-		}
-		if (mod & HOTKEYF_EXT)
-		{
-			ss << "Win+";
-		}
-
-		if (vk)
-		{
-			if (auto ch = (char)MapVirtualKey(vk, MAPVK_VK_TO_CHAR)) {
-				ss << ch;
-			}
-			else {
-				ss << funcKeyNameForVK(vk);
-			}
-		}
-
-		std::string s = ss.str();
-
-		if (s.back() == '+')
-{
-			s.pop_back();
-		}
-		else if (s.back() == ' ')
-		{
-			s.pop_back();
-			s += "Space";
-		}
-
-		return s;
+		ss << "Alt+";
 	}
+	if (mod & HOTKEYF_CONTROL)
+	{
+		ss << "Ctrl+";
+	}
+	if (mod & HOTKEYF_SHIFT)
+	{
+		ss << "Shift+";
+	}
+	if (mod & HOTKEYF_EXT)
+	{
+		ss << "Win+";
+	}
+
+	if (vk)
+	{
+		if (auto ch = (char)MapVirtualKey(vk, MAPVK_VK_TO_CHAR)) {
+			ss << ch;
+		}
+		else {
+			ss << funcKeyNameForVK(vk);
+		}
+	}
+
+	std::string s = ss.str();
+
+	if (!s.empty() && s.back() == '+') {
+		s.pop_back();
+	}
+	else if (!s.empty() && s.back() == ' ')
+	{
+		s.pop_back();
+		s += "Space";
+	}
+
+	return s;
 }
