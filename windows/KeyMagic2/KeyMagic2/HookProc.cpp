@@ -10,6 +10,10 @@
 HHOOK HH_KEYBOARD_LL;
 HHOOK HH_MOUSE_LL;
 
+HWINEVENTHOOK HWH_SYSTEM_FOREGROUND;
+
+HWND ignoreHandleForegroundEvent;
+
 using namespace libkm;
 
 BYTE KeyboardStates[256];
@@ -215,6 +219,24 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 	return CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
 }
 
+VOID WinEventHookProc(
+	HWINEVENTHOOK hWinEventHook,
+	DWORD         event,
+	HWND          hwnd,
+	LONG          idObject,
+	LONG          idChild,
+	DWORD         idEventThread,
+	DWORD         dwmsEventTime) {
+
+	if (event == EVENT_SYSTEM_FOREGROUND && ignoreHandleForegroundEvent != hwnd) {
+		HWND hwnd = GetForegroundWindow();
+		TCHAR name[256];
+		if (GetWindowText(hwnd, name, 255) > 0) {
+			KeyboardManager::sharedManager()->SetWindowHandle(hwnd);
+		}
+	}
+}
+
 void SendString(const KeyMagicString & s)
 {
 	int eventCount = s.size() * 2;
@@ -271,7 +293,10 @@ void SendBackspace(ULONG count)
 
 BOOL InitHooks(HWND mainHwnd)
 {
+	ignoreHandleForegroundEvent = mainHwnd;
+
 	HH_KEYBOARD_LL = SetWindowsHookEx(WH_KEYBOARD_LL, &LowLevelKeyboardProc, GetModuleHandle(NULL), NULL);
+	HWH_SYSTEM_FOREGROUND = SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 0, &WinEventHookProc, 0, 0, WINEVENT_OUTOFCONTEXT);
 #ifndef _DEBUG
 	HH_MOUSE_LL = SetWindowsHookEx(WH_MOUSE_LL, &LowLevelMouseProc, GetModuleHandle(NULL), NULL);
 #endif

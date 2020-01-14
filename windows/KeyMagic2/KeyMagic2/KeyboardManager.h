@@ -31,11 +31,15 @@ public:
 
 typedef std::vector<Keyboard> TKeyboardList;
 typedef std::function<void()> onDidChangeCallback;
+typedef std::map<HWND, Keyboard*> TMapWindowKeyboard;
+
 class KeyboardManager
 {
 private:
 	TKeyboardList m_keyboards;
-	Keyboard* m_selectedKeyboard;
+	TMapWindowKeyboard m_windows;
+	HWND m_currentWindow;
+	//Keyboard* m_selectedKeyboard;
 	Keyboard* m_lastSelectedKeyboard;
 	std::wstring m_basePath;
 	std::vector<onDidChangeCallback> m_callbacks;
@@ -59,4 +63,6 @@ public:
 	BOOL SelectKeyboard(Keyboard * keyboard);
 	BOOL ToggleKeyboard();
 	BOOL AdvanceToNextKeyboard();
+	HWND GetWindowHandle();
+	void SetWindowHandle(HWND);
 };

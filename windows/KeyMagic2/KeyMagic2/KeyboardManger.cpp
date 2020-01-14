@@ -92,15 +92,32 @@ TKeyboardList& KeyboardManager::GetKeyboards()
 	return this->m_keyboards;
 }
 
+HWND KeyboardManager::GetWindowHandle()
+{
+	return this->m_currentWindow;
+}
+
+void KeyboardManager::SetWindowHandle(HWND handle) {
+	Keyboard * keyboard = this->SelectedKeyboard();
+	
+	this->m_currentWindow = handle;
+
+	if (keyboard != this->SelectedKeyboard()) {
+		this->notifyCallbacks();
+	}
+ } 
+
 BOOL KeyboardManager::SelectKeyboard(Keyboard * keyboard)
 {
+	HWND handle = this->GetWindowHandle();
+
 	if (keyboard != nullptr)
 	{
 		for (auto &kb : this->m_keyboards)
 		{
 			if (&kb == keyboard) {
-				this->m_lastSelectedKeyboard = this->m_selectedKeyboard;
-				this->m_selectedKeyboard = keyboard;
+				this->m_lastSelectedKeyboard = this->m_windows[handle];
+				this->m_windows[handle] = keyboard;
 				this->notifyCallbacks();
 				return true;
 			}
@@ -108,8 +125,8 @@ BOOL KeyboardManager::SelectKeyboard(Keyboard * keyboard)
 		return false;
 	}
 	else {
-		this->m_lastSelectedKeyboard = this->m_selectedKeyboard;
-		this->m_selectedKeyboard = nullptr;
+		this->m_lastSelectedKeyboard = this->m_windows[handle];
+		this->m_windows[handle] = nullptr;
 		this->notifyCallbacks();
 	}
 	return true;
@@ -117,7 +134,9 @@ BOOL KeyboardManager::SelectKeyboard(Keyboard * keyboard)
 
 BOOL KeyboardManager::ToggleKeyboard()
 {
-	if (this->m_selectedKeyboard != nullptr) {
+	HWND handle = this->GetWindowHandle();
+
+	if (this->m_windows[handle] != nullptr) {
 		this->SelectKeyboard(nullptr);
 	}
 	else if (this->m_lastSelectedKeyboard) {
@@ -143,13 +162,15 @@ void KeyboardManager::notifyCallbacks()
 
 BOOL KeyboardManager::AdvanceToNextKeyboard()
 {
+	HWND handle = this->GetWindowHandle();
+
 	if (this->m_keyboards.size()) {
-		if (this->m_selectedKeyboard == nullptr) {
+		if (this->m_windows[handle] == nullptr) {
 			this->SelectKeyboard(&this->m_keyboards.front());
 		}
 		else
 		{
-			int nextIndex = this->m_selectedKeyboard->index + 1;
+			int nextIndex = this->m_windows[handle]->index + 1;
 			if (nextIndex == this->m_keyboards.size())
 			{
 				this->SelectKeyboard(nullptr);
@@ -187,7 +208,9 @@ void KeyboardManager::basePath(std::wstring const& newBasePath)
 
 Keyboard * KeyboardManager::SelectedKeyboard()
 {
-	return this->m_selectedKeyboard;
+	HWND handle = this->GetWindowHandle();
+
+	return this->m_windows[handle];
 }
 
 Keyboard * KeyboardManager::KeyboardAtIndex(int index)
