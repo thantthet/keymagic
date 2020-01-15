@@ -164,6 +164,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 #endif
 
+	ConfigUtils::MigrateToLocalAppData();
+
 	AddFont();
 
 	HudWindow * hud = new HudWindow(hInstance, KeyboardManager::sharedManager());
@@ -536,7 +538,7 @@ void RegisterKeyboardFile(HWND hWnd, LPCTSTR fileName)
 
 void UnregisterKeyboard(Keyboard &keyboard)
 {
-	std::wstring dirName = dirname(ConfigUtils::jsonFilePath());
+	std::wstring dirName = dirname(ConfigUtils::JsonFilePath());
 
 	json config = ConfigUtils::Read();
 	json &j = config[ConfigKeyKeyboards];
@@ -588,7 +590,7 @@ void ReloadKeyboards(HWND hWnd)
 
 	KeyboardManager *mgr = KeyboardManager::sharedManager();
 	json keyboards = config[ConfigKeyKeyboards];
-	mgr->basePath(dirname(ConfigUtils::jsonFilePath()));
+	mgr->basePath(dirname(ConfigUtils::JsonFilePath()));
 	mgr->SetKeyboards(keyboards);
 
 	HIMAGELIST himl = ListView_GetImageList(hControl, LVSIL_SMALL);

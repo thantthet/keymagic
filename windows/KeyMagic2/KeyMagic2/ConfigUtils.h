@@ -16,31 +16,37 @@ extern LPCSTR ConfigKeyKeyboardPerWindow;
 
 extern std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 
-static LPCTSTR AppDataDirectory(BOOL roaming = true)
-{
-	TCHAR szPath[MAX_PATH];
-	static std::wstring destDirPath;
-
-	if (destDirPath.size())
-	{
-		return destDirPath.c_str();
-	}
-
-	if (SUCCEEDED(SHGetFolderPath(NULL, roaming ? CSIDL_APPDATA : CSIDL_LOCAL_APPDATA, NULL, 0, szPath))) {
-		destDirPath = szPath;
-		destDirPath += _T("\\KeyMagic\\");
-		CreateDirectory(destDirPath.c_str(), NULL);
-	}
-
-	return destDirPath.c_str();
-}
+BOOL DirectoryExists(LPCTSTR szPath);
+std::wstring AppDataDirectory(BOOL roaming = false, BOOL create = true);
 
 using json = nlohmann::json;
 
 class ConfigUtils
 {
 public:
-	static std::wstring jsonFilePath() {
+	static void MigrateToLocalAppData() {
+		auto local = AppDataDirectory(false, false);
+		auto roaming = AppDataDirectory(true, false);
+
+		auto strLocal = local.c_str();
+		auto strRoaming = roaming.c_str();
+
+		if (DirectoryExists(strRoaming))
+		{
+			if (DirectoryExists(strLocal))
+			{
+				RemoveDirectory(strLocal);
+			}
+			if (!MoveFileEx(strRoaming, strLocal, MOVEFILE_WRITE_THROUGH))
+			{
+				char buf[256];
+				sprintf_s(buf, "MoveFileEx failed with error %d\n", GetLastError());
+				OutputDebugStringA(buf);
+			}
+		}
+	}
+
+	static std::wstring JsonFilePath() {
 		char temp[MAX_PATH];
 		size_t converted;
 
@@ -52,7 +58,7 @@ public:
 
 	static bool Write(json & config)
 	{
-		std::ofstream out(jsonFilePath());
+		std::ofstream out(JsonFilePath());
 		out << config.dump(4);
 		out.close();
 
@@ -61,7 +67,7 @@ public:
 
 	static json Read()
 	{
-		std::wstring jsonFile = jsonFilePath();
+		std::wstring jsonFile = JsonFilePath();
 		std::ifstream t(jsonFile);
 
 		json config = json::object();

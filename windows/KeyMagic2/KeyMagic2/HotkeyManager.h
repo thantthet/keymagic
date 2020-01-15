@@ -16,7 +16,7 @@ public:
 	{
 		static HotkeyManager * sharedManager = nullptr;
 		if (sharedManager == nullptr) {
-			sharedManager = new HotkeyManager(ConfigUtils::jsonFilePath());
+			sharedManager = new HotkeyManager(ConfigUtils::JsonFilePath());
 			sharedManager->ReloadHotkey();
 		}
 		return sharedManager;
