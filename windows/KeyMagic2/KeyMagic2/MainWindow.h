@@ -64,15 +64,15 @@ private:
     BOOL InitListViewColumns(HWND hWndListView);
     BOOL CreateListView();
     HWND CreateButton(LPTSTR title, HMENU buttonId);
-    HWND CreateAddKeyboardButton();
-    HWND CreateRemoveKeyboardButton();
-    HWND CreateReportBugButton();
     HWND CreateLabel();
+    void CreateControls();
     void SetHotKeyTexts();
+
     void RegisterKeyboardFile(LPCTSTR fileName);
     void UnregisterKeyboard(Keyboard& keyboard);
     void AddKeyboardFile(LPCTSTR filePath);
     void ReloadKeyboards();
+
     void ShellExecuteAndWait(LPCWSTR lpOperation, LPCWSTR lpFile, LPCWSTR lpParameters, LPCWSTR lpDirectory, INT nShowCmd);
     void UpdateMenuState();
     void SyncWindowMode();

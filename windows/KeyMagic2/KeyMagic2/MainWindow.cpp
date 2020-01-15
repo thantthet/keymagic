@@ -285,11 +285,7 @@ LRESULT MainWindow::Dispatch(UINT message, WPARAM wParam, LPARAM lParam) {
 		icex.dwICC = ICC_LISTVIEW_CLASSES;
 		InitCommonControlsEx(&icex);
 
-		CreateListView();
-		CreateAddKeyboardButton();
-		CreateRemoveKeyboardButton();
-		CreateReportBugButton();
-		CreateLabel();
+		CreateControls();
 		SetHotKeyTexts();
 		HICON icon = (HICON)LoadImage(GetInstance(),
 			MAKEINTRESOURCE(IDI_KEYMAGIC2),
@@ -438,27 +434,6 @@ HWND MainWindow::CreateButton(LPTSTR title, HMENU buttonId)
 	return hControl;
 }
 
-HWND MainWindow::CreateAddKeyboardButton()
-{
-	HWND hControl = CreateButton(_T("Add"), (HMENU)IDC_BTN_ADD);
-
-	return hControl;
-}
-
-HWND MainWindow::CreateRemoveKeyboardButton()
-{
-	HWND hControl = CreateButton(_T("Remove"), (HMENU)IDC_BTN_REMOVE);
-
-	return hControl;
-}
-
-HWND MainWindow::CreateReportBugButton()
-{
-	HWND hControl = CreateButton(_T("Report Bug"), (HMENU)IDC_BTN_BUG);
-
-	return hControl;
-}
-
 HWND MainWindow::CreateLabel()
 {
 	HWND hControl = CreateWindow(_T("static"), _T("ST_U"),
@@ -471,6 +446,15 @@ HWND MainWindow::CreateLabel()
 	SendMessage(hControl, WM_SETFONT, (WPARAM)GetFont(), MAKELPARAM(FALSE, 0));
 
 	return hControl;
+}
+
+void MainWindow::CreateControls()
+{
+	CreateListView();
+	CreateButton(_T("Add"), (HMENU)IDC_BTN_ADD);
+	CreateButton(_T("Remove"), (HMENU)IDC_BTN_REMOVE);
+	CreateButton(_T("Report Bug"), (HMENU)IDC_BTN_BUG);
+	CreateLabel();
 }
 
 void MainWindow::SetHotKeyTexts()
