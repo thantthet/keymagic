@@ -11,6 +11,7 @@
 #include "UpdateChecker.h"
 #include "HotkeysDialog.h"
 #include "Tasker.h"
+#include "Control.h"
 #include "dpi.h"
 
 #define IDM_KEYBOARD_ 0x5000
@@ -309,11 +310,7 @@ LRESULT MainWindow::Dispatch(UINT message, WPARAM wParam, LPARAM lParam) {
 	break;
 	case WM_SIZE:
 	{
-		SizeListView();
-		SizeAddKeyboardButton();
-		SizeRemoveKeyboardButton();
-		SizeLabel();
-		SizeReportBugButton();
+		Layout();
 	}
 	break;
 	case WM_PAINT:
@@ -465,7 +462,7 @@ HWND MainWindow::CreateReportBugButton()
 HWND MainWindow::CreateLabel()
 {
 	HWND hControl = CreateWindow(_T("static"), _T("ST_U"),
-		WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+		WS_CHILD | WS_VISIBLE,
 		0, 0, 0, 0,
 		hWnd, (HMENU)IDC_LABEL,
 		GetInstance(),
@@ -493,93 +490,54 @@ void MainWindow::SetHotKeyTexts()
 	SetWindowText(GetDlgItem(hWnd, IDC_LABEL), text.c_str());
 }
 
-void MainWindow::SizeListView()
+void MainWindow::Layout()
 {
-	HWND hControl;
 	RECT rcClient;
-
 	GetClientRect(hWnd, &rcClient);
 
-	hControl = GetDlgItem(hWnd, IDC_LV_KEYBOARDS);
-	SetWindowPos(hControl,
-		NULL,
+	auto listView = Control(hWnd, IDC_LV_KEYBOARDS);
+	auto addButton = Control(hWnd, IDC_BTN_ADD);
+	auto removeButton = Control(hWnd, IDC_BTN_REMOVE);
+	auto infoLabel = Control(hWnd, IDC_LABEL);
+	auto reportButton = Control(hWnd, IDC_BTN_BUG);
+
+	listView.SetPos(
 		kListViewMargin,
 		kListViewMargin,
 		rcClient.right - kRightColumnWidth - kListViewMargin,
-		rcClient.bottom - kListViewMargin * 2,
-		SWP_NOZORDER);
-}
+		rcClient.bottom - kListViewMargin * 2);
 
-void MainWindow::SizeAddKeyboardButton()
-{
-	HWND hControl;
-	RECT rcClient;
-
-	GetClientRect(hWnd, &rcClient);
-
-	hControl = GetDlgItem(hWnd, IDC_BTN_ADD);
-	SetWindowPos(hControl,
-		NULL,
+	addButton.SetPos(
 		rcClient.right - kRightColumnWidth + kRightColumnPadding,
 		kRightColumnPadding,
 		kButtonWidth,
-		kButtonHeight,
-		SWP_NOZORDER);
-}
+		kButtonHeight
+	);
 
-void MainWindow::SizeRemoveKeyboardButton()
-{
-	HWND hControl;
-	RECT rcClient;
-
-	GetClientRect(hWnd, &rcClient);
-
-	hControl = GetDlgItem(hWnd, IDC_BTN_REMOVE);
-	SetWindowPos(hControl,
-		NULL,
+	removeButton.SetPos(
 		rcClient.right - kRightColumnWidth + kRightColumnPadding,
 		kRightColumnPadding + kButtonHeight + 5,
 		kButtonWidth,
-		kButtonHeight,
-		SWP_NOZORDER);
-}
+		kButtonHeight
+	);
 
-void MainWindow::SizeReportBugButton()
-{
-	HWND hControl;
-	RECT rcClient;
+	RECT removeButtonRect = removeButton.GetRect();
 
-	hControl = GetDlgItem(hWnd, IDC_LABEL);
-	GetWindowRect(hControl, &rcClient);
-	MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rcClient, 2);
-
-	hControl = GetDlgItem(hWnd, IDC_BTN_BUG);
-	SetWindowPos(hControl,
-		NULL,
-		rcClient.left,
-		rcClient.bottom + 5,
+	infoLabel.SetPos(
+		removeButtonRect.left,
+		removeButtonRect.bottom + 5,
 		kButtonWidth,
-		kButtonHeight,
-		SWP_NOZORDER);
-}
+		100
+	);
 
-void MainWindow::SizeLabel()
-{
-	HWND hControl;
-	RECT rcClient;
+	RECT infoLabelRect = infoLabel.GetRect();
 
-	hControl = GetDlgItem(hWnd, IDC_BTN_REMOVE);
-	GetWindowRect(hControl, &rcClient);
-	MapWindowPoints(HWND_DESKTOP, hWnd, (LPPOINT)&rcClient, 2);
-
-	hControl = GetDlgItem(hWnd, IDC_LABEL);
-	SetWindowPos(hControl,
-		NULL,
-		rcClient.left,
-		rcClient.bottom + 5,
+	reportButton.SetPos(
+		infoLabelRect.left,
+		infoLabelRect.bottom + 5,
 		kButtonWidth,
-		100,
-		SWP_NOZORDER);
+		kButtonHeight
+	);
 }
 
 void MainWindow::RegisterKeyboardFile(LPCTSTR fileName)

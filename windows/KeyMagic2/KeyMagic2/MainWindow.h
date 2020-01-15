@@ -58,6 +58,8 @@ private:
     void CheckForUpdateAndNotify();
     void CheckForUpdateDialogEnabled();
 
+    void Layout();
+
     BOOL InsertListViewItems(HWND hWndListView, Keyboard keyboard);
     BOOL InitListViewColumns(HWND hWndListView);
     BOOL CreateListView();
@@ -67,11 +69,6 @@ private:
     HWND CreateReportBugButton();
     HWND CreateLabel();
     void SetHotKeyTexts();
-    void SizeListView();
-    void SizeAddKeyboardButton();
-    void SizeRemoveKeyboardButton();
-    void SizeReportBugButton();
-    void SizeLabel();
     void RegisterKeyboardFile(LPCTSTR fileName);
     void UnregisterKeyboard(Keyboard& keyboard);
     void AddKeyboardFile(LPCTSTR filePath);
