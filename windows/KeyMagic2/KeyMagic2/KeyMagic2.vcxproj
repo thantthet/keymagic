@@ -182,7 +182,9 @@
     <ClInclude Include="ConfigUtils.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Control.h" />
+    <ClInclude Include="Dialog.h" />
     <ClInclude Include="dpi.h" />
+    <ClInclude Include="AboutDialog.h" />
     <ClInclude Include="HotkeysDialog.h" />
     <ClInclude Include="UpdateChecker.h" />
     <ClInclude Include="HookProc.h" />

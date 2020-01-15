@@ -10,31 +10,12 @@
 #include "NotifyIcon.h"
 #include "UpdateChecker.h"
 #include "HotkeysDialog.h"
+#include "AboutDialog.h"
 #include "Tasker.h"
 #include "Control.h"
 #include "dpi.h"
 
 #define IDM_KEYBOARD_ 0x5000
-
-// Message handler for about box.
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	UNREFERENCED_PARAMETER(lParam);
-	switch (message)
-	{
-	case WM_INITDIALOG:
-		return (INT_PTR)TRUE;
-
-	case WM_COMMAND:
-		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-		{
-			EndDialog(hDlg, LOWORD(wParam));
-			return (INT_PTR)TRUE;
-		}
-		break;
-	}
-	return (INT_PTR)FALSE;
-}
 
 WCHAR MainWindow::szWindowClass[MAX_LOADSTRING];
 
@@ -193,7 +174,7 @@ LRESULT MainWindow::Dispatch(UINT message, WPARAM wParam, LPARAM lParam) {
 		switch (wmId)
 		{
 		case IDM_ABOUT:
-			DialogBox(GetInstance(), MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+			(new AboutDialog(hWnd))->Show();
 			break;
 		case IDM_CHECKUPDATE:
 			CheckForUpdateDialogEnabled();

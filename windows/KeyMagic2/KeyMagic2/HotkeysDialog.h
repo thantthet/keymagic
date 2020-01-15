@@ -4,21 +4,21 @@
 
 #include <map>
 
+#include "Dialog.h"
 #include "Resource.h"
 #include "HotkeyManager.h"
 
-class HotkeysDialog
+class HotkeysDialog: public Dialog
 {
+	friend Dialog;
+
 public:
-	HotkeysDialog(HWND hWnd) : hWnd(hWnd) {};
-	~HotkeysDialog() {};
+	HotkeysDialog(HWND hWnd) : Dialog(hWnd) {};
 
 	INT_PTR Show() {
-		return DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_HOTKEYS), hWnd, Procedure);
+		return DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_HOTKEYS), hWnd, Procedure<HotkeysDialog>);
 	}
-
 private:
-	HWND hWnd;
 
 	void InitHotkeyToRadioStates(HWND hDlg)
 	{
@@ -152,6 +152,7 @@ private:
 		//SetHotKeyTexts();
 	}
 
+protected:
 	INT_PTR CALLBACK Dispatch(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		UNREFERENCED_PARAMETER(lParam);
@@ -182,29 +183,5 @@ private:
 			break;
 		}
 		return (INT_PTR)FALSE;
-	}
-
-	static LRESULT CALLBACK Procedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-		try {
-			if (auto window = GetWindowLongPtr(hWnd, GWLP_USERDATA)) {
-				return reinterpret_cast <HotkeysDialog*> (window)->Dispatch(message, wParam, lParam);
-			}
-			else {
-				switch (message) {
-				case WM_INITDIALOG:
-					if (auto window = new (std::nothrow) HotkeysDialog(hWnd)) {
-						SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)window);
-						return window->Dispatch(WM_INITDIALOG, wParam, lParam);
-					}
-					else
-						return FALSE;
-				}
-				return FALSE;
-			}
-		}
-		catch (...) {
-			DestroyWindow(hWnd);
-			return 0;
-		}
 	}
 };
