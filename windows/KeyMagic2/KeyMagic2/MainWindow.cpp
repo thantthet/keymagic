@@ -578,7 +578,7 @@ void MainWindow::AddKeyboardFile(LPCTSTR filePath)
 		ReloadKeyboards();
 	}
 	else {
-		MessageBox(NULL, _T("Copying failed while registering keyboard!"), _T("Oh Snap!"), MB_OK | MB_ICONERROR);
+		MessageBox(hWnd, _T("Copying failed while registering keyboard!"), _T("Oh Snap!"), MB_OK | MB_ICONERROR);
 	}
 }
 
