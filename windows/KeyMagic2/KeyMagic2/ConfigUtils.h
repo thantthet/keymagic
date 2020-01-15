@@ -18,6 +18,7 @@ extern std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 
 BOOL DirectoryExists(LPCTSTR szPath);
 std::wstring AppDataDirectory(BOOL roaming = false, BOOL create = true);
+int SHRemoveDirectory(LPCTSTR dir);
 
 using json = nlohmann::json;
 
@@ -35,7 +36,9 @@ public:
 		{
 			if (DirectoryExists(strLocal))
 			{
-				RemoveDirectory(strLocal);
+				if (SHRemoveDirectory(strLocal) != 0) {
+					return;
+				}
 			}
 			if (!MoveFileEx(strRoaming, strLocal, MOVEFILE_WRITE_THROUGH))
 			{
