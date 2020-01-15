@@ -10,8 +10,8 @@ HudWindow::HudWindow(HINSTANCE hInstance, KeyboardManager * manager)
 {
 	this->hInst = hInstance;
 	this->kbdManager = manager;
-	this->kbdManager->addOnKeyboardDidChangeHandler([&](bool isToggle) {
-		if (!isToggle)
+	this->kbdManager->addOnKeyboardDidChangeHandler([&](bool isAdvancing) {
+		if (isAdvancing)
 		{
 			this->onKeyboardDidChange();
 		}
@@ -22,9 +22,7 @@ HudWindow::HudWindow(HINSTANCE hInstance, KeyboardManager * manager)
 	}
 }
 
-HudWindow::~HudWindow()
-{
-}
+HudWindow::~HudWindow() { }
 
 void HudWindow::onKeyboardDidChange()
 {

@@ -61,7 +61,7 @@ public:
 	Keyboard * KeyboardAtIndex(int index);
 	BOOL SetKeyboards(nlohmann::json);
 	TKeyboardList& GetKeyboards();
-	BOOL SelectKeyboard(Keyboard * keyboard, bool isToggle = true);
+	BOOL SelectKeyboard(Keyboard * keyboard, bool isAdvancing = false);
 	BOOL ToggleKeyboard();
 	BOOL AdvanceToNextKeyboard();
 	HWND GetWindowHandle();

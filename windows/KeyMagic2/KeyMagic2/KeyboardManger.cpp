@@ -116,7 +116,7 @@ void KeyboardManager::SetWindowMode(BOOL flag)
 	windowMode = flag;
 }
 
-BOOL KeyboardManager::SelectKeyboard(Keyboard * keyboard, bool isToggle)
+BOOL KeyboardManager::SelectKeyboard(Keyboard * keyboard, bool isAdvancing)
 {
 	HWND handle = this->GetWindowHandle();
 
@@ -127,7 +127,7 @@ BOOL KeyboardManager::SelectKeyboard(Keyboard * keyboard, bool isToggle)
 			if (&kb == keyboard) {
 				this->m_lastSelectedKeyboard = this->m_windows[handle];
 				this->m_windows[handle] = keyboard;
-				this->notifyCallbacks(isToggle);
+				this->notifyCallbacks(isAdvancing);
 				return true;
 			}
 		}
@@ -136,7 +136,7 @@ BOOL KeyboardManager::SelectKeyboard(Keyboard * keyboard, bool isToggle)
 	else {
 		this->m_lastSelectedKeyboard = this->m_windows[handle];
 		this->m_windows[handle] = nullptr;
-		this->notifyCallbacks(isToggle);
+		this->notifyCallbacks(isAdvancing);
 	}
 	return true;
 }
@@ -175,18 +175,18 @@ BOOL KeyboardManager::AdvanceToNextKeyboard()
 
 	if (this->m_keyboards.size()) {
 		if (this->m_windows[handle] == nullptr) {
-			this->SelectKeyboard(&this->m_keyboards.front(), false);
+			this->SelectKeyboard(&this->m_keyboards.front(), true);
 		}
 		else
 		{
 			int nextIndex = this->m_windows[handle]->index + 1;
 			if (nextIndex == this->m_keyboards.size())
 			{
-				this->SelectKeyboard(nullptr, false);
+				this->SelectKeyboard(nullptr, true);
 			}
 			else {
 				Keyboard &keyboard = this->m_keyboards.at(nextIndex);
-				this->SelectKeyboard(&keyboard, false);
+				this->SelectKeyboard(&keyboard, true);
 			}
 		}
 	}
