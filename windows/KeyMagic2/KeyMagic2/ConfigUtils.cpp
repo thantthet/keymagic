@@ -26,7 +26,9 @@ std::wstring AppDataDirectory(BOOL roaming, BOOL create)
 	if (SUCCEEDED(SHGetFolderPath(NULL, roaming ? CSIDL_APPDATA : CSIDL_LOCAL_APPDATA, NULL, 0, szPath))) {
 		destDirPath = szPath;
 		destDirPath += _T("\\KeyMagic\\");
-		CreateDirectory(destDirPath.c_str(), NULL);
+		if (create) {
+			CreateDirectory(destDirPath.c_str(), NULL);
+		}
 	}
 
 	return destDirPath;
