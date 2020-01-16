@@ -17,7 +17,7 @@ extern LPCSTR ConfigKeyKeyboardPerWindow;
 extern std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 
 BOOL DirectoryExists(LPCTSTR szPath);
-std::wstring AppDataDirectory(BOOL roaming = false, BOOL create = true);
+std::wstring AppDataDirectory(BOOL roaming = true, BOOL create = true);
 int SHRemoveDirectory(LPCTSTR dir);
 
 using json = nlohmann::json;
@@ -25,30 +25,6 @@ using json = nlohmann::json;
 class ConfigUtils
 {
 public:
-	static void MigrateToLocalAppData() {
-		auto local = AppDataDirectory(false, false);
-		auto roaming = AppDataDirectory(true, false);
-
-		auto strLocal = local.c_str();
-		auto strRoaming = roaming.c_str();
-
-		if (DirectoryExists(strRoaming))
-		{
-			if (DirectoryExists(strLocal))
-			{
-				if (SHRemoveDirectory(strLocal) != 0) {
-					return;
-				}
-			}
-			if (!MoveFileEx(strRoaming, strLocal, MOVEFILE_WRITE_THROUGH))
-			{
-				char buf[256];
-				sprintf_s(buf, "MoveFileEx failed with error %d\n", GetLastError());
-				OutputDebugStringA(buf);
-			}
-		}
-	}
-
 	static std::wstring JsonFilePath() {
 		char temp[MAX_PATH];
 		size_t converted;

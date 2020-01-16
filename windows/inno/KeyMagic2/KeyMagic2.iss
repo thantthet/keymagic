@@ -35,7 +35,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "KeyMagic2.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Padauk-Bold.ttf"; DestDir: "{app}"; Flags: ignoreversion
-Source: "AppData\*"; DestDir: "{localappdata}\KeyMagic"; Flags: ignoreversion
+Source: "AppData\*"; DestDir: "{userappdata}\KeyMagic"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

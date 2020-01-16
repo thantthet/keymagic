@@ -117,7 +117,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 #endif
 
-	ConfigUtils::MigrateToLocalAppData();
 	LoadSymbols();
 	AddFont();
 
