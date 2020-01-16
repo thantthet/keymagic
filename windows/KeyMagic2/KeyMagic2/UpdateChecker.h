@@ -52,7 +52,6 @@ public:
 	static BOOL CheckForUpdate(BOOL* newVersionAvailable)
 	{
 		TCHAR LocalCacheFilePath[MAX_PATH] = { 0 };
-		LPTSTR Url = _T("http://storage.keymagic.net.s3-ap-southeast-1.amazonaws.com/releases/windows/latest/version.txt");
 
 		DWORD dwSize = 0;
 		DWORD dwDownloaded = 0;
@@ -73,7 +72,7 @@ public:
 
 		// Specify an HTTP server.
 		if (hSession)
-			hConnect = WinHttpConnect(hSession, _T("storage.keymagic.net.s3-ap-southeast-1.amazonaws.com"),
+			hConnect = WinHttpConnect(hSession, _T("keymagic.s3-ap-southeast-1.amazonaws.com"),
 				INTERNET_DEFAULT_HTTP_PORT, 0);
 
 		// Create an HTTP request handle.
