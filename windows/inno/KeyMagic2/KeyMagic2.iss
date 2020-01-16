@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "KeyMagic"
-#define MyAppVersion "2.0.0.8"
+#define MyAppVersion "2.0.0.9"
 #define MyAppPublisher "KeyMagic"
 #define MyAppURL "http://www.keymagic.net/"
 #define MyAppExeName "KeyMagic2.exe"
