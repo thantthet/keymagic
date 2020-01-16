@@ -12,6 +12,7 @@
 #include "MainWindow.h"
 #include "HookProc.h"
 #include "HudWindow.h"
+#include "UpdateChecker.h"
 
 #pragma comment(lib, "Comctl32.lib")
 #pragma comment(lib, "Comdlg32.lib")
@@ -76,7 +77,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
 
 	// Initialize global strings
+	unsigned digitsCurrent[4];
+	UpdateChecker::GetBinaryVersion(digitsCurrent);
 	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+	wsprintf(szTitle, _T("%s v%d.%d.%d.%d"), szTitle, digitsCurrent[0], digitsCurrent[1], digitsCurrent[2], digitsCurrent[3]);
 
 	if (std::wstring(lpCmdLine).find(L"/runAtBoot") != std::string::npos)
 	{
