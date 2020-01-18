@@ -1,14 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeyMagic2", "KeyMagic2\KeyMagic2.vcxproj", "{DCE20F21-604F-4788-B03D-0551BB5F2B91}"
-	ProjectSection(ProjectDependencies) = postProject
-		{C934088A-E677-4B11-9E99-4729B0039E7D} = {C934088A-E677-4B11-9E99-4729B0039E7D}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MagicAssit", "MagicAssit\MagicAssit.vcxproj", "{C934088A-E677-4B11-9E99-4729B0039E7D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,16 +21,11 @@ Global
 		{DCE20F21-604F-4788-B03D-0551BB5F2B91}.Release|x64.Build.0 = Release|x64
 		{DCE20F21-604F-4788-B03D-0551BB5F2B91}.Release|x86.ActiveCfg = Release|Win32
 		{DCE20F21-604F-4788-B03D-0551BB5F2B91}.Release|x86.Build.0 = Release|Win32
-		{C934088A-E677-4B11-9E99-4729B0039E7D}.Debug|x64.ActiveCfg = Debug|x64
-		{C934088A-E677-4B11-9E99-4729B0039E7D}.Debug|x64.Build.0 = Debug|x64
-		{C934088A-E677-4B11-9E99-4729B0039E7D}.Debug|x86.ActiveCfg = Debug|Win32
-		{C934088A-E677-4B11-9E99-4729B0039E7D}.Debug|x86.Build.0 = Debug|Win32
-		{C934088A-E677-4B11-9E99-4729B0039E7D}.Release|x64.ActiveCfg = Release|x64
-		{C934088A-E677-4B11-9E99-4729B0039E7D}.Release|x64.Build.0 = Release|x64
-		{C934088A-E677-4B11-9E99-4729B0039E7D}.Release|x86.ActiveCfg = Release|Win32
-		{C934088A-E677-4B11-9E99-4729B0039E7D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {76E34664-B5B9-47AD-B168-B64278DFF82D}
 	EndGlobalSection
 EndGlobal
