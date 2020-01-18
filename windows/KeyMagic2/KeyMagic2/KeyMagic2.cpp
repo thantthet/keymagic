@@ -25,7 +25,6 @@ using json = nlohmann::json;
 // Global Variables:
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
-WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 HWND hHotkeyLabel;
 
 bool CheckIfRunning()
@@ -41,13 +40,17 @@ bool CheckIfRunning()
 		hMutex = CreateMutex(0, 0, _T("KeyMagic"));
 	}
 	else {
+		WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+		LoadStringW(GetModuleHandle(NULL), IDC_KEYMAGIC2, szWindowClass, MAX_LOADSTRING);
+
 		// The mutex exists so this is the
 		// the second instance so return.
 
 		HWND hWnd = FindWindow(szWindowClass, szTitle);
-
-		ShowWindow(hWnd, SW_SHOW);
-
+		if (hWnd) {
+			ShowWindow(hWnd, SW_SHOW);
+			SetForegroundWindow(hWnd);
+		}
 		return true;
 	}
 
