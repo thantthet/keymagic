@@ -48,7 +48,7 @@ bool CheckIfRunning()
 
 		HWND hWnd = FindWindow(szWindowClass, szTitle);
 		if (hWnd) {
-			ShowWindow(hWnd, SW_SHOW);
+			ShowWindow(hWnd, SW_RESTORE);
 			SetForegroundWindow(hWnd);
 		}
 		return true;

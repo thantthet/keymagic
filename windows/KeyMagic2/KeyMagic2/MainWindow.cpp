@@ -144,6 +144,7 @@ LRESULT MainWindow::Dispatch(UINT message, WPARAM wParam, LPARAM lParam) {
 		{
 		case WM_LBUTTONDBLCLK:
 			ShowWindow(hWnd, SW_RESTORE);
+			SetForegroundWindow(hWnd);
 			break;
 		case WM_RBUTTONDOWN:
 		case WM_CONTEXTMENU:
