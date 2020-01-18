@@ -563,7 +563,7 @@ void MainWindow::AddKeyboardFile(LPCTSTR filePath)
 {
 	std::wstring basename = base_name<std::wstring>(filePath);
 
-	std::wstring destFilePath = (AppDataDirectory() + basename);
+	std::wstring destFilePath = DataDirectoryProvider::Shared()->KeyboardDirectory(basename);
 
 	if (PathFileExists(destFilePath.c_str())) {
 		int result = MessageBox(hWnd, _T("File with the same name already exits. Do you want to overwrite?"), _T("Y sure?"), MB_YESNO | MB_ICONWARNING);

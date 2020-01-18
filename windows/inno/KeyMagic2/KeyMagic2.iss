@@ -23,7 +23,7 @@ DefaultDirName={pf}\{#MyAppName}
 DisableProgramGroupPage=yes
 LicenseFile=..\doc\License.txt
 OutputBaseFilename={#MyAppName}-v{#MyAppVersion}
-Compression=lzma
+Compression=lzma2/max
 SolidCompression=yes
 
 [Languages]
@@ -35,7 +35,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "KeyMagic2.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Padauk-Bold.ttf"; DestDir: "{app}"; Flags: ignoreversion
-Source: "AppData\*"; DestDir: "{userappdata}\KeyMagic"; Flags: ignoreversion
+Source: "AppData\*"; DestDir: "{commonappdata}\KeyMagic"; Flags: ignoreversion; Components: commondata
+Source: "AppData\*"; DestDir: "{userappdata}\KeyMagic"; Flags: ignoreversion; Components: userdata
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -47,4 +48,11 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 Filename: "{app}\{#MyAppExeName}"; Description: "Run {#MyAppName} at startup"; Parameters: "/runAtBoot"; Flags: nowait postinstall skipifsilent
 
 [UninstallRun]
-Filename: "{app}\{#MyAppExeName}"; Parameters: "/NoRunAtBoot";
+
+[Types]
+Name: "allusers"; Description: "Install for all users"
+Name: "singleuser"; Description: "Install for current user"
+
+[Components]
+Name: "commondata"; Description: "Install data for all users"; Types: allusers
+Name: "userdata"; Description: "Install data for single user"; Types: singleuser
