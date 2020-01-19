@@ -5,7 +5,6 @@
 #include <array>
 #include "KeyboardManager.h"
 #include "HotkeyManager.h"
-#include "../MagicAssit/MagicAssit.h"
 
 HHOOK HH_KEYBOARD_LL;
 HHOOK HH_MOUSE_LL;
@@ -219,7 +218,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 	return CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
 }
 
-VOID WinEventHookProc(
+void CALLBACK WinEventHookProc(
 	HWINEVENTHOOK hWinEventHook,
 	DWORD         event,
 	HWND          hwnd,

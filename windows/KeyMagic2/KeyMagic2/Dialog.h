@@ -18,7 +18,7 @@ protected:
 	};
 
 	template <typename T>
-	static LRESULT CALLBACK Procedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+	static INT_PTR CALLBACK Procedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
 		try {
 			if (auto window = GetWindowLongPtr(hWnd, GWLP_USERDATA)) {
 				return reinterpret_cast <T*> (window)->Dispatch(message, wParam, lParam);
