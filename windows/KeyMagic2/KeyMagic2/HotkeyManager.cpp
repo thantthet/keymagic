@@ -37,6 +37,7 @@ void HotkeyManager::OnKeyDown(int key)
 		ignoreMatchingOnKeyup = true;
 		vk = key;
 		// match on key down for non-modifier keys
+		ValidateKeyStates();
 		MatchAndCall();
 	}
 }
@@ -55,6 +56,14 @@ void HotkeyManager::OnKeyUp(int key)
 	else if (vk == key) {
 		vk = 0;
 	}
+}
+
+void HotkeyManager::ValidateKeyStates()
+{
+	ctrl  = GetKeyState(VK_CONTROL) & 80;
+	alt   = GetKeyState(VK_MENU) & 80;
+	shift = GetKeyState(VK_SHIFT) & 80;
+	win   = GetKeyState(VK_LWIN) & 80;
 }
 
 bool HotkeyManager::MatchAndCall()

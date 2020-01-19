@@ -45,6 +45,7 @@ private:
 	std::map<WORD, bool*> GetModifierToFlagMap();
 	void ResetKeys();
 	bool MatchHotkey(WORD hky);
+	void ValidateKeyStates();
 
 private:
 	std::wstring jsonPath;

@@ -155,9 +155,9 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 
 	BYTE states[256] = { 0 };
 
-	states[VK_CONTROL] = modKeyStates.CONTROL;
-	states[VK_SHIFT] = modKeyStates.SHIFT;
-	states[VK_MENU] = modKeyStates.MENU;
+	states[VK_CONTROL] = GetKeyState(VK_CONTROL);
+	states[VK_SHIFT]   = GetKeyState(VK_SHIFT);
+	states[VK_MENU]    = GetKeyState(VK_MENU);
 
 	int modifier = 0;
 	bool CTRL, ALT, SHIFT;
@@ -189,8 +189,8 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 		ToUnicodeEx(code, kbd->scanCode, states, unicode, 1, 0, (HKL)0x04090409);
 		states[code] = 0x80;
 	}
-	
-	states[VK_MENU] = modKeyStates.MENU;
+
+	states[VK_MENU] = GetKeyState(VK_MENU);
 
 	KeyMagicEngine *engine = GetEngineForSelectedKeyboard();
 	if (engine == nullptr)
