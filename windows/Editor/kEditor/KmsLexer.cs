@@ -245,7 +245,7 @@ namespace kEditor
                         break;
 
                     case STATE.VARIABLE:
-                        if (Char.IsLetterOrDigit(c))
+                        if (Char.IsLetterOrDigit(c) || c == '_')
                         {
                             length++;
                         }
