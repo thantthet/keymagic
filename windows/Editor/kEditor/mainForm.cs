@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using Microsoft.Win32;
 using WeifenLuo.WinFormsUI.Docking;
 using Utils.MessageBoxExLib;
 using System.IO;
-using System.Collections;
-using System.Resources;
 
 namespace kEditor
 {
@@ -30,7 +25,7 @@ namespace kEditor
             set { activeDocument = value; }
         }
 
-        Styler lex;
+        Styler styler;
 
         private List<string> recentFiles;
         private Font selectedFont;
@@ -64,7 +59,7 @@ namespace kEditor
             thisExe = Environment.GetCommandLineArgs()[0];
             thisDir = System.IO.Path.GetDirectoryName(thisExe);
 
-            SciEditor.Lexing.Lexer = (ScintillaNet.Lexer)100;
+            SciEditor.Lexer = ScintillaNET.Lexer.Container;
         }
         DockPanel dockPanel;
         DockContent GlyphDock;
@@ -264,34 +259,12 @@ namespace kEditor
                 }
             }
 
-            lex = new Styler(SciEditor);
-            frmStyleConfig = new ConfigStyles(SciEditor, lex.GetStyleNameIndex());
+            styler = Styler.shared;
 
             selectedFont = new Font(Properties.Settings.Default.DefaultFontName, Properties.Settings.Default.DefaultFontSize);
             glyphTable.Font = selectedFont;
 
-            autoCompleteList.AddRange(new string[] 
-            {
-                "ANY",
-                "VK_KEY_1","VK_KEY_2","VK_KEY_3","VK_KEY_4","VK_KEY_5","VK_KEY_6","VK_KEY_7","VK_KEY_8","VK_KEY_9","VK_KEY_0",
-
-                "VK_KEY_A","VK_KEY_B","VK_KEY_C","VK_KEY_D","VK_KEY_E","VK_KEY_F","VK_KEY_G","VK_KEY_H","VK_KEY_I","VK_KEY_J",
-                "VK_KEY_K","VK_KEY_L","VK_KEY_M","VK_KEY_N","VK_KEY_O","VK_KEY_P","VK_KEY_Q","VK_KEY_R","VK_KEY_S","VK_KEY_T",
-                "VK_KEY_U","VK_KEY_V","VK_KEY_W","VK_KEY_X","VK_KEY_Y","VK_KEY_Z",
-
-                "VK_NUMPAD0","VK_NUMPAD2","VK_NUMPAD3","VK_NUMPAD4","VK_NUMPAD5","VK_NUMPAD6","VK_NUMPAD7","VK_NUMPAD8","VK_NUMPAD9","VK_NUMPAD10",
-
-                "NULL","VK_BACK","VK_TAB","VK_ENTER","VK_RETURN","VK_SHIFT","VK_CONTROL","VK_CTRL","VK_MENU","VK_ALT","VK_SPACE",
-                "VK_PRIOR","VK_CAPITAL","VK_CAPSLOCK",
-                
-                "VK_OEM_1","VK_COLON","VK_OEM_2","VK_QUESTION","VK_OEM_3","VK_CFLEX","VK_OEM_4","VK_LBRACKET","VK_OEM_5","VK_BACKSLASH",
-                "VK_OEM_6","VK_RBRACKET","VK_OEM_7","VK_QUOTE","VK_OEM_8","VK_EXCM","VK_OEM_AX","VK_OEM_102","VK_LESSTHEN","VK_ICO_HELP","VK_ICO_00",
-                "VK_OEM_MINUS","VK_OEM_PLUS",
-
-                "VK_RMENU","VK_RALT","VK_ALT_GR","VK_LMENU","VK_LALT",
-                "VK_RCONTROL","VK_RCTRL","VK_LCTRL","VK_LCONTROL","VK_LSHIFT","VK_RSHIFT"
-            }
-            );
+            autoCompleteList.AddRange(Keywords.all);
 
             Text = "Untitled" + titleSuffix;
 
@@ -328,12 +301,11 @@ namespace kEditor
         private DockableDocument CreateNewDocument(string filePath)
         {
             DockableDocument doc = new DockableDocument(filePath, dockPanel);
-            lex.SetStyles(doc.Editor);
             doc.DockContent.Activated += new EventHandler(DockContent_Activated);
             doc.DockContent.FormClosing += new FormClosingEventHandler(DockContent_FormClosing);
-            doc.Editor.CharAdded += new EventHandler<ScintillaNet.CharAddedEventArgs>(Editor_CharAdded);
-            doc.Editor.TextChanged += new EventHandler<EventArgs>(Editor_TextChanged);
-            doc.Editor.SelectionChanged += new EventHandler(Editor_SelectionChanged);
+            doc.Editor.CharAdded += new EventHandler<ScintillaNET.CharAddedEventArgs>(Editor_CharAdded);
+            doc.Editor.TextChanged += new EventHandler(Editor_TextChanged);
+            //doc.Editor.SelectionChanged += new EventHandler(Editor_SelectionChanged);
 
             if (string.IsNullOrEmpty(doc.DocTitle))
             {
@@ -446,12 +418,12 @@ namespace kEditor
 
         private void Editor_TextChanged(object sender, EventArgs e)
         {
-            ScintillaNet.Scintilla Editor = sender as ScintillaNet.Scintilla;
+            ScintillaNET.Scintilla Editor = sender as ScintillaNET.Scintilla;
             //sm.HiliteSyntax();
             computeLineNumMargin(Editor);
         }
 
-        private void computeLineNumMargin(ScintillaNet.Scintilla Editor)
+        private void computeLineNumMargin(ScintillaNET.Scintilla Editor)
         {
             if (lineNumbersToolStripMenuItem.Checked)
             {
@@ -461,8 +433,7 @@ namespace kEditor
 
         private void Editor_SelectionChanged(object sender, EventArgs e)
         {
-            ScintillaNet.Scintilla Editor = sender as ScintillaNet.Scintilla;
-            string selText;
+            ScintillaNET.Scintilla Editor = sender as ScintillaNET.Scintilla;
 
             if (editorToolTip != null && editorToolTip.Active)
             {
@@ -470,12 +441,12 @@ namespace kEditor
                 editorToolTip.Dispose();
             }
 
-            if (Editor.NativeInterface.GetSelectionStart() == Editor.NativeInterface.GetSelectionEnd())
+            if (Editor.SelectionStart == Editor.SelectionEnd)
             {
                 return;
             }
 
-            Editor.NativeInterface.GetSelText(out selText);
+            string selText = Editor.SelectedText;
             selText = selText.Trim();
 
             if (selText.Length > 0)
@@ -551,7 +522,7 @@ namespace kEditor
             {
                 int state = GetAsyncKeyState(0x10);
                 string format = "U{0:X4}" + ((state & 0xf000) != 0 ? " + " : "");
-                ActiveDocument.Editor.InsertText(string.Format(format, (int)charValue));
+                ActiveDocument.Editor.AddText(string.Format(format, (int)charValue));
             }
         }
 
@@ -800,11 +771,11 @@ namespace kEditor
 
         private string curWord;
 
-        private void Editor_CharAdded(object sender, ScintillaNet.CharAddedEventArgs e)
+        private void Editor_CharAdded(object sender, ScintillaNET.CharAddedEventArgs e)
         {
-            ScintillaNet.Scintilla Editor = sender as ScintillaNet.Scintilla;
+            ScintillaNET.Scintilla Editor = sender as ScintillaNET.Scintilla;
 
-            curWord = Editor.GetWordFromPosition(Editor.Selection.Start);
+            curWord = Editor.GetWordFromPosition(Editor.SelectionStart);
             if (curWord.Length == 0)
             {
                 return;
@@ -814,7 +785,7 @@ namespace kEditor
 
             if (list.Count > 0)
             {
-                Editor.AutoComplete.Show(curWord.Length, string.Join(SciEditor.AutoComplete.ListSeparator.ToString(), list.ToArray()));
+                Editor.AutoCShow(curWord.Length, string.Join(SciEditor.AutoCSeparator.ToString(), list.ToArray()));
             }
         }
 
@@ -841,9 +812,9 @@ namespace kEditor
 
         private void changeStylesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (frmStyleConfig.Visible == false)
+            if (frmStyleConfig == null || frmStyleConfig.Visible == false)
             {
-                frmStyleConfig = new ConfigStyles(SciEditor, lex.GetStyleNameIndex());
+                frmStyleConfig = new ConfigStyles();
                 frmStyleConfig.Show();
             }
             else
@@ -1051,37 +1022,37 @@ namespace kEditor
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            activeDocument.Editor.UndoRedo.Undo();
+            activeDocument.Editor.Undo();
         }
 
         private void redoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            activeDocument.Editor.UndoRedo.Redo();
+            activeDocument.Editor.Redo();
         }
 
         private void cutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            activeDocument.Editor.Clipboard.Cut();
+            activeDocument.Editor.Cut();
         }
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            activeDocument.Editor.Clipboard.Copy();
+            activeDocument.Editor.Copy();
         }
 
         private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            activeDocument.Editor.Clipboard.Paste();
+            activeDocument.Editor.Paste();
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            activeDocument.Editor.NativeInterface.DeleteBack();
+            //activeDocument.Editor.DeleteBack();
         }
 
         private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            activeDocument.Editor.Selection.SelectAll();
+            activeDocument.Editor.SelectAll();
         }
 
         private void findToolStripMenuItem_Click(object sender, EventArgs e)

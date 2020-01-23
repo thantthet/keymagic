@@ -10,37 +10,21 @@ namespace kEditor
 {
     public partial class ConfigStyles : Form
     {
-        ScintillaNet.Scintilla STLControl;
-        Dictionary<string, int> nameToIndex;
         Dictionary<int, string> indexToName;
-        Dictionary<int, styleCopy> originalStyles;
+        Dictionary<int, Styler.StyleCopy> originalStyles;
+        Styler styler = Styler.shared;
 
-        struct styleCopy
+        public ConfigStyles()
         {
-            public Font Font;
-            public Color ForeColor;
-            public  Color BackColor;
-        }
-
-        public ConfigStyles(ScintillaNet.Scintilla control, Dictionary<string, int> dict)
-        {
-            STLControl = control;
-            nameToIndex = dict;
-
-            originalStyles = new Dictionary<int, styleCopy>();
+            originalStyles = new Dictionary<int, Styler.StyleCopy>();
             indexToName = new Dictionary<int, string>();
 
-            foreach (string name in dict.Keys)
+            foreach (string name in styler.GetStyleNameIndex().Keys)
             {
-                ScintillaNet.Style thisSyle = STLControl.Styles[dict[name]];
-                styleCopy copy = new styleCopy();
+                Styler.StyleCopy copy = styler.GetStyle(name);
 
-                copy.Font = thisSyle.Font;
-                copy.ForeColor = thisSyle.ForeColor;
-                copy.BackColor = thisSyle.BackColor;
-
-                originalStyles.Add(dict[name], copy);
-                indexToName.Add(dict[name], name);
+                originalStyles.Add(styler.GetStyleIndex(name), copy);
+                indexToName.Add(styler.GetStyleIndex(name), name);
             }
 
             InitializeComponent();
@@ -53,15 +37,15 @@ namespace kEditor
 
             flowLayoutPanel.SuspendLayout();
 
-            foreach (string name in nameToIndex.Keys)
+            foreach (string name in styler.GetStyleNameIndex().Keys)
             {
-                int thisIndex = nameToIndex[name];
-                ScintillaNet.Style thisStyle = STLControl.Styles[thisIndex];
+                int thisIndex = styler.GetStyleIndex(name);
+                Styler.StyleCopy thisStyle = styler.GetStyle(name);
 
                 styleLabel = new Label();
                 styleLabel.Text = name;
                 styleLabel.Tag = thisIndex;
-                styleLabel.Font = thisStyle.Font;
+                styleLabel.Font = SciStyleFont.GetFont(thisStyle);
                 styleLabel.ForeColor = thisStyle.ForeColor;
                 styleLabel.BackColor = thisStyle.BackColor;
                 styleLabel.Margin = new Padding(0, 3, 0, 0);
@@ -115,12 +99,14 @@ namespace kEditor
             ColorDialog colorDlg = new ColorDialog();
             int styleIndex = (int)thisControl.Tag;
 
-            colorDlg.Color = STLControl.Styles[styleIndex].BackColor;
+            var style = styler.GetStyle(styleIndex);
+            colorDlg.Color = style.BackColor;
             colorDlg.FullOpen = true;
 
             if (colorDlg.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
             {
-                STLControl.Styles[styleIndex].BackColor = colorDlg.Color;
+                style.BackColor = colorDlg.Color;
+                styler.SetStyle(styleIndex, style);
                 foreach (Control ctrl in flowLayoutPanel.Controls)
                 {
                     if ((int)ctrl.Tag == styleIndex)
@@ -137,11 +123,18 @@ namespace kEditor
             Button thisControl = sender as Button;
             FontDialog fontDlg = new FontDialog();
             int styleIndex = (int)thisControl.Tag;
-            fontDlg.Font = STLControl.Styles[styleIndex].Font;
+
+            var style = styler.GetStyle(styleIndex);
+            fontDlg.Font = SciStyleFont.GetFont(style);
 
             if (fontDlg.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
             {
-                STLControl.Styles[styleIndex].Font = fontDlg.Font;
+                style.Font = fontDlg.Font.Name;
+                style.Size = fontDlg.Font.Size;
+                style.Bold = fontDlg.Font.Bold;
+                style.Italic = fontDlg.Font.Italic;
+                style.Underline = fontDlg.Font.Underline;
+                styler.SetStyle(styleIndex, style);
                 foreach (Control ctrl in flowLayoutPanel.Controls)
                 {
                     if ((int)ctrl.Tag == styleIndex)
@@ -159,12 +152,14 @@ namespace kEditor
             ColorDialog colorDlg = new ColorDialog();
             int styleIndex = (int)thisControl.Tag;
 
-            colorDlg.Color = STLControl.Styles[styleIndex].ForeColor;
+            var style = styler.GetStyle(styleIndex);
+            colorDlg.Color = style.ForeColor;
             colorDlg.FullOpen = true;
 
             if (colorDlg.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
             {
-                STLControl.Styles[styleIndex].ForeColor = colorDlg.Color;
+                style.ForeColor = colorDlg.Color;
+                styler.SetStyle(styleIndex, style);
                 foreach (Control ctrl in flowLayoutPanel.Controls)
                 {
                     if ((int)ctrl.Tag == styleIndex)
@@ -180,9 +175,7 @@ namespace kEditor
         {
             foreach (int index in originalStyles.Keys)
             {
-                STLControl.Styles[index].Font = originalStyles[index].Font;
-                STLControl.Styles[index].ForeColor = originalStyles[index].ForeColor;
-                STLControl.Styles[index].BackColor = originalStyles[index].BackColor;
+                styler.SetStyle(index, originalStyles[index]);
             }
             DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Close();
@@ -190,6 +183,7 @@ namespace kEditor
 
         private void btnDone_Click(object sender, EventArgs e)
         {
+            styler.SaveStyles();
             DialogResult = System.Windows.Forms.DialogResult.OK;
             this.Close();
         }

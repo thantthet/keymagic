@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using ScintillaNet;
+using ScintillaNET;
 using System.IO;
 using System.Drawing;
 
@@ -11,6 +9,7 @@ namespace kEditor
     public class Document
     {
         private Scintilla editor = new Scintilla();
+        private KmsLexer lexer = new KmsLexer(String.Join(" ", Keywords.all));
 
         public Scintilla Editor
         {
@@ -19,23 +18,46 @@ namespace kEditor
         }
         private String filePath = null;
 
-        Styler lex;
-
-        Styler Lex
-        {
-            get { return lex; }
-            set { lex = value; }
-        }
-
         public Document()
         {
-            editor.Lexing.Lexer = (ScintillaNet.Lexer)100;
+            ApplyStyle();
 
-            ScintillaNet.Style S = editor.Styles[0x21];
-            S.ForeColor = Color.DimGray;
-            S.Italic = true;
+            editor.Lexer = Lexer.Container;
+            editor.StyleNeeded += Editor_StyleNeeded;
 
-            editor.Encoding = Encoding.UTF8;
+            Styler.shared.StyleDidChange += Shared_StyleDidChange;
+        }
+
+        private void ApplyStyle()
+        {
+            editor.StyleResetDefault();
+            editor.Styles[Style.Default].Font = "Consolas";
+            editor.Styles[Style.Default].Size = 10;
+            editor.StyleClearAll();
+
+            foreach (var ss in Styler.shared.GetStyles())
+            {
+                editor.Styles[ss.Key].Font = ss.Value.Font;
+                editor.Styles[ss.Key].ForeColor = ss.Value.ForeColor;
+                editor.Styles[ss.Key].BackColor = ss.Value.BackColor;
+                editor.Styles[ss.Key].SizeF = ss.Value.Size;
+                editor.Styles[ss.Key].Bold = ss.Value.Bold;
+                editor.Styles[ss.Key].Italic = ss.Value.Italic;
+                editor.Styles[ss.Key].Underline = ss.Value.Underline;
+            }
+        }
+
+        private void Shared_StyleDidChange(object sender, EventArgs e)
+        {
+            ApplyStyle();
+        }
+
+        private void Editor_StyleNeeded(object sender, StyleNeededEventArgs e)
+        {
+            var startPos = editor.GetEndStyled();
+            var endPos = e.Position;
+
+            lexer.Style(editor, startPos, endPos);
         }
 
         public String FileName
@@ -49,7 +71,6 @@ namespace kEditor
         public bool Modified
         {
             get { return editor.Modified; }
-            set { editor.Modified = value; }
         }
 
         public String FilePath
@@ -71,7 +92,7 @@ namespace kEditor
                 sw.Write(Editor.Text);
                 sw.Close();
 
-                Editor.Modified = false;
+                Editor.SetSavePoint();
                 filePath = file;
             }
             catch
@@ -94,8 +115,8 @@ namespace kEditor
                 Editor.Text = sr.ReadToEnd();
                 sr.Close();
 
-                Editor.UndoRedo.EmptyUndoBuffer();
-                Editor.Modified = false;
+                Editor.EmptyUndoBuffer();
+                Editor.SetSavePoint();
             }
             catch
             {

@@ -80,7 +80,7 @@
             this.openFileDlg = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDlg = new System.Windows.Forms.SaveFileDialog();
             this.fontDlg = new System.Windows.Forms.FontDialog();
-            this.SciEditor = new ScintillaNet.Scintilla();
+            this.SciEditor = new ScintillaNET.Scintilla();
             this.GlyphMapTableLayout = new System.Windows.Forms.TableLayoutPanel();
             this.glyphTable = new kEditor.GlyphTable();
             this.txtFilter = new kEditor.FilterEditBox();
@@ -88,7 +88,6 @@
             this.txtOutput = new System.Windows.Forms.TextBox();
             this.outputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenu.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.SciEditor)).BeginInit();
             this.GlyphMapTableLayout.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -436,18 +435,18 @@
             // 
             // SciEditor
             // 
-            this.SciEditor.AutoComplete.DropRestOfWord = true;
-            this.SciEditor.AutoComplete.ListString = "";
+            this.SciEditor.AutoCDropRestOfWord = true;
+            //this.SciEditor.AutoComplete.ListString = "";
             resources.ApplyResources(this.SciEditor, "SciEditor");
             this.SciEditor.Name = "SciEditor";
-            this.SciEditor.Styles.BraceBad.FontName = "Verdana";
-            this.SciEditor.Styles.BraceLight.FontName = "Verdana";
-            this.SciEditor.Styles.ControlChar.FontName = "Verdana";
-            this.SciEditor.Styles.Default.FontName = "Verdana";
-            this.SciEditor.Styles.IndentGuide.FontName = "Verdana";
-            this.SciEditor.Styles.LastPredefined.FontName = "Verdana";
-            this.SciEditor.Styles.LineNumber.FontName = "Verdana";
-            this.SciEditor.Styles.Max.FontName = "Verdana";
+            //this.SciEditor.Styles.BraceBad.FontName = "Verdana";
+            //this.SciEditor.Styles.BraceLight.FontName = "Verdana";
+            //this.SciEditor.Styles.ControlChar.FontName = "Verdana";
+            //this.SciEditor.Styles.Default.FontName = "Verdana";
+            //this.SciEditor.Styles.IndentGuide.FontName = "Verdana";
+            //this.SciEditor.Styles.LastPredefined.FontName = "Verdana";
+            //this.SciEditor.Styles.LineNumber.FontName = "Verdana";
+            //this.SciEditor.Styles.Max.FontName = "Verdana";
             // 
             // GlyphMapTableLayout
             // 
@@ -518,7 +517,6 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.mainFrame_FormClosing);
             this.mainMenu.ResumeLayout(false);
             this.mainMenu.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.SciEditor)).EndInit();
             this.GlyphMapTableLayout.ResumeLayout(false);
             this.GlyphMapTableLayout.PerformLayout();
             this.ResumeLayout(false);
@@ -574,7 +572,7 @@
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
-        private ScintillaNet.Scintilla SciEditor;
+        private ScintillaNET.Scintilla SciEditor;
         private System.Windows.Forms.TableLayoutPanel GlyphMapTableLayout;
         private GlyphTable glyphTable;
         private FilterEditBox txtFilter;

@@ -38,7 +38,7 @@ namespace kEditor
 
         public DockableDocument(String filePath, DockPanel dockPanel)
         {
-            Editor.ModifiedChanged += new EventHandler(Editor_ModifiedChanged);
+            Editor.TextChanged += Editor_TextChanged;
 
             try
             {
@@ -54,9 +54,9 @@ namespace kEditor
                 if (String.IsNullOrEmpty(filePath))
                 {
                     Editor.Text = newDocumentTemplate;
-                    Editor.Selection.Start = Editor.Selection.End = Editor.Text.Length;
-                    Editor.UndoRedo.EmptyUndoBuffer();
-                    Editor.Modified = false;
+                    Editor.SelectionStart = Editor.SelectionEnd = Editor.Text.Length;
+                    Editor.EmptyUndoBuffer();
+                    Editor.SetSavePoint();
 
                     dockContent.TabText = "Untitled";
                     return;
@@ -74,7 +74,7 @@ namespace kEditor
             }
         }
 
-        void Editor_ModifiedChanged(object sender, EventArgs e)
+        private void Editor_TextChanged(object sender, EventArgs e)
         {
             if (Editor.Modified)
             {
