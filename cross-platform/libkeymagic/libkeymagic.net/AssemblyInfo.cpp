@@ -14,9 +14,9 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyTitleAttribute("libkeymagicnet")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("")];
-[assembly:AssemblyCompanyAttribute("Microsoft")];
+[assembly:AssemblyCompanyAttribute("KeyMagic")];
 [assembly:AssemblyProductAttribute("libkeymagicnet")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c) Microsoft 2011")];
+[assembly:AssemblyCopyrightAttribute("Copyright (c) KeyMagic 2020")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
 
@@ -36,5 +36,3 @@ using namespace System::Security::Permissions;
 [assembly:ComVisible(false)];
 
 [assembly:CLSCompliantAttribute(true)];
-
-[assembly:SecurityPermission(SecurityAction::RequestMinimum, UnmanagedCode = true)];
