@@ -83,11 +83,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="aboutForm.cs">
+    <Compile Include="AboutForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="aboutForm.Designer.cs">
-      <DependentUpon>aboutForm.cs</DependentUpon>
+    <Compile Include="AboutForm.Designer.cs">
+      <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ConfigColor.cs">
       <SubType>Form</SubType>
@@ -131,8 +131,8 @@
       <DependentUpon>TesterForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UnicodeData.cs" />
-    <EmbeddedResource Include="aboutForm.resx">
-      <DependentUpon>aboutForm.cs</DependentUpon>
+    <EmbeddedResource Include="AboutForm.resx">
+      <DependentUpon>AboutForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ConfigColor.resx">

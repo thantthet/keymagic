@@ -9,9 +9,9 @@ using System.Reflection;
 
 namespace kEditor
 {
-    public partial class aboutForm : Form
+    public partial class AboutForm : Form
     {
-        public aboutForm()
+        public AboutForm()
         {
             InitializeComponent();
             lblTitle.Text = AssemblyTitle + " " + AssemblyVersion;
@@ -20,6 +20,12 @@ namespace kEditor
         private void btnOK_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            var label = sender as Label;
+            System.Diagnostics.Process.Start(label.Text);
         }
 
         #region Assembly Attribute Accessors

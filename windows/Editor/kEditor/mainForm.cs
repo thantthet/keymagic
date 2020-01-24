@@ -834,7 +834,7 @@ namespace kEditor
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            aboutForm aboutF = new aboutForm();
+            AboutForm aboutF = new AboutForm();
             aboutF.ShowDialog(this);
         }
 
