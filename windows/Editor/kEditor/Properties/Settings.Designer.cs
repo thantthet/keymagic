@@ -73,10 +73,7 @@ namespace kEditor.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(
-@"<?xml version=""1.0"" encoding=""utf-16""?>
-<Styles>
-</Styles>")]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?><Styles><Style index=""6"" fontName=""Consolas"" fontSize=""9.75"" foreColor=""FF0000DF"" backColor=""FFFFFFFF"" bold=""False"" italic=""False"" /><Style index=""8"" fontName=""Consolas"" fontSize=""9.75"" foreColor=""C4"" backColor=""FFFFFFFF"" bold=""False"" italic=""True"" /><Style index=""7"" fontName=""Consolas"" fontSize=""9.75"" foreColor=""FF800080"" backColor=""FFFFFFFF"" bold=""False"" italic=""False"" /><Style index=""1"" fontName=""Consolas"" fontSize=""9.75"" foreColor=""FF0080C0"" backColor=""FFFFFFFF"" bold=""False"" italic=""False"" /><Style index=""9"" fontName=""Consolas"" fontSize=""9.75"" foreColor=""FFFF0080"" backColor=""FFFFFFFF"" bold=""False"" italic=""False"" /><Style index=""11"" fontName=""Consolas"" fontSize=""9.75"" foreColor=""80C0"" backColor=""FFFFFFFF"" bold=""False"" italic=""False"" /><Style index=""10"" fontName=""Consolas"" fontSize=""9.75"" foreColor=""FF008080"" backColor=""FFFFFFFF"" bold=""True"" italic=""False"" /><Style index=""5"" fontName=""Consolas"" fontSize=""9.75"" foreColor=""FF606060"" backColor=""FFFFFFFF"" bold=""False"" italic=""True"" /><Style index=""4"" fontName=""Consolas"" fontSize=""9.75"" foreColor=""FF008000"" backColor=""FFFFFFFF"" bold=""False"" italic=""False"" /></Styles>")]
         public string StyleConfig {
             get {
                 return ((string)(this["StyleConfig"]));
