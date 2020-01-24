@@ -301,6 +301,8 @@ namespace kEditor
             doc.Editor.TextChanged += new EventHandler(Editor_TextChanged);
             doc.Editor.UpdateUI += Editor_UpdateUI;
 
+            UpdateMarginWidth(doc.Editor);
+
             if (string.IsNullOrEmpty(doc.DocTitle))
             {
                 doc.DockContent.Close();
@@ -334,42 +336,19 @@ namespace kEditor
                     case DialogResult.No:
                         break;
                 }
-                //MessageBoxEx msgBox = MessageBoxExManager.CreateMessageBox("ask for saving");
-                //msgBox.Caption = "Saving?";
-                //msgBox.Text = string.Format("Do you want to save '{0}'?", dd.FileName);
-                //msgBox.Icon = MessageBoxExIcon.Exclamation;
-
-                //msgBox.AddButton("Yes", "Y");
-                //msgBox.AddButton("No", "N");
-                //msgBox.AddButton("Cancel", "C");
-                //switch (msgBox.Show(this))
-                //{
-                //    case "C":
-                //        e.Cancel = true;
-                //        break;
-                //    case "Y":
-                //        if (dd.Save() == DialogResult.Cancel)
-                //        {
-                //            e.Cancel = true;
-                //        }
-                //        break;
-                //    case "N":
-                //        break;
-                //}
             }
         }
 
         private void mainFrame_FormClosing(object sender, FormClosingEventArgs e)
         {
             List<string> tabs = new List<string>();
-            foreach (DockContent dc in dockPanel.Documents)
+            ForEachDocument(dd =>
             {
-                DockableDocument dd = dc.Tag as DockableDocument;
                 if (string.IsNullOrEmpty(dd.FilePath) == false)
                 {
                     tabs.Add(dd.FilePath);
                 }
-            }
+            });
 
             Properties.Settings.Default.LastTabs = string.Join("|", tabs.ToArray());
             if (recentFiles != null)
@@ -424,8 +403,6 @@ namespace kEditor
                 Editor.Margins[0].Width = Editor.Lines.Count.ToString().Length * 10;
             }
         }
-
-
 
         private void Editor_UpdateUI(object sender, ScintillaNET.UpdateUIEventArgs e)
         {
@@ -548,95 +525,12 @@ namespace kEditor
             return dr;
         }
 
-        //private bool openFile(string OpenFilePath)
-        //{
-        //    String FileName;
-
-        //    if (OpenFilePath == null)
-        //    {
-        //        openFileDlg.CheckFileExists = true;
-
-        //        if (openFileDlg.ShowDialog(this) != System.Windows.Forms.DialogResult.OK)
-        //        {
-        //            return false;
-        //        }
-        //        else
-        //        {
-        //            OpenFilePath = openFileDlg.FileName;
-        //        }
-        //    }
-
-        //    FileName = System.IO.Path.GetFileName(OpenFilePath);
-
-        //    DockableDocument dockDoc = new DockableDocument(OpenFilePath, dockPanel);
-        //    dockDoc.DockContent.Activated += new EventHandler(DockContent_Activated);
-        //    bool success = dockDoc.DockContent != null;
-        //    lex.SetStyles(dockDoc.Editor);
-
-        //    if (success)
-        //    {
-        //        ActiveDocument = dockDoc;
-        //        setRecentFile(OpenFilePath);
-        //    }
-        //    return success;
-
-        //    //System.IO.StreamReader sr = new System.IO.StreamReader(FilePath);
-        //    //string str = sr.ReadToEnd();
-        //    //sr.Close();
-        //    //SciEditor.Text = str;
-
-        //    //SciEditor.Modified = false;
-        //    //WorkingWithFile = true;
-
-        //    //Text = FileName;
-        //    //SciEditor.UndoRedo.EmptyUndoBuffer();
-
-        //    //return true;
-        //}
-
         void DockContent_Activated(object sender, EventArgs e)
         {
             DockContent docDock = sender as DockContent;
             ActiveDocument = docDock.Tag as DockableDocument;
             Text = ActiveDocument.DocTitle + titleSuffix;
         }
-
-        //private bool saveActiveDocument()
-        //{
-        //    if (string.IsNullOrEmpty(activeDocument.FilePath))
-        //    {
-        //        //saveFileDlg.FileName = FilePath;
-        //        if (saveFileDlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-        //        {
-        //            ActiveDocument.FilePath = saveFileDlg.FileName;
-        //        }
-        //        else
-        //        {
-        //            return false;
-        //        }
-        //    }
-
-        //    try
-        //    {
-        //        System.IO.StreamWriter sw = new System.IO.StreamWriter(ActiveDocument.FilePath, false, Encoding.UTF8);
-        //        sw.Write(SciEditor.Text);
-        //        sw.Flush();
-        //        sw.Close();
-        //        sw.Dispose();
-
-        //        activeDocument.Editor.Modified = false;
-
-        //        Text = ActiveDocument.FileName;
-        //        setRecentFile(ActiveDocument.FilePath);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(ex.Message);
-        //        return false;
-        //    }
-
-        //    return true;
-        //}
 
         private void setRecentFile(String FilePath)
         {
@@ -681,20 +575,6 @@ namespace kEditor
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ActiveDocument = CreateNewDocument("");
-            //if (askToSaveModifiedDocument() != System.Windows.Forms.DialogResult.Cancel)
-            //{
-            //    SciEditor.Text = newDocumentTemplate;
-            //    SciEditor.UndoRedo.EmptyUndoBuffer();
-            //    SciEditor.Selection.Start = newDocumentTemplate.Length;
-            //    SciEditor.Selection.End = newDocumentTemplate.Length;
-            //    FileName = "Untitled" + titleSuffix;
-            //    FilePath = "";
-
-            //    Text = FileName;
-
-            //    SciEditor.Modified = false;
-            //    WorkingWithFile = false;
-            //}
         }
 
         private void hexadecimalToolStripMenuItem_Click(object sender, EventArgs e)
@@ -752,19 +632,40 @@ namespace kEditor
                     return true;
                 }
             }
+
             return false;
+        }
+
+        private void UpdateMarginWidth(ScintillaNET.Scintilla scintilla = null)
+        {
+            var Width = 0;
+            if (lineNumbersToolStripMenuItem.Checked)
+            {
+                Width = 30;
+            }
+
+            if (scintilla != null)
+            {
+                scintilla.Margins[0].Width = Width;
+            } else
+            {
+                ForEachDocument(doc => doc.Editor.Margins[0].Width = Width);
+            }
+        }
+
+        private void ForEachDocument(Action<DockableDocument> action)
+        {
+            foreach (var each in dockPanel.Documents)
+            {
+                var dc = each as DockContent;
+                var doc = dc.Tag as DockableDocument;
+                action(doc);
+            }
         }
 
         private void lineNumbersToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (lineNumbersToolStripMenuItem.Checked)
-            {
-                SciEditor.Margins[0].Width = 30;
-            }
-            else
-            {
-                SciEditor.Margins[0].Width = 0;
-            }
+            UpdateMarginWidth();
         }
         #endregion
 
@@ -891,7 +792,7 @@ namespace kEditor
                 if (parserProcess.ExitCode == 1)
                 {
                     txtOutput.Text += errText + nl;
-                    MessageBox.Show(this, "Faile to compile the script. Please check output window for more information.", "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(this, "Failed to compile the script. Please check output window for more information.", "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     ret = false;
                 }
                 else
@@ -985,11 +886,11 @@ namespace kEditor
                 }
 
                 KeyMagicDotNet.KeyMagicKeyboard keyboard = engine.GetKeyboard();
-                Byte[] font = keyboard.getInfo("font");
+                string font = keyboard.GetInfoList().GetFontFamily();
                 Font f = selectedFont;
                 if (font != null)
                 {
-                    f = new Font(Encoding.UTF8.GetString(font), selectedFont.Size);
+                    f = new Font(font, selectedFont.Size);
                 }
 
                 TesterForm tester = new TesterForm(engine, f);
@@ -1046,7 +947,7 @@ namespace kEditor
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //activeDocument.Editor.DeleteBack();
+            activeDocument.Editor.ReplaceSelection("");
         }
 
         private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
