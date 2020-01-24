@@ -9,9 +9,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("kEditor")]
 [assembly: AssemblyDescription("Editor for KeyMagic Layout Script")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Thant Thet Khin Zaw")]
+[assembly: AssemblyCompany("KeyMagic")]
 [assembly: AssemblyProduct("kEditor")]
-[assembly: AssemblyCopyright("Copyright ©  2010-2011")]
+[assembly: AssemblyCopyright("Copyright © 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
