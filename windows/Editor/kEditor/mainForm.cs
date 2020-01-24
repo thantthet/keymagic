@@ -73,12 +73,6 @@ namespace kEditor
             Controls.Add(dockPanel);
             dockPanel.BringToFront();
 
-            //string[] all = System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceNames();
-
-            //foreach (string one in all)
-            //{
-            //    MessageBox.Show(one);
-            //}
             GlyphDock = new DockContent();
             using (Bitmap bm = Properties.Resources.GlyphMap)
             {
@@ -305,7 +299,7 @@ namespace kEditor
             doc.DockContent.FormClosing += new FormClosingEventHandler(DockContent_FormClosing);
             doc.Editor.CharAdded += new EventHandler<ScintillaNET.CharAddedEventArgs>(Editor_CharAdded);
             doc.Editor.TextChanged += new EventHandler(Editor_TextChanged);
-            //doc.Editor.SelectionChanged += new EventHandler(Editor_SelectionChanged);
+            doc.Editor.UpdateUI += Editor_UpdateUI;
 
             if (string.IsNullOrEmpty(doc.DocTitle))
             {
@@ -431,55 +425,60 @@ namespace kEditor
             }
         }
 
-        private void Editor_SelectionChanged(object sender, EventArgs e)
+
+
+        private void Editor_UpdateUI(object sender, ScintillaNET.UpdateUIEventArgs e)
         {
             ScintillaNET.Scintilla Editor = sender as ScintillaNET.Scintilla;
 
-            if (editorToolTip != null && editorToolTip.Active)
+            if ((e.Change & ScintillaNET.UpdateChange.Selection) > 0)
             {
-                editorToolTip.Hide(Editor);
-                editorToolTip.Dispose();
-            }
-
-            if (Editor.SelectionStart == Editor.SelectionEnd)
-            {
-                return;
-            }
-
-            string selText = Editor.SelectedText;
-            selText = selText.Trim();
-
-            if (selText.Length > 0)
-            {
-                if (selText.Length > 4 && selText.StartsWith("U", StringComparison.OrdinalIgnoreCase))
+                if (editorToolTip != null && editorToolTip.Active)
                 {
-                    editorToolTip = new ToolTip();
-                    editorToolTip.Popup += new PopupEventHandler(editorToolTip_Popup);
-                    editorToolTip.OwnerDraw = true;
-                    editorToolTip.Draw += new DrawToolTipEventHandler(editorToolTip_Draw);
+                    editorToolTip.Hide(Editor);
+                    editorToolTip.Dispose();
+                }
 
-                    string[] splitted = selText.Split(' ');
-                    StringBuilder concated = new StringBuilder();
-                    foreach (string split in splitted)
+                if (Editor.SelectionStart == Editor.SelectionEnd)
+                {
+                    return;
+                }
+
+                string selText = Editor.SelectedText;
+                selText = selText.Trim();
+
+                if (selText.Length > 0)
+                {
+                    if (selText.Length > 4 && selText.StartsWith("U", StringComparison.OrdinalIgnoreCase))
                     {
-                        if (split.StartsWith("U", StringComparison.OrdinalIgnoreCase) && split.Length > 4)
+                        editorToolTip = new ToolTip();
+                        editorToolTip.Popup += new PopupEventHandler(editorToolTip_Popup);
+                        editorToolTip.OwnerDraw = true;
+                        editorToolTip.Draw += new DrawToolTipEventHandler(editorToolTip_Draw);
+
+                        string[] splitted = selText.Split(' ');
+                        StringBuilder concated = new StringBuilder();
+                        foreach (string split in splitted)
                         {
-                            string hexString = split.Substring(1, 4);
-                            int hexCode;
-                            if (int.TryParse(hexString, System.Globalization.NumberStyles.AllowHexSpecifier, null, out hexCode))
+                            if (split.StartsWith("U", StringComparison.OrdinalIgnoreCase) && split.Length > 4)
                             {
-                                concated.Append((char)hexCode);
+                                string hexString = split.Substring(1, 4);
+                                int hexCode;
+                                if (int.TryParse(hexString, System.Globalization.NumberStyles.AllowHexSpecifier, null, out hexCode))
+                                {
+                                    concated.Append((char)hexCode);
+                                }
                             }
                         }
-                    }
 
-                    Point caretPoint = new Point();
-                    if (GetCaretPos(out caretPoint))
-                    {
-                        caretPoint.X += 5;
-                        caretPoint.Y -= 30;
-                        toolTipString = concated.ToString();
-                        editorToolTip.Show(toolTipString, Editor, caretPoint);
+                        Point caretPoint = new Point();
+                        if (GetCaretPos(out caretPoint))
+                        {
+                            caretPoint.X += 5;
+                            caretPoint.Y -= 30;
+                            toolTipString = concated.ToString();
+                            editorToolTip.Show(toolTipString, Editor, caretPoint);
+                        }
                     }
                 }
             }
