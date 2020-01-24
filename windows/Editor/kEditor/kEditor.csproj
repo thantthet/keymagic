@@ -205,6 +205,9 @@
     <None Include="Resources\table.png" />
     <None Include="Resources\report.png" />
     <Content Include="Editor.ico" />
+    <Content Include="parser.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="UnicodeData.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
