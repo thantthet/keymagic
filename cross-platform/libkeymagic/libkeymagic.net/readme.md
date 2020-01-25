@@ -1,0 +1,1 @@
+**libkeymagic.net** is vc++ wrapper around cpp libkeymagic to used with .NET.
