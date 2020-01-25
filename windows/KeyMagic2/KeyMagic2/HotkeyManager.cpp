@@ -60,10 +60,10 @@ void HotkeyManager::OnKeyUp(int key)
 
 void HotkeyManager::ValidateKeyStates()
 {
-	ctrl  = GetKeyState(VK_CONTROL) & 80;
-	alt   = GetKeyState(VK_MENU) & 80;
-	shift = GetKeyState(VK_SHIFT) & 80;
-	win   = GetKeyState(VK_LWIN) & 80;
+	ctrl  = GetKeyState(VK_CONTROL) & 0x8000;
+	alt   = GetKeyState(VK_MENU)    & 0x8000;
+	shift = GetKeyState(VK_SHIFT)   & 0x8000;
+	win   = GetKeyState(VK_LWIN)    & 0x8000 || GetKeyState(VK_RWIN) & 0x8000;
 }
 
 bool HotkeyManager::MatchAndCall()
