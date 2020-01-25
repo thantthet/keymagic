@@ -1,0 +1,1 @@
+Java JNI interface for working with libkeymagic.
