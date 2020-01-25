@@ -1,0 +1,1 @@
+**cross-platform** directory contains projects, those can be compiled on Windows, Mac and Linux.

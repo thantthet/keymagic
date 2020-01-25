@@ -1,0 +1,1 @@
+**libkeymagic** is core of keymagic engine which contains implementation of key processing.
