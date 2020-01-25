@@ -2,10 +2,11 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "KeyMagic"
-#define MyAppVersion "2.0.0.9"
+#define MyAppVersion "2.0.1.0"
 #define MyAppPublisher "KeyMagic"
 #define MyAppURL "http://www.keymagic.net/"
 #define MyAppExeName "KeyMagic2.exe"
+#define MyDistFolder "..\..\KeyMagic2\Release"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -33,7 +34,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "KeyMagic2.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyDistFolder}\KeyMagic2.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Padauk-Bold.ttf"; DestDir: "{app}"; Flags: ignoreversion
 Source: "AppData\*"; DestDir: "{commonappdata}\KeyMagic"; Flags: ignoreversion;
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
