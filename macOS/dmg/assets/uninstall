@@ -5,7 +5,8 @@ if [[ -d "$app" ]]; then
 	echo "Uninstalling $app. You will be asked for your mac password to continue."
     sudo rm -rf  "$app"
 fi
-if [[ -d "~/$app" ]]; then
-	echo "Uninstalling ~/$app"
-    sudo rm -rf  "~/$app"
+user="$HOME$app"
+if [[ -d "$user" ]]; then
+	echo "Uninstalling $user"
+    rm -rf  "$user"
 fi
