@@ -94,3 +94,4 @@ windows/KeyMagic2/Debug
 windows/inno/KeyMagic2
 OSX/package/KeyMagic.app
 *.pkg
+macOS/dmg/node_modules
