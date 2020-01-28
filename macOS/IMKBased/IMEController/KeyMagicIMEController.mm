@@ -198,8 +198,8 @@ bool mapVK(int virtualkey, int * winVK)
     _updateAvailable = NO;
     
     NSDate *lastUpdateCheck = [configDictionary objectForKey:ConfigKeyLastUpdateCheck];
-    NSTimeInterval sevenDays = 7/*day*/ * 24/*hour*/ * 60/*minute*/ * 60/*sec*/;
-    NSDate *nextCheck = [lastUpdateCheck dateByAddingTimeInterval:sevenDays];
+    NSTimeInterval aDay = 1/*day*/ * 24/*hour*/ * 60/*minute*/ * 60/*sec*/;
+    NSDate *nextCheck = [lastUpdateCheck dateByAddingTimeInterval:aDay];
     if (nextCheck == nil) {
         nextCheck = [NSDate new];
     }
