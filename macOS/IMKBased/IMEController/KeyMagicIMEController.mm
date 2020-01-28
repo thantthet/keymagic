@@ -213,28 +213,42 @@ bool mapVK(int virtualkey, int * winVK)
 
 - (void)checkUpdateNotifying:(BOOL)notify
 {
+    __weak KeyMagicIMEController * weakSelf = self;
+    
     NSURL *url = [NSURL URLWithString:@"https://keymagic.s3-ap-southeast-1.amazonaws.com/releases/macos/latest/version.txt"];
-    NSError *error = nil;
-    NSString *lastestVersion = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
-    lastestVersion = [lastestVersion stringByTrimmingCharactersInSet:
-                      [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:10];
     
-    if (error != nil) {
-        trace(@"Failed to check update: %@", error);
-        return;
-    }
-    
-    NSString *bundleVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
-    
-    if ([lastestVersion compare:bundleVersion options:NSNumericSearch] == NSOrderedDescending) {
-        _updateAvailable = YES;
-        if (notify) {
-            NSString *text = @"New version of KeyMagic is available";
-            [self deliverNotification:text duration:3 onClick:@selector(openReleasesPage)];
+    NSURLSessionTask *task = [NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        if (weakSelf == nil) {
+            return;
         }
-    } else {
-        _updateAvailable = NO;
-    }
+        KeyMagicIMEController * strongSelf = weakSelf;
+        NSHTTPURLResponse * httpResponse = (NSHTTPURLResponse *)response;
+        if (httpResponse.statusCode == 200) {
+            NSString *latestVersion = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+
+            latestVersion = [latestVersion stringByTrimmingCharactersInSet:
+                              [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            
+            if (error != nil) {
+                trace(@"Failed to check update: %@", error);
+                return;
+            }
+            
+            NSString *bundleVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+            NSLog(@"%@ %@", bundleVersion, latestVersion);
+            if ([latestVersion compare:bundleVersion options:NSNumericSearch] == NSOrderedDescending) {
+                strongSelf->_updateAvailable = YES;
+                if (notify) {
+                    NSString *text = @"New version of KeyMagic is available";
+                    [self deliverNotification:text duration:3 onClick:@selector(openReleasesPage)];
+                }
+            } else {
+                strongSelf->_updateAvailable = NO;
+            }
+        }
+    }];
+    [task resume];
 }
 
 - (void)openReleasesPage
