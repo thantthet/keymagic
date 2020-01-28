@@ -1,0 +1,11 @@
+#!/bin/sh
+
+app="/Library/Input Methods/KeyMagic.app"
+if [[ -d "$app" ]]; then
+	echo "Uninstalling $app. You will be asked for your mac password to continue."
+    sudo rm -rf  "$app"
+fi
+if [[ -d "~/$app" ]]; then
+	echo "Uninstalling ~/$app"
+    sudo rm -rf  "~/$app"
+fi

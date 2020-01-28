@@ -1,0 +1,10 @@
+{
+  "title": "KeyMagic",
+  "icon": "assets/KeyMagic.icns",
+  "background": "./assets/background.png",
+  "contents": [
+    { "x": 448, "y": 400, "type": "link", "path": "/Library/Input Methods" },
+    { "x": 192, "y": 400, "type": "file", "path": "./assets/KeyMagic.app" },
+    { "x": 522, "y": 135, "type": "file", "path": "./assets/uninstall" }
+  ]
+}
