@@ -30,7 +30,6 @@ extern "C" {
 
 @interface KeyMagicIMEController : IMKInputController
 {
-	NSMutableArray * keyboards;
 	NSMutableDictionary * configDictionary;
 	NSString *activePath;
 	KeyMagicEngine kme;
@@ -49,9 +48,7 @@ extern "C" {
 - (void)selectionChanged:(id)sender;
 - (void)writeConfigurationFile;
 - (void)loadConfigurationFile;
-- (NSArray *)getKeyboardPathsFrom:(NSString*)directory;
 - (BOOL)changeKeyboardLayout:(Keyboard*)Keyboard;
 - (void)switchKeyboardLayout:(BOOL)previous;
-- (void)getKeyboardLayouts;
 
 @end

@@ -23,6 +23,7 @@
 #import "KeyMagicIMEController.h"
 #import	"keymagic.h"
 #import "KeyMagicUtil.h"
+#import "KeyboardFactory.h"
 
 static NSString * const ConfigKeyLastKeyboardPathKey = @"DefaultKeyboardPath";
 static NSString * const ConfigKeyInstantCommit = @"InstantCommit";
@@ -33,14 +34,11 @@ static NSString * const NotificationSelectorKey = @"NotificationSelectorKey";
 
 @interface KeyMagicIMEController () <NSUserNotificationCenterDelegate>
 
-@property (nonatomic, strong) NSMutableArray *keyboards;
-
 @end
 
 @implementation KeyMagicIMEController
 @synthesize activeKeyboard;
 @synthesize activePath;
-@synthesize keyboards;
 @synthesize instantCommit;
 
 #define RETURNVAL(b, c) \
@@ -159,9 +157,8 @@ bool mapVK(int virtualkey, int * winVK)
         [[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:self];
         
         self.activeKeyboard = [[Keyboard alloc] init];
-        self.keyboards = [[NSMutableArray alloc] init];
         
-        [self getKeyboardLayouts];
+        [KeyboardFactory.shared rescanKeyboards];
         
         configDictionary = [NSMutableDictionary new];
         self.activePath = @"";
@@ -293,6 +290,7 @@ bool mapVK(int virtualkey, int * winVK)
 - (void)switchKeyboardLayout:(BOOL)previous
 {
     trace(@"switchKeyboardLayout:%d", previous);
+    NSArray * keyboards = KeyboardFactory.shared.keyboards;
 	Keyboard * first = [keyboards objectAtIndex:0];
 	Keyboard * last = [keyboards objectAtIndex:[keyboards count] - 1];
 	
@@ -616,61 +614,6 @@ bool mapVK(int virtualkey, int * winVK)
 	[self changeKeyboardLayout:keyboard];
 }
 
-- (NSArray *)getKeyboardPathsFrom:(NSString*)directory
-{
-	NSMutableArray * paths = [NSMutableArray new];
-	NSFileManager *localFileManager = [[NSFileManager alloc] init];
-	NSDirectoryEnumerator *dirEnum = [localFileManager enumeratorAtPath:directory];
-	
-	NSString *file;
-	while (file = [dirEnum nextObject]) {
-		if ([[file pathExtension] isEqualToString: @"km2"]) {
-			[paths addObject:[directory stringByAppendingPathComponent:file]];
-		}
-	}
-	
-	return paths;
-}
-
-- (void)getKeyboardLayouts
-{
-	[keyboards removeAllObjects];
-	
-	NSMutableArray * allPaths = [NSMutableArray new];
-	NSArray * paths;
-	
-	NSString *layoutDir = [NSHomeDirectory() stringByAppendingPathComponent:@".keymagic"];
-	paths = [self getKeyboardPathsFrom:layoutDir];
-	[allPaths addObjectsFromArray:paths];
-	
-	NSBundle * mainBundle = [NSBundle mainBundle];
-	paths = [mainBundle pathsForResourcesOfType:@"km2" inDirectory:nil];
-	[allPaths addObjectsFromArray:paths];
-
-	for (NSString *path in allPaths) {
-		const char * szPath = [path cStringUsingEncoding:NSUTF8StringEncoding];
-		InfoList * infos = KeyMagicKeyboard::getInfosFromKeyboardFile(szPath);
-		
-		if (infos == NULL) {
-			continue;
-		}
-		
-//		NSMenuItem * menuItem = [NSMenuItem new];
-		NSString * keyboardName = [KeyMagicUtil getKeyboardNameOrTitle:*infos pathName:path];
-
-		Keyboard * keyboard = [Keyboard new];
-		[keyboard setTitle:keyboardName];
-		[keyboard setPath:path];
-		
-		[keyboards addObject:keyboard];
-		
-//		for (InfoList::iterator i = infos->begin(); i != infos->end(); i++) {
-//			delete[] i->second.data;
-//		}
-		delete infos;
-	}
-}
-
 - (NSMenu *)menu
 {
     trace(@"menu");
@@ -689,8 +632,8 @@ bool mapVK(int virtualkey, int * winVK)
         [menu addItem:[NSMenuItem separatorItem]];
     }
 	
-	[self getKeyboardLayouts];
-	NSEnumerator * e = [keyboards objectEnumerator];
+	[KeyboardFactory.shared rescanKeyboards];
+	NSEnumerator * e = [KeyboardFactory.shared.keyboards objectEnumerator];
 	while (Keyboard * kb = [e nextObject]) {
 		NSMenuItem * menuItem = [[NSMenuItem alloc] init];
 		

@@ -25,6 +25,11 @@
 		90706E4D222D0EE0003B56F0 /* Util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90706E4A222D0EE0003B56F0 /* Util.cpp */; };
 		90706E50222D0EF5003B56F0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90706E4F222D0EF5003B56F0 /* Foundation.framework */; };
 		90706E52222D0EF8003B56F0 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90706E51222D0EF8003B56F0 /* AppKit.framework */; };
+		90DCDF5F23E043DC0027B154 /* MyanSan.km2 in Resources */ = {isa = PBXBuildFile; fileRef = 90DCDF5E23E043DC0027B154 /* MyanSan.km2 */; };
+		90DCDF6123E043E60027B154 /* ZawCode.km2 in Resources */ = {isa = PBXBuildFile; fileRef = 90DCDF6023E043E60027B154 /* ZawCode.km2 */; };
+		90DCDF6323E043ED0027B154 /* Zawgyi L.km2 in Resources */ = {isa = PBXBuildFile; fileRef = 90DCDF6223E043ED0027B154 /* Zawgyi L.km2 */; };
+		90DCDF6523E043F60027B154 /* Pyidaungsu MM.km2 in Resources */ = {isa = PBXBuildFile; fileRef = 90DCDF6423E043F60027B154 /* Pyidaungsu MM.km2 */; };
+		90DCDF6823E0448B0027B154 /* KeyboardFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 90DCDF6723E0448B0027B154 /* KeyboardFactory.mm */; };
 		B510C5B513769F16008798E7 /* KeyMagicUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = B510C5B313769F16008798E7 /* KeyMagicUtil.mm */; };
 		B511BFC412009E270060A548 /* Keyboard.mm in Sources */ = {isa = PBXBuildFile; fileRef = B511BFB612009E270060A548 /* Keyboard.mm */; };
 		B511C1BC1200A6CA0060A548 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A31F7460EAC68880045D7EE /* Carbon.framework */; };
@@ -78,6 +83,12 @@
 		90706E4F222D0EF5003B56F0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		90706E51222D0EF8003B56F0 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		90706E53222D11CF003B56F0 /* keymagic.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; name = keymagic.h; path = "../../cross-platform/libkeymagic/keymagic.h"; sourceTree = "<group>"; };
+		90DCDF5E23E043DC0027B154 /* MyanSan.km2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = MyanSan.km2; path = "../../../keymagic-keyboards/MyanSan/MyanSan.km2"; sourceTree = "<group>"; };
+		90DCDF6023E043E60027B154 /* ZawCode.km2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = ZawCode.km2; path = "../../../keymagic-keyboards/ZawCode/ZawCode.km2"; sourceTree = "<group>"; };
+		90DCDF6223E043ED0027B154 /* Zawgyi L.km2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Zawgyi L.km2"; path = "../../../keymagic-keyboards/Zawgyi/Zawgyi L.km2"; sourceTree = "<group>"; };
+		90DCDF6423E043F60027B154 /* Pyidaungsu MM.km2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Pyidaungsu MM.km2"; path = "../../../keymagic-keyboards/Pyidaungsu/Pyidaungsu MM.km2"; sourceTree = "<group>"; };
+		90DCDF6623E0448B0027B154 /* KeyboardFactory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyboardFactory.h; sourceTree = "<group>"; };
+		90DCDF6723E0448B0027B154 /* KeyboardFactory.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = KeyboardFactory.mm; sourceTree = "<group>"; };
 		B510C5B213769F16008798E7 /* KeyMagicUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyMagicUtil.h; path = KeyMagic/KeyMagicUtil.h; sourceTree = "<group>"; };
 		B510C5B313769F16008798E7 /* KeyMagicUtil.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = KeyMagicUtil.mm; path = KeyMagic/KeyMagicUtil.mm; sourceTree = "<group>"; };
 		B511BFB512009E270060A548 /* Keyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Keyboard.h; path = KeyMagic/Keyboard.h; sourceTree = "<group>"; };
@@ -127,6 +138,7 @@
 		6AA6D1F20EAC641200DF1C2C /* KeyMagic (IMK-based) */ = {
 			isa = PBXGroup;
 			children = (
+				90DCDF5D23E043C00027B154 /* Keyboards */,
 				90412BC4222D13A700D03B91 /* KeyMagicIMEController.h */,
 				90412BC3222D13A700D03B91 /* KeyMagicIMEController.mm */,
 				90412BC5222D13A700D03B91 /* main.mm */,
@@ -134,6 +146,8 @@
 				B595DA2413D39931005636D3 /* KeyMagic_black.icns */,
 				6AA6D1EE0EAC640E00DF1C2C /* KeyMagic-Info.plist */,
 				6AAE6B550EAC6BE900E8EBBA /* MainMenu.xib */,
+				90DCDF6623E0448B0027B154 /* KeyboardFactory.h */,
+				90DCDF6723E0448B0027B154 /* KeyboardFactory.mm */,
 			);
 			name = "KeyMagic (IMK-based)";
 			sourceTree = "<group>";
@@ -173,6 +187,17 @@
 				90706E4F222D0EF5003B56F0 /* Foundation.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		90DCDF5D23E043C00027B154 /* Keyboards */ = {
+			isa = PBXGroup;
+			children = (
+				90DCDF6423E043F60027B154 /* Pyidaungsu MM.km2 */,
+				90DCDF5E23E043DC0027B154 /* MyanSan.km2 */,
+				90DCDF6023E043E60027B154 /* ZawCode.km2 */,
+				90DCDF6223E043ED0027B154 /* Zawgyi L.km2 */,
+			);
+			name = Keyboards;
 			sourceTree = "<group>";
 		};
 		B511BFAC12009E1A0060A548 /* KeyMagic */ = {
@@ -245,7 +270,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				6AAE6B230EAC6AA400E8EBBA /* KeyMagic.icns in Resources */,
+				90DCDF6523E043F60027B154 /* Pyidaungsu MM.km2 in Resources */,
+				90DCDF6323E043ED0027B154 /* Zawgyi L.km2 in Resources */,
 				6AAE6B570EAC6BE900E8EBBA /* MainMenu.xib in Resources */,
+				90DCDF6123E043E60027B154 /* ZawCode.km2 in Resources */,
+				90DCDF5F23E043DC0027B154 /* MyanSan.km2 in Resources */,
 				B595DA2513D39931005636D3 /* KeyMagic_black.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -283,6 +312,7 @@
 				90706E43222D0ED8003B56F0 /* KeyMagicString.cpp in Sources */,
 				B511BFC412009E270060A548 /* Keyboard.mm in Sources */,
 				90706E3F222D0ED8003B56F0 /* KeyCodes.cpp in Sources */,
+				90DCDF6823E0448B0027B154 /* KeyboardFactory.mm in Sources */,
 				B51D988212FFA555008E0A2F /* KeyMagicNSString.mm in Sources */,
 				90706E3E222D0ED8003B56F0 /* KeyMagicKeyboard.cpp in Sources */,
 				90412BC6222D13A700D03B91 /* KeyMagicIMEController.mm in Sources */,
