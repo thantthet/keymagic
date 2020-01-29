@@ -7,17 +7,17 @@ assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Describe the bug (ပြဿနာကိုရေးပါ)**
+A clear and concise description of what the bug is. (ဘာဖြစ်တယ်ဆိုတာကို ရှင်းရှင်းလင်းလင်းရေးပေးပါ။)
 
-**To Reproduce**
-Steps to reproduce the behavior:
+**To Reproduce (ဘာလုပ်ရင်ဖြစ်တာလဲ)**
+Steps to reproduce the behavior: (အောက်ပါအဆင့်များအတိုင်း လုပ်ရင်ဖြစ်ပါတယ် -)
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
 4. See error
 
-**Expected behavior**
+**Expected behavior (ဖြစ်သင့်သော အခြေအနေ**)
 A clear and concise description of what you expected to happen.
 
 **Screenshots**
