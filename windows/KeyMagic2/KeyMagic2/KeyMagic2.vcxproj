@@ -127,7 +127,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>MinSpace</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -148,7 +148,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>MinSpace</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -187,7 +187,10 @@
     <ClInclude Include="Dialog.h" />
     <ClInclude Include="dpi.h" />
     <ClInclude Include="AboutDialog.h" />
+    <ClInclude Include="DllHelper.h" />
     <ClInclude Include="HotkeysDialog.h" />
+    <ClInclude Include="meta_random.h" />
+    <ClInclude Include="obfuscate.h" />
     <ClInclude Include="UpdateChecker.h" />
     <ClInclude Include="HookProc.h" />
     <ClInclude Include="HotkeyManager.h" />
@@ -200,6 +203,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Tasker.h" />
+    <ClInclude Include="User32.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="version.h" />
   </ItemGroup>

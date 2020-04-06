@@ -138,7 +138,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
 			D, D, D, D, HWND_DESKTOP, NULL, hInstance, NULL)) {
 			ShowWindow(hWnd, nCmdShow);
-			InitHooks(hWnd);
+			HookProc::shared().InitHooks(hWnd);
 
 			MSG message;
 			message.wParam = 0;
