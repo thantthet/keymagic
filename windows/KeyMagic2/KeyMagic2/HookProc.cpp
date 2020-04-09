@@ -48,7 +48,7 @@ LRESULT HookProc::LowLevelMouseProc(
 	)
 {
 	if (nCode < 0) {
-		return user32.CallNextHookEx(HH_MOUSE_LL, nCode, wParam, lParam);
+		return CallNextHookEx(HH_MOUSE_LL, nCode, wParam, lParam);
 	}
 
 	UINT mouseAction = wParam;
@@ -64,12 +64,12 @@ LRESULT HookProc::LowLevelMouseProc(
 		break;
 	}
 
-	return user32.CallNextHookEx(HH_MOUSE_LL, nCode, wParam, lParam);
+	return CallNextHookEx(HH_MOUSE_LL, nCode, wParam, lParam);
 }
 
 DWORD HookProc::handleNumpadKeys(DWORD sc)
 {
-	if (user32.GetKeyState(VK_NUMLOCK) & 0xffff != 0) {
+	if (GetKeyState(VK_NUMLOCK) & 0xffff != 0) {
 		switch (sc) {
 		case 0x52: return VK_KEY_0;
 		case 0x4f: return VK_KEY_1;
@@ -95,7 +95,7 @@ LRESULT HookProc::LowLevelKeyboardProc(
 {
 
 	if (nCode < 0) {
-		return user32.CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
+		return CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
 	}
 
 	LPKBDLLHOOKSTRUCT kbd = (LPKBDLLHOOKSTRUCT)lParam;
@@ -138,14 +138,14 @@ LRESULT HookProc::LowLevelKeyboardProc(
 		kbd->vkCode == VK_PACKET || // ignore packets
 		kbd->dwExtraInfo == 0xDEADC0DE)
 	{
-		return user32.CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
+		return CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
 	}
 
 	BYTE states[256] = { 0 };
 
-	states[VK_CONTROL] = user32.GetKeyState(VK_CONTROL);
-	states[VK_SHIFT]   = user32.GetKeyState(VK_SHIFT);
-	states[VK_MENU]    = user32.GetKeyState(VK_MENU);
+	states[VK_CONTROL] = GetKeyState(VK_CONTROL);
+	states[VK_SHIFT]   = GetKeyState(VK_SHIFT);
+	states[VK_MENU]    = GetKeyState(VK_MENU);
 
 	int modifier = 0;
 	bool CTRL, ALT, SHIFT;
@@ -166,24 +166,24 @@ LRESULT HookProc::LowLevelKeyboardProc(
 
 	states[VK_MENU] = 0; // set to zero for ToUnicodeEx
 
-	UINT code = user32.MapVirtualKeyEx(kbd->scanCode, MAPVK_VSC_TO_VK_EX, (HKL)0x04090409);
+	UINT code = MapVirtualKeyEx(kbd->scanCode, MAPVK_VSC_TO_VK_EX, (HKL)0x04090409);
 	if (isModifierKey) {
 		// we dont want to pass value/code value for modifier keys
 		code = 0;
 	}
 	else {
-		DWORD vk = this->handleNumpadKeys(kbd->scanCode);
+		DWORD vk = handleNumpadKeys(kbd->scanCode);
 		if (vk) code = vk;
-		user32.ToUnicodeEx(code, kbd->scanCode, states, unicode, 1, 0, (HKL)0x04090409);
+		ToUnicodeEx(code, kbd->scanCode, states, unicode, 1, 0, (HKL)0x04090409);
 		states[code] = 0x80;
 	}
 
-	states[VK_MENU] = user32.GetKeyState(VK_MENU);
+	states[VK_MENU] = GetKeyState(VK_MENU);
 
 	KeyMagicEngine *engine = GetEngineForSelectedKeyboard();
 	if (engine == nullptr)
 	{
-		return user32.CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
+		return CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
 	}
 
 	KeyMagicString contextBefore = engine->getContextText();
@@ -203,7 +203,7 @@ LRESULT HookProc::LowLevelKeyboardProc(
 	else if (unicode[0]) {
 		ResetEngine();
 	}
-	return user32.CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
+	return CallNextHookEx(HH_KEYBOARD_LL, nCode, wParam, lParam);
 }
 
 void HookProc::WinEventHookProc(
@@ -216,9 +216,9 @@ void HookProc::WinEventHookProc(
 	DWORD         dwmsEventTime) {
 
 	if (event == EVENT_SYSTEM_FOREGROUND && ignoreHandleForegroundEvent != hwnd) {
-		HWND hwnd = user32.GetForegroundWindow();
+		HWND hwnd = GetForegroundWindow();
 		TCHAR name[256];
-		if (user32.GetWindowText(hwnd, name, 255) > 0) {
+		if (GetWindowText(hwnd, name, 255) > 0) {
 			KeyboardManager::sharedManager()->SetWindowHandle(hwnd);
 		}
 	}
@@ -253,7 +253,7 @@ void HookProc::SendString(const KeyMagicString & s)
 		inputs[ii].ki.wVk = 0;
 	}
 
-	user32.SendInput(eventCount, inputs, sizeof(INPUT));
+	SendInput(eventCount, inputs, sizeof(INPUT));
 
 	free(inputs);
 }
@@ -269,12 +269,12 @@ void HookProc::SendBackspace(ULONG count)
 		input.ki.wScan = 255;
 		input.ki.dwFlags = 0;
 		input.ki.wVk = VK_BACK;
-		user32.SendInput(1, &input, sizeof(INPUT));
+		SendInput(1, &input, sizeof(INPUT));
 
 		input.ki.wScan = 0;
 		input.ki.dwFlags = KEYEVENTF_KEYUP;
 		input.ki.wVk = VK_BACK;
-		user32.SendInput(1, &input, sizeof(INPUT));
+		SendInput(1, &input, sizeof(INPUT));
 	}
 }
 
@@ -282,18 +282,18 @@ BOOL HookProc::InitHooks(HWND mainHwnd)
 {
 	ignoreHandleForegroundEvent = mainHwnd;
 	
-	HH_KEYBOARD_LL = user32.SetWindowsHookEx(WH_KEYBOARD_LL,
+	HH_KEYBOARD_LL = SetWindowsHookEx(WH_KEYBOARD_LL,
 		[](int nCode, WPARAM wParam, LPARAM lParam) -> LRESULT {
 			return HookProc::shared().LowLevelKeyboardProc(nCode, wParam, lParam);
 		}, GetModuleHandle(NULL), NULL);
 
-	HWH_SYSTEM_FOREGROUND = user32.SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 0,
+	HWH_SYSTEM_FOREGROUND = SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, 0,
 		[](HWINEVENTHOOK hWinEventHook, DWORD event, HWND hwnd, LONG idObject, LONG idChild, DWORD idEventThread, DWORD dwmsEventTime) {
 			return HookProc::shared().WinEventHookProc(hWinEventHook, event, hwnd, idObject, idChild, idEventThread, dwmsEventTime);
 		}, 0, 0, WINEVENT_OUTOFCONTEXT);
 
 #ifndef _DEBUG
-	HH_MOUSE_LL = user32.SetWindowsHookEx(WH_MOUSE_LL,
+	HH_MOUSE_LL = SetWindowsHookEx(WH_MOUSE_LL,
 		[](int nCode, WPARAM wParam, LPARAM lParam) -> LRESULT {
 			return HookProc::shared().LowLevelMouseProc(nCode, wParam, lParam);
 		}, GetModuleHandle(NULL), NULL);

@@ -6,7 +6,7 @@
 
 class HookProc {
 private:
-	User32 user32 = User32();
+	User32 user32 = User32::shared();
 
 	BYTE KeyboardStates[256];
 
