@@ -1,7 +1,8 @@
 IDENTITY_APP = "Developer ID Application: H T KHIN ZAW (YQ4W4QMX9D)"
 IDENTITY_INSTALLER = "Developer ID Installer: H T KHIN ZAW (YQ4W4QMX9D)"
 ROOT_DIR = /tmp/KeyMagic.dst
-VERSION = defaults read $(ROOT_DIR)/KeyMagic.app/Contents/Info.plist CFBundleVersion
+GET_VERSION = defaults read $(ROOT_DIR)/KeyMagic.app/Contents/Info.plist CFBundleVersion
+VERSION = $(shell $(GET_VERSION))
 # assuming keymagic repo and keymagic-keyboards repo are in the same directory
 # so you need to clone keymagic-keyboards repo to run successfully
 KEYBOARDS_REPO = "../../../keymagic-keyboards/"
@@ -13,7 +14,7 @@ all: clean build
 	--install-location 'Library/Input Methods' \
 	--component-plist components.plist \
 	--identifier org.keymagic.pkg.app \
-	--version $(shell $(VERSION)) \
+	--version $(VERSION) \
 	app.pkg
 
 	pkgbuild \
@@ -28,7 +29,7 @@ all: clean build
 	--resources ./ \
 	--package-path . \
 	--sign $(IDENTITY_INSTALLER) \
-	keymagic-$(shell $(VERSION)).pkg
+	keymagic-$(VERSION).pkg
 
 cp: build #components plist
 	pkgbuild --analyze --root $(ROOT_DIR) components.plist
@@ -51,8 +52,7 @@ build:
 	mkdir -p $(ROOT_DIR)
 	cp -r ../IMKBased/build/Release/KeyMagic.app $(ROOT_DIR)/
 	/usr/bin/xattr -rc $(ROOT_DIR)
-	
-	sed -e 's/__VERSION__/$(shell $(VERSION))/' distribution.plist > distribution_.plist
+	sh -c "sed -e 's/__VERSION__/`$(GET_VERSION)`/' distribution.plist > distribution_.plist"
 
 prepare:
 	mkdir -p resource/others
