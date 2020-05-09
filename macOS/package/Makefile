@@ -1,6 +1,7 @@
 IDENTITY_APP = "Developer ID Application: H T KHIN ZAW (YQ4W4QMX9D)"
 IDENTITY_INSTALLER = "Developer ID Installer: H T KHIN ZAW (YQ4W4QMX9D)"
 ROOT_DIR = "/tmp/KeyMagic.dst"
+APP_DIR = $(ROOT_DIR)/Library/Input\ Methods/
 VERSION = "1.5.4"
 # assuming keymagic repo and keymagic-keyboards repo are in the same directory
 # so you need to clone keymagic-keyboards repo to run successfully
@@ -10,13 +11,13 @@ ZIP_PATH="resource/others/kbLayouts.zip"
 all: clean build
 	pkgbuild \
 	--root $(ROOT_DIR) \
-	--install-location "/Library/Input Methods" \
 	--component-plist components.plist \
 	--identifier org.keymagic.pkg.app \
 	--version $(VERSION) \
 	app.pkg
 
-	pkgbuild --root ./resource/others \
+	pkgbuild \
+	--root ./resource/others \
 	--identifier org.keymagic.resources \
 	--scripts ./resource/scripts \
 	resources.pkg
@@ -46,8 +47,8 @@ clean:
 	
 build:
 	xcodebuild -configuration Release -project ../IMKBased/KeyMagic.xcodeproj
-	mkdir -p $(ROOT_DIR)
-	cp -r ../IMKBased/build/Release/KeyMagic.app $(ROOT_DIR)/
+	mkdir -p $(APP_DIR)
+	cp -r ../IMKBased/build/Release/KeyMagic.app $(APP_DIR)
 	/usr/bin/xattr -rc $(ROOT_DIR)
 
 prepare:
