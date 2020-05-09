@@ -1,12 +1,13 @@
 #!/bin/bash
 IMDir="Library/Input Methods"
+
 # check if we are installing at for all users or current user
-if [ -f "/$IMDir/kbLayouts.zip" ]
-then # all users
+if [ -f "/$IMDir/kbLayouts.zip" ]; then
 	SRC_DIR="/$IMDir"
-elif [ -f "$HOME/$IMDir/kbLayouts.zip" ]
-then # current
+	ALL_USERS="true"
+elif [ -f "$HOME/$IMDir/kbLayouts.zip" ]; then
 	SRC_DIR="$HOME/$IMDir"
+	ALL_USERS="false"
 fi
 
 # remove old keyboards
@@ -16,10 +17,23 @@ mkdir -p "$HOME/.keymagic"
 # cd to dir
 cd "$HOME/.keymagic/"
 # move zip
-mv "$SRC_DIR/kbLayouts.zip" "$HOME/.keymagic/"
+cp "$SRC_DIR/kbLayouts.zip" "$HOME/.keymagic/"
+rm -f "$SRC_DIR/kbLayouts.zip"
 # unzip
 unzip -o "kbLayouts.zip"
 # remove
 rm "kbLayouts.zip"
+# change ownership
+chown -R $USER "$HOME/.keymagic/"
+
+####    Not related to keyboards stuff     ####
+#### Clean up other KeyMagic.app if exists ####
+
+if [ "$ALL_USERS" == "true" ]; then
+	rm -rf "$HOME/$IMDir/KeyMagic.app" || 0
+else
+	rm -rf "$HOME/$IMDir/KeyMagic.app" || 0 # self remove
+	exit 1 # and fail
+fi
 
 exit 0
