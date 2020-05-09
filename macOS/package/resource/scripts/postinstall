@@ -1,12 +1,12 @@
 #!/bin/bash
-
-# check if was installed to root or user home
-if [ -f "/kbLayouts.zip" ]
-then
-	DESC_DIR="/"
-elif [ -f "$HOME/kbLayouts.zip" ]
-then
-	DESC_DIR="$HOME/"
+IMDir="Library/Input Methods"
+# check if we are installing at for all users or current user
+if [ -f "/$IMDir/kbLayouts.zip" ]
+then # all users
+	SRC_DIR="/$IMDir"
+elif [ -f "$HOME/$IMDir/kbLayouts.zip" ]
+then # current
+	SRC_DIR="$HOME/$IMDir"
 fi
 
 # remove old keyboards
@@ -16,7 +16,7 @@ mkdir -p "$HOME/.keymagic"
 # cd to dir
 cd "$HOME/.keymagic/"
 # move zip
-mv "$DESC_DIR/kbLayouts.zip" "$HOME/.keymagic/"
+mv "$SRC_DIR/kbLayouts.zip" "$HOME/.keymagic/"
 # unzip
 unzip -o "kbLayouts.zip"
 # remove
