@@ -1,12 +1,12 @@
 IDENTITY_APP = "Developer ID Application: H T KHIN ZAW (YQ4W4QMX9D)"
 IDENTITY_INSTALLER = "Developer ID Installer: H T KHIN ZAW (YQ4W4QMX9D)"
-ROOT_DIR = "/tmp/KeyMagic.dst"
+ROOT_DIR = /tmp/KeyMagic.dst
 APP_DIR = $(ROOT_DIR)/Library/Input\ Methods/
-VERSION = "1.5.4"
+VERSION := $(shell defaults read $(APP_DIR)KeyMagic.app/Contents/Info.plist CFBundleVersion)
 # assuming keymagic repo and keymagic-keyboards repo are in the same directory
 # so you need to clone keymagic-keyboards repo to run successfully
 KEYBOARDS_REPO = "../../../keymagic-keyboards/"
-ZIP_PATH="resource/others/kbLayouts.zip"
+ZIP_PATH = "resource/others/kbLayouts.zip"
 
 all: clean build
 	pkgbuild \
@@ -23,7 +23,7 @@ all: clean build
 	resources.pkg
 
 	productbuild \
-	--distribution distribution.plist \
+	--distribution distribution_.plist \
 	--resources ./ \
 	--package-path . \
 	--sign $(IDENTITY_INSTALLER) \
@@ -50,6 +50,8 @@ build:
 	mkdir -p $(APP_DIR)
 	cp -r ../IMKBased/build/Release/KeyMagic.app $(APP_DIR)
 	/usr/bin/xattr -rc $(ROOT_DIR)
+	
+	sed -e 's/__VERSION__/$(VERSION)/' distribution.plist > distribution_.plist
 
 prepare:
 	mkdir -p resource/others
