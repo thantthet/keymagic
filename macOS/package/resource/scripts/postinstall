@@ -31,7 +31,7 @@ chown -R $USER "$HOME/.keymagic/"
 
 if [ "$ALL_USERS" == "true" ]; then
 	rm -rf "$HOME/$IMDir/KeyMagic.app" || 0
-else if [ -d "/$IMDir/KeyMagic.app" ]; then # if app exists in root volume
+elif [ -d "/$IMDir/KeyMagic.app" ]; then # if app exists in root volume
 	rm -rf "$HOME/$IMDir/KeyMagic.app" || 0 # self remove
 	exit 1 # and fail
 fi
