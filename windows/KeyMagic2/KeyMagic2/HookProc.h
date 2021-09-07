@@ -45,7 +45,7 @@ private:
 public:
 	BOOL InitHooks(HWND mainHwnd);
 
-	static HookProc shared() {
+	static HookProc& shared() {
 		static HookProc shared = HookProc();
 		return shared;
 	}

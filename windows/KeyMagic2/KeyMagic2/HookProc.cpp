@@ -280,6 +280,7 @@ void HookProc::SendBackspace(ULONG count)
 
 BOOL HookProc::InitHooks(HWND mainHwnd)
 {
+	assert(this == &HookProc::shared());
 	ignoreHandleForegroundEvent = mainHwnd;
 	
 	HH_KEYBOARD_LL = SetWindowsHookEx(WH_KEYBOARD_LL,
