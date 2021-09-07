@@ -19,7 +19,8 @@ private:
 	HWND hWnd;
 	KeyboardManager * kbdManager;
 
-	COLORREF transparent = RGB(0xff, 0xff, 0);
+	COLORREF transparentColor = RGB(0xff, 0x0, 0);
+	COLORREF textColor = RGB(0xff, 0xff, 0xff);
 	static constexpr LPTSTR szWindowClass = _T("HudWindow");
 	static BOOL registered;
 

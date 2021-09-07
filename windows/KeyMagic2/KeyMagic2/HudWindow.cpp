@@ -163,6 +163,19 @@ void HudWindow::SetBitmapAlpha(HDC hdc, HBITMAP hBmp)
 	GetDIBits(hdc, hBmp, 0, bm.bmHeight, pData, bmi, DIB_RGB_COLORS);
 	for (int y = 0; y < bm.bmHeight; y++) {
 		for (int x = 0; x < bm.bmWidth; x++) {
+			COLORREF color = RGB(pData[2], pData[1], pData[0]);
+			if (color == this->transparentColor) {
+				pData[3] = 0;
+			}
+			else if (color == this->textColor) {
+				pData[3] = 255;
+			}
+			else {
+				pData[3] = (255 * 0.8);
+			}
+			pData[0] = pData[0] * pData[3] / 255;
+			pData[1] = pData[1] * pData[3] / 255;
+			pData[2] = pData[2] * pData[3] / 255;
 			pData += 4;
 		}
 	}
@@ -205,10 +218,10 @@ HBITMAP HudWindow::CreateBitmap()
 
 	// Set Pen
 	SelectObject(memDC, bmp);
-	HPEN transparentPen = CreatePen(PS_SOLID, 0, this->transparent);
+	HPEN transparentPen = CreatePen(PS_SOLID, 0, this->transparentColor);
 	SelectObject(memDC, transparentPen);
 	// Set Brush
-	HBRUSH transparentBrush = CreateSolidBrush(this->transparent);
+	HBRUSH transparentBrush = CreateSolidBrush(this->transparentColor);
 	SelectObject(memDC, transparentBrush);
 	// Draw Rect
 	Rectangle(memDC, 0, 0, bmpWidth, bmpHeight);
@@ -216,15 +229,15 @@ HBITMAP HudWindow::CreateBitmap()
 	HBRUSH brush = CreateSolidBrush(RGB(0, 0, 0));
 	SelectObject(memDC, brush);
 	RoundRect(memDC, 0, 0, bmpWidth, bmpHeight, 22, 22);
-
+	
 	RECT rect = { 0 };
 	rect.right = bmpWidth;
 	rect.bottom = bmpHeight;
-	SetTextColor(memDC, RGB(0xff, 0xff, 0xff));
-
+	SetTextColor(memDC, this->textColor);
+	
 	DrawTextEx(memDC, (LPTSTR)name.c_str(), name.length(), &rect, DT_CENTER | DT_SINGLELINE | DT_VCENTER, NULL);
 	
-	//this->SetBitmapAlpha(memDC, bmp);
+	this->SetBitmapAlpha(memDC, bmp);
 	DeleteObject(hfnt);
 	DeleteObject(brush);
 	DeleteDC(memDC);
@@ -261,11 +274,11 @@ void HudWindow::SetBitmap(HBITMAP hbmpSplash)
 	HBITMAP hbmpOld = (HBITMAP)SelectObject(hdcMem, hbmpSplash);
 
 	// use the source image's alpha channel for blending
-	BLENDFUNCTION blend = { AC_SRC_OVER, 0, abs(0.9 * 255), AC_SRC_ALPHA };
+	BLENDFUNCTION blend = { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
 
 	// paint the window (in the right location) with the alpha-blended bitmap
 	UpdateLayeredWindow(this->hWnd, hdcScreen, &ptOrigin, &sizeSplash,
-		hdcMem, &ptZero, this->transparent, &blend, ULW_COLORKEY);
+		hdcMem, &ptZero, this->transparentColor, &blend, ULW_ALPHA);
 
 	// delete temporary objects
 	SelectObject(hdcMem, hbmpOld);
